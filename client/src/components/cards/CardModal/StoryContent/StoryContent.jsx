@@ -8,7 +8,7 @@ import React, { useCallback, useContext, useEffect, useMemo, useState } from 're
 import { useTranslation } from 'react-i18next';
 import { Gallery, Item as GalleryItem } from 'react-photoswipe-gallery';
 import { shallowEqual, useDispatch, useSelector } from 'react-redux';
-import { Button, Grid, Icon } from 'semantic-ui-react';
+import { Button, Dropdown, Grid, Icon } from 'semantic-ui-react';
 import { useDidUpdate } from '../../../../lib/hooks';
 import { push } from '../../../../lib/redux-router';
 
@@ -46,6 +46,8 @@ const StoryContent = React.memo(() => {
   const selectAttachmentById = useMemo(() => selectors.makeSelectAttachmentById(), []);
   const selectChildCardListById = useMemo(() => selectors.makeSelectListById(), []);
 
+  const dispatch = useDispatch();
+
   const card = useSelector(selectors.selectCurrentCard);
   const board = useSelector(selectors.selectCurrentBoard);
   const userIds = useSelector(selectors.selectUserIdsForCurrentCard);
@@ -65,6 +67,9 @@ const StoryContent = React.memo(() => {
     });
     return lists;
   });
+
+  // Get available lists for the current board
+  const availableLists = useSelector(selectors.selectAvailableListsForCurrentBoard);
 
   const imageAttachmentIdsExceptCover = useSelector(
     selectors.selectImageAttachmentIdsExceptCoverForCurrentCard,
@@ -152,7 +157,6 @@ const StoryContent = React.memo(() => {
     };
   }, shallowEqual);
 
-  const dispatch = useDispatch();
   const [t] = useTranslation();
   const [descriptionDraft, setDescriptionDraft] = useState(null);
   const [isEditDescriptionOpened, setIsEditDescriptionOpened] = useState(false);
@@ -234,6 +238,13 @@ const StoryContent = React.memo(() => {
   const handleUserDeselect = useCallback(
     (userId) => {
       dispatch(entryActions.removeUserFromCurrentCard(userId));
+    },
+    [dispatch],
+  );
+
+  const handleChildCardListChange = useCallback(
+    (childCardId, newListId) => {
+      dispatch(entryActions.moveCard(childCardId, newListId));
     },
     [dispatch],
   );
@@ -540,7 +551,26 @@ const StoryContent = React.memo(() => {
                             <span className={styles.taskName}>{childCard.name}</span>
                           </div>
                           <div className={styles.tableCell}>
-                            <span className={styles.listName}>{childCardList?.name || '-'}</span>
+                            {canUseLists ? (
+                              <Dropdown
+                                value={childCard.listId}
+                                options={availableLists.map((availableList) => ({
+                                  key: availableList.id,
+                                  value: availableList.id,
+                                  text: availableList.name,
+                                }))}
+                                onChange={(e, { value }) => {
+                                  e.stopPropagation();
+                                  handleChildCardListChange(childCard.id, value);
+                                }}
+                                onClick={(e) => e.stopPropagation()}
+                                selection
+                                compact
+                                className={styles.listDropdown}
+                              />
+                            ) : (
+                              <span className={styles.listName}>{childCardList?.name || '-'}</span>
+                            )}
                           </div>
                           <div className={styles.tableCell}>
                             <span

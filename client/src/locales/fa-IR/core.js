@@ -51,7 +51,11 @@ export default {
       areYouSureYouWantToDeleteThisBackgroundImage: null,
       areYouSureYouWantToDeleteThisBoard: 'آیا مطمئن هستید که می‌خواهید این برد را حذف کنید؟',
       areYouSureYouWantToDeleteThisCard: 'آیا مطمئن هستید که می‌خواهید این کارت را حذف کنید؟',
+      areYouSureYouWantToDeleteThisCardWithChildTasks:
+        'آیا مطمئن هستید که می‌خواهید این کارت را حذف کنید؟ تمام زیر وظیفه‌ها والد خود را از دست خواهند داد.',
       areYouSureYouWantToDeleteThisCardForever: null,
+      areYouSureYouWantToDeleteThisCardForeverWithChildTasks:
+        'آیا مطمئن هستید که می‌خواهید این کارت را برای همیشه حذف کنید؟ تمام زیر وظیفه‌ها والد خود را از دست خواهند داد.',
       areYouSureYouWantToDeleteThisComment: 'آیا مطمئن هستید که می‌خواهید این نظر را حذف کنید؟',
       areYouSureYouWantToDeleteThisCustomField: null,
       areYouSureYouWantToDeleteThisCustomFieldGroup: null,

@@ -50,8 +50,12 @@ export default {
         'Are you sure you want to delete this background image?',
       areYouSureYouWantToDeleteThisBoard: 'Are you sure you want to delete this board?',
       areYouSureYouWantToDeleteThisCard: 'Are you sure you want to delete this card?',
+      areYouSureYouWantToDeleteThisCardWithChildTasks:
+        'Are you sure you want to delete this card? All child tasks will lose their parent.',
       areYouSureYouWantToDeleteThisCardForever:
         'Are you sure you want to delete this card forever?',
+      areYouSureYouWantToDeleteThisCardForeverWithChildTasks:
+        'Are you sure you want to delete this card forever? All child tasks will lose their parent.',
       areYouSureYouWantToDeleteThisComment: 'Are you sure you want to delete this comment?',
       areYouSureYouWantToDeleteThisCustomField:
         'Are you sure you want to delete this custom field?',
