@@ -75,6 +75,11 @@ module.exports = {
       }),
     );
 
+    await Board.updateOne({ id }).set({
+      projectId: targetProjectId,
+      position: newPosition,
+    });
+
     const finalBoard = await Board.findOne(id).populate('memberUsers');
 
     sails.sockets.broadcast(
