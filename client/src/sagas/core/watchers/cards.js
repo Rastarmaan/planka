@@ -5,8 +5,8 @@
 
 import { all, takeEvery } from 'redux-saga/effects';
 
-import services from '../services';
 import EntryActionTypes from '../../../constants/EntryActionTypes';
+import services from '../services';
 
 export default function* cardsWatchers() {
   yield all([
@@ -74,6 +74,15 @@ export default function* cardsWatchers() {
     takeEvery(EntryActionTypes.CURRENT_CARD_DELETE, () => services.deleteCurrentCard()),
     takeEvery(EntryActionTypes.CARD_DELETE_HANDLE, ({ payload: { card } }) =>
       services.handleCardDelete(card),
+    ),
+    takeEvery(EntryActionTypes.CURRENT_CARD_TO_STORY_ADD, ({ payload: { storyId } }) =>
+      services.addStoryToCurrentCard(storyId),
+    ),
+    takeEvery(EntryActionTypes.CURRENT_CARD_FROM_STORY_REMOVE, () =>
+      services.removeStoryFromCurrentCard(),
+    ),
+    takeEvery(EntryActionTypes.CARD_CHILDREN_FETCH, ({ payload: { parentId } }) =>
+      services.fetchChildCards(parentId),
     ),
   ]);
 }

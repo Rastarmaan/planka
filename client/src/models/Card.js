@@ -5,9 +5,9 @@
 
 import { attr, fk, many, oneToOne } from 'redux-orm';
 
-import BaseModel from './BaseModel';
 import ActionTypes from '../constants/ActionTypes';
 import Config from '../constants/Config';
+import BaseModel from './BaseModel';
 
 export default class extends BaseModel {
   static modelName = 'Card';
@@ -61,6 +61,11 @@ export default class extends BaseModel {
       to: 'List',
       as: 'list',
       relatedName: 'cards',
+    }),
+    parentCardId: fk({
+      to: 'Card',
+      as: 'parentCard',
+      relatedName: 'childCards',
     }),
     creatorUserId: fk({
       to: 'User',

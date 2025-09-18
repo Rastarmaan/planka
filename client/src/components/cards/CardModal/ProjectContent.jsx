@@ -3,55 +3,58 @@
  * Licensed under the Fair Use License: https://github.com/plankanban/planka/blob/master/LICENSE.md
  */
 
-import React, { useCallback, useContext, useMemo, useState } from 'react';
 import classNames from 'classnames';
-import { shallowEqual, useDispatch, useSelector } from 'react-redux';
+import React, { useCallback, useContext, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { shallowEqual, useDispatch, useSelector } from 'react-redux';
 import { Button, Checkbox, Grid, Icon } from 'semantic-ui-react';
 import { useDidUpdate } from '../../../lib/hooks';
 
-import selectors from '../../../selectors';
-import entryActions from '../../../entry-actions';
-import { usePopupInClosableContext } from '../../../hooks';
-import { startStopwatch, stopStopwatch } from '../../../utils/stopwatch';
-import { isUsableMarkdownElement } from '../../../utils/element-helpers';
 import { BoardMembershipRoles, CardTypes, ListTypes } from '../../../constants/Enums';
 import { CardTypeIcons } from '../../../constants/Icons';
 import { ClosableContext } from '../../../contexts';
-import NameField from './NameField';
-import TaskLists from './TaskLists';
-import CustomFieldGroups from './CustomFieldGroups';
-import Communication from './Communication';
-import CreationDetailsStep from './CreationDetailsStep';
-import MoreActionsStep from './MoreActionsStep';
-import DueDateChip from '../DueDateChip';
-import StopwatchChip from '../StopwatchChip';
-import EditDueDateStep from '../EditDueDateStep';
-import EditStopwatchStep from '../EditStopwatchStep';
-import ExpandableMarkdown from '../../common/ExpandableMarkdown';
-import EditMarkdown from '../../common/EditMarkdown';
-import ConfirmationStep from '../../common/ConfirmationStep';
-import UserAvatar from '../../users/UserAvatar';
+import entryActions from '../../../entry-actions';
+import { usePopupInClosableContext } from '../../../hooks';
+import selectors from '../../../selectors';
+import { isUsableMarkdownElement } from '../../../utils/element-helpers';
+import { startStopwatch, stopStopwatch } from '../../../utils/stopwatch';
+import Attachments from '../../attachments/Attachments';
 import BoardMembershipsStep from '../../board-memberships/BoardMembershipsStep';
+import ConfirmationStep from '../../common/ConfirmationStep';
+import EditMarkdown from '../../common/EditMarkdown';
+import ExpandableMarkdown from '../../common/ExpandableMarkdown';
 import LabelChip from '../../labels/LabelChip';
 import LabelsStep from '../../labels/LabelsStep';
 import ListsStep from '../../lists/ListsStep';
-import AddTaskListStep from '../../task-lists/AddTaskListStep';
-import Attachments from '../../attachments/Attachments';
-import AddAttachmentStep from '../../attachments/AddAttachmentStep';
-import AddCustomFieldGroupStep from '../../custom-field-groups/AddCustomFieldGroupStep';
+import StoriesPopup from '../../stories/StoriesPopup';
+import UserAvatar from '../../users/UserAvatar';
+import DueDateChip from '../DueDateChip';
+import EditDueDateStep from '../EditDueDateStep';
+import EditStopwatchStep from '../EditStopwatchStep';
+import StopwatchChip from '../StopwatchChip';
+import Communication from './Communication';
+import CreationDetailsStep from './CreationDetailsStep';
+import CustomFieldGroups from './CustomFieldGroups';
+import MoreActionsStep from './MoreActionsStep';
+import NameField from './NameField';
+import TaskLists from './TaskLists';
 
 import styles from './ProjectContent.module.scss';
 
 const ProjectContent = React.memo(() => {
   const selectListById = useMemo(() => selectors.makeSelectListById(), []);
   const selectPrevListById = useMemo(() => selectors.makeSelectListById(), []);
+  const selectCardById = useMemo(() => selectors.makeSelectCardById(), []);
 
   const card = useSelector(selectors.selectCurrentCard);
   const board = useSelector(selectors.selectCurrentBoard);
   const userIds = useSelector(selectors.selectUserIdsForCurrentCard);
   const labelIds = useSelector(selectors.selectLabelIdsForCurrentCard);
   const attachmentIds = useSelector(selectors.selectAttachmentIdsForCurrentCard);
+
+  const parentCard = useSelector((state) =>
+    card.parentCardId ? selectCardById(state, card.parentCardId) : null,
+  );
 
   const isJoined = useSelector(selectors.selectIsCurrentUserInCurrentCard);
 
@@ -81,9 +84,6 @@ const ProjectContent = React.memo(() => {
     canUseLists,
     canUseMembers,
     canUseLabels,
-    canAddTaskList,
-    canAddAttachment,
-    canAddCustomFieldGroup,
   } = useSelector((state) => {
     const boardMembership = selectors.selectCurrentUserMembershipForCurrentBoard(state);
 
@@ -223,6 +223,17 @@ const ProjectContent = React.memo(() => {
     [dispatch],
   );
 
+  const handleStorySelect = useCallback(
+    (storyId) => {
+      dispatch(entryActions.addStoryToCurrentCard(storyId));
+    },
+    [dispatch],
+  );
+
+  const handleRemoveParentStory = useCallback(() => {
+    dispatch(entryActions.removeStoryFromCurrentCard());
+  }, [dispatch]);
+
   const handleLabelSelect = useCallback(
     (labelId) => {
       dispatch(entryActions.addLabelToCurrentCard(labelId));
@@ -233,13 +244,6 @@ const ProjectContent = React.memo(() => {
   const handleLabelDeselect = useCallback(
     (labelId) => {
       dispatch(entryActions.removeLabelFromCurrentCard(labelId));
-    },
-    [dispatch],
-  );
-
-  const handleCustomFieldGroupCreate = useCallback(
-    (data) => {
-      dispatch(entryActions.createCustomFieldGroupInCurrentCard(data));
     },
     [dispatch],
   );
@@ -289,9 +293,6 @@ const ProjectContent = React.memo(() => {
   const ListsPopup = usePopupInClosableContext(ListsStep);
   const EditDueDatePopup = usePopupInClosableContext(EditDueDateStep);
   const EditStopwatchPopup = usePopupInClosableContext(EditStopwatchStep);
-  const AddTaskListPopup = usePopupInClosableContext(AddTaskListStep);
-  const AddAttachmentPopup = usePopupInClosableContext(AddAttachmentStep);
-  const AddCustomFieldGroupPopup = usePopupInClosableContext(AddCustomFieldGroupStep);
   const MoreActionsPopup = usePopupInClosableContext(MoreActionsStep);
   const ConfirmationPopup = usePopupInClosableContext(ConfirmationStep);
 
@@ -549,6 +550,7 @@ const ProjectContent = React.memo(() => {
         </Grid.Column>
         <Grid.Column width={4} className={styles.sidebarPadding}>
           <div className={styles.sticky}>
+            {/* In the sidebar section, after the list section: */}
             <div className={styles.actions}>
               <div className={classNames(styles.attachments, styles.attachmentsList)}>
                 <div className={classNames(styles.text, styles.textList)}>{t('common.list')}</div>
@@ -570,89 +572,39 @@ const ProjectContent = React.memo(() => {
                   </span>
                 )}
               </div>
+              {card.type === CardTypes.PROJECT && (
+                <div className={classNames(styles.attachments, styles.attachmentsList)}>
+                  <div className={classNames(styles.text, styles.textList)}>
+                    {t('common.story')}
+                  </div>
+                  {parentCard ? (
+                    <div className={styles.storyContainer}>
+                      <span className={styles.list}>
+                        <Icon name="book" size="small" className={styles.listIcon} />
+                        <span className={styles.hidable}>{parentCard.name}</span>
+                      </span>
+                      <button
+                        type="button"
+                        className={styles.removeStoryButton}
+                        onClick={handleRemoveParentStory}
+                        title={t('action.removeFromStory')}
+                      >
+                        <Icon name="times" size="small" />
+                      </button>
+                    </div>
+                  ) : (
+                    <StoriesPopup onSelect={handleStorySelect}>
+                      <button type="button" className={styles.listButton}>
+                        <span className={classNames(styles.list, styles.listHoverable)}>
+                          <Icon name="book" size="small" className={styles.listIcon} />
+                          <span className={styles.hidable}>{t('action.addToStory')}</span>
+                        </span>
+                      </button>
+                    </StoriesPopup>
+                  )}
+                </div>
+              )}
             </div>
-            {(canEditDueDate ||
-              canEditStopwatch ||
-              canUseMembers ||
-              canUseLabels ||
-              canAddTaskList ||
-              canAddAttachment ||
-              canAddCustomFieldGroup) && (
-              <div className={styles.actions}>
-                <span className={styles.actionsTitle}>{t('action.addToCard')}</span>
-                {canUseMembers && (
-                  <BoardMembershipsPopup
-                    currentUserIds={userIds}
-                    onUserSelect={handleUserSelect}
-                    onUserDeselect={handleUserDeselect}
-                  >
-                    <Button fluid className={classNames(styles.actionButton, styles.hidable)}>
-                      <Icon name="user outline" className={styles.actionIcon} />
-                      {t('common.members')}
-                    </Button>
-                  </BoardMembershipsPopup>
-                )}
-                {canUseLabels && (
-                  <LabelsPopup
-                    currentIds={labelIds}
-                    cardId={card.id}
-                    onSelect={handleLabelSelect}
-                    onDeselect={handleLabelDeselect}
-                  >
-                    <Button fluid className={classNames(styles.actionButton, styles.hidable)}>
-                      <Icon name="bookmark outline" className={styles.actionIcon} />
-                      {t('common.labels')}
-                    </Button>
-                  </LabelsPopup>
-                )}
-                {canEditDueDate && (
-                  <EditDueDatePopup cardId={card.id}>
-                    <Button fluid className={classNames(styles.actionButton, styles.hidable)}>
-                      <Icon name="calendar check outline" className={styles.actionIcon} />
-                      {t('common.dueDate', {
-                        context: 'title',
-                      })}
-                    </Button>
-                  </EditDueDatePopup>
-                )}
-                {canEditStopwatch && (
-                  <EditStopwatchPopup cardId={card.id}>
-                    <Button fluid className={classNames(styles.actionButton, styles.hidable)}>
-                      <Icon name="clock outline" className={styles.actionIcon} />
-                      {t('common.stopwatch')}
-                    </Button>
-                  </EditStopwatchPopup>
-                )}
-                {canAddTaskList && (
-                  <AddTaskListPopup>
-                    <Button fluid className={classNames(styles.actionButton, styles.hidable)}>
-                      <Icon name="check square outline" className={styles.actionIcon} />
-                      {t('common.taskList', {
-                        context: 'title',
-                      })}
-                    </Button>
-                  </AddTaskListPopup>
-                )}
-                {canAddAttachment && (
-                  <AddAttachmentPopup>
-                    <Button fluid className={classNames(styles.actionButton, styles.hidable)}>
-                      <Icon name="attach" className={styles.actionIcon} />
-                      {t('common.attachment')}
-                    </Button>
-                  </AddAttachmentPopup>
-                )}
-                {canAddCustomFieldGroup && (
-                  <AddCustomFieldGroupPopup onCreate={handleCustomFieldGroupCreate}>
-                    <Button fluid className={classNames(styles.actionButton, styles.hidable)}>
-                      <Icon name="sticky note outline" className={styles.actionIcon} />
-                      {t('common.customField', {
-                        context: 'title',
-                      })}
-                    </Button>
-                  </AddCustomFieldGroupPopup>
-                )}
-              </div>
-            )}
             {((!board.limitCardTypesToDefaultOne && canEditType) ||
               canSubscribe ||
               canJoin ||

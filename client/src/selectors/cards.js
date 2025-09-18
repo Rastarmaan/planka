@@ -5,12 +5,12 @@
 
 import { createSelector } from 'redux-orm';
 
+import { buildCustomFieldValueId } from '../models/CustomFieldValue';
 import orm from '../orm';
+import { isLocalId } from '../utils/local-id';
 import { selectRecentCardId } from './core';
 import { selectPath } from './router';
 import { selectCurrentUserId } from './users';
-import { buildCustomFieldValueId } from '../models/CustomFieldValue';
-import { isLocalId } from '../utils/local-id';
 
 export const makeSelectCardById = () =>
   createSelector(
@@ -445,8 +445,8 @@ export const selectActivityIdsForCurrentCard = createSelector(
 
 export const selectIsCurrentUserInCurrentCard = createSelector(
   orm,
-  (state) => selectPath(state).cardId,
-  (state) => selectCurrentUserId(state),
+  selectPath,
+  selectCurrentUserId,
   ({ Card }, id, currentUserId) => {
     if (!id) {
       return false;
@@ -458,7 +458,59 @@ export const selectIsCurrentUserInCurrentCard = createSelector(
       return false;
     }
 
-    return cardModel.hasUserWithId(currentUserId);
+    return cardModel.users.toRefArray().some((user) => user.id === currentUserId);
+  },
+);
+
+export const selectPrevCardId = createSelector(orm, selectPath, ({ Card }, id) => {
+  if (!id) {
+    return null;
+  }
+
+  const cardModel = Card.withId(id);
+  if (!cardModel) {
+    return null;
+  }
+
+  const cardsInList = cardModel.list.getCardsModelArray();
+  const currentIndex = cardsInList.findIndex((card) => card.id === id);
+
+  if (currentIndex > 0) {
+    return cardsInList[currentIndex - 1].id;
+  }
+
+  return null;
+});
+
+export const selectNextCardId = createSelector(orm, selectPath, ({ Card }, id) => {
+  if (!id) {
+    return null;
+  }
+
+  const cardModel = Card.withId(id);
+  if (!cardModel) {
+    return null;
+  }
+
+  const cardsInList = cardModel.list.getCardsModelArray();
+  const currentIndex = cardsInList.findIndex((card) => card.id === id);
+
+  if (currentIndex >= 0 && currentIndex < cardsInList.length - 1) {
+    return cardsInList[currentIndex + 1].id;
+  }
+
+  return null;
+});
+
+export const selectChildCardsByParentId = createSelector(
+  orm,
+  (_, parentId) => parentId,
+  ({ Card }, parentId) => {
+    if (!parentId) {
+      return [];
+    }
+
+    return Card.filter({ parentCardId: parentId }).toRefArray();
   },
 );
 
@@ -495,4 +547,7 @@ export default {
   selectCommentIdsForCurrentCard,
   selectActivityIdsForCurrentCard,
   selectIsCurrentUserInCurrentCard,
+  selectPrevCardId,
+  selectNextCardId,
+  selectChildCardsByParentId,
 };

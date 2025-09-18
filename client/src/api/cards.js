@@ -1,14 +1,9 @@
-/*!
- * Copyright (c) 2024 PLANKA Software GmbH
- * Licensed under the Fair Use License: https://github.com/plankanban/planka/blob/master/LICENSE.md
- */
-
 import omit from 'lodash/omit';
 
-import socket from './socket';
-import { transformAttachment } from './attachments';
 import { transformActivity } from './activities';
+import { transformAttachment } from './attachments';
 import { transformNotification } from './notifications';
+import socket from './socket';
 
 /* Transformers */
 
@@ -108,6 +103,16 @@ const deleteCard = (id, headers) =>
     item: transformCard(body.item),
   }));
 
+const getChildCards = (parentId, headers) =>
+  socket.get(`/cards/${parentId}/children`, undefined, headers).then((body) => ({
+    ...body,
+    items: body.items.map(transformCard),
+    included: {
+      ...body.included,
+      attachments: body.included.attachments.map(transformAttachment),
+    },
+  }));
+
 /* Event handlers */
 
 const makeHandleCardsUpdate = (next) => (body) => {
@@ -140,6 +145,7 @@ export default {
   duplicateCard,
   readCardNotifications,
   deleteCard,
+  getChildCards,
   makeHandleCardsUpdate,
   makeHandleCardCreate,
   makeHandleCardUpdate,

@@ -3,7 +3,7 @@
  * Licensed under the Fair Use License: https://github.com/plankanban/planka/blob/master/LICENSE.md
  */
 
-:global(#app) {
+ :global(#app) {
   .actionButton {
     background: #ebeef0;
     box-shadow: 0 1px 0 0 rgba(9, 30, 66, 0.13);
@@ -359,4 +359,231 @@
     border-radius: 4px;
     margin: 0;
   }
+}
+
+.childTasksSection {
+  margin-top: 8px;
+}
+
+.tableHeader {
+  display: grid;
+  grid-template-columns: 2fr 1fr 1fr;
+  gap: 16px;
+  padding: 12px 16px;
+  background: #f4f5f7;
+  border-radius: 4px 4px 0 0;
+  border-bottom: 1px solid #dfe1e6;
+}
+
+.tableHeaderCell {
+  font-size: 12px;
+  font-weight: 600;
+  color: #5e6c84;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.tableBody {
+  background: #ffffff;
+  border-radius: 0 0 4px 4px;
+  border: 1px solid #dfe1e6;
+  border-top: none;
+}
+
+.tableRow {
+  display: grid;
+  grid-template-columns: 2fr 1fr 1fr;
+  gap: 16px;
+  padding: 12px 16px;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+  border-bottom: 1px solid #f4f5f7;
+
+  &:last-child {
+    border-bottom: none;
+  }
+
+  &:hover {
+    background-color: #f4f5f7;
+  }
+
+  &:focus {
+    outline: 2px solid #0084ff;
+    outline-offset: -2px;
+  }
+}
+
+.tableCell {
+  display: flex;
+  align-items: center;
+  font-size: 14px;
+  color: #172b4d;
+}
+
+.taskIcon {
+  margin-right: 8px;
+  color: #6b778c;
+  font-size: 12px;
+}
+
+.taskName {
+  font-weight: 500;
+  flex: 1;
+}
+
+.listName {
+  font-size: 12px;
+  color: #6b778c;
+  background: #f4f5f7;
+  padding: 4px 8px;
+  border-radius: 12px;
+  text-transform: uppercase;
+  font-weight: 500;
+  letter-spacing: 0.5px;
+}
+
+.statusBadge {
+  font-size: 11px;
+  padding: 4px 8px;
+  border-radius: 12px;
+  text-transform: uppercase;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+}
+
+.statusCompleted {
+  background: #e3fcef;
+  color: #006644;
+}
+
+.statusOpen {
+  background: #deebff;
+  color: #0052cc;
+}
+
+.paginationContainer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 16px;
+  background: #f8f9fa;
+  border-top: 1px solid #dfe1e6;
+  border-radius: 0 0 4px 4px;
+}
+
+.paginationInfo {
+  font-size: 12px;
+  color: #6b778c;
+}
+
+.paginationControls {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.paginationButton {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border: 1px solid #dfe1e6;
+  background: #ffffff;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-size: 12px;
+  font-weight: 500;
+  color: #172b4d;
+
+  &:hover:not(.disabled) {
+    background: #f4f5f7;
+    border-color: #b3bac5;
+  }
+
+  &.disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+
+  &.active {
+    background: #0084ff;
+    border-color: #0084ff;
+    color: #ffffff;
+  }
+}
+
+.pageNumber {
+  min-width: 32px;
+}
+
+.childTasksTable {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.childTaskRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 12px;
+  border: none;
+  background: transparent;
+  width: 100%;
+  text-align: left;
+  cursor: pointer;
+  border-radius: 4px;
+  transition: background-color 0.2s ease;
+
+  &:hover {
+    background-color: rgba(0, 0, 0, 0.05);
+  }
+
+  &:focus {
+    outline: 2px solid #0084ff;
+    outline-offset: 2px;
+  }
+}
+
+.childTaskName {
+  display: flex;
+  align-items: center;
+  flex: 1;
+  font-weight: 500;
+  color: #172b4d;
+}
+
+.childTaskIcon {
+  margin-right: 8px;
+  color: #6b778c;
+}
+
+.childTaskMeta {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 4px;
+}
+
+.childTaskList {
+  font-size: 11px;
+  color: #6b778c;
+  background: #f4f5f7;
+  padding: 2px 6px;
+  border-radius: 8px;
+  text-transform: uppercase;
+  font-weight: 500;
+  letter-spacing: 0.5px;
+}
+
+.childTaskStatus {
+  font-size: 12px;
+  color: #6b778c;
+  background: #dfe1e6;
+  padding: 2px 8px;
+  border-radius: 12px;
+  text-transform: uppercase;
+  font-weight: 500;
 }

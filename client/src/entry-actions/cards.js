@@ -176,6 +176,40 @@ const handleCardDelete = (card) => ({
   },
 });
 
+const fetchChildCards = (cardId) => ({
+  type: EntryActionTypes.CARD_CHILDREN_FETCH,
+  payload: {
+    cardId,
+  },
+});
+
+const addCardToStory = (cardId, storyId) => ({
+  type: EntryActionTypes.CARD_TO_STORY_ADD,
+  payload: {
+    cardId,
+    storyId,
+  },
+});
+
+const addCurrentCardToStory = (storyId) => ({
+  type: EntryActionTypes.CURRENT_CARD_TO_STORY_ADD,
+  payload: {
+    storyId,
+  },
+});
+
+const addStoryToCurrentCard = (storyId) => ({
+  type: EntryActionTypes.CURRENT_CARD_TO_STORY_ADD,
+  payload: {
+    storyId,
+  },
+});
+
+const removeStoryFromCurrentCard = () => ({
+  type: EntryActionTypes.CURRENT_CARD_FROM_STORY_REMOVE,
+  payload: {},
+});
+
 export default {
   fetchCardsInCurrentList,
   handleCardsUpdate,
@@ -200,4 +234,9 @@ export default {
   deleteCard,
   deleteCurrentCard,
   handleCardDelete,
+  fetchChildCards,
+  addCardToStory,
+  addCurrentCardToStory,
+  addStoryToCurrentCard,
+  removeStoryFromCurrentCard,
 };

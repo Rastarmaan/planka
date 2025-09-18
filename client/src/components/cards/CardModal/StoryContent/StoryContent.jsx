@@ -3,38 +3,40 @@
  * Licensed under the Fair Use License: https://github.com/plankanban/planka/blob/master/LICENSE.md
  */
 
-import React, { useCallback, useContext, useMemo, useState } from 'react';
 import classNames from 'classnames';
-import { shallowEqual, useDispatch, useSelector } from 'react-redux';
+import React, { useCallback, useContext, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Gallery, Item as GalleryItem } from 'react-photoswipe-gallery';
+import { shallowEqual, useDispatch, useSelector } from 'react-redux';
 import { Button, Grid, Icon } from 'semantic-ui-react';
 import { useDidUpdate } from '../../../../lib/hooks';
+import { push } from '../../../../lib/redux-router';
 
-import selectors from '../../../../selectors';
-import entryActions from '../../../../entry-actions';
-import { usePopupInClosableContext } from '../../../../hooks';
-import { isUsableMarkdownElement } from '../../../../utils/element-helpers';
 import { BoardMembershipRoles, CardTypes, ListTypes } from '../../../../constants/Enums';
 import { CardTypeIcons } from '../../../../constants/Icons';
+import Paths from '../../../../constants/Paths';
 import { ClosableContext } from '../../../../contexts';
-import Thumbnail from './Thumbnail';
-import NameField from '../NameField';
-import CustomFieldGroups from '../CustomFieldGroups';
-import Communication from '../Communication';
-import CreationDetailsStep from '../CreationDetailsStep';
-import MoreActionsStep from '../MoreActionsStep';
-import Markdown from '../../../common/Markdown';
-import EditMarkdown from '../../../common/EditMarkdown';
-import ConfirmationStep from '../../../common/ConfirmationStep';
-import UserAvatar from '../../../users/UserAvatar';
+import entryActions from '../../../../entry-actions';
+import { usePopupInClosableContext } from '../../../../hooks';
+import selectors from '../../../../selectors';
+import { isUsableMarkdownElement } from '../../../../utils/element-helpers';
+import AddAttachmentStep from '../../../attachments/AddAttachmentStep';
+import Attachments from '../../../attachments/Attachments';
 import BoardMembershipsStep from '../../../board-memberships/BoardMembershipsStep';
+import ConfirmationStep from '../../../common/ConfirmationStep';
+import EditMarkdown from '../../../common/EditMarkdown';
+import Markdown from '../../../common/Markdown';
+import AddCustomFieldGroupStep from '../../../custom-field-groups/AddCustomFieldGroupStep';
 import LabelChip from '../../../labels/LabelChip';
 import LabelsStep from '../../../labels/LabelsStep';
 import ListsStep from '../../../lists/ListsStep';
-import Attachments from '../../../attachments/Attachments';
-import AddAttachmentStep from '../../../attachments/AddAttachmentStep';
-import AddCustomFieldGroupStep from '../../../custom-field-groups/AddCustomFieldGroupStep';
+import UserAvatar from '../../../users/UserAvatar';
+import Communication from '../Communication';
+import CreationDetailsStep from '../CreationDetailsStep';
+import CustomFieldGroups from '../CustomFieldGroups';
+import MoreActionsStep from '../MoreActionsStep';
+import NameField from '../NameField';
+import Thumbnail from './Thumbnail';
 
 import styles from './StoryContent.module.scss';
 
@@ -42,12 +44,27 @@ const StoryContent = React.memo(() => {
   const selectListById = useMemo(() => selectors.makeSelectListById(), []);
   const selectPrevListById = useMemo(() => selectors.makeSelectListById(), []);
   const selectAttachmentById = useMemo(() => selectors.makeSelectAttachmentById(), []);
+  const selectChildCardListById = useMemo(() => selectors.makeSelectListById(), []);
 
   const card = useSelector(selectors.selectCurrentCard);
   const board = useSelector(selectors.selectCurrentBoard);
   const userIds = useSelector(selectors.selectUserIdsForCurrentCard);
   const labelIds = useSelector(selectors.selectLabelIdsForCurrentCard);
   const attachmentIds = useSelector(selectors.selectAttachmentIdsForCurrentCard);
+  const childCards = useSelector((state) => selectors.selectChildCardsByParentId(state, card?.id));
+
+  // Get list data for all child cards
+  const childCardLists = useSelector((state) => {
+    if (!childCards || childCards.length === 0) return {};
+
+    const lists = {};
+    childCards.forEach((childCard) => {
+      if (childCard.listId) {
+        lists[childCard.id] = selectChildCardListById(state, childCard.listId);
+      }
+    });
+    return lists;
+  });
 
   const imageAttachmentIdsExceptCover = useSelector(
     selectors.selectImageAttachmentIdsExceptCoverForCurrentCard,
@@ -140,6 +157,27 @@ const StoryContent = React.memo(() => {
   const [descriptionDraft, setDescriptionDraft] = useState(null);
   const [isEditDescriptionOpened, setIsEditDescriptionOpened] = useState(false);
   const [activateClosable, deactivateClosable, setIsClosableActive] = useContext(ClosableContext);
+
+  // Pagination state for child tasks
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 5;
+
+  // Pagination calculations for child tasks
+  const paginatedChildCards = useMemo(() => {
+    if (!childCards) return [];
+    const startIndex = (currentPage - 1) * itemsPerPage;
+    const endIndex = startIndex + itemsPerPage;
+    return childCards.slice(startIndex, endIndex);
+  }, [childCards, currentPage, itemsPerPage]);
+
+  const totalPages = useMemo(() => {
+    if (!childCards) return 0;
+    return Math.ceil(childCards.length / itemsPerPage);
+  }, [childCards, itemsPerPage]);
+
+  const handlePageChange = useCallback((page) => {
+    setCurrentPage(page);
+  }, []);
 
   const handleListSelect = useCallback(
     (listId) => {
@@ -261,6 +299,13 @@ const StoryContent = React.memo(() => {
     [activateClosable, deactivateClosable],
   );
 
+  const handleChildCardClick = useCallback(
+    (childCardId) => {
+      dispatch(push(Paths.CARDS.replace(':id', childCardId)));
+    },
+    [dispatch],
+  );
+
   useDidUpdate(() => {
     if (!canEditDescription) {
       setIsEditDescriptionOpened(false);
@@ -270,6 +315,13 @@ const StoryContent = React.memo(() => {
   useDidUpdate(() => {
     setIsClosableActive(isEditDescriptionOpened);
   }, [isEditDescriptionOpened]);
+
+  // Fetch child cards when component mounts or card changes
+  useEffect(() => {
+    if (card?.id) {
+      dispatch(entryActions.fetchChildCards(card.id));
+    }
+  }, [card?.id, dispatch]);
 
   const CreationDetailsPopup = usePopupInClosableContext(CreationDetailsStep);
   const BoardMembershipsPopup = usePopupInClosableContext(BoardMembershipsStep);
@@ -454,6 +506,106 @@ const StoryContent = React.memo(() => {
             )}
           </Gallery>
           <CustomFieldGroups />
+          {childCards && childCards.length > 0 && (
+            <div className={styles.contentModule}>
+              <div className={styles.moduleWrapper}>
+                <Icon name="tasks" className={styles.moduleIcon} />
+                <div className={styles.moduleHeader}>{t('common.childTasks')}</div>
+                <div className={styles.childTasksSection}>
+                  <div className={styles.tableHeader}>
+                    <div className={styles.tableHeaderCell}>{t('common.taskName')}</div>
+                    <div className={styles.tableHeaderCell}>{t('common.list')}</div>
+                    <div className={styles.tableHeaderCell}>{t('common.action')}</div>
+                  </div>
+
+                  <div className={styles.tableBody}>
+                    {paginatedChildCards.map((childCard) => {
+                      const childCardList = childCardLists[childCard.id];
+
+                      return (
+                        <div
+                          key={childCard.id}
+                          className={styles.tableRow}
+                          onClick={() => handleChildCardClick(childCard.id)}
+                          role="button"
+                          tabIndex={0}
+                          onKeyDown={(e) => {
+                            if (e.key === 'Enter' || e.key === ' ') {
+                              handleChildCardClick(childCard.id);
+                            }
+                          }}
+                        >
+                          <div className={styles.tableCell}>
+                            <Icon name="circle outline" className={styles.taskIcon} />
+                            <span className={styles.taskName}>{childCard.name}</span>
+                          </div>
+                          <div className={styles.tableCell}>
+                            <span className={styles.listName}>{childCardList?.name || '-'}</span>
+                          </div>
+                          <div className={styles.tableCell}>
+                            <span
+                              className={classNames(styles.statusBadge, {
+                                [styles.statusCompleted]: childCard.isCompleted,
+                                [styles.statusOpen]: !childCard.isCompleted,
+                              })}
+                            >
+                              {childCard.isCompleted ? t('common.completed') : t('common.open')}
+                            </span>
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+
+                  {totalPages > 1 && (
+                    <div className={styles.paginationContainer}>
+                      <div className={styles.paginationInfo}>
+                        {t('common.showing')} {(currentPage - 1) * itemsPerPage + 1}-
+                        {Math.min(currentPage * itemsPerPage, childCards.length)} {t('common.of')}{' '}
+                        {childCards.length}
+                      </div>
+                      <div className={styles.paginationControls}>
+                        <button
+                          className={classNames(styles.paginationButton, {
+                            [styles.disabled]: currentPage === 1,
+                          })}
+                          onClick={() => handlePageChange(currentPage - 1)}
+                          disabled={currentPage === 1}
+                          type="button"
+                        >
+                          <Icon name="chevron left" />
+                        </button>
+
+                        {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
+                          <button
+                            key={page}
+                            className={classNames(styles.paginationButton, styles.pageNumber, {
+                              [styles.active]: page === currentPage,
+                            })}
+                            onClick={() => handlePageChange(page)}
+                            type="button"
+                          >
+                            {page}
+                          </button>
+                        ))}
+
+                        <button
+                          className={classNames(styles.paginationButton, {
+                            [styles.disabled]: currentPage === totalPages,
+                          })}
+                          onClick={() => handlePageChange(currentPage + 1)}
+                          disabled={currentPage === totalPages}
+                          type="button"
+                        >
+                          <Icon name="chevron right" />
+                        </button>
+                      </div>
+                    </div>
+                  )}
+                </div>
+              </div>
+            </div>
+          )}
           {attachmentIds.length > 0 && (
             <div className={styles.contentModule}>
               <div className={styles.moduleWrapper}>

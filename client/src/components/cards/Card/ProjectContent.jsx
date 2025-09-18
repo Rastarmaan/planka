@@ -3,23 +3,23 @@
  * Licensed under the Fair Use License: https://github.com/plankanban/planka/blob/master/LICENSE.md
  */
 
-import React, { useCallback, useMemo } from 'react';
-import PropTypes from 'prop-types';
 import classNames from 'classnames';
+import PropTypes from 'prop-types';
+import React, { useCallback, useMemo } from 'react';
 import { shallowEqual, useDispatch, useSelector } from 'react-redux';
 import { Icon } from 'semantic-ui-react';
 
-import selectors from '../../../selectors';
-import entryActions from '../../../entry-actions';
-import { startStopwatch, stopStopwatch } from '../../../utils/stopwatch';
-import { isListArchiveOrTrash } from '../../../utils/record-helpers';
 import { BoardMembershipRoles, BoardViews } from '../../../constants/Enums';
-import TaskList from './TaskList';
+import entryActions from '../../../entry-actions';
+import selectors from '../../../selectors';
+import { isListArchiveOrTrash } from '../../../utils/record-helpers';
+import { startStopwatch, stopStopwatch } from '../../../utils/stopwatch';
+import CustomFieldValueChip from '../../custom-field-values/CustomFieldValueChip';
+import LabelChip from '../../labels/LabelChip';
+import UserAvatar from '../../users/UserAvatar';
 import DueDateChip from '../DueDateChip';
 import StopwatchChip from '../StopwatchChip';
-import UserAvatar from '../../users/UserAvatar';
-import LabelChip from '../../labels/LabelChip';
-import CustomFieldValueChip from '../../custom-field-values/CustomFieldValueChip';
+import TaskList from './TaskList';
 
 import styles from './ProjectContent.module.scss';
 
@@ -55,6 +55,11 @@ const ProjectContent = React.memo(({ cardId }) => {
   const list = useSelector((state) => selectListById(state, card.listId));
   const userIds = useSelector((state) => selectUserIdsByCardId(state, cardId));
   const labelIds = useSelector((state) => selectLabelIdsByCardId(state, cardId));
+
+  const parentCard = useSelector((state) => {
+    if (!card.parentCardId) return null;
+    return selectCardById(state, card.parentCardId);
+  });
 
   const taskListIds = useSelector((state) =>
     selectShownOnFrontOfCardTaskListIdsByCardId(state, cardId),
@@ -146,6 +151,12 @@ const ProjectContent = React.memo(({ cardId }) => {
   return (
     <div className={styles.wrapper}>
       <div className={classNames(styles.name, card.isClosed && styles.nameClosed)}>{card.name}</div>
+      {parentCard && (
+        <div className={styles.storyBadge}>
+          <Icon name="book" />
+          <span className={styles.storyBadgeText}>{parentCard.name}</span>
+        </div>
+      )}
       {coverUrl && (
         <div className={styles.coverWrapper}>
           <img src={coverUrl} alt="" className={styles.cover} />

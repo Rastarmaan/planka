@@ -6,16 +6,16 @@
 import { call, fork, join, put, race, select, take } from 'redux-saga/effects';
 import { LOCATION_CHANGE_HANDLE } from '../../../lib/redux-router';
 
-import { goToBoard, goToCard } from './router';
-import request from '../request';
-import selectors from '../../../selectors';
 import actions from '../../../actions';
 import api from '../../../api';
-import { createLocalId } from '../../../utils/local-id';
-import { isListArchiveOrTrash, isListFinite } from '../../../utils/record-helpers';
 import ActionTypes from '../../../constants/ActionTypes';
 import { BoardViews, ListTypes, ListTypeStates } from '../../../constants/Enums';
 import LIST_TYPE_STATE_BY_TYPE from '../../../constants/ListTypeStateByType';
+import selectors from '../../../selectors';
+import { createLocalId } from '../../../utils/local-id';
+import { isListArchiveOrTrash, isListFinite } from '../../../utils/record-helpers';
+import request from '../request';
+import { goToBoard, goToCard } from './router';
 
 // eslint-disable-next-line no-underscore-dangle
 const _preloadImage = (url) =>
@@ -596,6 +596,69 @@ export function* handleCardDelete(card) {
   }
 }
 
+export function* fetchChildCards(parentId) {
+  yield put(actions.fetchChildCards(parentId));
+
+  let cards;
+  let users;
+  let cardMemberships;
+  let cardLabels;
+  let taskLists;
+  let tasks;
+  let attachments;
+  let customFieldGroups;
+  let customFields;
+  let customFieldValues;
+
+  try {
+    ({
+      items: cards,
+      included: {
+        users,
+        cardMemberships,
+        cardLabels,
+        taskLists,
+        tasks,
+        attachments,
+        customFieldGroups,
+        customFields,
+        customFieldValues,
+      },
+    } = yield call(request, api.getChildCards, parentId));
+  } catch (error) {
+    yield put(actions.fetchChildCards.failure(parentId, error));
+    return;
+  }
+
+  yield put(
+    actions.fetchChildCards.success(
+      parentId,
+      cards,
+      users,
+      cardMemberships,
+      cardLabels,
+      taskLists,
+      tasks,
+      attachments,
+      customFieldGroups,
+      customFields,
+      customFieldValues,
+    ),
+  );
+}
+
+export function* addStoryToCurrentCard(storyId) {
+  const { cardId } = yield select(selectors.selectPath);
+
+  yield call(updateCard, cardId, { parentCardId: storyId });
+}
+
+export function* removeStoryFromCurrentCard() {
+  const { cardId } = yield select(selectors.selectPath);
+
+  yield call(updateCard, cardId, { parentCardId: null });
+}
+
 export default {
   fetchCards,
   fetchCardsInCurrentList,
@@ -621,4 +684,7 @@ export default {
   deleteCard,
   deleteCurrentCard,
   handleCardDelete,
+  fetchChildCards,
+  addStoryToCurrentCard,
+  removeStoryFromCurrentCard,
 };

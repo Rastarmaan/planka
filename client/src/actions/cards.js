@@ -233,6 +233,50 @@ const handleCardDelete = (card) => ({
   },
 });
 
+const fetchChildCards = (parentId) => ({
+  type: ActionTypes.CARD_CHILDREN_FETCH,
+  payload: {
+    parentId,
+  },
+});
+
+fetchChildCards.success = (
+  parentId,
+  cards,
+  users,
+  cardMemberships,
+  cardLabels,
+  taskLists,
+  tasks,
+  attachments,
+  customFieldGroups,
+  customFields,
+  customFieldValues,
+) => ({
+  type: ActionTypes.CARD_CHILDREN_FETCH__SUCCESS,
+  payload: {
+    parentId,
+    cards,
+    users,
+    cardMemberships,
+    cardLabels,
+    taskLists,
+    tasks,
+    attachments,
+    customFieldGroups,
+    customFields,
+    customFieldValues,
+  },
+});
+
+fetchChildCards.failure = (parentId, error) => ({
+  type: ActionTypes.CARD_CHILDREN_FETCH__FAILURE,
+  payload: {
+    parentId,
+    error,
+  },
+});
+
 export default {
   fetchCards,
   handleCardsUpdate,
@@ -243,4 +287,5 @@ export default {
   duplicateCard,
   deleteCard,
   handleCardDelete,
+  fetchChildCards,
 };

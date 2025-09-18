@@ -3,7 +3,7 @@
  * Licensed under the Fair Use License: https://github.com/plankanban/planka/blob/master/LICENSE.md
  */
 
-:global(#app) {
+ :global(#app) {
   .attachment {
     display: inline-block;
     line-height: 0;
@@ -101,6 +101,34 @@
     text-align: left;
     transition: background 0.3s ease;
     vertical-align: top;
+  }
+
+  .storyBadge {
+    background: #0079bf;
+    border-radius: 3px;
+    color: #fff;
+    display: inline-flex;
+    align-items: center;
+    justify-content: flex-start;
+    font-size: 11px;
+    line-height: 1;
+    margin-bottom: 4px;
+    padding: 4px 6px;
+    max-width: 100%;
+
+    :global(.icon) {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      line-height: 1;
+    }
+  }
+
+  .storyBadgeText {
+    margin-left: 4px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
   }
 
   .wrapper {
