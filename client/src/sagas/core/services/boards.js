@@ -5,15 +5,15 @@
 
 import { call, fork, put, select, take } from 'redux-saga/effects';
 
-import { goToBoard, goToProject } from './router';
-import { openModal } from './modals';
-import request from '../request';
-import selectors from '../../../selectors';
 import actions from '../../../actions';
 import api from '../../../api';
-import { createLocalId } from '../../../utils/local-id';
 import ActionTypes from '../../../constants/ActionTypes';
 import ModalTypes from '../../../constants/ModalTypes';
+import selectors from '../../../selectors';
+import { createLocalId } from '../../../utils/local-id';
+import request from '../request';
+import { openModal } from './modals';
+import { goToBoard, goToProject } from './router';
 
 export function* createBoard(projectId, { import: boardImport, ...data }) {
   const localId = yield call(createLocalId);
@@ -245,6 +245,18 @@ export function* handleBoardDelete(board) {
   }
 }
 
+export function* transferBoard(id, projectId) {
+  let board;
+  try {
+    ({ item: board } = yield call(request, api.transferBoard, id, projectId));
+  } catch (error) {
+    console.error('Transfer board failed:', error);
+    return;
+  }
+
+  yield put(actions.handleBoardUpdate(board));
+}
+
 export default {
   createBoard,
   createBoardInCurrentProject,
@@ -261,4 +273,5 @@ export default {
   searchInCurrentBoard,
   deleteBoard,
   handleBoardDelete,
+  transferBoard,
 };

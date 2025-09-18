@@ -5,8 +5,8 @@
 
 import { all, takeEvery } from 'redux-saga/effects';
 
-import services from '../services';
 import EntryActionTypes from '../../../constants/EntryActionTypes';
+import services from '../services';
 
 export default function* boardsWatchers() {
   yield all([
@@ -43,6 +43,12 @@ export default function* boardsWatchers() {
     takeEvery(EntryActionTypes.BOARD_DELETE, ({ payload: { id } }) => services.deleteBoard(id)),
     takeEvery(EntryActionTypes.BOARD_DELETE_HANDLE, ({ payload: { board } }) =>
       services.handleBoardDelete(board),
+    ),
+    takeEvery(EntryActionTypes.BOARD_TRANSFER, ({ payload: { id, projectId } }) =>
+      services.transferBoard(id, projectId),
+    ),
+    takeEvery(EntryActionTypes.BOARD_TRANSFER_HANDLE, ({ payload: { board } }) =>
+      services.handleBoardTransfer(board),
     ),
   ]);
 }

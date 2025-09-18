@@ -4,15 +4,16 @@
  */
 
 import React, { useCallback, useMemo } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
 import { useTranslation } from 'react-i18next';
+import { useDispatch, useSelector } from 'react-redux';
 import { Button, Divider, Header, Tab } from 'semantic-ui-react';
 
-import selectors from '../../../../selectors';
 import entryActions from '../../../../entry-actions';
 import { usePopupInClosableContext } from '../../../../hooks';
-import EditInformation from './EditInformation';
+import selectors from '../../../../selectors';
 import ConfirmationStep from '../../../common/ConfirmationStep';
+import EditInformation from './EditInformation';
+import TransferBoard from './TransferBoard';
 
 import styles from './GeneralPane.module.scss';
 
@@ -34,6 +35,14 @@ const GeneralPane = React.memo(() => {
   return (
     <Tab.Pane attached={false} className={styles.wrapper}>
       <EditInformation />
+      <Divider horizontal section>
+        <Header as="h4">
+          {t('common.boardManagement', {
+            context: 'title',
+          })}
+        </Header>
+      </Divider>
+      <TransferBoard />
       <Divider horizontal section>
         <Header as="h4">
           {t('common.dangerZone', {

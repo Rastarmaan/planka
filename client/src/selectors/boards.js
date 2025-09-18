@@ -5,12 +5,12 @@
 
 import { createSelector } from 'redux-orm';
 
+import { ListTypes } from '../constants/Enums';
 import orm from '../orm';
-import { selectPath } from './router';
-import { selectCurrentUserId } from './users';
 import { isLocalId } from '../utils/local-id';
 import { isListArchiveOrTrash } from '../utils/record-helpers';
-import { ListTypes } from '../constants/Enums';
+import { selectPath } from './router';
+import { selectCurrentUserId } from './users';
 
 export const makeSelectBoardById = () =>
   createSelector(
@@ -154,7 +154,7 @@ export const selectMembershipsForCurrentBoard = createSelector(
       .map((boardMembershipModel) => ({
         ...boardMembershipModel.ref,
         isPersisted: !isLocalId(boardMembershipModel.id),
-        user: boardMembershipModel.user.ref,
+        user: boardMembershipModel.user?.ref || null,
       }));
   },
 );
@@ -176,7 +176,8 @@ export const selectMemberUserIdsForCurrentBoard = createSelector(
     return boardModel
       .getMembershipsQuerySet()
       .toModelArray()
-      .map((boardMembershipModel) => boardMembershipModel.user.id);
+      .map((boardMembershipModel) => boardMembershipModel.user?.id)
+      .filter(Boolean);
   },
 );
 

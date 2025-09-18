@@ -3,10 +3,10 @@
  * Licensed under the Fair Use License: https://github.com/plankanban/planka/blob/master/LICENSE.md
  */
 
+import { transformAttachment } from './attachments';
+import { transformCard } from './cards';
 import http from './http';
 import socket from './socket';
-import { transformCard } from './cards';
-import { transformAttachment } from './attachments';
 
 /* Actions */
 
@@ -32,10 +32,14 @@ const updateBoard = (id, data, headers) => socket.patch(`/boards/${id}`, data, h
 
 const deleteBoard = (id, headers) => socket.delete(`/boards/${id}`, undefined, headers);
 
+const transferBoard = (id, projectId, headers) =>
+  socket.patch(`/boards/${id}/transfer`, { projectId }, headers);
+
 export default {
   createBoard,
   createBoardWithImport,
   getBoard,
   updateBoard,
+  transferBoard,
   deleteBoard,
 };

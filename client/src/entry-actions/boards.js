@@ -79,6 +79,21 @@ const searchInCurrentBoard = (value) => ({
   },
 });
 
+const transferBoard = (id, projectId) => ({
+  type: EntryActionTypes.BOARD_TRANSFER,
+  payload: {
+    id,
+    projectId,
+  },
+});
+
+const handleBoardTransfer = (board) => ({
+  type: EntryActionTypes.BOARD_TRANSFER_HANDLE,
+  payload: {
+    board,
+  },
+});
+
 const deleteBoard = (id) => ({
   type: EntryActionTypes.BOARD_DELETE,
   payload: {
@@ -104,6 +119,8 @@ export default {
   updateContextInCurrentBoard,
   updateViewInCurrentBoard,
   searchInCurrentBoard,
+  transferBoard,
+  handleBoardTransfer,
   deleteBoard,
   handleBoardDelete,
 };

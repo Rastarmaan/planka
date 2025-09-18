@@ -71,6 +71,7 @@ export default {
         'آیا مطمئن هستید که می‌خواهید این مدیر را از پروژه حذف کنید؟',
       areYouSureYouWantToRemoveThisMemberFromBoard:
         'آیا مطمئن هستید که می‌خواهید این عضو را از برد حذف کنید؟',
+      areYouSureYouWantToTransferThisBoard: 'آیا مطمئن هستید که می‌خواهید این برد را انتقال دهید؟',
       assignAsOwner_title: null,
       atLeastOneListMustBePresent: null,
       attachment: 'پیوست',
@@ -81,6 +82,7 @@ export default {
       baseGroup: null,
       board: 'برد',
       boardActions_title: null,
+      boardManagement_title: 'مدیریت برد',
       boardNotFound_title: 'برد یافت نشد',
       boardSubscribed: null,
       boardUser: null,
@@ -218,6 +220,7 @@ export default {
       noCardsFound: null,
       noConnectionToServer: 'ارتباط با سرور قطع است',
       noLists: 'لیستی وجود ندارد',
+      noProjectsAvailableForTransfer: 'پروژه‌ای برای انتقال وجود ندارد',
       noProjects: 'پروژه‌ای وجود ندارد',
       noUnreadNotifications: 'اعلان خوانده نشده‌ای وجود ندارد.',
       notifications: 'اعلان‌ها',
@@ -438,6 +441,7 @@ export default {
       unsubscribe: 'لغو اشتراک',
       uploadNewAvatar: 'آپلود آواتار جدید',
       uploadNewImage: 'آپلود تصویر جدید',
+      transferBoard: 'انتقال برد',
     },
   },
 };
