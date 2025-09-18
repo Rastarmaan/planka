@@ -30,6 +30,11 @@
  *               - type
  *               - name
  *             properties:
+ *               parentCardId:
+ *                 type: string
+ *                 nullable: true
+ *                 description: ID of the parent card (must be a STORY card)
+ *                 example: "1357158568008091270"
  *               type:
  *                 type: string
  *                 enum: [project, story]
@@ -116,6 +121,12 @@ const Errors = {
   POSITION_MUST_BE_PRESENT: {
     positionMustBePresent: 'Position must be present',
   },
+  PARENT_CARD_NOT_FOUND: {
+    parentCardNotFound: 'Parent card not found',
+  },
+  PARENT_CARD_MUST_BE_STORY: {
+    parentCardMustBeStory: 'Parent card must be a story type',
+  },
 };
 
 module.exports = {
@@ -157,6 +168,10 @@ module.exports = {
       type: 'json',
       custom: isStopwatch,
     },
+    parentCardId: {
+      type: 'string',
+      allowNull: true,
+    },
   },
 
   exits: {
@@ -167,6 +182,12 @@ module.exports = {
       responseType: 'notFound',
     },
     positionMustBePresent: {
+      responseType: 'unprocessableEntity',
+    },
+    parentCardNotFound: {
+      responseType: 'notFound',
+    },
+    parentCardMustBeStory: {
       responseType: 'unprocessableEntity',
     },
   },
@@ -191,6 +212,21 @@ module.exports = {
       throw Errors.NOT_ENOUGH_RIGHTS;
     }
 
+    if (inputs.parentCardId) {
+      const parentCard = await Card.findOne({
+        id: inputs.parentCardId,
+        boardId: board.id,
+      });
+
+      if (!parentCard) {
+        throw Errors.PARENT_CARD_NOT_FOUND;
+      }
+
+      if (parentCard.type !== Card.Types.STORY) {
+        throw Errors.PARENT_CARD_MUST_BE_STORY;
+      }
+    }
+
     const values = _.pick(inputs, [
       'type',
       'position',
@@ -199,6 +235,7 @@ module.exports = {
       'dueDate',
       'isDueCompleted',
       'stopwatch',
+      'parentCardId',
     ]);
 
     const card = await sails.helpers.cards.createOne

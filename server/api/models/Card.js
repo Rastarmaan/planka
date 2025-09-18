@@ -229,6 +229,10 @@ module.exports = {
       model: 'Attachment',
       columnName: 'cover_attachment_id',
     },
+    parentCardId: {
+      model: 'Card',
+      columnName: 'parent_card_id',
+    },
     subscriptionUsers: {
       collection: 'User',
       via: 'cardId',

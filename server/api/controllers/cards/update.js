@@ -195,6 +195,10 @@ module.exports = {
     isSubscribed: {
       type: 'boolean',
     },
+    parentCardId: {
+      ...idInput,
+      allowNull: true,
+    },
   },
 
   exits: {
@@ -256,6 +260,7 @@ module.exports = {
         'dueDate',
         'isDueCompleted',
         'stopwatch',
+        'parentCardId',
       );
     }
 
@@ -317,6 +322,7 @@ module.exports = {
       'isDueCompleted',
       'stopwatch',
       'isSubscribed',
+      'parentCardId',
     ]);
 
     card = await sails.helpers.cards.updateOne

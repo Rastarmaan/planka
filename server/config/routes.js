@@ -128,6 +128,7 @@ module.exports.routes = {
   'GET /api/lists/:listId/cards': 'cards/index',
   'POST /api/lists/:listId/cards': 'cards/create',
   'GET /api/cards/:id': 'cards/show',
+  'GET /api/cards/:id/children': 'cards/get-children',
   'PATCH /api/cards/:id': 'cards/update',
   'POST /api/cards/:id/duplicate': 'cards/duplicate',
   'POST /api/cards/:id/read-notifications': 'cards/read-notifications',
