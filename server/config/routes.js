@@ -117,6 +117,11 @@ module.exports.routes = {
   'PATCH /api/labels/:id': 'labels/update',
   'DELETE /api/labels/:id': 'labels/delete',
 
+  'GET /api/boards/:boardId/versions': 'board-versions/index',
+  'POST /api/boards/:boardId/versions': 'board-versions/create',
+  'POST /api/boards/:boardId/versions/:versionId/restore': 'board-versions/restore',
+  'DELETE /api/boards/:boardId/versions/:versionId': 'board-versions/delete',
+
   'POST /api/boards/:boardId/lists': 'lists/create',
   'GET /api/lists/:id': 'lists/show',
   'PATCH /api/lists/:id': 'lists/update',
