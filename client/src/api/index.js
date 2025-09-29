@@ -3,34 +3,35 @@
  * Licensed under the Fair Use License: https://github.com/plankanban/planka/blob/master/LICENSE.md
  */
 
-import http from './http';
-import socket from './socket';
-import config from './config';
-import terms from './terms';
 import accessTokens from './access-tokens';
-import webhooks from './webhooks';
-import users from './users';
-import projects from './projects';
-import projectManagers from './project-managers';
+import activities from './activities';
+import attachments from './attachments';
 import backgroundImages from './background-images';
 import baseCustomFieldGroups from './base-custom-field-groups';
-import boards from './boards';
 import boardMemberships from './board-memberships';
+import boardVersions from './board-versions';
+import boards from './boards';
+import cardLabels from './card-labels';
+import cardMemberships from './card-memberships';
+import cards from './cards';
+import comments from './comments';
+import config from './config';
+import customFieldGroups from './custom-field-groups';
+import customFieldValues from './custom-field-values';
+import customFields from './custom-fields';
+import http from './http';
 import labels from './labels';
 import lists from './lists';
-import cards from './cards';
-import cardMemberships from './card-memberships';
-import cardLabels from './card-labels';
+import notificationServices from './notification-services';
+import notifications from './notifications';
+import projectManagers from './project-managers';
+import projects from './projects';
+import socket from './socket';
 import taskLists from './task-lists';
 import tasks from './tasks';
-import attachments from './attachments';
-import customFieldGroups from './custom-field-groups';
-import customFields from './custom-fields';
-import customFieldValues from './custom-field-values';
-import comments from './comments';
-import activities from './activities';
-import notifications from './notifications';
-import notificationServices from './notification-services';
+import terms from './terms';
+import users from './users';
+import webhooks from './webhooks';
 
 export { http, socket };
 
@@ -46,6 +47,7 @@ export default {
   ...baseCustomFieldGroups,
   ...boards,
   ...boardMemberships,
+  ...boardVersions,
   ...labels,
   ...lists,
   ...cards,

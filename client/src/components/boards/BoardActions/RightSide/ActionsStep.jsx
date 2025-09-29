@@ -3,18 +3,18 @@
  * Licensed under the Fair Use License: https://github.com/plankanban/planka/blob/master/LICENSE.md
  */
 
-import React, { useCallback } from 'react';
 import PropTypes from 'prop-types';
-import { shallowEqual, useDispatch, useSelector } from 'react-redux';
+import React, { useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
+import { shallowEqual, useDispatch, useSelector } from 'react-redux';
 import { Icon, Menu } from 'semantic-ui-react';
 import { Popup } from '../../../../lib/custom-ui';
 
-import selectors from '../../../../selectors';
-import entryActions from '../../../../entry-actions';
-import { useSteps } from '../../../../hooks';
 import { BoardContexts, BoardMembershipRoles } from '../../../../constants/Enums';
 import { BoardContextIcons } from '../../../../constants/Icons';
+import entryActions from '../../../../entry-actions';
+import { useSteps } from '../../../../hooks';
+import selectors from '../../../../selectors';
 import ConfirmationStep from '../../../common/ConfirmationStep';
 import CustomFieldGroupsStep from '../../../custom-field-groups/CustomFieldGroupsStep';
 
@@ -71,6 +71,11 @@ const ActionsStep = React.memo(({ onClose }) => {
 
   const handleActivitiesClick = useCallback(() => {
     dispatch(entryActions.openBoardActivitiesModal());
+    onClose();
+  }, [onClose, dispatch]);
+
+  const handleVersionsClick = useCallback(() => {
+    dispatch(entryActions.openBoardVersionsModal());
     onClose();
   }, [onClose, dispatch]);
 
@@ -137,6 +142,13 @@ const ActionsStep = React.memo(({ onClose }) => {
             <Icon name="list ul" className={styles.menuItemIcon} />
             {t('common.actions', {
               context: 'title',
+            })}
+          </Menu.Item>
+          <Menu.Item className={styles.menuItem} onClick={handleVersionsClick}>
+            <Icon name="history" className={styles.menuItemIcon} />
+            {t('common.versions', {
+              context: 'title',
+              defaultValue: 'Versions',
             })}
           </Menu.Item>
           {withTrashEmptier && (

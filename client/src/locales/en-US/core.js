@@ -161,6 +161,7 @@ export default {
       deleteWebhook_title: 'Delete Webhook',
       deletedUser_title: 'Deleted User',
       description: 'Description',
+      versionDescriptionPlaceholder: 'Optional description for this version...',
       detectAutomatically: 'Detect automatically',
       display: 'Display',
       dropFileToUpload: 'Drop file to upload',
@@ -229,6 +230,7 @@ export default {
       moveList_title: 'Move List',
       myOwn_title: 'My Own',
       name: 'Name',
+      versionNamePlaceholder: 'Enter version name...',
       newEmail: 'New e-mail',
       newPassword: 'New password',
       newUsername: 'New username',
@@ -266,6 +268,14 @@ export default {
       removeManager_title: 'Remove Manager',
       removeMember_title: 'Remove Member',
       role: 'Role',
+      boardVersions: 'Board Versions',
+      cancel: 'Cancel',
+      confirmDelete: 'Confirm Delete',
+      confirmDeleteVersion:
+        'Are you sure you want to delete this version? This action cannot be undone.',
+      confirmRestore: 'Confirm Restore',
+      confirmRestoreVersion:
+        'Are you sure you want to restore this version? This will replace the current board state.',
       searchCards: 'Search cards...',
       searchCustomFieldGroups: 'Search custom field groups...',
       searchCustomFields: 'Search custom fields...',
@@ -353,6 +363,7 @@ export default {
       webhooks: 'Webhooks',
       withoutBaseGroup: 'Without base group',
       writeComment: 'Write a comment...',
+      createBackupBeforeRestore: 'Create a backup before restoring',
     },
 
     action: {
@@ -388,6 +399,8 @@ export default {
       createLabel: 'Create label',
       createNewLabel: 'Create new label',
       createProject: 'Create project',
+      createVersion: 'Create Version',
+      restore: 'Restore',
       deactivateUser: 'Deactivate user',
       deactivateUser_title: 'Deactivate User',
       delete: 'Delete',

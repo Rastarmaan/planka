@@ -6,14 +6,15 @@
 import React from 'react';
 import { useSelector } from 'react-redux';
 
-import selectors from '../../../selectors';
-import ModalTypes from '../../../constants/ModalTypes';
 import { BoardContexts, BoardViews } from '../../../constants/Enums';
-import KanbanContent from './KanbanContent';
-import FiniteContent from './FiniteContent';
-import EndlessContent from './EndlessContent';
-import CardModal from '../../cards/CardModal';
+import ModalTypes from '../../../constants/ModalTypes';
+import selectors from '../../../selectors';
 import BoardActivitiesModal from '../../activities/BoardActivitiesModal';
+import BoardVersionsModal from '../../board-versions/BoardVersionsModal';
+import CardModal from '../../cards/CardModal';
+import EndlessContent from './EndlessContent';
+import FiniteContent from './FiniteContent';
+import KanbanContent from './KanbanContent';
 
 const Board = React.memo(() => {
   const board = useSelector(selectors.selectCurrentBoard);
@@ -45,6 +46,10 @@ const Board = React.memo(() => {
     switch (modal.type) {
       case ModalTypes.BOARD_ACTIVITIES:
         modalNode = <BoardActivitiesModal />;
+
+        break;
+      case ModalTypes.BOARD_VERSIONS:
+        modalNode = <BoardVersionsModal />;
 
         break;
       default:
