@@ -18,15 +18,18 @@ import { usePopupInClosableContext } from '../../../hooks';
 import selectors from '../../../selectors';
 import { isUsableMarkdownElement } from '../../../utils/element-helpers';
 import { startStopwatch, stopStopwatch } from '../../../utils/stopwatch';
+import AddAttachmentStep from '../../attachments/AddAttachmentStep';
 import Attachments from '../../attachments/Attachments';
 import BoardMembershipsStep from '../../board-memberships/BoardMembershipsStep';
 import ConfirmationStep from '../../common/ConfirmationStep';
 import EditMarkdown from '../../common/EditMarkdown';
 import ExpandableMarkdown from '../../common/ExpandableMarkdown';
+import AddCustomFieldGroupStep from '../../custom-field-groups/AddCustomFieldGroupStep';
 import LabelChip from '../../labels/LabelChip';
 import LabelsStep from '../../labels/LabelsStep';
 import ListsStep from '../../lists/ListsStep';
 import StoriesPopup from '../../stories/StoriesPopup';
+import AddTaskListStep from '../../task-lists/AddTaskListStep';
 import UserAvatar from '../../users/UserAvatar';
 import DueDateChip from '../DueDateChip';
 import EditDueDateStep from '../EditDueDateStep';
@@ -84,6 +87,9 @@ const ProjectContent = React.memo(() => {
     canUseLists,
     canUseMembers,
     canUseLabels,
+    canAddTaskList,
+    canAddAttachment,
+    canAddCustomFieldGroup,
   } = useSelector((state) => {
     const boardMembership = selectors.selectCurrentUserMembershipForCurrentBoard(state);
 
@@ -248,6 +254,13 @@ const ProjectContent = React.memo(() => {
     [dispatch],
   );
 
+  const handleCustomFieldGroupCreate = useCallback(
+    (data) => {
+      dispatch(entryActions.createCustomFieldGroupInCurrentCard(data));
+    },
+    [dispatch],
+  );
+
   const handleToggleJointClick = useCallback(() => {
     if (isJoined) {
       dispatch(entryActions.removeCurrentUserFromCurrentCard());
@@ -293,6 +306,9 @@ const ProjectContent = React.memo(() => {
   const ListsPopup = usePopupInClosableContext(ListsStep);
   const EditDueDatePopup = usePopupInClosableContext(EditDueDateStep);
   const EditStopwatchPopup = usePopupInClosableContext(EditStopwatchStep);
+  const AddTaskListPopup = usePopupInClosableContext(AddTaskListStep);
+  const AddAttachmentPopup = usePopupInClosableContext(AddAttachmentStep);
+  const AddCustomFieldGroupPopup = usePopupInClosableContext(AddCustomFieldGroupStep);
   const MoreActionsPopup = usePopupInClosableContext(MoreActionsStep);
   const ConfirmationPopup = usePopupInClosableContext(ConfirmationStep);
 
@@ -605,6 +621,88 @@ const ProjectContent = React.memo(() => {
                 </div>
               )}
             </div>
+            {(canEditDueDate ||
+              canEditStopwatch ||
+              canUseMembers ||
+              canUseLabels ||
+              canAddTaskList ||
+              canAddAttachment ||
+              canAddCustomFieldGroup) && (
+              <div className={styles.actions}>
+                <span className={styles.actionsTitle}>{t('action.addToCard')}</span>
+                {canUseMembers && (
+                  <BoardMembershipsPopup
+                    currentUserIds={userIds}
+                    onUserSelect={handleUserSelect}
+                    onUserDeselect={handleUserDeselect}
+                  >
+                    <Button fluid className={classNames(styles.actionButton, styles.hidable)}>
+                      <Icon name="user outline" className={styles.actionIcon} />
+                      {t('common.members')}
+                    </Button>
+                  </BoardMembershipsPopup>
+                )}
+                {canUseLabels && (
+                  <LabelsPopup
+                    currentIds={labelIds}
+                    cardId={card.id}
+                    onSelect={handleLabelSelect}
+                    onDeselect={handleLabelDeselect}
+                  >
+                    <Button fluid className={classNames(styles.actionButton, styles.hidable)}>
+                      <Icon name="bookmark outline" className={styles.actionIcon} />
+                      {t('common.labels')}
+                    </Button>
+                  </LabelsPopup>
+                )}
+                {canEditDueDate && (
+                  <EditDueDatePopup cardId={card.id}>
+                    <Button fluid className={classNames(styles.actionButton, styles.hidable)}>
+                      <Icon name="calendar check outline" className={styles.actionIcon} />
+                      {t('common.dueDate', {
+                        context: 'title',
+                      })}
+                    </Button>
+                  </EditDueDatePopup>
+                )}
+                {canEditStopwatch && (
+                  <EditStopwatchPopup cardId={card.id}>
+                    <Button fluid className={classNames(styles.actionButton, styles.hidable)}>
+                      <Icon name="clock outline" className={styles.actionIcon} />
+                      {t('common.stopwatch')}
+                    </Button>
+                  </EditStopwatchPopup>
+                )}
+                {canAddTaskList && (
+                  <AddTaskListPopup>
+                    <Button fluid className={classNames(styles.actionButton, styles.hidable)}>
+                      <Icon name="check square outline" className={styles.actionIcon} />
+                      {t('common.taskList', {
+                        context: 'title',
+                      })}
+                    </Button>
+                  </AddTaskListPopup>
+                )}
+                {canAddAttachment && (
+                  <AddAttachmentPopup>
+                    <Button fluid className={classNames(styles.actionButton, styles.hidable)}>
+                      <Icon name="attach" className={styles.actionIcon} />
+                      {t('common.attachment')}
+                    </Button>
+                  </AddAttachmentPopup>
+                )}
+                {canAddCustomFieldGroup && (
+                  <AddCustomFieldGroupPopup onCreate={handleCustomFieldGroupCreate}>
+                    <Button fluid className={classNames(styles.actionButton, styles.hidable)}>
+                      <Icon name="sticky note outline" className={styles.actionIcon} />
+                      {t('common.customField', {
+                        context: 'title',
+                      })}
+                    </Button>
+                  </AddCustomFieldGroupPopup>
+                )}
+              </div>
+            )}
             {((!board.limitCardTypesToDefaultOne && canEditType) ||
               canSubscribe ||
               canJoin ||
