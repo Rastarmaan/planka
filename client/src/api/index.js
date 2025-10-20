@@ -25,6 +25,7 @@ import lists from './lists';
 import notificationServices from './notification-services';
 import notifications from './notifications';
 import projectManagers from './project-managers';
+import projectVersions from './project-versions';
 import projects from './projects';
 import socket from './socket';
 import taskLists from './task-lists';
@@ -43,6 +44,7 @@ export default {
   ...users,
   ...projects,
   ...projectManagers,
+  ...projectVersions,
   ...backgroundImages,
   ...baseCustomFieldGroups,
   ...boards,

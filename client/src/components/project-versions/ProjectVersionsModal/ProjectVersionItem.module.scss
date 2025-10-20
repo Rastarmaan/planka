@@ -1,0 +1,154 @@
+:global(#app) {
+  .versionRow {
+    align-items: center;
+    background: #ffffff;
+    border-bottom: 1px solid #e9ecef;
+    display: grid;
+    gap: 16px;
+    grid-template-columns: 2fr 1fr 1fr 1fr auto;
+    padding: 16px 20px;
+    transition: background-color 0.15s ease;
+
+    &:hover {
+      background: #f8f9fa;
+    }
+
+    &:last-child {
+      border-bottom: none;
+    }
+  }
+
+  .nameColumn {
+    min-width: 0;
+  }
+
+  .name {
+    align-items: center;
+    color: #212529;
+    display: flex;
+    font-size: 14px;
+    font-weight: 600;
+    gap: 8px;
+    line-height: 1.4;
+    margin-bottom: 4px;
+
+    .icon {
+      color: #667eea;
+      flex-shrink: 0;
+      font-size: 14px;
+      margin: 0;
+    }
+  }
+
+  .description {
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
+    color: #6c757d;
+    display: -webkit-box;
+    font-size: 12px;
+    line-height: 1.4;
+    max-height: 2.8em;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .dateColumn {
+    align-items: center;
+    color: #495057;
+    display: flex;
+    font-size: 13px;
+    font-weight: 500;
+    gap: 6px;
+
+    .icon {
+      color: #6c757d;
+      font-size: 13px;
+      margin: 0;
+    }
+  }
+
+  .statsColumn {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+
+  .stat {
+    align-items: center;
+    color: #6c757d;
+    display: flex;
+    font-size: 12px;
+    font-weight: 500;
+    gap: 6px;
+
+    .icon {
+      color: #adb5bd;
+      font-size: 12px;
+      margin: 0;
+    }
+  }
+
+  .badgeColumn {
+    display: flex;
+    justify-content: center;
+  }
+
+  .actionsColumn {
+    display: flex;
+    gap: 4px;
+    justify-content: center;
+
+    button {
+      margin: 0 !important;
+    }
+  }
+
+  .deleteAction {
+    &:hover {
+      background-color: #fff5f5 !important;
+      border-color: #dc2626 !important;
+      color: #dc2626 !important;
+    }
+  }
+
+  .restoreAction {
+    &:hover {
+      background-color: #f0fdf4 !important;
+      border-color: #059669 !important;
+      color: #059669 !important;
+    }
+  }
+
+  .versionBadge {
+    align-items: center;
+    background: #e7f5ff;
+    border: 1px solid #74c0fc;
+    border-radius: 12px;
+    color: #1971c2;
+    display: inline-flex;
+    font-size: 10px;
+    font-weight: 700;
+    gap: 4px;
+    letter-spacing: 0.3px;
+    padding: 4px 10px;
+    text-transform: uppercase;
+    white-space: nowrap;
+
+    i.icon {
+      font-size: 10px;
+      margin: 0 !important;
+    }
+  }
+
+  .autoCreatedBadge {
+    background: #f3e8ff;
+    border-color: #d8b4fe;
+    color: #7c3aed;
+  }
+
+  .createdByYouBadge {
+    background: #d3f9d8;
+    border-color: #8ce99a;
+    color: #2f9e44;
+  }
+}

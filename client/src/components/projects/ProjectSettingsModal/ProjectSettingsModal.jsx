@@ -4,17 +4,18 @@
  */
 
 import React, { useCallback, useState } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
 import { useTranslation } from 'react-i18next';
+import { useDispatch, useSelector } from 'react-redux';
 import { Tab } from 'semantic-ui-react';
 
-import selectors from '../../../selectors';
 import entryActions from '../../../entry-actions';
 import { useClosableModal } from '../../../hooks';
-import GeneralPane from './GeneralPane';
-import ManagersPane from './ManagersPane';
+import selectors from '../../../selectors';
 import BackgroundPane from './BackgroundPane';
 import BaseCustomFieldGroupsPane from './BaseCustomFieldGroupsPane';
+import GeneralPane from './GeneralPane';
+import ManagersPane from './ManagersPane';
+import VersionsPane from './VersionsPane';
 
 import styles from './ProjectSettingsModal.module.scss';
 
@@ -63,6 +64,13 @@ const ProjectSettingsModal = React.memo(() => {
           context: 'title',
         }),
         render: () => <BaseCustomFieldGroupsPane />,
+      },
+      {
+        menuItem: t('common.versions', {
+          context: 'title',
+          defaultValue: 'Versions',
+        }),
+        render: () => <VersionsPane />,
       },
     );
   }

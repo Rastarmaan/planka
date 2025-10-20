@@ -274,6 +274,26 @@ export default {
       removeMember_title: 'Remove Member',
       role: 'Role',
       boardVersions: 'Board Versions',
+      projectVersions: 'Project Versions',
+      projectVersionsDescription:
+        'Create snapshots of your entire project (all boards, cards, and tasks) and restore them later.',
+      noProjectVersionsYet:
+        'Create your first project version to start tracking changes and restore previous states.',
+      versions: 'Versions',
+      areYouSureYouWantToRestoreThisProjectVersion:
+        'Are you sure you want to restore this project version? This will replace ALL current boards, lists, and cards with the data from this version. This action cannot be undone.',
+      untitledVersion: 'Untitled Version',
+      createdByYou: 'Created by you',
+      autoCreated: 'Auto-created',
+      version: 'Version',
+      noVersionsFound: 'No versions found',
+      created: 'Created',
+      content: 'Content',
+      type: 'Type',
+      deleteVersion: 'Delete Version',
+      restoreVersion: 'Restore Version',
+      areYouSureYouWantToDeleteThisVersion:
+        'Are you sure you want to delete this version? This action cannot be undone.',
       cancel: 'Cancel',
       confirmDelete: 'Confirm Delete',
       confirmDeleteVersion:
@@ -281,6 +301,10 @@ export default {
       confirmRestore: 'Confirm Restore',
       confirmRestoreVersion:
         'Are you sure you want to restore this version? This will replace the current board state.',
+      searchVersions: 'Search versions...',
+      showingResults: 'Showing {{count}} of {{total}} versions',
+      noMatchingVersions: 'No matching versions found',
+      tryDifferentSearch: 'Try a different search term or clear the filter.',
       searchCards: 'Search cards...',
       searchCustomFieldGroups: 'Search custom field groups...',
       searchCustomFields: 'Search custom fields...',

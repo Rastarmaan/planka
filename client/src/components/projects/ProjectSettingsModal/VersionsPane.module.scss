@@ -1,0 +1,131 @@
+/*!
+ * Copyright (c) 2024 PLANKA Software GmbH
+ * Licensed under the Fair Use License: https://github.com/plankanban/planka/blob/master/LICENSE.md
+ */
+
+:global(#app) {
+  .createButton {
+    margin-bottom: 0;
+  }
+
+  .createForm {
+    background: #f8f9fa;
+    border: 1px solid #dee2e6;
+    border-radius: 4px;
+    margin-bottom: 24px;
+    padding: 20px;
+  }
+
+  .description {
+    color: #6c757d;
+    font-size: 14px;
+    line-height: 1.6;
+    margin: 0 0 20px 0;
+  }
+
+  .emptyDescription {
+    color: #6c757d;
+    font-size: 14px;
+    line-height: 1.5;
+    margin-top: 12px;
+    max-width: 400px;
+  }
+
+  .emptyState {
+    align-items: center;
+    color: #adb5bd;
+    display: flex;
+    flex-direction: column;
+    padding: 80px 20px;
+    text-align: center;
+
+    i.icon {
+      margin-bottom: 16px !important;
+      opacity: 0.3;
+    }
+  }
+
+  .emptyTitle {
+    color: #495057;
+    font-size: 18px;
+    font-weight: 600;
+    margin-top: 0;
+  }
+
+  .header {
+    align-items: center;
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 20px;
+  }
+
+  .headerText {
+    flex: 1;
+    margin-bottom: 0;
+    padding-right: 20px;
+  }
+
+  .tableHeader {
+    align-items: center;
+    background: #f8f9fa;
+    border-bottom: 2px solid #dee2e6;
+    border-radius: 4px 4px 0 0;
+    color: #495057;
+    display: grid;
+    font-size: 11px;
+    font-weight: 700;
+    gap: 16px;
+    grid-template-columns: 2fr 1fr 1fr 1fr auto;
+    letter-spacing: 0.5px;
+    padding: 12px 20px;
+    text-transform: uppercase;
+  }
+
+  .versionsList {
+    background: #fff;
+    border: 1px solid #dee2e6;
+    border-radius: 4px;
+    margin-top: 0;
+    overflow: hidden;
+  }
+
+  .wrapper {
+    border: none;
+    box-shadow: none;
+    padding: 20px 0;
+  }
+
+  .actionsColumn,
+  .badgeColumn,
+  .dateColumn,
+  .nameColumn,
+  .statsColumn {
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .nameColumn {
+    font-weight: 600;
+  }
+
+  .actionsColumn {
+    text-align: center;
+  }
+
+  .pagination {
+    align-items: center;
+    display: flex;
+    justify-content: center;
+    margin-top: 24px;
+    padding: 16px 0;
+
+    .ui.pagination.menu {
+      border: none;
+      box-shadow: none;
+
+      .item {
+        min-width: 32px;
+      }
+    }
+  }
+}
