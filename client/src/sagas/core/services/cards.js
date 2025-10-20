@@ -597,6 +597,12 @@ export function* handleCardDelete(card) {
 }
 
 export function* fetchChildCards(parentId) {
+  if (!parentId) {
+    const error = new Error('Missing parentId for fetchChildCards');
+    yield put(actions.fetchChildCards.failure(parentId, error));
+    return;
+  }
+
   yield put(actions.fetchChildCards(parentId));
 
   let cards;

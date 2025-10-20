@@ -3,25 +3,25 @@
  * Licensed under the Fair Use License: https://github.com/plankanban/planka/blob/master/LICENSE.md
  */
 
-import React, { useCallback, useMemo } from 'react';
 import PropTypes from 'prop-types';
-import { shallowEqual, useDispatch, useSelector } from 'react-redux';
+import React, { useCallback, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
+import { shallowEqual, useDispatch, useSelector } from 'react-redux';
 import { Icon, Menu } from 'semantic-ui-react';
 import { Popup } from '../../../lib/custom-ui';
 
-import selectors from '../../../selectors';
+import { BoardMembershipRoles, CardTypes, ListTypes } from '../../../constants/Enums';
 import entryActions from '../../../entry-actions';
 import { useSteps } from '../../../hooks';
+import selectors from '../../../selectors';
 import { isListArchiveOrTrash } from '../../../utils/record-helpers';
-import { BoardMembershipRoles, CardTypes, ListTypes } from '../../../constants/Enums';
-import SelectCardTypeStep from '../SelectCardTypeStep';
+import BoardMembershipsStep from '../../board-memberships/BoardMembershipsStep';
+import ConfirmationStep from '../../common/ConfirmationStep';
+import LabelsStep from '../../labels/LabelsStep';
 import EditDueDateStep from '../EditDueDateStep';
 import EditStopwatchStep from '../EditStopwatchStep';
 import MoveCardStep from '../MoveCardStep';
-import ConfirmationStep from '../../common/ConfirmationStep';
-import BoardMembershipsStep from '../../board-memberships/BoardMembershipsStep';
-import LabelsStep from '../../labels/LabelsStep';
+import SelectCardTypeStep from '../SelectCardTypeStep';
 
 import styles from './ActionsStep.module.scss';
 
@@ -320,7 +320,7 @@ const ActionsStep = React.memo(({ cardId, onNameEdit, onClose }) => {
               })}
             </Menu.Item>
           )}
-          {card.type === CardTypes.STORY && canUseMembers && (
+          {(card.type === CardTypes.STORY || card.type === CardTypes.EPIC) && canUseMembers && (
             <Menu.Item className={styles.menuItem} onClick={handleUsersClick}>
               <Icon name="user outline" className={styles.menuItemIcon} />
               {t('common.members', {

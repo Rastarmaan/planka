@@ -632,3 +632,38 @@
   text-transform: uppercase;
   font-weight: 500;
 }
+
+.storyContainer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  width: 100%;
+}
+
+.storyContainer > span {
+    width: 100%;
+  }
+
+.removeStoryButton {
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  padding: 4px 8px;
+  border-radius: 3px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.2s ease;
+  color: #6b808c;
+  flex-shrink: 0;
+
+  &:hover {
+    background: rgba(9, 30, 66, 0.08);
+    color: #17394d;
+  }
+
+  &:active {
+    background: rgba(9, 30, 66, 0.13);
+  }
+}

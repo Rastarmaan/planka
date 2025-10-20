@@ -3,8 +3,8 @@
  * Licensed under the Fair Use License: https://github.com/plankanban/planka/blob/master/LICENSE.md
  */
 
-import React, { useCallback } from 'react';
 import PropTypes from 'prop-types';
+import React, { useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Icon, Menu } from 'semantic-ui-react';
 
@@ -16,6 +16,7 @@ import styles from './SelectCardType.module.scss';
 const DESCRIPTION_BY_TYPE = {
   [CardTypes.PROJECT]: 'common.taskAssignmentAndProjectCompletion',
   [CardTypes.STORY]: 'common.referenceDataAndKnowledgeStorage',
+  [CardTypes.EPIC]: 'common.epicCollectAndOrganizeStories',
 };
 
 const SelectCardType = React.memo(({ value, onSelect }) => {
@@ -32,7 +33,7 @@ const SelectCardType = React.memo(({ value, onSelect }) => {
 
   return (
     <Menu secondary vertical className={styles.menu}>
-      {[CardTypes.PROJECT, CardTypes.STORY].map((type) => (
+      {[CardTypes.PROJECT, CardTypes.STORY, CardTypes.EPIC].map((type) => (
         <Menu.Item
           key={type}
           value={type}

@@ -3,22 +3,22 @@
  * Licensed under the Fair Use License: https://github.com/plankanban/planka/blob/master/LICENSE.md
  */
 
-import React, { useCallback, useEffect, useMemo } from 'react';
 import classNames from 'classnames';
+import React, { useCallback, useEffect, useMemo } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Icon } from 'semantic-ui-react';
 import { push } from '../../../lib/redux-router';
 
-import selectors from '../../../selectors';
+import { BoardMembershipRoles, CardTypes } from '../../../constants/Enums';
+import Paths from '../../../constants/Paths';
 import entryActions from '../../../entry-actions';
 import { useClosableModal } from '../../../hooks';
-import { isListArchiveOrTrash } from '../../../utils/record-helpers';
+import selectors from '../../../selectors';
 import { isActiveTextElement } from '../../../utils/element-helpers';
-import Paths from '../../../constants/Paths';
-import { BoardMembershipRoles, CardTypes } from '../../../constants/Enums';
+import { isListArchiveOrTrash } from '../../../utils/record-helpers';
+import AddAttachmentZone from './AddAttachmentZone';
 import ProjectContent from './ProjectContent';
 import StoryContent from './StoryContent';
-import AddAttachmentZone from './AddAttachmentZone';
 
 import styles from './CardModal.module.scss';
 
@@ -88,6 +88,10 @@ const CardModal = React.memo(() => {
 
       break;
     case CardTypes.STORY:
+      Content = StoryContent;
+
+      break;
+    case CardTypes.EPIC:
       Content = StoryContent;
 
       break;

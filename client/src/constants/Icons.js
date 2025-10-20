@@ -72,4 +72,5 @@ export const ListTypeIcons = {
 export const CardTypeIcons = {
   [CardTypes.PROJECT]: 'list alternate outline',
   [CardTypes.STORY]: 'images outline',
+  [CardTypes.EPIC]: 'sitemap',
 };

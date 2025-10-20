@@ -27,6 +27,7 @@ import ConfirmationStep from '../../../common/ConfirmationStep';
 import EditMarkdown from '../../../common/EditMarkdown';
 import Markdown from '../../../common/Markdown';
 import AddCustomFieldGroupStep from '../../../custom-field-groups/AddCustomFieldGroupStep';
+import EpicsPopup from '../../../epics/EpicsPopup/EpicsPopup';
 import LabelChip from '../../../labels/LabelChip';
 import LabelsStep from '../../../labels/LabelsStep';
 import ListsStep from '../../../lists/ListsStep';
@@ -45,6 +46,7 @@ const StoryContent = React.memo(() => {
   const selectPrevListById = useMemo(() => selectors.makeSelectListById(), []);
   const selectAttachmentById = useMemo(() => selectors.makeSelectAttachmentById(), []);
   const selectChildCardListById = useMemo(() => selectors.makeSelectListById(), []);
+  const selectCardById = useMemo(() => selectors.makeSelectCardById(), []);
 
   const dispatch = useDispatch();
 
@@ -78,6 +80,10 @@ const StoryContent = React.memo(() => {
   const isJoined = useSelector(selectors.selectIsCurrentUserInCurrentCard);
 
   const list = useSelector((state) => selectListById(state, card.listId));
+
+  const parentCard = useSelector((state) =>
+    card.parentCardId ? selectCardById(state, card.parentCardId) : null,
+  );
 
   // TODO: check availability?
   const prevList = useSelector(
@@ -248,6 +254,17 @@ const StoryContent = React.memo(() => {
     },
     [dispatch],
   );
+
+  const handleEpicSelect = useCallback(
+    (epicId) => {
+      dispatch(entryActions.updateCurrentCard({ parentCardId: epicId }));
+    },
+    [dispatch],
+  );
+
+  const handleRemoveParentEpic = useCallback(() => {
+    dispatch(entryActions.updateCurrentCard({ parentCardId: null }));
+  }, [dispatch]);
 
   const handleLabelSelect = useCallback(
     (labelId) => {
@@ -521,10 +538,14 @@ const StoryContent = React.memo(() => {
             <div className={styles.contentModule}>
               <div className={styles.moduleWrapper}>
                 <Icon name="tasks" className={styles.moduleIcon} />
-                <div className={styles.moduleHeader}>{t('common.childTasks')}</div>
+                <div className={styles.moduleHeader}>
+                  {card.type === CardTypes.EPIC ? t('common.childStories') : t('common.childTasks')}
+                </div>
                 <div className={styles.childTasksSection}>
                   <div className={styles.tableHeader}>
-                    <div className={styles.tableHeaderCell}>{t('common.taskName')}</div>
+                    <div className={styles.tableHeaderCell}>
+                      {card.type === CardTypes.EPIC ? t('common.storyName') : t('common.taskName')}
+                    </div>
                     <div className={styles.tableHeaderCell}>{t('common.list')}</div>
                     <div className={styles.tableHeaderCell}>{t('common.action')}</div>
                   </div>
@@ -673,6 +694,40 @@ const StoryContent = React.memo(() => {
                     <Icon name="columns" size="small" className={styles.listIcon} />
                     <span className={styles.hidable}>{list.name || t(`common.${list.type}`)}</span>
                   </span>
+                )}
+                {card.type === CardTypes.STORY && (
+                  <div className={classNames(styles.attachments, styles.attachmentsList)}>
+                    <div className={classNames(styles.text, styles.textList)}>
+                      {t('common.epic')}
+                    </div>
+                    {card.parentCardId ? (
+                      <div className={styles.storyContainer}>
+                        <span className={styles.list}>
+                          <Icon name="sitemap" size="small" className={styles.listIcon} />
+                          <span className={styles.hidable}>
+                            {parentCard ? parentCard.name : t('common.epic')}
+                          </span>
+                        </span>
+                        <button
+                          type="button"
+                          className={styles.removeStoryButton}
+                          onClick={handleRemoveParentEpic}
+                          title={t('action.removeFromEpic')}
+                        >
+                          <Icon name="times" size="small" />
+                        </button>
+                      </div>
+                    ) : (
+                      <EpicsPopup onSelect={handleEpicSelect}>
+                        <button type="button" className={styles.listButton}>
+                          <span className={classNames(styles.list, styles.listHoverable)}>
+                            <Icon name="sitemap" size="small" className={styles.listIcon} />
+                            <span className={styles.hidable}>{t('action.addToEpic')}</span>
+                          </span>
+                        </button>
+                      </EpicsPopup>
+                    )}
+                  </div>
                 )}
               </div>
             </div>

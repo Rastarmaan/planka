@@ -3,17 +3,17 @@
  * Licensed under the Fair Use License: https://github.com/plankanban/planka/blob/master/LICENSE.md
  */
 
-import React, { useMemo } from 'react';
-import PropTypes from 'prop-types';
 import classNames from 'classnames';
+import PropTypes from 'prop-types';
+import React, { useMemo } from 'react';
 import { useSelector } from 'react-redux';
 import { Icon } from 'semantic-ui-react';
 
+import { BoardViews } from '../../../constants/Enums';
 import selectors from '../../../selectors';
 import markdownToText from '../../../utils/markdown-to-text';
-import { BoardViews } from '../../../constants/Enums';
-import LabelChip from '../../labels/LabelChip';
 import CustomFieldValueChip from '../../custom-field-values/CustomFieldValueChip';
+import LabelChip from '../../labels/LabelChip';
 
 import styles from './StoryContent.module.scss';
 
@@ -43,6 +43,11 @@ const StoryContent = React.memo(({ cardId }) => {
   const list = useSelector((state) => selectListById(state, card.listId));
   const labelIds = useSelector((state) => selectLabelIdsByCardId(state, cardId));
   const attachmentsTotal = useSelector((state) => selectAttachmentsTotalByCardId(state, cardId));
+
+  const parentCard = useSelector((state) => {
+    if (!card.parentCardId) return null;
+    return selectCardById(state, card.parentCardId);
+  });
 
   const customFieldValueIds = useSelector((state) =>
     selectShownOnFrontOfCardCustomFieldValueIdsByCardId(state, cardId),
@@ -108,6 +113,12 @@ const StoryContent = React.memo(({ cardId }) => {
         <div className={classNames(styles.name, card.isClosed && styles.nameClosed)}>
           {card.name}
         </div>
+        {parentCard && (
+          <div className={styles.epicBadge}>
+            <Icon name="sitemap" />
+            <span className={styles.epicBadgeText}>{parentCard.name}</span>
+          </div>
+        )}
         {card.description && <div className={styles.descriptionText}>{descriptionText}</div>}
         {(attachmentsTotal > 0 || notificationsTotal > 0 || listName) && (
           <span className={styles.attachments}>

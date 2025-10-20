@@ -85,6 +85,7 @@ export const ListSortFieldNames = {
 export const CardTypes = {
   PROJECT: 'project',
   STORY: 'story',
+  EPIC: 'epic',
 };
 
 export const AttachmentTypes = {

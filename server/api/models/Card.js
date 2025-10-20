@@ -143,6 +143,7 @@
 const Types = {
   PROJECT: 'project',
   STORY: 'story',
+  EPIC: 'epic',
 };
 
 module.exports = {

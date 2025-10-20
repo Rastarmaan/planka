@@ -3,27 +3,27 @@
  * Licensed under the Fair Use License: https://github.com/plankanban/planka/blob/master/LICENSE.md
  */
 
-import upperFirst from 'lodash/upperFirst';
-import camelCase from 'lodash/camelCase';
-import React, { useCallback, useMemo, useRef, useState } from 'react';
-import PropTypes from 'prop-types';
 import classNames from 'classnames';
+import camelCase from 'lodash/camelCase';
+import upperFirst from 'lodash/upperFirst';
+import PropTypes from 'prop-types';
+import React, { useCallback, useMemo, useRef, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Button, Icon } from 'semantic-ui-react';
-import { push } from '../../../lib/redux-router';
 import { closePopup, usePopup } from '../../../lib/popup';
+import { push } from '../../../lib/redux-router';
 
-import selectors from '../../../selectors';
-import Paths from '../../../constants/Paths';
 import { BoardMembershipRoles, CardTypes } from '../../../constants/Enums';
+import Paths from '../../../constants/Paths';
+import selectors from '../../../selectors';
+import ActionsStep from './ActionsStep';
+import EditName from './EditName';
+import InlineContent from './InlineContent';
 import ProjectContent from './ProjectContent';
 import StoryContent from './StoryContent';
-import InlineContent from './InlineContent';
-import EditName from './EditName';
-import ActionsStep from './ActionsStep';
 
-import styles from './Card.module.scss';
 import globalStyles from '../../../styles.module.scss';
+import styles from './Card.module.scss';
 
 const Card = React.memo(({ id, isInline }) => {
   const selectCardById = useMemo(() => selectors.makeSelectCardById(), []);
@@ -96,6 +96,10 @@ const Card = React.memo(({ id, isInline }) => {
 
         break;
       case CardTypes.STORY:
+        Content = StoryContent;
+
+        break;
+      case CardTypes.EPIC:
         Content = StoryContent;
 
         break;
