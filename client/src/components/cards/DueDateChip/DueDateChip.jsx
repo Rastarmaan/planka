@@ -2,15 +2,21 @@
  * Copyright (c) 2024 PLANKA Software GmbH
  * Licensed under the Fair Use License: https://github.com/plankanban/planka/blob/master/LICENSE.md
  */
+/* eslint-disable import/no-extraneous-dependencies */
 
-import upperFirst from 'lodash/upperFirst';
-import React, { useEffect, useRef } from 'react';
-import PropTypes from 'prop-types';
 import classNames from 'classnames';
+import upperFirst from 'lodash/upperFirst';
+import PropTypes from 'prop-types';
+import React, { useEffect, useMemo, useRef } from 'react';
+import DateObject from 'react-date-object';
+import persian from 'react-date-object/calendars/persian';
+import persianEn from 'react-date-object/locales/persian_en';
 import { useTranslation } from 'react-i18next';
+import { useSelector } from 'react-redux';
 import { Icon } from 'semantic-ui-react';
 import { useForceUpdate } from '../../../lib/hooks';
 
+import selectors from '../../../selectors';
 import getDateFormat from '../../../utils/get-date-format';
 
 import styles from './DueDateChip.module.scss';
@@ -77,6 +83,9 @@ const DueDateChip = React.memo(
     const [t] = useTranslation();
     const forceUpdate = useForceUpdate();
 
+    const board = useSelector(selectors.selectCurrentBoard);
+    const isJalali = board?.calendarType === 'jalali';
+
     const statusRef = useRef(null);
     statusRef.current = withStatus ? getStatus(value, isCompleted) : null;
 
@@ -87,6 +96,28 @@ const DueDateChip = React.memo(
       LONG_DATE_FORMAT_BY_SIZE[size],
       FULL_DATE_FORMAT_BY_SIZE[size],
     );
+
+    const formattedDate = useMemo(() => {
+      if (isJalali) {
+        const dateObj = new DateObject({
+          date: value,
+          calendar: persian,
+          locale: persianEn,
+        });
+
+        if (size === Sizes.TINY || size === Sizes.SMALL) {
+          return dateObj.format('MMMM DD');
+        }
+        const datePart = dateObj.format('MMMM DD');
+        const timePart = dateObj.format('HH:mm');
+        return `${datePart} at ${timePart}`;
+      }
+
+      return t(`format:${dateFormat}`, {
+        value,
+        postProcess: 'formatDate',
+      });
+    }, [isJalali, value, size, dateFormat, t]);
 
     useEffect(() => {
       if (
@@ -123,10 +154,7 @@ const DueDateChip = React.memo(
           onClick && styles.wrapperHoverable,
         )}
       >
-        {t(`format:${dateFormat}`, {
-          value,
-          postProcess: 'formatDate',
-        })}
+        {formattedDate}
         {withStatusIcon && statusRef.current && (
           // eslint-disable-next-line react/jsx-props-no-spreading
           <Icon {...STATUS_ICON_PROPS_BY_STATUS[statusRef.current]} className={styles.statusIcon} />

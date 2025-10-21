@@ -138,6 +138,170 @@
       }
     }
 
+    /* Custom styling for react-multi-date-picker to match react-datepicker */
+    .rmdp-wrapper {
+      box-shadow: none !important;
+      border: none !important;
+    }
+
+    .rmdp-container {
+      width: 100% !important;
+    }
+
+    .rmdp-calendar {
+      padding: 0 !important;
+      width: 100% !important;
+      font-family: "Nunitoga", "Helvetica Neue", Arial, Helvetica, sans-serif !important;
+      font-size: 14px !important;
+      padding-bottom: 16px !important;
+      border: 0 !important;
+      color: #444444 !important;
+    }
+
+    .rmdp-header {
+      padding: 0 !important;
+    }
+
+    .rmdp-header-values {
+      font-family: "Nunitoga", "Helvetica Neue", Arial, Helvetica, sans-serif !important;
+      font-size: 14px !important;
+      font-weight: normal !important;
+      color: #444 !important;
+      line-height: 32px !important;
+      text-transform: capitalize !important;
+    }
+
+    // .rmdp-arrow-container {
+    //   width: auto !important;
+    //   height: auto !important;
+    //   border-radius: 0 !important;
+    //   background: transparent !important;
+    //   outline: none !important;
+
+    //   &:hover {
+    //     background-color: transparent !important;
+    //     box-shadow: none !important;
+    //   }
+    // }
+
+    .rmdp-arrow {
+      border-color: #999;
+      // border-width: 0 !important;
+      // padding: 0 !important;
+      // margin: 0 !important;
+      width: 8px !important;
+      height: 8px !important;
+      display: inline-block !important;
+    }
+
+    .rmdp-arrow-container:hover {
+      background-color: transparent !important;
+      box-shadow: none !important;
+    }
+
+    // .rmdp-arrow-container.rmdp-left {
+    //   left: 0 !important;
+
+    //   .rmdp-arrow {
+    //     border-width: 7px 9px 7px 0 !important;
+    //     border-right-color: #999 !important;
+    //   }
+    // }
+
+    // .rmdp-arrow-container.rmdp-right {
+    //   right: 0 !important;
+
+    //   .rmdp-arrow {
+    //     border-width: 7px 0 7px 9px !important;
+    //     border-left-color: #999 !important;
+    //   }
+    // }
+
+    .rmdp-week-day {
+      color: #444 !important;
+      font-family: "Nunitoga", "Helvetica Neue", Arial, Helvetica, sans-serif !important;
+      font-size: 14px !important;
+      font-weight: normal !important;
+      height: 28px !important;
+      line-height: 28px !important;
+      width: 40px !important;
+      display: inline-block !important;
+      text-align: center !important;
+      margin: 0 !important;
+      border-style: solid !important;
+      border-width: 1px 0 0 1px !important;
+      border-color: rgba(34, 36, 38, 0.15) !important;
+      background: #ebeef0 !important;
+
+      &:last-child {
+        border-right: 1px solid rgba(34, 36, 38, 0.15) !important;
+      }
+    }
+
+    .rmdp-day-picker {
+      padding: 0 !important;
+      margin: 0.4rem 0 0 !important;
+    }
+
+    .rmdp-week {
+      border-right: 1px solid #c2ccd1 !important;
+    }
+
+    .rmdp-day {
+      width: 40px !important;
+      height: 28px !important;
+      margin: 0 !important;
+      border-style: solid !important;
+      border-width: 0 0 1px 1px !important;
+      border-color: rgba(34, 36, 38, 0.15) !important;
+      border-radius: 0 !important;
+      outline: none !important;
+
+      span {
+        font-family: "Nunitoga", "Helvetica Neue", Arial, Helvetica, sans-serif !important;
+        font-size: 14px !important;
+        line-height: 28px !important;
+        color: #444 !important;
+        font-weight: normal !important;
+        border-radius: 0 !important;
+        width: 100% !important;
+        height: 100% !important;
+        display: block !important;
+      }
+
+      &:not(.rmdp-disabled):not(.rmdp-day-hidden) span:hover {
+        background-color: #f0f0f0 !important;
+        color: #444 !important;
+        border-radius: 0 !important;
+        top: 0 !important;
+        left: 0 !important;
+      }
+
+      &.rmdp-today span {
+        background-color: #216ba5 !important;
+        color: #fff !important;
+        font-weight: normal !important;
+        border-radius: 0 !important;
+        top: 0 !important;
+        left: 0 !important;
+      }
+
+      &.rmdp-selected span:not(.highlight) {
+        background-color: #216ba5 !important;
+        color: #fff !important;
+        box-shadow: none !important;
+        border-radius: 0 !important;
+        top: 0 !important;
+        left: 0 !important;
+      }
+
+      &.rmdp-disabled span,
+      &.rmdp-deactive span {
+        color: transparent !important;
+        background: #f5f6f7 !important;
+      }
+    }
+
     .pswp .pswp__img--placeholder {
       display: none !important;
     }
