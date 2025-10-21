@@ -7,8 +7,9 @@ import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { Divider, Header, Tab } from 'semantic-ui-react';
 
-import DefaultView from './DefaultView';
+import CalendarType from './CalendarType';
 import DefaultCardType from './DefaultCardType';
+import DefaultView from './DefaultView';
 import Others from './Others';
 
 import styles from './PreferencesPane.module.scss';
@@ -34,6 +35,14 @@ const PreferencesPane = React.memo(() => {
         </Header>
       </Divider>
       <DefaultCardType />
+      <Divider horizontal>
+        <Header as="h4">
+          {t('common.calendarType', {
+            context: 'title',
+          })}
+        </Header>
+      </Divider>
+      <CalendarType />
       <Divider horizontal>
         <Header as="h4">
           {t('common.others', {

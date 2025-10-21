@@ -59,6 +59,11 @@
  *                 type: boolean
  *                 description: Whether to expand task lists by default
  *                 example: false
+ *               calendarType:
+ *                 type: string
+ *                 enum: [gregorian, jalali]
+ *                 description: Calendar type for displaying dates
+ *                 example: gregorian
  *               isSubscribed:
  *                 type: boolean
  *                 description: Whether the current user is subscribed to the board
@@ -123,6 +128,10 @@ module.exports = {
     expandTaskListsByDefault: {
       type: 'boolean',
     },
+    calendarType: {
+      type: 'string',
+      isIn: Object.values(Board.CalendarTypes),
+    },
     isSubscribed: {
       type: 'boolean',
     },
@@ -161,6 +170,7 @@ module.exports = {
         'limitCardTypesToDefaultOne',
         'alwaysDisplayCardCreator',
         'expandTaskListsByDefault',
+        'calendarType',
       );
     }
     if (isBoardMember) {
@@ -179,6 +189,7 @@ module.exports = {
       'limitCardTypesToDefaultOne',
       'alwaysDisplayCardCreator',
       'expandTaskListsByDefault',
+      'calendarType',
       'isSubscribed',
     ]);
 

@@ -26,6 +26,7 @@
  *         - limitCardTypesToDefaultOne
  *         - alwaysDisplayCardCreator
  *         - expandTaskListsByDefault
+ *         - calendarType
  *         - createdAt
  *         - updatedAt
  *       properties:
@@ -72,6 +73,12 @@
  *           default: false
  *           description: Whether to expand task lists by default
  *           example: false
+ *         calendarType:
+ *           type: string
+ *           enum: [gregorian, jalali]
+ *           default: gregorian
+ *           description: Calendar type for displaying dates
+ *           example: gregorian
  *         createdAt:
  *           type: string
  *           format: date-time
@@ -94,12 +101,18 @@ const Views = {
   LIST: 'list',
 };
 
+const CalendarTypes = {
+  GREGORIAN: 'gregorian',
+  JALALI: 'jalali',
+};
+
 const ImportTypes = {
   TRELLO: 'trello',
 };
 
 module.exports = {
   Views,
+  CalendarTypes,
   ImportTypes,
 
   attributes: {
@@ -141,6 +154,12 @@ module.exports = {
       type: 'boolean',
       defaultsTo: false,
       columnName: 'expand_task_lists_by_default',
+    },
+    calendarType: {
+      type: 'string',
+      isIn: Object.values(CalendarTypes),
+      defaultsTo: CalendarTypes.GREGORIAN,
+      columnName: 'calendar_type',
     },
 
     //  ╔═╗╔╦╗╔╗ ╔═╗╔╦╗╔═╗

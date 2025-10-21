@@ -5,12 +5,12 @@
 
 import { attr, fk, many } from 'redux-orm';
 
-import BaseModel from './BaseModel';
-import buildSearchParts from '../utils/build-search-parts';
-import { isListFinite } from '../utils/record-helpers';
 import ActionTypes from '../constants/ActionTypes';
 import Config from '../constants/Config';
 import { BoardContexts, BoardViews } from '../constants/Enums';
+import buildSearchParts from '../utils/build-search-parts';
+import { isListFinite } from '../utils/record-helpers';
+import BaseModel from './BaseModel';
 
 const prepareFetchedBoard = (board) => ({
   ...board,
@@ -32,6 +32,9 @@ export default class extends BaseModel {
     limitCardTypesToDefaultOne: attr(),
     alwaysDisplayCardCreator: attr(),
     expandTaskListsByDefault: attr(),
+    calendarType: attr({
+      getDefault: () => 'gregorian',
+    }),
     context: attr(),
     view: attr(),
     search: attr(),

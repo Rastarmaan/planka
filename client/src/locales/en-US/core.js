@@ -142,6 +142,11 @@ export default {
       deactivateUser_title: 'Deactivate User',
       defaultCardType_title: 'Default Card Type',
       defaultView_title: 'Default View',
+      calendarType_title: 'Calendar Type',
+      gregorian_calendar: 'Gregorian',
+      jalali_calendar: 'Jalali',
+      gregorianCalendarDescription: 'Use the standard Gregorian calendar system',
+      jalaliCalendarDescription: 'Use the Persian (Jalali) calendar system',
       deleteAllBoardsToBeAbleToDeleteThisProject:
         'Delete all boards to be able to delete this project',
       deleteAttachment_title: 'Delete Attachment',
