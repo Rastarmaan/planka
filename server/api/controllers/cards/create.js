@@ -130,7 +130,7 @@ const Errors = {
     parentCardNotFound: 'Parent card not found',
   },
   PARENT_CARD_MUST_BE_STORY: {
-    parentCardMustBeStory: 'Parent card must be a story or epic type',
+    parentCardMustBeStory: 'Parent card must be a story, epic, or task type',
   },
 };
 
@@ -231,7 +231,11 @@ module.exports = {
         throw Errors.PARENT_CARD_NOT_FOUND;
       }
 
-      if (parentCard.type !== Card.Types.STORY && parentCard.type !== Card.Types.EPIC) {
+      if (
+        parentCard.type !== Card.Types.STORY &&
+        parentCard.type !== Card.Types.EPIC &&
+        parentCard.type !== Card.Types.PROJECT
+      ) {
         throw Errors.PARENT_CARD_MUST_BE_STORY;
       }
     }

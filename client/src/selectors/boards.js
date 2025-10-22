@@ -508,6 +508,27 @@ export const selectEpicCardsForCurrentBoard = createSelector(
   },
 );
 
+export const selectProjectCardsForCurrentBoard = createSelector(
+  orm,
+  (state) => selectPath(state).boardId,
+  ({ Board }, id) => {
+    if (!id) {
+      return [];
+    }
+
+    const boardModel = Board.withId(id);
+
+    if (!boardModel) {
+      return [];
+    }
+
+    return boardModel
+      .getCardsModelArray()
+      .filter((cardModel) => cardModel.type === 'project')
+      .map((cardModel) => cardModel.ref);
+  },
+);
+
 export default {
   makeSelectBoardById,
   selectBoardById,
@@ -537,4 +558,5 @@ export default {
   selectIsBoardWithIdExists,
   selectStoryCardsForCurrentBoard,
   selectEpicCardsForCurrentBoard,
+  selectProjectCardsForCurrentBoard,
 };
