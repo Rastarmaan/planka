@@ -57,6 +57,11 @@
  *                 nullable: true
  *                 description: Detailed description of the card
  *                 example: Add JWT-based authentication system...
+ *               startDate:
+ *                 type: string
+ *                 format: date-time
+ *                 description: Start date for the card
+ *                 example: 2024-01-01T00:00:00.000Z
  *               dueDate:
  *                 type: string
  *                 format: date-time
@@ -155,6 +160,10 @@ module.exports = {
       isNotEmptyString: true,
       maxLength: 1048576,
       allowNull: true,
+    },
+    startDate: {
+      type: 'string',
+      custom: isDueDate,
     },
     dueDate: {
       type: 'string',

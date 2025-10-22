@@ -21,15 +21,15 @@ import { useForm, useNestedRef } from '../../../hooks';
 import selectors from '../../../selectors';
 import parseTime from '../../../utils/parse-time';
 
-import styles from './EditDueDateStep.module.scss';
+import styles from './EditStartDateStep.module.scss';
 
-const EditDueDateStep = React.memo(({ cardId, onBack, onClose }) => {
+const EditStartDateStep = React.memo(({ cardId, onBack, onClose }) => {
   const selectCardById = useMemo(() => selectors.makeSelectCardById(), []);
   const selectBoardById = useMemo(() => selectors.makeSelectBoardById(), []);
 
   const card = useSelector((state) => selectCardById(state, cardId));
   const board = useSelector((state) => selectBoardById(state, card.boardId));
-  const { dueDate: defaultValue, startDate } = card;
+  const { startDate: defaultValue, dueDate } = card;
 
   const dispatch = useDispatch();
   const [t] = useTranslation();
@@ -131,8 +131,9 @@ const EditDueDateStep = React.memo(({ cardId, onBack, onClose }) => {
       return;
     }
 
-    if (startDate && value.getTime() < startDate.getTime()) {
-      setError(t('common.dueDateCannotBeBeforeStartDate'));
+    // Validate: start date cannot be after due date
+    if (dueDate && value.getTime() > dueDate.getTime()) {
+      setError(t('common.startDateCannotBeAfterDueDate'));
       return;
     }
 
@@ -141,7 +142,7 @@ const EditDueDateStep = React.memo(({ cardId, onBack, onClose }) => {
     if (!defaultValue || value.getTime() !== defaultValue.getTime()) {
       dispatch(
         entryActions.updateCard(cardId, {
-          dueDate: value,
+          startDate: value,
         }),
       );
     }
@@ -151,7 +152,7 @@ const EditDueDateStep = React.memo(({ cardId, onBack, onClose }) => {
     cardId,
     onClose,
     defaultValue,
-    startDate,
+    dueDate,
     dispatch,
     t,
     data,
@@ -165,7 +166,7 @@ const EditDueDateStep = React.memo(({ cardId, onBack, onClose }) => {
     if (defaultValue) {
       dispatch(
         entryActions.updateCard(cardId, {
-          dueDate: null,
+          startDate: null,
         }),
       );
     }
@@ -194,6 +195,7 @@ const EditDueDateStep = React.memo(({ cardId, onBack, onClose }) => {
     timeFieldRef.current.select();
   }, [selectTimeFieldState]);
 
+  // Clear error when user changes date or time
   useEffect(() => {
     if (error) {
       setError(null);
@@ -204,7 +206,7 @@ const EditDueDateStep = React.memo(({ cardId, onBack, onClose }) => {
   return (
     <>
       <Popup.Header onBack={onBack}>
-        {t('common.editDueDate', {
+        {t('common.editStartDate', {
           context: 'title',
         })}
       </Popup.Header>
@@ -237,17 +239,13 @@ const EditDueDateStep = React.memo(({ cardId, onBack, onClose }) => {
           </div>
           {board?.calendarType === 'jalali' ? (
             <Calendar
-              inline
-              calendar={persian}
-              locale={persianEn}
               value={nullableDate}
               onChange={handleDatePickerChange}
-              format="YYYY/MM/DD"
-              shadow={false}
-              mapDays={({ date }) => {
-                const isToday =
-                  date.format('YYYY/MM/DD') ===
-                  new DateObject({ calendar: persian }).format('YYYY/MM/DD');
+              calendar={persian}
+              locale={persianEn}
+              weekStartDayIndex={6}
+              mapDays={({ date, today }) => {
+                const isToday = date.day === today.day && date.month.index === today.month.index;
                 return {
                   className: isToday ? 'rmdp-today' : '',
                 };
@@ -274,14 +272,14 @@ const EditDueDateStep = React.memo(({ cardId, onBack, onClose }) => {
   );
 });
 
-EditDueDateStep.propTypes = {
+EditStartDateStep.propTypes = {
   cardId: PropTypes.string.isRequired,
   onBack: PropTypes.func,
   onClose: PropTypes.func.isRequired,
 };
 
-EditDueDateStep.defaultProps = {
+EditStartDateStep.defaultProps = {
   onBack: undefined,
 };
 
-export default EditDueDateStep;
+export default EditStartDateStep;

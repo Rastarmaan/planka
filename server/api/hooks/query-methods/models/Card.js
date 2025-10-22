@@ -242,7 +242,10 @@ const updateOne = async (criteria, values) => {
     });
   }
 
-  const card = await Card.updateOne(criteria).set({ ...values });
+  const card = await Card.updateOne(criteria)
+    .set({ ...values })
+    .fetch();
+
   return { card };
 };
 
