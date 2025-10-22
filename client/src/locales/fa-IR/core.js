@@ -259,8 +259,8 @@ export default {
       pressPasteShortcutToAddAttachmentFromClipboard:
         'نکته: با فشردن Ctrl-V (Cmd-V در مک) می‌توانید پیوست را از کلیپ بورد اضافه کنید.',
       private: null,
-      project: 'پروژه',
-      projectNotFound_title: 'پروژه یافت نشد',
+      project: 'تسک',
+      projectNotFound_title: 'تسک یافت نشد',
       projectOwner: null,
       referenceDataAndKnowledgeStorage: null,
       removeManager_title: 'حذف مدیر',
