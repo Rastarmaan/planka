@@ -695,41 +695,42 @@ const StoryContent = React.memo(() => {
                     <span className={styles.hidable}>{list.name || t(`common.${list.type}`)}</span>
                   </span>
                 )}
-                {card.type === CardTypes.STORY && (
-                  <div className={classNames(styles.attachments, styles.attachmentsList)}>
-                    <div className={classNames(styles.text, styles.textList)}>
-                      {t('common.epic')}
-                    </div>
-                    {card.parentCardId ? (
-                      <div className={styles.storyContainer}>
-                        <span className={styles.list}>
-                          <Icon name="sitemap" size="small" className={styles.listIcon} />
-                          <span className={styles.hidable}>
-                            {parentCard ? parentCard.name : t('common.epic')}
-                          </span>
-                        </span>
-                        <button
-                          type="button"
-                          className={styles.removeStoryButton}
-                          onClick={handleRemoveParentEpic}
-                          title={t('action.removeFromEpic')}
-                        >
-                          <Icon name="times" size="small" />
-                        </button>
-                      </div>
-                    ) : (
-                      <EpicsPopup onSelect={handleEpicSelect}>
-                        <button type="button" className={styles.listButton}>
-                          <span className={classNames(styles.list, styles.listHoverable)}>
-                            <Icon name="sitemap" size="small" className={styles.listIcon} />
-                            <span className={styles.hidable}>{t('action.addToEpic')}</span>
-                          </span>
-                        </button>
-                      </EpicsPopup>
-                    )}
-                  </div>
-                )}
               </div>
+              {card.type === CardTypes.STORY && (
+                <div className={classNames(styles.attachments, styles.attachmentsList)}>
+                  <div className={classNames(styles.text, styles.textList)}>{t('common.epic')}</div>
+                  {card.parentCardId ? (
+                    <div
+                      className={styles.storyContainer}
+                      title={parentCard ? parentCard.name : t('common.epic')}
+                    >
+                      <span className={styles.list}>
+                        <Icon name="sitemap" size="small" className={styles.listIcon} />
+                        <span className={styles.hidable}>
+                          {parentCard ? parentCard.name : t('common.epic')}
+                        </span>
+                      </span>
+                      <button
+                        type="button"
+                        className={styles.removeStoryButton}
+                        onClick={handleRemoveParentEpic}
+                        title={t('action.removeFromEpic')}
+                      >
+                        <Icon name="times" size="small" />
+                      </button>
+                    </div>
+                  ) : (
+                    <EpicsPopup onSelect={handleEpicSelect}>
+                      <button type="button" className={styles.listButton}>
+                        <span className={classNames(styles.list, styles.listHoverable)}>
+                          <Icon name="sitemap" size="small" className={styles.listIcon} />
+                          <span className={styles.hidable}>{t('action.addToEpic')}</span>
+                        </span>
+                      </button>
+                    </EpicsPopup>
+                  )}
+                </div>
+              )}
             </div>
             {(canUseMembers || canUseLabels || canAddAttachment || canAddCustomFieldGroup) && (
               <div className={styles.actions}>

@@ -642,8 +642,10 @@
 }
 
 .storyContainer > span {
-    width: 100%;
-  }
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+}
 
 .removeStoryButton {
   background: transparent;

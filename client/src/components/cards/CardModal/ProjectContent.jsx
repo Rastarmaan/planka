@@ -619,7 +619,7 @@ const ProjectContent = React.memo(() => {
                     {t('common.story')}
                   </div>
                   {parentCard ? (
-                    <div className={styles.storyContainer}>
+                    <div className={styles.storyContainer} title={parentCard.name}>
                       <span className={styles.list}>
                         <Icon name="book" size="small" className={styles.listIcon} />
                         <span className={styles.hidable}>{parentCard.name}</span>
