@@ -4,14 +4,14 @@
  */
 
 import React, { useCallback, useMemo } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
 import { useTranslation } from 'react-i18next';
+import { useDispatch, useSelector } from 'react-redux';
 import { Icon, Menu } from 'semantic-ui-react';
 
-import selectors from '../../../../selectors';
-import entryActions from '../../../../entry-actions';
 import { BoardViews } from '../../../../constants/Enums';
 import { BoardViewIcons } from '../../../../constants/Icons';
+import entryActions from '../../../../entry-actions';
+import selectors from '../../../../selectors';
 
 import styles from './DefaultView.module.scss';
 
@@ -19,6 +19,7 @@ const DESCRIPTION_BY_VIEW = {
   [BoardViews.KANBAN]: 'common.visualTaskManagementWithLists',
   [BoardViews.GRID]: 'common.dynamicAndUnevenlySpacedLayout',
   [BoardViews.LIST]: 'common.sequentialDisplayOfCards',
+  [BoardViews.GANTT]: 'common.timelineViewForProjectScheduling',
 };
 
 const DefaultView = React.memo(() => {
@@ -43,7 +44,7 @@ const DefaultView = React.memo(() => {
 
   return (
     <Menu secondary vertical className={styles.menu}>
-      {[BoardViews.KANBAN, BoardViews.GRID, BoardViews.LIST].map((view) => (
+      {[BoardViews.KANBAN, BoardViews.GRID, BoardViews.LIST, BoardViews.GANTT].map((view) => (
         <Menu.Item
           key={view}
           value={view}

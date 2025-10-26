@@ -14,6 +14,7 @@ import BoardVersionsModal from '../../board-versions/BoardVersionsModal';
 import CardModal from '../../cards/CardModal';
 import EndlessContent from './EndlessContent';
 import FiniteContent from './FiniteContent';
+import GanttContent from './GanttContent';
 import KanbanContent from './KanbanContent';
 
 const Board = React.memo(() => {
@@ -24,6 +25,8 @@ const Board = React.memo(() => {
   let Content;
   if (board.view === BoardViews.KANBAN) {
     Content = KanbanContent;
+  } else if (board.view === BoardViews.GANTT) {
+    Content = GanttContent;
   } else {
     switch (board.context) {
       case BoardContexts.BOARD:

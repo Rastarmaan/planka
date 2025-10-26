@@ -99,6 +99,7 @@ const Views = {
   KANBAN: 'kanban',
   GRID: 'grid',
   LIST: 'list',
+  GANTT: 'gantt',
 };
 
 const CalendarTypes = {
