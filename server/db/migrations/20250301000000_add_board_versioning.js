@@ -8,41 +8,74 @@ exports.up = async (knex) => {
     CREATE SEQUENCE IF NOT EXISTS board_version_id_seq;
   `);
 
-  await knex.schema.createTable('board_version', (table) => {
-    table.bigInteger('id').primary().defaultTo(knex.raw('next_id()'));
+  // Check if table exists before creating it
+  const tableExists = await knex.schema.hasTable('board_version');
 
-    table.bigInteger('board_id').notNullable();
-    table.bigInteger('creator_user_id');
-    table.string('name').notNullable();
-    table.text('description');
-    table.json('snapshot_data').notNullable();
-    table.json('metadata');
-    table.boolean('is_auto_created').defaultTo(false);
-    table.timestamp('created_at', { useTz: true });
-    table.timestamp('updated_at', { useTz: true });
+  if (!tableExists) {
+    await knex.schema.createTable('board_version', (table) => {
+      table.bigInteger('id').primary().defaultTo(knex.raw('next_id()'));
 
-    table.index('board_id');
-    table.index('creator_user_id');
-    table.index('created_at');
-    table.index(['board_id', 'created_at']);
-  });
+      table.bigInteger('board_id').notNullable();
+      table.bigInteger('creator_user_id');
+      table.string('name').notNullable();
+      table.text('description');
+      table.json('snapshot_data').notNullable();
+      table.json('metadata');
+      table.boolean('is_auto_created').defaultTo(false);
+      table.timestamp('created_at', { useTz: true });
+      table.timestamp('updated_at', { useTz: true });
 
+      table.index('board_id');
+      table.index('creator_user_id');
+      table.index('created_at');
+      table.index(['board_id', 'created_at']);
+    });
+  }
+
+  // Add foreign key constraints if they don't exist
   await knex.raw(`
-    ALTER TABLE board_version
-    ADD CONSTRAINT board_version_board_id_fkey
-    FOREIGN KEY (board_id) REFERENCES board(id) ON DELETE CASCADE;
+    DO $$
+    BEGIN
+      IF NOT EXISTS (
+        SELECT 1 FROM pg_constraint WHERE conname = 'board_version_board_id_fkey'
+      ) THEN
+        ALTER TABLE board_version
+        ADD CONSTRAINT board_version_board_id_fkey
+        FOREIGN KEY (board_id) REFERENCES board(id) ON DELETE CASCADE;
+      END IF;
+    END $$;
   `);
 
   await knex.raw(`
-    ALTER TABLE board_version
-    ADD CONSTRAINT board_version_creator_user_id_fkey
-    FOREIGN KEY (creator_user_id) REFERENCES "user_account"(id) ON DELETE SET NULL;
+    DO $$
+    BEGIN
+      IF NOT EXISTS (
+        SELECT 1 FROM pg_constraint WHERE conname = 'board_version_creator_user_id_fkey'
+      ) THEN
+        ALTER TABLE board_version
+        ADD CONSTRAINT board_version_creator_user_id_fkey
+        FOREIGN KEY (creator_user_id) REFERENCES "user_account"(id) ON DELETE SET NULL;
+      END IF;
+    END $$;
   `);
 
-  await knex.schema.alterTable('board', (table) => {
-    table.integer('version_count').defaultTo(0);
-    table.timestamp('last_version_created_at', { useTz: true });
-  });
+  // Add columns to board table if they don't exist
+  const boardHasVersionCount = await knex.schema.hasColumn('board', 'version_count');
+  const boardHasLastVersionCreated = await knex.schema.hasColumn(
+    'board',
+    'last_version_created_at',
+  );
+
+  if (!boardHasVersionCount || !boardHasLastVersionCreated) {
+    await knex.schema.alterTable('board', (table) => {
+      if (!boardHasVersionCount) {
+        table.integer('version_count').defaultTo(0);
+      }
+      if (!boardHasLastVersionCreated) {
+        table.timestamp('last_version_created_at', { useTz: true });
+      }
+    });
+  }
 
   await knex.raw(`
     CREATE OR REPLACE FUNCTION update_board_version_count()
