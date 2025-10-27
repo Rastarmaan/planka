@@ -4,15 +4,20 @@
  */
 
 exports.up = async (knex) => {
-  await knex.schema.alterTable('board', (table) => {
-    /* Columns */
+  // Check if calendar_type column already exists before adding it
+  const hasCalendarType = await knex.schema.hasColumn('board', 'calendar_type');
 
-    table.string('calendar_type', 10).notNullable().defaultTo('gregorian');
-  });
+  if (!hasCalendarType) {
+    await knex.schema.alterTable('board', (table) => {
+      /* Columns */
 
-  return knex.schema.alterTable('board', (table) => {
-    table.string('calendar_type', 10).notNullable().alter();
-  });
+      table.string('calendar_type', 10).notNullable().defaultTo('gregorian');
+    });
+
+    await knex.schema.alterTable('board', (table) => {
+      table.string('calendar_type', 10).notNullable().alter();
+    });
+  }
 };
 
 exports.down = (knex) =>

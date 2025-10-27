@@ -4,15 +4,20 @@
  */
 
 exports.up = async (knex) => {
-  await knex.schema.alterTable('action', (table) => {
-    /* Columns */
+  // Check if board_id column already exists before adding it
+  const hasBoardId = await knex.schema.hasColumn('action', 'board_id');
 
-    table.bigInteger('board_id');
+  if (!hasBoardId) {
+    await knex.schema.alterTable('action', (table) => {
+      /* Columns */
 
-    /* Indexes */
+      table.bigInteger('board_id');
 
-    table.index('board_id');
-  });
+      /* Indexes */
+
+      table.index('board_id');
+    });
+  }
 
   return knex.raw(`
     UPDATE action

@@ -4,11 +4,16 @@
  */
 
 exports.up = async (knex) => {
-  await knex.schema.alterTable('card', (table) => {
-    /* Columns */
+  // Check if start_date column already exists before adding it
+  const hasStartDate = await knex.schema.hasColumn('card', 'start_date');
 
-    table.timestamp('start_date', true);
-  });
+  if (!hasStartDate) {
+    await knex.schema.alterTable('card', (table) => {
+      /* Columns */
+
+      table.timestamp('start_date', true);
+    });
+  }
 };
 
 exports.down = (knex) =>

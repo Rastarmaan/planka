@@ -4,20 +4,33 @@
  */
 
 exports.up = async (knex) => {
-  await knex.schema.alterTable('card', (table) => {
-    /* Columns */
+  // Check if parent_card_id column already exists before adding it
+  const hasParentCardId = await knex.schema.hasColumn('card', 'parent_card_id');
 
-    table.bigInteger('parent_card_id');
+  if (!hasParentCardId) {
+    await knex.schema.alterTable('card', (table) => {
+      /* Columns */
 
-    /* Indexes */
+      table.bigInteger('parent_card_id');
 
-    table.index('parent_card_id');
-  });
+      /* Indexes */
 
+      table.index('parent_card_id');
+    });
+  }
+
+  // Add foreign key constraint if it doesn't exist
   await knex.raw(`
-    ALTER TABLE card
-    ADD CONSTRAINT card_parent_card_id_fkey
-    FOREIGN KEY (parent_card_id) REFERENCES card(id) ON DELETE SET NULL;
+    DO $$
+    BEGIN
+      IF NOT EXISTS (
+        SELECT 1 FROM pg_constraint WHERE conname = 'card_parent_card_id_fkey'
+      ) THEN
+        ALTER TABLE card
+        ADD CONSTRAINT card_parent_card_id_fkey
+        FOREIGN KEY (parent_card_id) REFERENCES card(id) ON DELETE SET NULL;
+      END IF;
+    END $$;
   `);
 
   await knex.raw(`
@@ -49,11 +62,19 @@ exports.up = async (knex) => {
     $$ LANGUAGE plpgsql;
   `);
 
-  return knex.raw(`
-    CREATE TRIGGER card_parent_child_validation_trigger
-    BEFORE INSERT OR UPDATE ON card
-    FOR EACH ROW
-    EXECUTE FUNCTION validate_card_parent_child();
+  // Create trigger if it doesn't exist
+  await knex.raw(`
+    DO $$
+    BEGIN
+      IF NOT EXISTS (
+        SELECT 1 FROM pg_trigger WHERE tgname = 'card_parent_child_validation_trigger'
+      ) THEN
+        CREATE TRIGGER card_parent_child_validation_trigger
+        BEFORE INSERT OR UPDATE ON card
+        FOR EACH ROW
+        EXECUTE FUNCTION validate_card_parent_child();
+      END IF;
+    END $$;
   `);
 };
 

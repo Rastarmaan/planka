@@ -98,10 +98,18 @@ exports.up = async (knex) => {
     $$ LANGUAGE plpgsql;
   `);
 
+  // Create trigger if it doesn't exist
   await knex.raw(`
-    CREATE TRIGGER board_version_count_trigger
-    AFTER INSERT OR DELETE ON board_version
-    FOR EACH ROW EXECUTE FUNCTION update_board_version_count();
+    DO $$
+    BEGIN
+      IF NOT EXISTS (
+        SELECT 1 FROM pg_trigger WHERE tgname = 'board_version_count_trigger'
+      ) THEN
+        CREATE TRIGGER board_version_count_trigger
+        AFTER INSERT OR DELETE ON board_version
+        FOR EACH ROW EXECUTE FUNCTION update_board_version_count();
+      END IF;
+    END $$;
   `);
 
   await knex.raw(`
@@ -124,10 +132,18 @@ exports.up = async (knex) => {
     $$ LANGUAGE plpgsql;
   `);
 
+  // Create second trigger if it doesn't exist
   await knex.raw(`
-    CREATE TRIGGER board_version_limit_trigger
-    BEFORE INSERT ON board_version
-    FOR EACH ROW EXECUTE FUNCTION validate_board_version_limit();
+    DO $$
+    BEGIN
+      IF NOT EXISTS (
+        SELECT 1 FROM pg_trigger WHERE tgname = 'board_version_limit_trigger'
+      ) THEN
+        CREATE TRIGGER board_version_limit_trigger
+        BEFORE INSERT ON board_version
+        FOR EACH ROW EXECUTE FUNCTION validate_board_version_limit();
+      END IF;
+    END $$;
   `);
 };
 
