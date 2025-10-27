@@ -67,7 +67,10 @@ exports.up = async (knex) => {
     DO $$
     BEGIN
       IF NOT EXISTS (
-        SELECT 1 FROM pg_trigger WHERE tgname = 'card_parent_child_validation_trigger'
+        SELECT 1 FROM pg_trigger t 
+        JOIN pg_class c ON t.tgrelid = c.oid 
+        WHERE t.tgname = 'card_parent_child_validation_trigger' 
+        AND c.relname = 'card'
       ) THEN
         CREATE TRIGGER card_parent_child_validation_trigger
         BEFORE INSERT OR UPDATE ON card

@@ -103,7 +103,10 @@ exports.up = async (knex) => {
     DO $$
     BEGIN
       IF NOT EXISTS (
-        SELECT 1 FROM pg_trigger WHERE tgname = 'board_version_count_trigger'
+        SELECT 1 FROM pg_trigger t
+        JOIN pg_class c ON t.tgrelid = c.oid
+        WHERE t.tgname = 'board_version_count_trigger'
+        AND c.relname = 'board_version'
       ) THEN
         CREATE TRIGGER board_version_count_trigger
         AFTER INSERT OR DELETE ON board_version
@@ -137,7 +140,10 @@ exports.up = async (knex) => {
     DO $$
     BEGIN
       IF NOT EXISTS (
-        SELECT 1 FROM pg_trigger WHERE tgname = 'board_version_limit_trigger'
+        SELECT 1 FROM pg_trigger t
+        JOIN pg_class c ON t.tgrelid = c.oid
+        WHERE t.tgname = 'board_version_limit_trigger'
+        AND c.relname = 'board_version'
       ) THEN
         CREATE TRIGGER board_version_limit_trigger
         BEFORE INSERT ON board_version
