@@ -3,25 +3,25 @@
  * Licensed under the Fair Use License: https://github.com/plankanban/planka/blob/master/LICENSE.md
  */
 
-import React, { useCallback, useEffect, useMemo } from 'react';
 import PropTypes from 'prop-types';
-import { useDispatch, useSelector } from 'react-redux';
-import { useTranslation } from 'react-i18next';
+import React, { useCallback, useEffect, useMemo } from 'react';
 import { DragDropContext, Droppable } from 'react-beautiful-dnd';
+import { useTranslation } from 'react-i18next';
+import { useDispatch, useSelector } from 'react-redux';
 import { Button } from 'semantic-ui-react';
 import { Input, Popup } from '../../../lib/custom-ui';
 
-import selectors from '../../../selectors';
-import entryActions from '../../../entry-actions';
-import { useField, useNestedRef, useSteps } from '../../../hooks';
 import DroppableTypes from '../../../constants/DroppableTypes';
 import { BoardMembershipRoles } from '../../../constants/Enums';
-import Item from './Item';
+import entryActions from '../../../entry-actions';
+import { useField, useNestedRef, useSteps } from '../../../hooks';
+import selectors from '../../../selectors';
 import AddStep from './AddStep';
 import EditStep from './EditStep';
+import Item from './Item';
 
-import styles from './LabelsStep.module.scss';
 import globalStyles from '../../../styles.module.scss';
+import styles from './LabelsStep.module.scss';
 
 const StepTypes = {
   ADD: 'ADD',
@@ -50,6 +50,16 @@ const LabelsStep = React.memo(({ currentIds, cardId, title, onSelect, onDeselect
           label.color.includes(cleanSearch),
       ),
     [labels, cleanSearch],
+  );
+
+  const globalLabels = useMemo(
+    () => filteredLabels.filter((label) => label.isGlobal),
+    [filteredLabels],
+  );
+
+  const boardLabels = useMemo(
+    () => filteredLabels.filter((label) => !label.isGlobal),
+    [filteredLabels],
   );
 
   const [searchFieldRef, handleSearchFieldRef] = useNestedRef('inputRef');
@@ -137,28 +147,67 @@ const LabelsStep = React.memo(({ currentIds, cardId, title, onSelect, onDeselect
         />
         {filteredLabels.length > 0 && (
           <DragDropContext onDragStart={handleDragStart} onDragEnd={handleDragEnd}>
-            <Droppable droppableId="labels" type={DroppableTypes.LABEL}>
-              {({ innerRef, droppableProps, placeholder }) => (
-                <div
-                  {...droppableProps} // eslint-disable-line react/jsx-props-no-spreading
-                  ref={innerRef}
-                  className={styles.items}
-                >
-                  {filteredLabels.map((item, index) => (
-                    <Item
-                      key={item.id}
-                      id={item.id}
-                      index={index}
-                      isActive={currentIds.includes(item.id)}
-                      onSelect={onSelect}
-                      onDeselect={onDeselect}
-                      onEdit={handleEdit}
-                    />
-                  ))}
-                  {placeholder}
+            {globalLabels.length > 0 && (
+              <>
+                <div className={styles.sectionHeader}>
+                  {t('common.globalLabels', { context: 'title' })}
                 </div>
-              )}
-            </Droppable>
+                <Droppable droppableId="global-labels" type={DroppableTypes.LABEL}>
+                  {({ innerRef, droppableProps, placeholder }) => (
+                    <div
+                      {...droppableProps} // eslint-disable-line react/jsx-props-no-spreading
+                      ref={innerRef}
+                      className={styles.items}
+                    >
+                      {globalLabels.map((item, index) => (
+                        <Item
+                          key={item.id}
+                          id={item.id}
+                          index={index}
+                          isActive={currentIds.includes(item.id)}
+                          onSelect={onSelect}
+                          onDeselect={onDeselect}
+                          onEdit={handleEdit}
+                        />
+                      ))}
+                      {placeholder}
+                    </div>
+                  )}
+                </Droppable>
+              </>
+            )}
+            {globalLabels.length > 0 && boardLabels.length > 0 && (
+              <div className={styles.separator} />
+            )}
+            {boardLabels.length > 0 && (
+              <>
+                {globalLabels.length > 0 && (
+                  <div className={styles.sectionHeader}>{t('common.labels')}</div>
+                )}
+                <Droppable droppableId="board-labels" type={DroppableTypes.LABEL}>
+                  {({ innerRef, droppableProps, placeholder }) => (
+                    <div
+                      {...droppableProps} // eslint-disable-line react/jsx-props-no-spreading
+                      ref={innerRef}
+                      className={styles.items}
+                    >
+                      {boardLabels.map((item, index) => (
+                        <Item
+                          key={item.id}
+                          id={item.id}
+                          index={index}
+                          isActive={currentIds.includes(item.id)}
+                          onSelect={onSelect}
+                          onDeselect={onDeselect}
+                          onEdit={handleEdit}
+                        />
+                      ))}
+                      {placeholder}
+                    </div>
+                  )}
+                </Droppable>
+              </>
+            )}
             <Droppable droppableId="labels:hack" type={DroppableTypes.LABEL}>
               {({ innerRef, droppableProps, placeholder }) => (
                 <div

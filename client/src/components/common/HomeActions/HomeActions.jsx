@@ -3,10 +3,11 @@
  * Licensed under the Fair Use License: https://github.com/plankanban/planka/blob/master/LICENSE.md
  */
 
-import React from 'react';
 import classNames from 'classnames';
+import React from 'react';
 
 import Filters from './Filters';
+import GlobalLabels from './GlobalLabels';
 import RightSide from './RightSide';
 
 import styles from './HomeActions.module.scss';
@@ -17,6 +18,9 @@ const HomeActions = React.memo(() => (
       <div className={styles.actions}>
         <div className={classNames(styles.action, styles.actionFilters)}>
           <Filters />
+        </div>
+        <div className={styles.action}>
+          <GlobalLabels />
         </div>
         <div className={classNames(styles.action, styles.actionRightSide)}>
           <RightSide />

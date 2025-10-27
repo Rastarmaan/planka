@@ -120,6 +120,11 @@ module.exports.routes = {
   'PATCH /api/board-memberships/:id': 'board-memberships/update',
   'DELETE /api/board-memberships/:id': 'board-memberships/delete',
 
+  'GET /api/global-labels': 'global-labels/index',
+  'POST /api/global-labels': 'global-labels/create',
+  'PATCH /api/global-labels/:id': 'global-labels/update',
+  'DELETE /api/global-labels/:id': 'global-labels/delete',
+
   'POST /api/boards/:boardId/labels': 'labels/create',
   'PATCH /api/labels/:id': 'labels/update',
   'DELETE /api/labels/:id': 'labels/delete',

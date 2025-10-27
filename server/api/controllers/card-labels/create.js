@@ -121,9 +121,16 @@ module.exports = {
       throw Errors.NOT_ENOUGH_RIGHTS;
     }
 
-    const label = await Label.qm.getOneById(inputs.labelId, {
+    let label = await Label.qm.getOneById(inputs.labelId, {
       boardId: board.id,
     });
+
+    if (!label) {
+      const globalLabel = await Label.qm.getOneById(inputs.labelId);
+      if (globalLabel && globalLabel.isGlobal) {
+        label = globalLabel;
+      }
+    }
 
     if (!label) {
       throw Errors.LABEL_NOT_FOUND;

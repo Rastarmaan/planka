@@ -3,14 +3,15 @@
  * Licensed under the Fair Use License: https://github.com/plankanban/planka/blob/master/LICENSE.md
  */
 
-import React, { useCallback, useState } from 'react';
 import classNames from 'classnames';
-import { useDispatch } from 'react-redux';
+import React, { useCallback, useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { useDispatch } from 'react-redux';
 import { Modal, Tab } from 'semantic-ui-react';
 
 import entryActions from '../../../entry-actions';
 import { useClosableModal } from '../../../hooks';
+import GlobalLabelsPane from './GlobalLabelsPane';
 import UsersPane from './UsersPane';
 import WebhooksPane from './WebhooksPane';
 
@@ -43,6 +44,12 @@ const AdministrationModal = React.memo(() => {
         context: 'title',
       }),
       render: () => <WebhooksPane />,
+    },
+    {
+      menuItem: t('common.globalLabels', {
+        context: 'title',
+      }),
+      render: () => <GlobalLabelsPane />,
     },
   ];
 

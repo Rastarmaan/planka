@@ -209,7 +209,7 @@ export const selectCurrentUserMembershipForCurrentBoard = createSelector(
 export const selectLabelsForCurrentBoard = createSelector(
   orm,
   (state) => selectPath(state).boardId,
-  ({ Board }, id) => {
+  ({ Board, Label }, id) => {
     if (!id) {
       return id;
     }
@@ -220,7 +220,13 @@ export const selectLabelsForCurrentBoard = createSelector(
       return boardModel;
     }
 
-    return boardModel.getLabelsQuerySet().toRefArray();
+    const boardLabels = boardModel.getLabelsQuerySet().toRefArray();
+
+    const globalLabels = Label.filter((label) => label.isGlobal === true)
+      .orderBy('position')
+      .toRefArray();
+
+    return [...globalLabels, ...boardLabels];
   },
 );
 

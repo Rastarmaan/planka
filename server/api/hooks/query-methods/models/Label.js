@@ -25,6 +25,37 @@ const getByBoardId = (boardId, { exceptIdOrIds, sort = ['position', 'id'] } = {}
   return defaultFind(criteria, { sort });
 };
 
+const getGlobalLabels = ({ exceptIdOrIds, sort = ['position', 'id'] } = {}) => {
+  const criteria = {
+    isGlobal: true,
+  };
+
+  if (exceptIdOrIds) {
+    criteria.id = {
+      '!=': exceptIdOrIds,
+    };
+  }
+
+  return defaultFind(criteria, { sort });
+};
+
+const getByBoardIdIncludingGlobal = (
+  boardId,
+  { exceptIdOrIds, sort = ['position', 'id'] } = {},
+) => {
+  const criteria = {
+    or: [{ boardId }, { isGlobal: true }],
+  };
+
+  if (exceptIdOrIds) {
+    criteria.id = {
+      '!=': exceptIdOrIds,
+    };
+  }
+
+  return defaultFind(criteria, { sort });
+};
+
 const getOneById = (id, { boardId } = {}) => {
   const criteria = {
     id,
@@ -48,6 +79,8 @@ module.exports = {
   createOne,
   getByIds,
   getByBoardId,
+  getGlobalLabels,
+  getByBoardIdIncludingGlobal,
   getOneById,
   updateOne,
   deleteOne,

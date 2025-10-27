@@ -203,7 +203,7 @@ module.exports = {
     board.isSubscribed = await sails.helpers.users.isBoardSubscriber(currentUser.id, board.id);
 
     const boardMemberships = await BoardMembership.qm.getByBoardId(board.id);
-    const labels = await Label.qm.getByBoardId(board.id);
+    const labels = await Label.qm.getByBoardIdIncludingGlobal(board.id);
     const lists = await List.qm.getByBoardId(board.id);
 
     const finiteLists = lists.filter((list) => sails.helpers.lists.isFinite(list));
