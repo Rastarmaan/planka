@@ -91,8 +91,15 @@ module.exports.routes = {
   'POST /api/projects': 'projects/create',
   'GET /api/projects/:id': 'projects/show',
   'PATCH /api/projects/:id': 'projects/update',
+  'PATCH /api/projects/:id/categories': 'projects/update-categories',
   'POST /api/projects/:projectId/duplicate': 'projects/duplicate',
   'DELETE /api/projects/:id': 'projects/delete',
+
+  'GET /api/project-categories': 'project-categories/index',
+  'POST /api/project-categories': 'project-categories/create',
+  'GET /api/project-categories/:id': 'project-categories/show',
+  'PATCH /api/project-categories/:id': 'project-categories/update',
+  'DELETE /api/project-categories/:id': 'project-categories/delete',
 
   'POST /api/projects/:projectId/project-managers': 'project-managers/create',
   'DELETE /api/project-managers/:id': 'project-managers/delete',

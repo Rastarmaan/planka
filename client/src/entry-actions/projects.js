@@ -19,6 +19,13 @@ const updateProjectsOrder = (value) => ({
   },
 });
 
+const updateProjectsCategoryFilter = (categoryId) => ({
+  type: EntryActionTypes.PROJECTS_CATEGORY_FILTER_UPDATE,
+  payload: {
+    categoryId,
+  },
+});
+
 const toggleHiddenProjects = (isVisible) => ({
   type: EntryActionTypes.HIDDEN_PROJECTS_TOGGLE,
   payload: {
@@ -33,10 +40,11 @@ const createProject = (data) => ({
   },
 });
 
-const handleProjectCreate = (project) => ({
+const handleProjectCreate = (project, included = {}) => ({
   type: EntryActionTypes.PROJECT_CREATE_HANDLE,
   payload: {
     project,
+    ...included,
   },
 });
 
@@ -74,9 +82,18 @@ const handleProjectDelete = (project) => ({
   },
 });
 
+const updateProjectCategories = (projectId, categoryIds) => ({
+  type: EntryActionTypes.PROJECT_CATEGORIES_UPDATE,
+  payload: {
+    projectId,
+    categoryIds,
+  },
+});
+
 export default {
   searchProjects,
   updateProjectsOrder,
+  updateProjectsCategoryFilter,
   toggleHiddenProjects,
   createProject,
   handleProjectCreate,
@@ -85,4 +102,5 @@ export default {
   handleProjectUpdate,
   deleteCurrentProject,
   handleProjectDelete,
+  updateProjectCategories,
 };

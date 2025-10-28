@@ -3,23 +3,23 @@
  * Licensed under the Fair Use License: https://github.com/plankanban/planka/blob/master/LICENSE.md
  */
 
-import upperFirst from 'lodash/upperFirst';
-import camelCase from 'lodash/camelCase';
-import React, { useCallback, useMemo } from 'react';
-import PropTypes from 'prop-types';
 import classNames from 'classnames';
+import camelCase from 'lodash/camelCase';
+import upperFirst from 'lodash/upperFirst';
+import PropTypes from 'prop-types';
+import React, { useCallback, useMemo } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Link } from 'react-router-dom';
-import { Button, Icon } from 'semantic-ui-react';
+import { Button, Icon, Label } from 'semantic-ui-react';
 
-import selectors from '../../../selectors';
-import entryActions from '../../../entry-actions';
-import Paths from '../../../constants/Paths';
 import { ProjectBackgroundTypes } from '../../../constants/Enums';
+import Paths from '../../../constants/Paths';
+import entryActions from '../../../entry-actions';
+import selectors from '../../../selectors';
 import UserAvatar from '../../users/UserAvatar';
 
-import styles from './ProjectCard.module.scss';
 import globalStyles from '../../../styles.module.scss';
+import styles from './ProjectCard.module.scss';
 
 const Sizes = {
   SMALL: 'small',
@@ -45,6 +45,10 @@ const ProjectCard = React.memo(
 
     const project = useSelector((state) => selectProjectById(state, id));
     const firstBoardId = useSelector((state) => selectFirstBoardIdByProjectId(state, id));
+
+    const projectCategories = useSelector((state) =>
+      selectors.selectProjectCategoriesForProject(state, id),
+    );
 
     const notificationsTotal = useSelector((state) =>
       selectNotificationsTotalByProjectId(state, id),
@@ -126,6 +130,15 @@ const ProjectCard = React.memo(
             </div>
             {withDescription && project.description && (
               <div className={styles.description}>{project.description}</div>
+            )}
+            {projectCategories.length > 0 && (
+              <div className={styles.categories}>
+                {projectCategories.map((category) => (
+                  <Label key={category.id} size="tiny" className={styles.categoryBadge}>
+                    {category.name}
+                  </Label>
+                ))}
+              </div>
             )}
           </div>
           {withTypeIndicator && (

@@ -38,6 +38,12 @@
  *                 nullable: true
  *                 description: Detailed description of the project
  *                 example: A project for developing new features...
+ *               categoryIds:
+ *                 type: array
+ *                 items:
+ *                   type: string
+ *                 description: Array of category IDs to assign to the project
+ *                 example: ["1357158568008091264", "1357158568008091265"]
  *     responses:
  *       200:
  *         description: Project created successfully
@@ -85,23 +91,37 @@ module.exports = {
       maxLength: 1024,
       allowNull: true,
     },
+    categoryIds: {
+      type: 'json',
+      custom: (value) => {
+        if (!Array.isArray(value)) {
+          return false;
+        }
+        return value.every((id) => typeof id === 'string' || typeof id === 'number');
+      },
+      defaultsTo: [],
+    },
   },
 
   async fn(inputs) {
     const { currentUser } = this.req;
 
     const values = _.pick(inputs, ['type', 'name', 'description']);
+    const { categoryIds } = inputs;
 
-    const { project, projectManager } = await sails.helpers.projects.createOne.with({
-      values,
-      actorUser: currentUser,
-      request: this.req,
-    });
+    const { project, projectManager, projectCategoryAssignments } =
+      await sails.helpers.projects.createOne.with({
+        values,
+        categoryIds,
+        actorUser: currentUser,
+        request: this.req,
+      });
 
     return {
       item: project,
       included: {
         projectManagers: [projectManager],
+        projectCategoryAssignments: projectCategoryAssignments || [],
       },
     };
   },

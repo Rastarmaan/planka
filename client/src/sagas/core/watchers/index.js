@@ -21,6 +21,7 @@ import lists from './lists';
 import modals from './modals';
 import notificationServices from './notification-services';
 import notifications from './notifications';
+import projectCategories from './project-categories';
 import projectManagers from './project-managers';
 import projects from './projects';
 import router from './router';
@@ -38,6 +39,7 @@ export default [
   webhooks,
   users,
   projects,
+  projectCategories,
   projectManagers,
   backgroundImages,
   baseCustomFieldGroups,

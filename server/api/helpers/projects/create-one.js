@@ -9,6 +9,10 @@ module.exports = {
       type: 'json',
       required: true,
     },
+    categoryIds: {
+      type: 'json',
+      defaultsTo: [],
+    },
     actorUser: {
       type: 'ref',
       required: true,
@@ -19,11 +23,26 @@ module.exports = {
   },
 
   async fn(inputs) {
-    const { values } = inputs;
+    const { values, categoryIds } = inputs;
 
     const { project, projectManager } = await Project.qm.createOne(values, {
       user: inputs.actorUser,
     });
+
+    let projectCategoryAssignments = [];
+    if (categoryIds && categoryIds.length > 0) {
+      projectCategoryAssignments = await Promise.all(
+        categoryIds.map((categoryId) =>
+          ProjectCategoryAssignment.create({
+            projectId: project.id,
+            categoryId,
+          })
+            .fetch()
+            .tolerate('E_UNIQUE'),
+        ),
+      );
+      projectCategoryAssignments = projectCategoryAssignments.filter(Boolean);
+    }
 
     const scoper = sails.helpers.projects.makeScoper.with({
       record: project,
@@ -39,6 +58,9 @@ module.exports = {
         'projectCreate',
         {
           item: project,
+          included: {
+            projectCategoryAssignments,
+          },
         },
         inputs.request,
       );
@@ -58,6 +80,7 @@ module.exports = {
     return {
       project,
       projectManager,
+      projectCategoryAssignments,
     };
   },
 };

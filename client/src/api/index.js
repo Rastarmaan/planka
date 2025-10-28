@@ -24,6 +24,7 @@ import labels from './labels';
 import lists from './lists';
 import notificationServices from './notification-services';
 import notifications from './notifications';
+import projectCategories from './project-categories';
 import projectManagers from './project-managers';
 import projectVersions from './project-versions';
 import projects from './projects';
@@ -43,6 +44,7 @@ export default {
   ...webhooks,
   ...users,
   ...projects,
+  ...projectCategories,
   ...projectManagers,
   ...projectVersions,
   ...backgroundImages,

@@ -1,0 +1,42 @@
+:global(#app) {
+  .menu {
+    margin: 0 !important;
+    width: 100%;
+  }
+
+  .menuItem {
+    cursor: pointer !important;
+    display: flex !important;
+    align-items: center !important;
+    padding: 0.75rem 1rem !important;
+    border-radius: 4px !important;
+    margin: 0 !important;
+    transition: all 0.2s ease !important;
+
+    &:hover {
+      background-color: #f5f5f5 !important;
+    }
+
+    &:global(.active) {
+      background-color: #e3f2fd !important;
+      color: #1976d2 !important;
+      font-weight: 600 !important;
+
+      .menuItemIcon {
+        color: #1976d2 !important;
+      }
+    }
+  }
+
+  .menuItemIcon {
+    margin: 0 !important;
+    margin-right: 0.75rem !important;
+    font-size: 1.1rem !important;
+    color: #666 !important;
+  }
+
+  .menuItemText {
+    flex: 1;
+    font-size: 0.95rem;
+  }
+}

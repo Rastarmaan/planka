@@ -5,17 +5,18 @@
 
 import { createSelector } from 'redux-orm';
 
+import { BoardMembershipRoles, ProjectGroups, ProjectOrders } from '../constants/Enums';
+import { STATIC_USER_BY_ID } from '../constants/StaticUsers';
 import orm from '../orm';
+import { isLocalId } from '../utils/local-id';
+import { isUserAdminOrProjectOwner } from '../utils/record-helpers';
 import {
   selectIsFavoritesEnabled,
   selectIsHiddenProjectsVisible,
+  selectProjectsCategoryFilter,
   selectProjectsOrder,
   selectProjectsSearch,
 } from './core';
-import { isLocalId } from '../utils/local-id';
-import { isUserAdminOrProjectOwner } from '../utils/record-helpers';
-import { STATIC_USER_BY_ID } from '../constants/StaticUsers';
-import { BoardMembershipRoles, ProjectGroups, ProjectOrders } from '../constants/Enums';
 
 const ORDER_BY_ARGS_BY_PROJECTS_ORDER = {
   [ProjectOrders.ALPHABETICALLY]: [['name', 'id.length', 'id']],
@@ -111,8 +112,9 @@ export const selectFilteredProjectIdsForCurrentUser = createSelector(
   (state) => selectCurrentUserId(state),
   (state) => selectProjectsSearch(state),
   (state) => selectIsHiddenProjectsVisible(state),
+  (state) => selectProjectsCategoryFilter(state),
   (state) => selectProjectsOrder(state),
-  ({ User }, id, projectsSearch, isHiddenProjectsVisible, projectsOrder) => {
+  ({ User }, id, projectsSearch, isHiddenProjectsVisible, categoryFilter, projectsOrder) => {
     if (!id) {
       return id;
     }
@@ -123,13 +125,16 @@ export const selectFilteredProjectIdsForCurrentUser = createSelector(
       return userModel;
     }
 
-    return userModel
+    const result = userModel
       .getFilteredProjectsModelArray(
         projectsSearch,
         isHiddenProjectsVisible,
+        categoryFilter,
         ORDER_BY_ARGS_BY_PROJECTS_ORDER[projectsOrder],
       )
       .map((projectModel) => projectModel.id);
+
+    return result;
   },
 );
 
@@ -138,8 +143,9 @@ export const selectFilteredProjctIdsByGroupForCurrentUser = createSelector(
   (state) => selectCurrentUserId(state),
   (state) => selectProjectsSearch(state),
   (state) => selectIsHiddenProjectsVisible(state),
+  (state) => selectProjectsCategoryFilter(state),
   (state) => selectProjectsOrder(state),
-  ({ User }, id, projectsSearch, isHiddenProjectsVisible, projectsOrder) => {
+  ({ User }, id, projectsSearch, isHiddenProjectsVisible, categoryFilter, projectsOrder) => {
     if (!id) {
       return id;
     }
@@ -154,6 +160,7 @@ export const selectFilteredProjctIdsByGroupForCurrentUser = createSelector(
       userModel.getFilteredSeparatedProjectsModelArray(
         projectsSearch,
         isHiddenProjectsVisible,
+        categoryFilter,
         ORDER_BY_ARGS_BY_PROJECTS_ORDER[projectsOrder],
       );
 

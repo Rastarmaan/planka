@@ -3,16 +3,17 @@
  * Licensed under the Fair Use License: https://github.com/plankanban/planka/blob/master/LICENSE.md
  */
 
-import React, { useCallback } from 'react';
 import classNames from 'classnames';
+import React, { useCallback } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Icon } from 'semantic-ui-react';
 import { usePopup } from '../../../../lib/popup';
 
-import selectors from '../../../../selectors';
-import entryActions from '../../../../entry-actions';
 import { HomeViews } from '../../../../constants/Enums';
 import { HomeViewIcons, ProjectOrderIcons } from '../../../../constants/Icons';
+import entryActions from '../../../../entry-actions';
+import selectors from '../../../../selectors';
+import SelectCategoryStep from './SelectCategoryStep';
 import SelectOrderStep from './SelectOrderStep';
 
 import styles from './RightSide.module.scss';
@@ -20,6 +21,7 @@ import styles from './RightSide.module.scss';
 const RightSide = React.memo(() => {
   const currentView = useSelector(selectors.selectHomeView); // TODO: rename?
   const currentOrder = useSelector(selectors.selectProjectsOrder); // TODO: rename?
+  const currentCategory = useSelector(selectors.selectProjectsCategoryFilter);
   const isHiddenVisible = useSelector(selectors.selectIsHiddenProjectsVisible);
 
   const dispatch = useDispatch();
@@ -38,11 +40,19 @@ const RightSide = React.memo(() => {
     [dispatch],
   );
 
+  const handleCategorySelect = useCallback(
+    (categoryId) => {
+      dispatch(entryActions.updateProjectsCategoryFilter(categoryId));
+    },
+    [dispatch],
+  );
+
   const handleToggleHiddenClick = useCallback(() => {
     dispatch(entryActions.toggleHiddenProjects(!isHiddenVisible));
   }, [isHiddenVisible, dispatch]);
 
   const SelectOrderPopup = usePopup(SelectOrderStep);
+  const SelectCategoryPopup = usePopup(SelectCategoryStep);
 
   return (
     <>
@@ -54,6 +64,13 @@ const RightSide = React.memo(() => {
         >
           <Icon fitted name={isHiddenVisible ? 'eye slash' : 'eye'} />
         </button>
+      </div>
+      <div className={styles.action}>
+        <SelectCategoryPopup value={currentCategory} onSelect={handleCategorySelect}>
+          <button type="button" className={styles.button}>
+            <Icon fitted name="folder" />
+          </button>
+        </SelectCategoryPopup>
       </div>
       <div className={styles.action}>
         <SelectOrderPopup value={currentOrder} onSelect={handleOrderSelect}>

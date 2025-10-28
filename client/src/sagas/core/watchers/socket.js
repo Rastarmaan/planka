@@ -6,6 +6,7 @@
 import { eventChannel } from 'redux-saga';
 import { all, call, cancelled, put, take, takeEvery } from 'redux-saga/effects';
 
+import actions from '../../../actions';
 import api, { socket } from '../../../api';
 import EntryActionTypes from '../../../constants/EntryActionTypes';
 import entryActions from '../../../entry-actions';
@@ -41,8 +42,8 @@ const createSocketEventsChannel = () =>
       emit(entryActions.handleUserDelete(item));
     };
 
-    const handleProjectCreate = ({ item }) => {
-      emit(entryActions.handleProjectCreate(item));
+    const handleProjectCreate = ({ item, included }) => {
+      emit(entryActions.handleProjectCreate(item, included));
     };
 
     const handleProjectUpdate = ({ item }) => {
@@ -51,6 +52,18 @@ const createSocketEventsChannel = () =>
 
     const handleProjectDelete = ({ item }) => {
       emit(entryActions.handleProjectDelete(item));
+    };
+
+    const handleProjectCategoryCreate = ({ item }) => {
+      emit(actions.handleProjectCategoryCreate(item));
+    };
+
+    const handleProjectCategoryUpdate = ({ item }) => {
+      emit(actions.handleProjectCategoryUpdate(item));
+    };
+
+    const handleProjectCategoryDelete = ({ item }) => {
+      emit(actions.handleProjectCategoryDelete(item));
     };
 
     const handleProjectManagerCreate = ({ item, included: { users } }) => {
@@ -299,6 +312,10 @@ const createSocketEventsChannel = () =>
     socket.on('projectCreate', handleProjectCreate);
     socket.on('projectUpdate', handleProjectUpdate);
     socket.on('projectDelete', handleProjectDelete);
+
+    socket.on('projectCategoryCreate', handleProjectCategoryCreate);
+    socket.on('projectCategoryUpdate', handleProjectCategoryUpdate);
+    socket.on('projectCategoryDelete', handleProjectCategoryDelete);
 
     socket.on('projectManagerCreate', handleProjectManagerCreate);
     socket.on('projectManagerDelete', handleProjectManagerDelete);

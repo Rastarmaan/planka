@@ -5,9 +5,9 @@
 
 import { attr, many, oneToOne } from 'redux-orm';
 
-import BaseModel from './BaseModel';
 import ActionTypes from '../constants/ActionTypes';
 import { UserRoles } from '../constants/Enums';
+import BaseModel from './BaseModel';
 
 export default class extends BaseModel {
   static modelName = 'Project';
@@ -36,6 +36,11 @@ export default class extends BaseModel {
       to: 'User',
       through: 'ProjectManager',
       relatedName: 'managerProjects',
+    }),
+    categories: many({
+      to: 'ProjectCategory',
+      through: 'ProjectCategoryAssignment',
+      relatedName: 'projects',
     }),
   };
 

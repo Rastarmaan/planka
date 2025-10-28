@@ -35,6 +35,12 @@ module.exports.policies = {
 
   'projects/create': ['is-authenticated', 'is-external', 'is-admin-or-project-owner'],
 
+  'project-categories/index': 'is-authenticated',
+  'project-categories/show': 'is-authenticated',
+  'project-categories/create': ['is-authenticated', 'is-external', 'is-admin'],
+  'project-categories/update': ['is-authenticated', 'is-external', 'is-admin'],
+  'project-categories/delete': ['is-authenticated', 'is-external', 'is-admin'],
+
   'config/show': true,
   'terms/show': true,
   'access-tokens/create': true,

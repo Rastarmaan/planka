@@ -3,48 +3,52 @@
  * Licensed under the Fair Use License: https://github.com/plankanban/planka/blob/master/LICENSE.md
  */
 
-import Webhook from './Webhook';
-import User from './User';
-import Project from './Project';
-import ProjectManager from './ProjectManager';
+import Activity from './Activity';
+import Attachment from './Attachment';
 import BackgroundImage from './BackgroundImage';
 import BaseCustomFieldGroup from './BaseCustomFieldGroup';
 import Board from './Board';
 import BoardMembership from './BoardMembership';
+import Card from './Card';
+import Comment from './Comment';
+import CustomField from './CustomField';
+import CustomFieldGroup from './CustomFieldGroup';
+import CustomFieldValue from './CustomFieldValue';
 import Label from './Label';
 import List from './List';
-import Card from './Card';
-import TaskList from './TaskList';
-import Task from './Task';
-import Attachment from './Attachment';
-import CustomFieldGroup from './CustomFieldGroup';
-import CustomField from './CustomField';
-import CustomFieldValue from './CustomFieldValue';
-import Comment from './Comment';
-import Activity from './Activity';
 import Notification from './Notification';
 import NotificationService from './NotificationService';
+import Project from './Project';
+import ProjectCategory from './ProjectCategory';
+import ProjectCategoryAssignment from './ProjectCategoryAssignment';
+import ProjectManager from './ProjectManager';
+import Task from './Task';
+import TaskList from './TaskList';
+import User from './User';
+import Webhook from './Webhook';
 
 export {
-  Webhook,
-  User,
-  Project,
-  ProjectManager,
+  Activity,
+  Attachment,
   BackgroundImage,
   BaseCustomFieldGroup,
   Board,
   BoardMembership,
+  Card,
+  Comment,
+  CustomField,
+  CustomFieldGroup,
+  CustomFieldValue,
   Label,
   List,
-  Card,
-  TaskList,
-  Task,
-  Attachment,
-  CustomFieldGroup,
-  CustomField,
-  CustomFieldValue,
-  Comment,
-  Activity,
   Notification,
   NotificationService,
+  Project,
+  ProjectCategory,
+  ProjectCategoryAssignment,
+  ProjectManager,
+  Task,
+  TaskList,
+  User,
+  Webhook,
 };

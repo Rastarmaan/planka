@@ -5,13 +5,13 @@
 
 import { call, put, select } from 'redux-saga/effects';
 
-import request from '../request';
-import requests from '../requests';
-import selectors from '../../../selectors';
 import actions from '../../../actions';
 import api from '../../../api';
 import i18n from '../../../i18n';
+import selectors from '../../../selectors';
 import { removeAccessToken } from '../../../utils/access-token-storage';
+import request from '../request';
+import requests from '../requests';
 
 export function* initializeCore() {
   const { item: config } = yield call(request, api.getConfig); // TODO: handle error
@@ -25,6 +25,8 @@ export function* initializeCore() {
     users,
     projects,
     projectManagers,
+    projectCategories,
+    projectCategoryAssignments,
     backgroundImages,
     baseCustomFieldGroups,
     boards,
@@ -55,6 +57,8 @@ export function* initializeCore() {
       users,
       projects,
       projectManagers,
+      projectCategories,
+      projectCategoryAssignments,
       backgroundImages,
       baseCustomFieldGroups,
       boards,

@@ -8,6 +8,7 @@ import React from 'react';
 
 import Filters from './Filters';
 import GlobalLabels from './GlobalLabels';
+import ProjectCategories from './ProjectCategories';
 import RightSide from './RightSide';
 
 import styles from './HomeActions.module.scss';
@@ -21,6 +22,9 @@ const HomeActions = React.memo(() => (
         </div>
         <div className={styles.action}>
           <GlobalLabels />
+        </div>
+        <div className={styles.action}>
+          <ProjectCategories />
         </div>
         <div className={classNames(styles.action, styles.actionRightSide)}>
           <RightSide />

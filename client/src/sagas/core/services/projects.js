@@ -6,14 +6,14 @@
 import omit from 'lodash/omit';
 import { call, put, select } from 'redux-saga/effects';
 
-import { goToProject, goToRoot } from './router';
-import request from '../request';
-import requests from '../requests';
-import selectors from '../../../selectors';
 import actions from '../../../actions';
 import api from '../../../api';
-import mergeRecords from '../../../utils/merge-records';
 import { UserRoles } from '../../../constants/Enums';
+import selectors from '../../../selectors';
+import mergeRecords from '../../../utils/merge-records';
+import request from '../request';
+import requests from '../requests';
+import { goToProject, goToRoot } from './router';
 
 export function* searchProjects(value) {
   yield put(actions.searchProjects(value));
@@ -33,6 +33,10 @@ export function* updateProjectsOrder(value) {
   }
 }
 
+export function* updateProjectsCategoryFilter(categoryId) {
+  yield put(actions.updateProjectsCategoryFilter(categoryId));
+}
+
 export function* toggleHiddenProjects(isVisible) {
   yield put(actions.toggleHiddenProjects(isVisible));
 }
@@ -42,18 +46,19 @@ export function* createProject(data) {
 
   let project;
   let projectManagers;
+  let projectCategoryAssignments;
 
   try {
     ({
       item: project,
-      included: { projectManagers },
+      included: { projectManagers, projectCategoryAssignments = [] },
     } = yield call(request, api.createProject, data));
   } catch (error) {
     yield put(actions.createProject.failure(error));
     return;
   }
 
-  yield put(actions.createProject.success(project, projectManagers));
+  yield put(actions.createProject.success(project, projectManagers, projectCategoryAssignments));
   yield call(goToProject, project.id);
 }
 
@@ -297,9 +302,30 @@ export function* handleProjectDelete(project) {
   }
 }
 
+export function* updateProjectCategories(projectId, categoryIds) {
+  try {
+    const { projectCategoryAssignments } = yield call(
+      request,
+      api.updateProjectCategories,
+      projectId,
+      categoryIds,
+    );
+
+    yield put(
+      actions.handleProjectCategoryAssignments({
+        projectId,
+        projectCategoryAssignments,
+      }),
+    );
+  } catch (error) {
+    console.error('Failed to update project categories:', error); // eslint-disable-line no-console
+  }
+}
+
 export default {
   searchProjects,
   updateProjectsOrder,
+  updateProjectsCategoryFilter,
   toggleHiddenProjects,
   createProject,
   handleProjectCreate,
@@ -309,4 +335,5 @@ export default {
   deleteProject,
   deleteCurrentProject,
   handleProjectDelete,
+  updateProjectCategories,
 };

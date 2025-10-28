@@ -182,5 +182,10 @@ module.exports = {
       collection: 'Board',
       via: 'projectId',
     },
+    categories: {
+      collection: 'ProjectCategory',
+      via: 'projectId',
+      through: 'ProjectCategoryAssignment',
+    },
   },
 };
