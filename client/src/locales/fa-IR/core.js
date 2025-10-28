@@ -266,6 +266,7 @@ export default {
         'نکته: با فشردن Ctrl-V (Cmd-V در مک) می‌توانید پیوست را از کلیپ بورد اضافه کنید.',
       private: null,
       project: 'تسک',
+      projectCategories_title: 'دسته‌بندی‌های پروژه',
       parentTask: 'تسک والد',
       projectNotFound_title: 'تسک یافت نشد',
       projectOwner: 'مالک تسک',
