@@ -10,7 +10,7 @@ import React, { useCallback, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useDispatch, useSelector } from 'react-redux';
 import { createSelector } from 'redux-orm';
-import { Button, Dropdown } from 'semantic-ui-react';
+import { Dropdown } from 'semantic-ui-react';
 
 import { BoardMembershipRoles } from '../../../../constants/Enums';
 import entryActions from '../../../../entry-actions';
@@ -350,14 +350,14 @@ const GanttView = React.memo(({ cardIds }) => {
             onChange={handleViewModeChange}
           />
         </div>
-        <Button
+        {/* <Button
           size="small"
           onClick={() => {
             // TODO: Implement scroll to today functionality
           }}
         >
           {t('action.goToToday')}
-        </Button>
+        </Button> */}
       </div>
       <div className={styles.ganttContainer}>
         <Gantt
