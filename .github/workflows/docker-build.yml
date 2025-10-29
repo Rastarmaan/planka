@@ -30,7 +30,7 @@ jobs:
         uses: nick-invision/retry@v3
         with:
           max_attempts: 1 # (1 initial + 0 retries)
-          timeout_minutes: 8 # Timeout for each attempt
+          timeout_minutes: 15 # Timeout for each attempt
           command: |
             ssh -o StrictHostKeyChecking=no -p ${{ secrets.SSH_PORT }} ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} '
             # Exit immediately if any command fails, ensuring a failed build stops the process.
