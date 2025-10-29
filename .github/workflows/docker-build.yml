@@ -21,6 +21,10 @@ jobs:
         with:
           ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
 
+      - name: Set branch name
+        id: branch
+        run: echo "branch=${GITHUB_REF_NAME}" >> $GITHUB_OUTPUT
+
       # due to some network problems, sometimes the build stage fails.
       - name: Deploy and Rebuild Services
         uses: nick-invision/retry@v3
@@ -31,10 +35,10 @@ jobs:
             ssh -o StrictHostKeyChecking=no -p ${{ secrets.SSH_PORT }} ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} '
             # Exit immediately if any command fails, ensuring a failed build stops the process.
             set -e
-            BRANCH_NAME=$(git rev-parse --abbrev-ref HEAD)
-
             cd /home/deploy/planka
+            BRANCH_NAME="${{ steps.branch.outputs.branch }}"
             echo "--- Pulling latest code from ${BRANCH_NAME} branch ---"
+            git checkout ${BRANCH_NAME}
             git pull origin ${BRANCH_NAME}
 
             IMAGE_NAME="registry.hamdocker.ir/shhm3834/planka-rastarmaan"
