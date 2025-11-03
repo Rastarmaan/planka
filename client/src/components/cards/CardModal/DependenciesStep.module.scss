@@ -1,0 +1,126 @@
+.section {
+  margin-bottom: 1.5rem;
+
+  &:last-child {
+    margin-bottom: 0;
+  }
+}
+
+.sectionHeader {
+  display: flex;
+  align-items: center;
+  margin-bottom: 0.75rem;
+  font-weight: 600;
+  color: #172b4d;
+}
+
+.sectionTitle {
+  font-size: 0.875rem;
+  text-transform: uppercase;
+}
+
+.sectionCount {
+  margin-left: 0.5rem;
+  font-size: 0.75rem;
+  color: #6b778c;
+  font-weight: normal;
+}
+
+.cardList {
+  margin-bottom: 0.75rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.dependencyCard {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.75rem;
+  background: #ffffff;
+  border: 1px solid #dfe1e6;
+  border-radius: 3px;
+  cursor: pointer;
+  transition: background 0.1s ease;
+
+  &:hover {
+    background: #f4f5f7;
+  }
+
+  &.completed {
+    opacity: 0.7;
+    
+    .cardName {
+      text-decoration: line-through;
+    }
+  }
+
+  &.archived {
+    opacity: 0.5;
+    background: #f4f5f7;
+  }
+}
+
+.cardInfo {
+  flex: 1;
+  min-width: 0;
+}
+
+.cardName {
+  font-weight: 500;
+  color: #172b4d;
+  margin-bottom: 0.25rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.completedIcon {
+  color: #00875a;
+  font-size: 1rem;
+  flex-shrink: 0;
+}
+
+.cardList {
+  font-size: 0.75rem;
+  color: #6b778c;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.removeButton {
+  flex-shrink: 0;
+  margin-left: 0.5rem !important;
+  padding: 0.5rem !important;
+  opacity: 0.6;
+  
+  &:hover {
+    opacity: 1;
+    background: #ff5630 !important;
+    color: #ffffff !important;
+  }
+}
+
+.emptyMessage {
+  padding: 1rem;
+  text-align: center;
+  color: #6b778c;
+  font-style: italic;
+  background: #f4f5f7;
+  border-radius: 3px;
+  margin-bottom: 0.75rem;
+}
+
+.addButton {
+  background: #0079bf !important;
+  color: #ffffff !important;
+  
+  &:hover {
+    background: #026aa7 !important;
+  }
+}

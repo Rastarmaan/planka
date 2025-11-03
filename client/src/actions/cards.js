@@ -277,6 +277,68 @@ fetchChildCards.failure = (parentId, error) => ({
   },
 });
 
+const addDependencyToCard = (cardId, dependsOnCardId) => ({
+  type: ActionTypes.CARD_DEPENDENCY_CREATE,
+  payload: {
+    cardId,
+    dependsOnCardId,
+  },
+});
+
+addDependencyToCard.success = (cardDependency) => ({
+  type: ActionTypes.CARD_DEPENDENCY_CREATE__SUCCESS,
+  payload: {
+    cardDependency,
+  },
+});
+
+addDependencyToCard.failure = (cardId, dependsOnCardId, error) => ({
+  type: ActionTypes.CARD_DEPENDENCY_CREATE__FAILURE,
+  payload: {
+    cardId,
+    dependsOnCardId,
+    error,
+  },
+});
+
+const handleCardDependencyCreate = (cardDependency) => ({
+  type: ActionTypes.CARD_DEPENDENCY_CREATE_HANDLE,
+  payload: {
+    cardDependency,
+  },
+});
+
+const removeDependencyFromCard = (id, cardId, dependsOnCardId) => ({
+  type: ActionTypes.CARD_DEPENDENCY_DELETE,
+  payload: {
+    id,
+    cardId,
+    dependsOnCardId,
+  },
+});
+
+removeDependencyFromCard.success = (cardDependency) => ({
+  type: ActionTypes.CARD_DEPENDENCY_DELETE__SUCCESS,
+  payload: {
+    cardDependency,
+  },
+});
+
+removeDependencyFromCard.failure = (id, error) => ({
+  type: ActionTypes.CARD_DEPENDENCY_DELETE__FAILURE,
+  payload: {
+    id,
+    error,
+  },
+});
+
+const handleCardDependencyDelete = (cardDependency) => ({
+  type: ActionTypes.CARD_DEPENDENCY_DELETE_HANDLE,
+  payload: {
+    cardDependency,
+  },
+});
+
 export default {
   fetchCards,
   handleCardsUpdate,
@@ -288,4 +350,8 @@ export default {
   deleteCard,
   handleCardDelete,
   fetchChildCards,
+  addDependencyToCard,
+  handleCardDependencyCreate,
+  removeDependencyFromCard,
+  handleCardDependencyDelete,
 };

@@ -665,6 +665,61 @@ export function* removeStoryFromCurrentCard() {
   yield call(updateCard, cardId, { parentCardId: null });
 }
 
+export function* addDependencyToCard(cardId, dependsOnCardId) {
+  yield put(actions.addDependencyToCard(cardId, dependsOnCardId));
+
+  let cardDependency;
+  try {
+    ({ item: cardDependency } = yield call(request, api.createCardDependency, cardId, {
+      dependsOnCardId,
+    }));
+  } catch (error) {
+    yield put(actions.addDependencyToCard.failure(cardId, dependsOnCardId, error));
+    return;
+  }
+
+  yield put(actions.addDependencyToCard.success(cardDependency));
+}
+
+export function* addDependencyToCurrentCard(dependsOnCardId) {
+  const { cardId } = yield select(selectors.selectPath);
+
+  yield call(addDependencyToCard, cardId, dependsOnCardId);
+}
+
+export function* handleCardDependencyCreate(cardDependency) {
+  yield put(actions.handleCardDependencyCreate(cardDependency));
+}
+
+export function* removeDependencyFromCard(id, cardId, dependsOnCardId) {
+  yield put(actions.removeDependencyFromCard(id, cardId, dependsOnCardId));
+
+  let cardDependency;
+  try {
+    ({ item: cardDependency } = yield call(
+      request,
+      api.deleteCardDependency,
+      cardId,
+      dependsOnCardId,
+    ));
+  } catch (error) {
+    yield put(actions.removeDependencyFromCard.failure(id, error));
+    return;
+  }
+
+  yield put(actions.removeDependencyFromCard.success(cardDependency));
+}
+
+export function* removeDependencyFromCurrentCard(id, dependsOnCardId) {
+  const { cardId } = yield select(selectors.selectPath);
+
+  yield call(removeDependencyFromCard, id, cardId, dependsOnCardId);
+}
+
+export function* handleCardDependencyDelete(cardDependency) {
+  yield put(actions.handleCardDependencyDelete(cardDependency));
+}
+
 export default {
   fetchCards,
   fetchCardsInCurrentList,
@@ -693,4 +748,10 @@ export default {
   fetchChildCards,
   addStoryToCurrentCard,
   removeStoryFromCurrentCard,
+  addDependencyToCard,
+  addDependencyToCurrentCard,
+  handleCardDependencyCreate,
+  removeDependencyFromCard,
+  removeDependencyFromCurrentCard,
+  handleCardDependencyDelete,
 };

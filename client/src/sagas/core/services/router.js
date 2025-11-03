@@ -6,15 +6,15 @@
 import { call, put, select, take } from 'redux-saga/effects';
 import { push } from '../../../lib/redux-router';
 
-import { logout } from './core';
-import request from '../request';
-import selectors from '../../../selectors';
 import actions from '../../../actions';
 import api from '../../../api';
-import { getAccessToken } from '../../../utils/access-token-storage';
-import mergeRecords from '../../../utils/merge-records';
 import ActionTypes from '../../../constants/ActionTypes';
 import Paths from '../../../constants/Paths';
+import selectors from '../../../selectors';
+import { getAccessToken } from '../../../utils/access-token-storage';
+import mergeRecords from '../../../utils/merge-records';
+import request from '../request';
+import { logout } from './core';
 
 export function* goTo(pathname) {
   yield put(push(pathname));
@@ -83,6 +83,8 @@ export function* handleLocationChange() {
   let cardMemberships2;
   let cardLabels1;
   let cardLabels2;
+  let cardDependencies1;
+  let cardDependencies2;
   let taskLists1;
   let taskLists2;
   let tasks1;
@@ -130,12 +132,13 @@ export function* handleLocationChange() {
                 users: users1,
                 cardMemberships: cardMemberships1,
                 cardLabels: cardLabels1,
+                cardDependencies: cardDependencies1,
                 taskLists: taskLists1,
                 tasks: tasks1,
                 attachments: attachments1,
                 customFieldGroups: customFieldGroups1,
                 customFields: customFields1,
-                customFieldValues: customFieldValues1,
+                cardDependencies: cardDependencies1,
               },
             } = yield call(request, api.getBoard, currentBoard.id, true));
           } catch {
@@ -148,60 +151,60 @@ export function* handleLocationChange() {
     case Paths.CARDS:
       ({ cardId: currentCardId, boardId: currentBoardId } = yield select(selectors.selectPath));
 
-      if (!currentCardId) {
-        yield put(actions.handleLocationChange.fetchContent());
+      yield put(actions.handleLocationChange.fetchContent());
 
-        try {
-          ({
-            item: card,
-            included: {
-              users: users1,
-              cardMemberships: cardMemberships1,
-              cardLabels: cardLabels1,
-              taskLists: taskLists1,
-              tasks: tasks1,
-              attachments: attachments1,
-              customFieldGroups: customFieldGroups1,
-              customFields: customFields1,
-              customFieldValues: customFieldValues1,
-            },
-          } = yield call(request, api.getCard, pathsMatch.params.id));
-        } catch {
-          /* empty */
-        }
+      try {
+        ({
+          item: card,
+          included: {
+            users: users1,
+            cardMemberships: cardMemberships1,
+            cardLabels: cardLabels1,
+            cardDependencies: cardDependencies1,
+            taskLists: taskLists1,
+            tasks: tasks1,
+            attachments: attachments1,
+            customFieldGroups: customFieldGroups1,
+            customFields: customFields1,
+            customFieldValues: customFieldValues1,
+          },
+        } = yield call(request, api.getCard, pathsMatch.params.id));
+      } catch {
+        /* empty */
+      }
 
-        if (card) {
-          ({ id: currentCardId } = card);
+      if (card) {
+        ({ id: currentCardId } = card);
 
-          currentBoard = yield select(selectors.selectBoardById, card.boardId);
+        currentBoard = yield select(selectors.selectBoardById, card.boardId);
 
-          if (currentBoard) {
-            ({ id: currentBoardId } = currentBoard);
+        if (currentBoard) {
+          ({ id: currentBoardId } = currentBoard);
 
-            if (currentBoard.isFetching === null) {
-              try {
-                ({
-                  item: board,
-                  included: {
-                    projects,
-                    boardMemberships,
-                    labels,
-                    lists,
-                    cards,
-                    users: users2,
-                    cardMemberships: cardMemberships2,
-                    cardLabels: cardLabels2,
-                    taskLists: taskLists2,
-                    tasks: tasks2,
-                    attachments: attachments2,
-                    customFieldGroups: customFieldGroups2,
-                    customFields: customFields2,
-                    customFieldValues: customFieldValues2,
-                  },
-                } = yield call(request, api.getBoard, card.boardId, true));
-              } catch {
-                /* empty */
-              }
+          if (currentBoard.isFetching === null) {
+            try {
+              ({
+                item: board,
+                included: {
+                  projects,
+                  boardMemberships,
+                  labels,
+                  lists,
+                  cards,
+                  users: users2,
+                  cardMemberships: cardMemberships2,
+                  cardLabels: cardLabels2,
+                  cardDependencies: cardDependencies2,
+                  taskLists: taskLists2,
+                  tasks: tasks2,
+                  attachments: attachments2,
+                  customFieldGroups: customFieldGroups2,
+                  customFields: customFields2,
+                  customFieldValues: customFieldValues2,
+                },
+              } = yield call(request, api.getBoard, card.boardId, true));
+            } catch {
+              /* empty */
             }
           }
         }
@@ -228,6 +231,8 @@ export function* handleLocationChange() {
     default:
   }
 
+  const mergedCardDependencies = mergeRecords(cardDependencies1, cardDependencies2);
+
   yield put(
     actions.handleLocationChange(
       pathsMatch.pathname,
@@ -243,6 +248,7 @@ export function* handleLocationChange() {
       mergeRecords(card && [card], cards),
       mergeRecords(cardMemberships1, cardMemberships2),
       mergeRecords(cardLabels1, cardLabels2),
+      mergedCardDependencies,
       mergeRecords(taskLists1, taskLists2),
       mergeRecords(tasks1, tasks2),
       mergeRecords(attachments1, attachments2),

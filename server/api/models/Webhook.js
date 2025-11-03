@@ -103,6 +103,9 @@ const Events = {
   CARD_MEMBERSHIP_CREATE: 'cardMembershipCreate',
   CARD_MEMBERSHIP_DELETE: 'cardMembershipDelete',
 
+  CARD_DEPENDENCY_CREATE: 'cardDependencyCreate',
+  CARD_DEPENDENCY_DELETE: 'cardDependencyDelete',
+
   COMMENT_CREATE: 'commentCreate',
   COMMENT_UPDATE: 'commentUpdate',
   COMMENT_DELETE: 'commentDelete',

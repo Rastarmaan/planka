@@ -43,6 +43,7 @@ import StopwatchChip from '../StopwatchChip';
 import Communication from './Communication';
 import CreationDetailsStep from './CreationDetailsStep';
 import CustomFieldGroups from './CustomFieldGroups';
+import DependenciesStep from './DependenciesStep';
 import MoreActionsStep from './MoreActionsStep';
 import NameField from './NameField';
 import TaskLists from './TaskLists';
@@ -60,6 +61,27 @@ const ProjectContent = React.memo(() => {
   const labelIds = useSelector(selectors.selectLabelIdsForCurrentCard);
   const attachmentIds = useSelector(selectors.selectAttachmentIdsForCurrentCard);
   const childCards = useSelector((state) => selectors.selectChildCardsByParentId(state, card?.id));
+
+  // Use singleton selectors to avoid memoization issues
+  const selectDependsOnCardsByCardId = useMemo(
+    () => selectors.makeSelectDependsOnCardsByCardId(),
+    [],
+  );
+  const selectDependentCardsByCardId = useMemo(
+    () => selectors.makeSelectDependentCardsByCardId(),
+    [],
+  );
+  const selectDependenciesByCardId = useMemo(() => selectors.makeSelectDependenciesByCardId(), []);
+
+  const dependsOnCards = useSelector((state) =>
+    card?.id ? selectDependsOnCardsByCardId(state, card.id) : [],
+  );
+  const dependentCards = useSelector((state) =>
+    card?.id ? selectDependentCardsByCardId(state, card.id) : [],
+  );
+  const dependencyRecords = useSelector((state) =>
+    card?.id ? selectDependenciesByCardId(state, card.id) : [],
+  );
 
   const childCardLists = useSelector((state) => {
     if (!childCards) return {};
@@ -428,6 +450,7 @@ const ProjectContent = React.memo(() => {
   const CreationDetailsPopup = usePopupInClosableContext(CreationDetailsStep);
   const BoardMembershipsPopup = usePopupInClosableContext(BoardMembershipsStep);
   const LabelsPopup = usePopupInClosableContext(LabelsStep);
+  const DependenciesPopup = usePopupInClosableContext(DependenciesStep);
   const ListsPopup = usePopupInClosableContext(ListsStep);
   const EditStartDatePopup = usePopupInClosableContext(EditStartDateStep);
   const EditDueDatePopup = usePopupInClosableContext(EditDueDateStep);
@@ -456,6 +479,128 @@ const ProjectContent = React.memo(() => {
       </Grid.Row>
       <Grid.Row className={styles.modalPadding}>
         <Grid.Column width={12} className={styles.contentPadding}>
+          {/* Dependencies Section */}
+          {(dependsOnCards.length > 0 || dependentCards.length > 0 || canUseLists) && (
+            <div className={styles.dependenciesSection}>
+              <div className={styles.dependenciesSectionHeader}>
+                <Icon name="sitemap" className={styles.dependenciesIcon} />
+                <span className={styles.dependenciesSectionTitle}>
+                  {t('common.dependencies', { context: 'title' })}
+                </span>
+              </div>
+
+              <div className={styles.dependenciesContainer}>
+                {(dependsOnCards.length > 0 || canUseLists) && (
+                  <div className={styles.dependencyGroup}>
+                    <div className={styles.dependencyGroupHeader}>
+                      <Icon name="arrow circle left" className={styles.groupIcon} />
+                      <span className={styles.dependencyGroupTitle}>
+                        {t('common.blockedBy', { context: 'title' })}
+                      </span>
+                      <span className={styles.dependencyCount}>({dependsOnCards.length})</span>
+                    </div>
+                    <div className={styles.dependencyCardsList}>
+                      {dependsOnCards.map((dependsOnCard) => {
+                        // Find the dependency record for this card
+                        const dependencyRecord = dependencyRecords.find(
+                          (dep) => dep.dependsOnCardId === dependsOnCard.id,
+                        );
+
+                        return (
+                          <div key={dependsOnCard.id} className={styles.dependencyCardWrapper}>
+                            <button
+                              type="button"
+                              className={classNames(styles.dependencyCardItem, {
+                                [styles.dependencyCardCompleted]: dependsOnCard.isClosed,
+                              })}
+                              onClick={() => {
+                                dispatch(push(Paths.CARDS.replace(':id', dependsOnCard.id)));
+                              }}
+                              title={dependsOnCard.name}
+                            >
+                              <Icon
+                                name={dependsOnCard.isClosed ? 'check circle' : 'circle outline'}
+                                className={styles.dependencyCardIcon}
+                              />
+                              <span className={styles.dependencyCardName}>
+                                {dependsOnCard.name}
+                              </span>
+                              <Icon
+                                name="external alternate"
+                                className={styles.dependencyCardLinkIcon}
+                              />
+                            </button>
+                            {canUseLists && dependencyRecord && (
+                              <button
+                                type="button"
+                                className={styles.dependencyRemoveButton}
+                                onClick={() => {
+                                  dispatch(
+                                    entryActions.removeDependencyFromCurrentCard(
+                                      dependencyRecord.id,
+                                      dependsOnCard.id,
+                                    ),
+                                  );
+                                }}
+                                title={t('action.remove')}
+                              >
+                                <Icon name="close" />
+                              </button>
+                            )}
+                          </div>
+                        );
+                      })}
+                    </div>
+                    {canUseLists && (
+                      <DependenciesPopup cardId={card.id}>
+                        <button type="button" className={styles.addDependencyButton}>
+                          <Icon name="plus" />
+                          <span>{t('action.addDependency')}</span>
+                        </button>
+                      </DependenciesPopup>
+                    )}
+                  </div>
+                )}
+
+                {dependentCards.length > 0 && (
+                  <div className={styles.dependencyGroup}>
+                    <div className={styles.dependencyGroupHeader}>
+                      <Icon name="arrow circle right" className={styles.groupIcon} />
+                      <span className={styles.dependencyGroupTitle}>
+                        {t('common.blocking', { context: 'title' })}
+                      </span>
+                      <span className={styles.dependencyCount}>({dependentCards.length})</span>
+                    </div>
+                    <div className={styles.dependencyCardsList}>
+                      {dependentCards.map((dependentCard) => (
+                        <button
+                          key={dependentCard.id}
+                          type="button"
+                          className={classNames(styles.dependencyCardItem, {
+                            [styles.dependencyCardCompleted]: dependentCard.isClosed,
+                          })}
+                          onClick={() => {
+                            dispatch(push(Paths.CARDS.replace(':id', dependentCard.id)));
+                          }}
+                          title={dependentCard.name}
+                        >
+                          <Icon
+                            name={dependentCard.isClosed ? 'check circle' : 'circle outline'}
+                            className={styles.dependencyCardIcon}
+                          />
+                          <span className={styles.dependencyCardName}>{dependentCard.name}</span>
+                          <Icon
+                            name="external alternate"
+                            className={styles.dependencyCardLinkIcon}
+                          />
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                )}
+              </div>
+            </div>
+          )}
           {(card.startDate ||
             card.dueDate ||
             card.stopwatch ||
@@ -553,6 +698,50 @@ const ProjectContent = React.memo(() => {
                       </button>
                     </LabelsPopup>
                   )}
+                </div>
+              )}
+              {(dependsOnCards.length > 0 || dependentCards.length > 0) && (
+                <div className={styles.attachments}>
+                  <div className={styles.text}>
+                    {t('common.dependencies', {
+                      context: 'title',
+                    })}
+                  </div>
+                  {dependsOnCards.length > 0 && (
+                    <span className={styles.attachment}>
+                      <DependenciesPopup cardId={card.id}>
+                        <button
+                          type="button"
+                          className={classNames(styles.attachment, styles.dependencyButton)}
+                        >
+                          <Icon name="arrow left" size="small" />
+                          <span>
+                            {t('common.blockedBy')} ({dependsOnCards.length})
+                          </span>
+                        </button>
+                      </DependenciesPopup>
+                    </span>
+                  )}
+                  {dependentCards.length > 0 && (
+                    <span className={styles.attachment}>
+                      <DependenciesPopup cardId={card.id}>
+                        <button
+                          type="button"
+                          className={classNames(styles.attachment, styles.dependencyButton)}
+                        >
+                          <Icon name="arrow right" size="small" />
+                          <span>
+                            {t('common.blocking')} ({dependentCards.length})
+                          </span>
+                        </button>
+                      </DependenciesPopup>
+                    </span>
+                  )}
+                  <DependenciesPopup cardId={card.id}>
+                    <button type="button" className={classNames(styles.attachment, styles.dueDate)}>
+                      <Icon name="add" size="small" className={styles.addAttachment} />
+                    </button>
+                  </DependenciesPopup>
                 </div>
               )}
               {card.startDate && (
@@ -999,6 +1188,12 @@ const ProjectContent = React.memo(() => {
                     </Button>
                   </LabelsPopup>
                 )}
+                <DependenciesPopup cardId={card.id}>
+                  <Button fluid className={classNames(styles.actionButton, styles.hidable)}>
+                    <Icon name="random" className={styles.actionIcon} />
+                    {t('common.dependencies')}
+                  </Button>
+                </DependenciesPopup>
                 {canEditStartDate && (
                   <EditStartDatePopup cardId={card.id}>
                     <Button fluid className={classNames(styles.actionButton, styles.hidable)}>

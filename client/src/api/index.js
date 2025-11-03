@@ -11,6 +11,7 @@ import baseCustomFieldGroups from './base-custom-field-groups';
 import boardMemberships from './board-memberships';
 import boardVersions from './board-versions';
 import boards from './boards';
+import cardDependencies from './card-dependencies';
 import cardLabels from './card-labels';
 import cardMemberships from './card-memberships';
 import cards from './cards';
@@ -56,6 +57,7 @@ export default {
   ...lists,
   ...cards,
   ...cardMemberships,
+  ...cardDependencies,
   ...cardLabels,
   ...taskLists,
   ...tasks,

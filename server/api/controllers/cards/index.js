@@ -255,6 +255,10 @@ module.exports = {
     const cardMemberships = await CardMembership.qm.getByCardIds(cardIds);
     const cardLabels = await CardLabel.qm.getByCardIds(cardIds);
 
+    const cardDependencies1 = await CardDependency.qm.getByCardIds(cardIds);
+    const cardDependencies2 = await CardDependency.qm.getByDependsOnCardIds(cardIds);
+    const cardDependencies = [...cardDependencies1, ...cardDependencies2];
+
     const taskLists = await TaskList.qm.getByCardIds(cardIds);
     const taskListIds = sails.helpers.utils.mapRecords(taskLists);
 
@@ -285,6 +289,7 @@ module.exports = {
       included: {
         cardMemberships,
         cardLabels,
+        cardDependencies,
         taskLists,
         tasks,
         customFieldGroups,

@@ -1,0 +1,81 @@
+.searchInput {
+  margin-bottom: 1rem !important;
+}
+
+.cardList {
+  max-height: 400px;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.cardItem {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.75rem;
+  background: #ffffff;
+  border: 1px solid #dfe1e6;
+  border-radius: 3px;
+  cursor: pointer;
+  transition: all 0.1s ease;
+
+  &:hover {
+    background: #f4f5f7;
+    border-color: #0079bf;
+  }
+
+  &.completed {
+    opacity: 0.7;
+    
+    .cardName {
+      text-decoration: line-through;
+    }
+  }
+
+  &.archived {
+    opacity: 0.5;
+    background: #f4f5f7;
+  }
+}
+
+.cardInfo {
+  flex: 1;
+  min-width: 0;
+}
+
+.cardName {
+  font-weight: 500;
+  color: #172b4d;
+  margin-bottom: 0.25rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.completedIcon {
+  color: #00875a;
+  font-size: 1rem;
+  flex-shrink: 0;
+}
+
+.cardList {
+  font-size: 0.75rem;
+  color: #6b778c;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.emptyMessage {
+  padding: 2rem 1rem;
+  text-align: center;
+  color: #6b778c;
+  font-style: italic;
+  background: #f4f5f7;
+  border-radius: 3px;
+}

@@ -10,6 +10,7 @@ import BaseCustomFieldGroup from './BaseCustomFieldGroup';
 import Board from './Board';
 import BoardMembership from './BoardMembership';
 import Card from './Card';
+import CardDependency from './CardDependency';
 import Comment from './Comment';
 import CustomField from './CustomField';
 import CustomFieldGroup from './CustomFieldGroup';
@@ -35,6 +36,7 @@ export {
   Board,
   BoardMembership,
   Card,
+  CardDependency,
   Comment,
   CustomField,
   CustomFieldGroup,
