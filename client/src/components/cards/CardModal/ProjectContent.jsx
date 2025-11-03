@@ -95,6 +95,17 @@ const ProjectContent = React.memo(() => {
     return lists;
   });
 
+  const dependencyCardLists = useSelector((state) => {
+    const lists = {};
+    [...dependsOnCards, ...dependentCards].forEach((dependencyCard) => {
+      const depList = selectListById(state, dependencyCard.listId);
+      if (depList) {
+        lists[dependencyCard.id] = depList;
+      }
+    });
+    return lists;
+  });
+
   const availableLists = useSelector(selectors.selectAvailableListsForCurrentBoard);
 
   const parentCard = useSelector((state) =>
@@ -479,7 +490,6 @@ const ProjectContent = React.memo(() => {
       </Grid.Row>
       <Grid.Row className={styles.modalPadding}>
         <Grid.Column width={12} className={styles.contentPadding}>
-          {/* Dependencies Section */}
           {(dependsOnCards.length > 0 || dependentCards.length > 0 || canUseLists) && (
             <div className={styles.dependenciesSection}>
               <div className={styles.dependenciesSectionHeader}>
@@ -501,10 +511,10 @@ const ProjectContent = React.memo(() => {
                     </div>
                     <div className={styles.dependencyCardsList}>
                       {dependsOnCards.map((dependsOnCard) => {
-                        // Find the dependency record for this card
                         const dependencyRecord = dependencyRecords.find(
                           (dep) => dep.dependsOnCardId === dependsOnCard.id,
                         );
+                        const dependsOnCardList = dependencyCardLists[dependsOnCard.id];
 
                         return (
                           <div key={dependsOnCard.id} className={styles.dependencyCardWrapper}>
@@ -524,6 +534,12 @@ const ProjectContent = React.memo(() => {
                               />
                               <span className={styles.dependencyCardName}>
                                 {dependsOnCard.name}
+                                {dependsOnCardList && (
+                                  <span className={styles.dependencyCardListName}>
+                                    {' '}
+                                    ({dependsOnCardList.name})
+                                  </span>
+                                )}
                               </span>
                               <Icon
                                 name="external alternate"
@@ -572,29 +588,41 @@ const ProjectContent = React.memo(() => {
                       <span className={styles.dependencyCount}>({dependentCards.length})</span>
                     </div>
                     <div className={styles.dependencyCardsList}>
-                      {dependentCards.map((dependentCard) => (
-                        <button
-                          key={dependentCard.id}
-                          type="button"
-                          className={classNames(styles.dependencyCardItem, {
-                            [styles.dependencyCardCompleted]: dependentCard.isClosed,
-                          })}
-                          onClick={() => {
-                            dispatch(push(Paths.CARDS.replace(':id', dependentCard.id)));
-                          }}
-                          title={dependentCard.name}
-                        >
-                          <Icon
-                            name={dependentCard.isClosed ? 'check circle' : 'circle outline'}
-                            className={styles.dependencyCardIcon}
-                          />
-                          <span className={styles.dependencyCardName}>{dependentCard.name}</span>
-                          <Icon
-                            name="external alternate"
-                            className={styles.dependencyCardLinkIcon}
-                          />
-                        </button>
-                      ))}
+                      {dependentCards.map((dependentCard) => {
+                        const dependentCardList = dependencyCardLists[dependentCard.id];
+
+                        return (
+                          <button
+                            key={dependentCard.id}
+                            type="button"
+                            className={classNames(styles.dependencyCardItem, {
+                              [styles.dependencyCardCompleted]: dependentCard.isClosed,
+                            })}
+                            onClick={() => {
+                              dispatch(push(Paths.CARDS.replace(':id', dependentCard.id)));
+                            }}
+                            title={dependentCard.name}
+                          >
+                            <Icon
+                              name={dependentCard.isClosed ? 'check circle' : 'circle outline'}
+                              className={styles.dependencyCardIcon}
+                            />
+                            <span className={styles.dependencyCardName}>
+                              {dependentCard.name}
+                              {dependentCardList && (
+                                <span className={styles.dependencyCardListName}>
+                                  {' '}
+                                  ({dependentCardList.name})
+                                </span>
+                              )}
+                            </span>
+                            <Icon
+                              name="external alternate"
+                              className={styles.dependencyCardLinkIcon}
+                            />
+                          </button>
+                        );
+                      })}
                     </div>
                   </div>
                 )}
