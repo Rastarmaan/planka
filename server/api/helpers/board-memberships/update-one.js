@@ -92,6 +92,15 @@ module.exports = {
         }),
         user: inputs.actorUser,
       });
+
+      try {
+        // eslint-disable-next-line global-require
+        const boardSync = require('../../../utils/board-sync');
+        await boardSync.syncBoardMembership(boardMembership, inputs.user, inputs.request);
+      } catch (syncError) {
+        sails.log.error('Error syncing board membership:', syncError);
+        // Continue even if sync fails
+      }
     }
 
     return boardMembership;

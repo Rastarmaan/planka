@@ -8,6 +8,7 @@ import Attachment from './Attachment';
 import BackgroundImage from './BackgroundImage';
 import BaseCustomFieldGroup from './BaseCustomFieldGroup';
 import Board from './Board';
+import BoardLink from './BoardLink';
 import BoardMembership from './BoardMembership';
 import Card from './Card';
 import CardDependency from './CardDependency';
@@ -34,6 +35,7 @@ export {
   BackgroundImage,
   BaseCustomFieldGroup,
   Board,
+  BoardLink,
   BoardMembership,
   Card,
   CardDependency,

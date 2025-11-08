@@ -219,6 +219,7 @@ export default {
       forTeamBasedProjects: 'For team-based projects.',
       fromComputer_title: 'From Computer',
       fromTrello: 'From Trello',
+      fromPlankaBoard: 'From Planka Board',
       gantt: 'Gantt',
       general: 'General',
       globalLabels_title: 'Global Labels',
@@ -295,6 +296,38 @@ export default {
       plankaUsesAppriseToSendNotificationsToOver100PopularServices:
         'PLANKA uses <1><0>Apprise</0></1> to send notifications to over 100 popular services.',
       preferences: 'Preferences',
+      sync: 'Sync',
+      importBoard: 'Import Board',
+      selectProjectForImport: 'Select Project',
+      selectBoardForImport: 'Select Board',
+      pleaseSelectBoard: 'Please select a board',
+      importOptions: 'Import Options',
+      importCards: 'Import Cards',
+      importMembers: 'Import Members',
+      importLabels: 'Import Labels',
+      syncSettings: 'Sync Settings',
+      enableSync: 'Enable Real-time Sync',
+      syncDirection: 'Sync Direction',
+      bidirectional: 'Bidirectional',
+      oneWay: 'One Way (Source → This Board)',
+      noSync: 'No Sync',
+      disabled: 'Disabled',
+      bidirectionalSyncDescription:
+        'Changes in either board will be synced to the other board automatically.',
+      oneWaySyncDescription:
+        'Changes in the source board will be synced to this board, but not vice versa.',
+      importFailed: 'Failed to import board',
+      noBoardLinks: 'No Linked Boards',
+      noBoardLinksDescription:
+        'This board is not linked to any other boards. Use the "Import Board" feature to link and sync with another board.',
+      boardLinksDescription:
+        'Linked boards can automatically sync cards, lists, members, and labels between them.',
+      linkedBoard: 'Linked Board',
+      syncing: 'Syncing',
+      paused: 'Paused',
+      confirmUnlinkBoard:
+        'Are you sure you want to unlink this board? Sync mappings will be removed.',
+      unknown: 'Unknown',
       pressPasteShortcutToAddAttachmentFromClipboard:
         'Tip: press Ctrl-V (Cmd-V on Mac) to add an attachment from the clipboard.',
       private: 'Private',

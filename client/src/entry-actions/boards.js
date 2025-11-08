@@ -108,6 +108,13 @@ const handleBoardDelete = (board) => ({
   },
 });
 
+const importBoardToCurrentProject = (data) => ({
+  type: EntryActionTypes.BOARD_IMPORT_TO_CURRENT_PROJECT,
+  payload: {
+    data,
+  },
+});
+
 export default {
   createBoardInCurrentProject,
   handleBoardCreate,
@@ -123,4 +130,5 @@ export default {
   handleBoardTransfer,
   deleteBoard,
   handleBoardDelete,
+  importBoardToCurrentProject,
 };

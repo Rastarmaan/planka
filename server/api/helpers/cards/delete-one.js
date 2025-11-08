@@ -60,6 +60,15 @@ module.exports = {
         }),
         user: inputs.actorUser,
       });
+
+      try {
+        // eslint-disable-next-line global-require
+        const boardSync = require('../../../utils/board-sync');
+        await boardSync.deleteCardFromLinkedBoards(card, inputs.request);
+      } catch (syncError) {
+        sails.log.error('Error deleting card from linked boards:', syncError);
+        // Continue even if sync fails
+      }
     }
 
     return card;

@@ -3,14 +3,14 @@
  * Licensed under the Fair Use License: https://github.com/plankanban/planka/blob/master/LICENSE.md
  */
 
-import React, { useCallback, useEffect } from 'react';
-import PropTypes from 'prop-types';
 import classNames from 'classnames';
-import { useDispatch } from 'react-redux';
+import PropTypes from 'prop-types';
+import React, { useCallback, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
+import { useDispatch } from 'react-redux';
 import { Button, Form, Icon } from 'semantic-ui-react';
-import { useDidUpdate, useToggle } from '../../../../lib/hooks';
 import { Input, Popup } from '../../../../lib/custom-ui';
+import { useDidUpdate, useToggle } from '../../../../lib/hooks';
 
 import entryActions from '../../../../entry-actions';
 import { useForm, useNestedRef, useSteps } from '../../../../hooks';
@@ -20,9 +20,10 @@ import styles from './AddStep.module.scss';
 
 const StepTypes = {
   IMPORT: 'IMPORT',
+  IMPORT_FROM_PLANKA: 'IMPORT_FROM_PLANKA',
 };
 
-const AddStep = React.memo(({ onClose }) => {
+const AddStep = React.memo(({ onClose, onOpenImportModal }) => {
   const dispatch = useDispatch();
   const [t] = useTranslation();
 
@@ -70,6 +71,13 @@ const AddStep = React.memo(({ onClose }) => {
     openStep(StepTypes.IMPORT);
   }, [openStep]);
 
+  const handleImportFromPlanka = useCallback(() => {
+    onClose();
+    if (onOpenImportModal) {
+      onOpenImportModal();
+    }
+  }, [onClose, onOpenImportModal]);
+
   useEffect(() => {
     nameFieldRef.current.focus({
       preventScroll: true,
@@ -81,7 +89,13 @@ const AddStep = React.memo(({ onClose }) => {
   }, [focusNameFieldState]);
 
   if (step && step.type === StepTypes.IMPORT) {
-    return <ImportStep onSelect={handleImportSelect} onBack={handleImportBack} />;
+    return (
+      <ImportStep
+        onSelect={handleImportSelect}
+        onBack={handleImportBack}
+        onImportFromPlanka={handleImportFromPlanka}
+      />
+    );
   }
 
   return (
@@ -125,6 +139,11 @@ const AddStep = React.memo(({ onClose }) => {
 
 AddStep.propTypes = {
   onClose: PropTypes.func.isRequired,
+  onOpenImportModal: PropTypes.func,
+};
+
+AddStep.defaultProps = {
+  onOpenImportModal: undefined,
 };
 
 export default AddStep;

@@ -104,13 +104,21 @@ export default class extends BaseModel {
 
         if (payload.cardMemberships) {
           payload.cardMemberships.forEach(({ cardId, userId }) => {
-            Card.withId(cardId).users.add(userId);
+            try {
+              Card.withId(cardId).users.add(userId);
+            } catch {
+              /* User already added, ignore */
+            }
           });
         }
 
         if (payload.cardLabels) {
           payload.cardLabels.forEach(({ cardId, labelId }) => {
-            Card.withId(cardId).labels.add(labelId);
+            try {
+              Card.withId(cardId).labels.add(labelId);
+            } catch {
+              /* Label already added, ignore */
+            }
           });
         }
 
@@ -130,13 +138,21 @@ export default class extends BaseModel {
 
         if (payload.cardMemberships) {
           payload.cardMemberships.forEach(({ cardId, userId }) => {
-            Card.withId(cardId).users.add(userId);
+            try {
+              Card.withId(cardId).users.add(userId);
+            } catch {
+              /* User already added, ignore */
+            }
           });
         }
 
         if (payload.cardLabels) {
           payload.cardLabels.forEach(({ cardId, labelId }) => {
-            Card.withId(cardId).labels.add(labelId);
+            try {
+              Card.withId(cardId).labels.add(labelId);
+            } catch {
+              /* Label already added, ignore */
+            }
           });
         }
 
@@ -179,32 +195,61 @@ export default class extends BaseModel {
         });
 
         payload.cardMemberships.forEach(({ cardId, userId }) => {
-          Card.withId(cardId).users.add(userId);
+          try {
+            Card.withId(cardId).users.add(userId);
+          } catch {
+            /* User already added, ignore */
+          }
         });
 
         payload.cardLabels.forEach(({ cardId, labelId }) => {
-          Card.withId(cardId).labels.add(labelId);
+          try {
+            Card.withId(cardId).labels.add(labelId);
+          } catch {
+            /* Label already added, ignore */
+          }
         });
 
         break;
       case ActionTypes.LABEL_FROM_CARD_CREATE:
-        Card.withId(payload.cardId).labels.add(payload.label.id);
+        try {
+          Card.withId(payload.cardId).labels.add(payload.label.id);
+        } catch {
+          /* Label already exists, ignore */
+        }
 
         break;
       case ActionTypes.LABEL_FROM_CARD_CREATE__SUCCESS: {
         const cardModel = Card.withId(payload.cardLabel.cardId);
 
-        cardModel.labels.remove(payload.localId);
-        cardModel.labels.add(payload.label.id);
+        try {
+          cardModel.labels.remove(payload.localId);
+        } catch {
+          /* Local ID not found, ignore */
+        }
+
+        try {
+          cardModel.labels.add(payload.label.id);
+        } catch {
+          /* Label already exists, ignore */
+        }
 
         break;
       }
       case ActionTypes.LABEL_FROM_CARD_CREATE__FAILURE:
-        Card.withId(payload.cardId).labels.remove(payload.localId);
+        try {
+          Card.withId(payload.cardId).labels.remove(payload.localId);
+        } catch {
+          /* Label not found, ignore */
+        }
 
         break;
       case ActionTypes.LABEL_TO_CARD_ADD:
-        Card.withId(payload.cardId).labels.add(payload.id);
+        try {
+          Card.withId(payload.cardId).labels.add(payload.id);
+        } catch {
+          /* Label already added, ignore */
+        }
 
         break;
       case ActionTypes.LABEL_TO_CARD_ADD__SUCCESS:
@@ -285,11 +330,19 @@ export default class extends BaseModel {
         });
 
         payload.cardMemberships.forEach(({ cardId, userId }) => {
-          Card.withId(cardId).users.add(userId);
+          try {
+            Card.withId(cardId).users.add(userId);
+          } catch {
+            /* User already added, ignore */
+          }
         });
 
         payload.cardLabels.forEach(({ cardId, labelId }) => {
-          Card.withId(cardId).labels.add(labelId);
+          try {
+            Card.withId(cardId).labels.add(labelId);
+          } catch {
+            /* Label already added, ignore */
+          }
         });
 
         break;
@@ -311,11 +364,19 @@ export default class extends BaseModel {
         Card.upsert(payload.card);
 
         payload.cardMemberships.forEach(({ cardId, userId }) => {
-          Card.withId(cardId).users.add(userId);
+          try {
+            Card.withId(cardId).users.add(userId);
+          } catch {
+            /* User already added, ignore */
+          }
         });
 
         payload.cardLabels.forEach(({ cardId, labelId }) => {
-          Card.withId(cardId).labels.add(labelId);
+          try {
+            Card.withId(cardId).labels.add(labelId);
+          } catch {
+            /* Label already added, ignore */
+          }
         });
 
         break;
@@ -372,13 +433,21 @@ export default class extends BaseModel {
 
         if (payload.cardMemberships) {
           payload.cardMemberships.forEach(({ cardId, userId }) => {
-            Card.withId(cardId).users.add(userId);
+            try {
+              Card.withId(cardId).users.add(userId);
+            } catch {
+              /* User already added, ignore */
+            }
           });
         }
 
         if (payload.cardLabels) {
           payload.cardLabels.forEach(({ cardId, labelId }) => {
-            Card.withId(cardId).labels.add(labelId);
+            try {
+              Card.withId(cardId).labels.add(labelId);
+            } catch {
+              /* Label already added, ignore */
+            }
           });
         }
 
@@ -593,11 +662,19 @@ export default class extends BaseModel {
     });
 
     this.users.toRefArray().forEach((user) => {
-      cardModel.users.add(user.id);
+      try {
+        cardModel.users.add(user.id);
+      } catch {
+        /* User already added, ignore */
+      }
     });
 
     this.labels.toRefArray().forEach((label) => {
-      cardModel.labels.add(label.id);
+      try {
+        cardModel.labels.add(label.id);
+      } catch {
+        /* Label already added, ignore */
+      }
     });
 
     this.taskLists.toModelArray().forEach((taskListModel) => {

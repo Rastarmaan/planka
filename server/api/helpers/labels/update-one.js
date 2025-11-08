@@ -3,6 +3,8 @@
  * Licensed under the Fair Use License: https://github.com/plankanban/planka/blob/master/LICENSE.md
  */
 
+const boardSync = require('../../../utils/board-sync');
+
 module.exports = {
   inputs: {
     record: {
@@ -72,6 +74,12 @@ module.exports = {
     const label = await Label.qm.updateOne(inputs.record.id, values);
 
     if (label) {
+      try {
+        await boardSync.syncLabel(label, inputs.request);
+      } catch (error) {
+        sails.log.error('Error syncing label to linked boards:', error);
+      }
+
       sails.sockets.broadcast(
         `board:${label.boardId}`,
         'labelUpdate',

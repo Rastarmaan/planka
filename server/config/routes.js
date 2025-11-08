@@ -117,11 +117,16 @@ module.exports.routes = {
   'DELETE /api/projects/:projectId/versions/:versionId': 'project-versions/delete',
 
   'POST /api/projects/:projectId/boards': 'boards/create',
+  'POST /api/projects/:projectId/boards/import': 'projects/import-board',
   'GET /api/boards/:id': 'boards/show',
   'PATCH /api/boards/:id': 'boards/update',
   'PATCH /api/boards/:id/transfer': 'boards/transfer',
   'POST /api/boards/:boardId/duplicate': 'boards/duplicate',
   'DELETE /api/boards/:id': 'boards/delete',
+
+  'GET /api/boards/:boardId/links': 'board-links/show',
+  'PATCH /api/board-links/:id': 'board-links/update',
+  'DELETE /api/board-links/:id': 'board-links/delete',
 
   'POST /api/boards/:boardId/board-memberships': 'board-memberships/create',
   'PATCH /api/board-memberships/:id': 'board-memberships/update',

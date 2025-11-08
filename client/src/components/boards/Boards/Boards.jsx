@@ -3,23 +3,35 @@
  * Licensed under the Fair Use License: https://github.com/plankanban/planka/blob/master/LICENSE.md
  */
 
-import React, { useCallback, useRef } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
+import React, { useCallback, useRef, useState } from 'react';
 import { DragDropContext, Droppable } from 'react-beautiful-dnd';
+import { useDispatch, useSelector } from 'react-redux';
 import { Button } from 'semantic-ui-react';
 import { closePopup, usePopup } from '../../../lib/popup';
 
-import selectors from '../../../selectors';
-import entryActions from '../../../entry-actions';
 import DroppableTypes from '../../../constants/DroppableTypes';
-import Item from './Item';
+import entryActions from '../../../entry-actions';
+import selectors from '../../../selectors';
+import {
+  selectBoardIdsForCurrentProject,
+  selectAllProjectsForImport,
+} from '../../../selectors/projects';
+import ImportBoardModal from '../ImportBoardModal';
 import AddStep from './AddStep';
+import Item from './Item';
 
-import styles from './Boards.module.scss';
 import globalStyles from '../../../styles.module.scss';
+import styles from './Boards.module.scss';
 
 const Boards = React.memo(() => {
-  const boardIds = useSelector(selectors.selectBoardIdsForCurrentProject);
+  const boardIds = useSelector(selectBoardIdsForCurrentProject);
+  const { projectId: currentProjectId, boardId: currentBoardId } = useSelector(
+    selectors.selectPath,
+  );
+
+  const projects = useSelector(selectAllProjectsForImport);
+
+  const [isImportModalOpen, setIsImportModalOpen] = useState(false);
 
   const canAdd = useSelector((state) => {
     const isEditModeEnabled = selectors.selectIsEditModeEnabled(state); // TODO: move out?
@@ -59,31 +71,58 @@ const Boards = React.memo(() => {
     });
   }, []);
 
+  const handleOpenImportModal = useCallback(() => {
+    setIsImportModalOpen(true);
+    closePopup();
+  }, []);
+
+  const handleCloseImportModal = useCallback(() => {
+    setIsImportModalOpen(false);
+  }, []);
+
+  const handleImport = useCallback(
+    async (importData) => {
+      dispatch(entryActions.importBoardToCurrentProject(importData));
+    },
+    [dispatch],
+  );
+
   const AddPopup = usePopup(AddStep);
 
   return (
-    <div className={styles.wrapper} onWheel={handleWheel}>
-      <div ref={tabsWrapperRef} className={styles.tabsWrapper}>
-        <DragDropContext onDragStart={handleDragStart} onDragEnd={handleDragEnd}>
-          <Droppable droppableId="boards" type={DroppableTypes.BOARD} direction="horizontal">
-            {({ innerRef, droppableProps, placeholder }) => (
-              // eslint-disable-next-line react/jsx-props-no-spreading
-              <div {...droppableProps} ref={innerRef} className={styles.tabs}>
-                {boardIds.map((boardId, index) => (
-                  <Item key={boardId} id={boardId} index={index} />
-                ))}
-                {placeholder}
-                {canAdd && (
-                  <AddPopup>
-                    <Button icon="plus" className={styles.addButton} />
-                  </AddPopup>
-                )}
-              </div>
-            )}
-          </Droppable>
-        </DragDropContext>
+    <>
+      <div className={styles.wrapper} onWheel={handleWheel}>
+        <div ref={tabsWrapperRef} className={styles.tabsWrapper}>
+          <DragDropContext onDragStart={handleDragStart} onDragEnd={handleDragEnd}>
+            <Droppable droppableId="boards" type={DroppableTypes.BOARD} direction="horizontal">
+              {({ innerRef, droppableProps, placeholder }) => (
+                // eslint-disable-next-line react/jsx-props-no-spreading
+                <div {...droppableProps} ref={innerRef} className={styles.tabs}>
+                  {boardIds.map((boardId, index) => (
+                    <Item key={boardId} id={boardId} index={index} />
+                  ))}
+                  {placeholder}
+                  {canAdd && (
+                    <AddPopup onOpenImportModal={handleOpenImportModal}>
+                      <Button icon="plus" className={styles.addButton} />
+                    </AddPopup>
+                  )}
+                </div>
+              )}
+            </Droppable>
+          </DragDropContext>
+        </div>
       </div>
-    </div>
+      {isImportModalOpen && (
+        <ImportBoardModal
+          projects={projects}
+          currentProjectId={currentProjectId || ''}
+          currentBoardId={currentBoardId || ''}
+          onImport={handleImport}
+          onClose={handleCloseImportModal}
+        />
+      )}
+    </>
   );
 });
 

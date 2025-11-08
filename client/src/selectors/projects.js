@@ -6,9 +6,9 @@
 import { createSelector } from 'redux-orm';
 
 import orm from '../orm';
+import { isLocalId } from '../utils/local-id';
 import { selectPath } from './router';
 import { selectCurrentUserId } from './users';
-import { isLocalId } from '../utils/local-id';
 
 export const makeSelectProjectById = () =>
   createSelector(
@@ -310,6 +310,32 @@ export const selectIsCurrentUserManagerForCurrentProject = createSelector(
   },
 );
 
+export const selectAllProjectsForImport = createSelector(
+  orm,
+  (state) => selectCurrentUserId(state),
+  ({ Project, User }, currentUserId) => {
+    const currentUserModel = User.withId(currentUserId);
+
+    if (!currentUserModel) {
+      return [];
+    }
+
+    return Project.all()
+      .toModelArray()
+      .filter((projectModel) => projectModel.isAvailableForUser(currentUserModel))
+      .map((projectModel) => ({
+        id: projectModel.id,
+        name: projectModel.name,
+        boards: projectModel
+          .getBoardsModelArrayAvailableForUser(currentUserModel)
+          .map((boardModel) => ({
+            id: boardModel.id,
+            name: boardModel.name,
+          })),
+      }));
+  },
+);
+
 export default {
   makeSelectProjectById,
   selectProjectById,
@@ -331,4 +357,5 @@ export default {
   selectBaseCustomFieldGroupsForCurrentProject,
   selectBoardIdsForCurrentProject,
   selectIsCurrentUserManagerForCurrentProject,
+  selectAllProjectsForImport,
 };
