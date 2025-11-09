@@ -5,12 +5,12 @@
 
 import { call } from 'redux-saga/effects';
 
-import { fetchBoardByCurrentPath } from './boards';
-import request from '../request';
 import api from '../../../api';
+import { UserRoles } from '../../../constants/Enums';
 import mergeRecords from '../../../utils/merge-records';
 import { isUserAdminOrProjectOwner } from '../../../utils/record-helpers';
-import { UserRoles } from '../../../constants/Enums';
+import request from '../request';
+import { fetchBoardByCurrentPath } from './boards';
 
 export function* fetchCore() {
   const {
@@ -32,6 +32,8 @@ export function* fetchCore() {
     items: projects1,
     included: {
       projectManagers,
+      projectCategories,
+      projectCategoryAssignments,
       backgroundImages,
       baseCustomFieldGroups,
       boards,
@@ -109,6 +111,8 @@ export function* fetchCore() {
     board,
     webhooks,
     projectManagers,
+    projectCategories,
+    projectCategoryAssignments,
     backgroundImages,
     baseCustomFieldGroups,
     boards,

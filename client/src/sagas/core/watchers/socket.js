@@ -6,10 +6,11 @@
 import { eventChannel } from 'redux-saga';
 import { all, call, cancelled, put, take, takeEvery } from 'redux-saga/effects';
 
-import services from '../services';
-import entryActions from '../../../entry-actions';
+import actions from '../../../actions';
 import api, { socket } from '../../../api';
 import EntryActionTypes from '../../../constants/EntryActionTypes';
+import entryActions from '../../../entry-actions';
+import services from '../services';
 
 const createSocketEventsChannel = () =>
   eventChannel((emit) => {
@@ -41,8 +42,8 @@ const createSocketEventsChannel = () =>
       emit(entryActions.handleUserDelete(item));
     };
 
-    const handleProjectCreate = ({ item }) => {
-      emit(entryActions.handleProjectCreate(item));
+    const handleProjectCreate = ({ item, included }) => {
+      emit(entryActions.handleProjectCreate(item, included));
     };
 
     const handleProjectUpdate = ({ item }) => {
@@ -51,6 +52,18 @@ const createSocketEventsChannel = () =>
 
     const handleProjectDelete = ({ item }) => {
       emit(entryActions.handleProjectDelete(item));
+    };
+
+    const handleProjectCategoryCreate = ({ item }) => {
+      emit(actions.handleProjectCategoryCreate(item));
+    };
+
+    const handleProjectCategoryUpdate = ({ item }) => {
+      emit(actions.handleProjectCategoryUpdate(item));
+    };
+
+    const handleProjectCategoryDelete = ({ item }) => {
+      emit(actions.handleProjectCategoryDelete(item));
     };
 
     const handleProjectManagerCreate = ({ item, included: { users } }) => {
@@ -131,6 +144,18 @@ const createSocketEventsChannel = () =>
 
     const handleLabelDelete = ({ item }) => {
       emit(entryActions.handleLabelDelete(item));
+    };
+
+    const handleGlobalLabelCreate = ({ item }) => {
+      emit(entryActions.handleGlobalLabelCreate(item));
+    };
+
+    const handleGlobalLabelUpdate = ({ item }) => {
+      emit(entryActions.handleGlobalLabelUpdate(item));
+    };
+
+    const handleGlobalLabelDelete = ({ item }) => {
+      emit(entryActions.handleGlobalLabelDelete(item));
     };
 
     const handleCardsUpdate = api.makeHandleCardsUpdate(
@@ -288,6 +313,10 @@ const createSocketEventsChannel = () =>
     socket.on('projectUpdate', handleProjectUpdate);
     socket.on('projectDelete', handleProjectDelete);
 
+    socket.on('projectCategoryCreate', handleProjectCategoryCreate);
+    socket.on('projectCategoryUpdate', handleProjectCategoryUpdate);
+    socket.on('projectCategoryDelete', handleProjectCategoryDelete);
+
     socket.on('projectManagerCreate', handleProjectManagerCreate);
     socket.on('projectManagerDelete', handleProjectManagerDelete);
 
@@ -314,6 +343,10 @@ const createSocketEventsChannel = () =>
     socket.on('labelCreate', handleLabelCreate);
     socket.on('labelUpdate', handleLabelUpdate);
     socket.on('labelDelete', handleLabelDelete);
+
+    socket.on('globalLabelCreate', handleGlobalLabelCreate);
+    socket.on('globalLabelUpdate', handleGlobalLabelUpdate);
+    socket.on('globalLabelDelete', handleGlobalLabelDelete);
 
     socket.on('cardsUpdate', handleCardsUpdate);
     socket.on('cardCreate', handleCardCreate);
@@ -404,6 +437,10 @@ const createSocketEventsChannel = () =>
       socket.off('labelCreate', handleLabelCreate);
       socket.off('labelUpdate', handleLabelUpdate);
       socket.off('labelDelete', handleLabelDelete);
+
+      socket.off('globalLabelCreate', handleGlobalLabelCreate);
+      socket.off('globalLabelUpdate', handleGlobalLabelUpdate);
+      socket.off('globalLabelDelete', handleGlobalLabelDelete);
 
       socket.off('cardsUpdate', handleCardsUpdate);
       socket.off('cardCreate', handleCardCreate);

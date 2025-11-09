@@ -4,14 +4,16 @@
  */
 
 import classNames from 'classnames';
-import React, { useCallback, useContext, useMemo, useState } from 'react';
+import React, { useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { shallowEqual, useDispatch, useSelector } from 'react-redux';
-import { Button, Checkbox, Grid, Icon } from 'semantic-ui-react';
+import { Button, Checkbox, Dropdown, Grid, Icon } from 'semantic-ui-react';
 import { useDidUpdate } from '../../../lib/hooks';
+import { push } from '../../../lib/redux-router';
 
 import { BoardMembershipRoles, CardTypes, ListTypes } from '../../../constants/Enums';
 import { CardTypeIcons } from '../../../constants/Icons';
+import Paths from '../../../constants/Paths';
 import { ClosableContext } from '../../../contexts';
 import entryActions from '../../../entry-actions';
 import { usePopupInClosableContext } from '../../../hooks';
@@ -29,6 +31,7 @@ import LabelChip from '../../labels/LabelChip';
 import LabelsStep from '../../labels/LabelsStep';
 import ListsStep from '../../lists/ListsStep';
 import StoriesPopup from '../../stories/StoriesPopup';
+import SubTasksPopup from '../../sub-tasks/SubTasksPopup';
 import AddTaskListStep from '../../task-lists/AddTaskListStep';
 import UserAvatar from '../../users/UserAvatar';
 import DueDateChip from '../DueDateChip';
@@ -40,6 +43,7 @@ import StopwatchChip from '../StopwatchChip';
 import Communication from './Communication';
 import CreationDetailsStep from './CreationDetailsStep';
 import CustomFieldGroups from './CustomFieldGroups';
+import DependenciesStep from './DependenciesStep';
 import MoreActionsStep from './MoreActionsStep';
 import NameField from './NameField';
 import TaskLists from './TaskLists';
@@ -56,6 +60,53 @@ const ProjectContent = React.memo(() => {
   const userIds = useSelector(selectors.selectUserIdsForCurrentCard);
   const labelIds = useSelector(selectors.selectLabelIdsForCurrentCard);
   const attachmentIds = useSelector(selectors.selectAttachmentIdsForCurrentCard);
+  const childCards = useSelector((state) => selectors.selectChildCardsByParentId(state, card?.id));
+
+  // Use singleton selectors to avoid memoization issues
+  const selectDependsOnCardsByCardId = useMemo(
+    () => selectors.makeSelectDependsOnCardsByCardId(),
+    [],
+  );
+  const selectDependentCardsByCardId = useMemo(
+    () => selectors.makeSelectDependentCardsByCardId(),
+    [],
+  );
+  const selectDependenciesByCardId = useMemo(() => selectors.makeSelectDependenciesByCardId(), []);
+
+  const dependsOnCards = useSelector((state) =>
+    card?.id ? selectDependsOnCardsByCardId(state, card.id) : [],
+  );
+  const dependentCards = useSelector((state) =>
+    card?.id ? selectDependentCardsByCardId(state, card.id) : [],
+  );
+  const dependencyRecords = useSelector((state) =>
+    card?.id ? selectDependenciesByCardId(state, card.id) : [],
+  );
+
+  const childCardLists = useSelector((state) => {
+    if (!childCards) return {};
+    const lists = {};
+    childCards.forEach((childCard) => {
+      const childList = selectListById(state, childCard.listId);
+      if (childList) {
+        lists[childCard.id] = childList;
+      }
+    });
+    return lists;
+  });
+
+  const dependencyCardLists = useSelector((state) => {
+    const lists = {};
+    [...dependsOnCards, ...dependentCards].forEach((dependencyCard) => {
+      const depList = selectListById(state, dependencyCard.listId);
+      if (depList) {
+        lists[dependencyCard.id] = depList;
+      }
+    });
+    return lists;
+  });
+
+  const availableLists = useSelector(selectors.selectAvailableListsForCurrentBoard);
 
   const parentCard = useSelector((state) =>
     card.parentCardId ? selectCardById(state, card.parentCardId) : null,
@@ -157,6 +208,25 @@ const ProjectContent = React.memo(() => {
   const [isEditDescriptionOpened, setIsEditDescriptionOpened] = useState(false);
   const [, , setIsClosableActive] = useContext(ClosableContext);
 
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 5;
+
+  const [newSubTaskName, setNewSubTaskName] = useState('');
+  const [isCreatingSubTask, setIsCreatingSubTask] = useState(false);
+  const inlineInputRef = useRef(null);
+
+  const paginatedChildCards = useMemo(() => {
+    if (!childCards) return [];
+    const startIndex = (currentPage - 1) * itemsPerPage;
+    const endIndex = startIndex + itemsPerPage;
+    return childCards.slice(startIndex, endIndex);
+  }, [childCards, currentPage, itemsPerPage]);
+
+  const totalPages = useMemo(() => {
+    if (!childCards) return 0;
+    return Math.ceil(childCards.length / itemsPerPage);
+  }, [childCards, itemsPerPage]);
+
   const handleListSelect = useCallback(
     (listId) => {
       dispatch(entryActions.moveCurrentCard(listId));
@@ -234,6 +304,24 @@ const ProjectContent = React.memo(() => {
     [dispatch],
   );
 
+  const handlePageChange = useCallback((page) => {
+    setCurrentPage(page);
+  }, []);
+
+  const handleChildCardListChange = useCallback(
+    (childCardId, newListId) => {
+      dispatch(entryActions.moveCard(childCardId, newListId));
+    },
+    [dispatch],
+  );
+
+  const handleChildCardClick = useCallback(
+    (childCardId) => {
+      dispatch(push(Paths.CARDS.replace(':id', childCardId)));
+    },
+    [dispatch],
+  );
+
   const handleStorySelect = useCallback(
     (storyId) => {
       dispatch(entryActions.addStoryToCurrentCard(storyId));
@@ -244,6 +332,65 @@ const ProjectContent = React.memo(() => {
   const handleRemoveParentStory = useCallback(() => {
     dispatch(entryActions.removeStoryFromCurrentCard());
   }, [dispatch]);
+
+  const handleTaskSelect = useCallback(
+    (taskId) => {
+      dispatch(entryActions.addStoryToCurrentCard(taskId));
+    },
+    [dispatch],
+  );
+
+  const handleCreateSubTask = useCallback(
+    (name) => {
+      dispatch(
+        entryActions.createCard(card.listId, {
+          name,
+          type: CardTypes.PROJECT,
+          parentCardId: card.id,
+        }),
+      );
+    },
+    [card.id, card.listId, dispatch],
+  );
+
+  const handleNewSubTaskNameChange = useCallback((e) => {
+    setNewSubTaskName(e.target.value);
+  }, []);
+
+  const handleCreateInlineSubTask = useCallback(() => {
+    if (newSubTaskName.trim()) {
+      handleCreateSubTask(newSubTaskName.trim());
+      setNewSubTaskName('');
+      setIsCreatingSubTask(false);
+    }
+  }, [newSubTaskName, handleCreateSubTask]);
+
+  const handleSubTaskKeyDown = useCallback(
+    (e) => {
+      if (e.key === 'Enter') {
+        e.preventDefault();
+        handleCreateInlineSubTask();
+      } else if (e.key === 'Escape') {
+        setNewSubTaskName('');
+        setIsCreatingSubTask(false);
+      }
+    },
+    [handleCreateInlineSubTask],
+  );
+
+  const handleAddSubTaskClick = useCallback(() => {
+    setIsCreatingSubTask(true);
+    setTimeout(() => {
+      if (inlineInputRef.current) {
+        inlineInputRef.current.focus();
+      }
+    }, 0);
+  }, []);
+
+  const handleCancelInlineSubTask = useCallback(() => {
+    setNewSubTaskName('');
+    setIsCreatingSubTask(false);
+  }, []);
 
   const handleLabelSelect = useCallback(
     (labelId) => {
@@ -305,9 +452,16 @@ const ProjectContent = React.memo(() => {
     setIsClosableActive(isEditDescriptionOpened);
   }, [isEditDescriptionOpened]);
 
+  useEffect(() => {
+    if (card?.id) {
+      dispatch(entryActions.fetchChildCards(card.id));
+    }
+  }, [card?.id, dispatch]);
+
   const CreationDetailsPopup = usePopupInClosableContext(CreationDetailsStep);
   const BoardMembershipsPopup = usePopupInClosableContext(BoardMembershipsStep);
   const LabelsPopup = usePopupInClosableContext(LabelsStep);
+  const DependenciesPopup = usePopupInClosableContext(DependenciesStep);
   const ListsPopup = usePopupInClosableContext(ListsStep);
   const EditStartDatePopup = usePopupInClosableContext(EditStartDateStep);
   const EditDueDatePopup = usePopupInClosableContext(EditDueDateStep);
@@ -336,6 +490,145 @@ const ProjectContent = React.memo(() => {
       </Grid.Row>
       <Grid.Row className={styles.modalPadding}>
         <Grid.Column width={12} className={styles.contentPadding}>
+          {(dependsOnCards.length > 0 || dependentCards.length > 0 || canUseLists) && (
+            <div className={styles.dependenciesSection}>
+              <div className={styles.dependenciesSectionHeader}>
+                <Icon name="sitemap" className={styles.dependenciesIcon} />
+                <span className={styles.dependenciesSectionTitle}>
+                  {t('common.dependencies', { context: 'title' })}
+                </span>
+              </div>
+
+              <div className={styles.dependenciesContainer}>
+                {(dependsOnCards.length > 0 || canUseLists) && (
+                  <div className={styles.dependencyGroup}>
+                    <div className={styles.dependencyGroupHeader}>
+                      <Icon name="arrow circle left" className={styles.groupIcon} />
+                      <span className={styles.dependencyGroupTitle}>
+                        {t('common.blockedBy', { context: 'title' })}
+                      </span>
+                      <span className={styles.dependencyCount}>({dependsOnCards.length})</span>
+                    </div>
+                    <div className={styles.dependencyCardsList}>
+                      {dependsOnCards.map((dependsOnCard) => {
+                        const dependencyRecord = dependencyRecords.find(
+                          (dep) => dep.dependsOnCardId === dependsOnCard.id,
+                        );
+                        const dependsOnCardList = dependencyCardLists[dependsOnCard.id];
+
+                        return (
+                          <div key={dependsOnCard.id} className={styles.dependencyCardWrapper}>
+                            <button
+                              type="button"
+                              className={classNames(styles.dependencyCardItem, {
+                                [styles.dependencyCardCompleted]: dependsOnCard.isClosed,
+                              })}
+                              onClick={() => {
+                                dispatch(push(Paths.CARDS.replace(':id', dependsOnCard.id)));
+                              }}
+                              title={dependsOnCard.name}
+                            >
+                              <Icon
+                                name={dependsOnCard.isClosed ? 'check circle' : 'circle outline'}
+                                className={styles.dependencyCardIcon}
+                              />
+                              <span className={styles.dependencyCardName}>
+                                {dependsOnCard.name}
+                                {dependsOnCardList && (
+                                  <span className={styles.dependencyCardListName}>
+                                    {' '}
+                                    ({dependsOnCardList.name})
+                                  </span>
+                                )}
+                              </span>
+                              <Icon
+                                name="external alternate"
+                                className={styles.dependencyCardLinkIcon}
+                              />
+                            </button>
+                            {canUseLists && dependencyRecord && (
+                              <button
+                                type="button"
+                                className={styles.dependencyRemoveButton}
+                                onClick={() => {
+                                  dispatch(
+                                    entryActions.removeDependencyFromCurrentCard(
+                                      dependencyRecord.id,
+                                      dependsOnCard.id,
+                                    ),
+                                  );
+                                }}
+                                title={t('action.remove')}
+                              >
+                                <Icon name="close" />
+                              </button>
+                            )}
+                          </div>
+                        );
+                      })}
+                    </div>
+                    {canUseLists && (
+                      <DependenciesPopup cardId={card.id}>
+                        <button type="button" className={styles.addDependencyButton}>
+                          <Icon name="plus" />
+                          <span>{t('action.addDependency')}</span>
+                        </button>
+                      </DependenciesPopup>
+                    )}
+                  </div>
+                )}
+
+                {dependentCards.length > 0 && (
+                  <div className={styles.dependencyGroup}>
+                    <div className={styles.dependencyGroupHeader}>
+                      <Icon name="arrow circle right" className={styles.groupIcon} />
+                      <span className={styles.dependencyGroupTitle}>
+                        {t('common.blocking', { context: 'title' })}
+                      </span>
+                      <span className={styles.dependencyCount}>({dependentCards.length})</span>
+                    </div>
+                    <div className={styles.dependencyCardsList}>
+                      {dependentCards.map((dependentCard) => {
+                        const dependentCardList = dependencyCardLists[dependentCard.id];
+
+                        return (
+                          <button
+                            key={dependentCard.id}
+                            type="button"
+                            className={classNames(styles.dependencyCardItem, {
+                              [styles.dependencyCardCompleted]: dependentCard.isClosed,
+                            })}
+                            onClick={() => {
+                              dispatch(push(Paths.CARDS.replace(':id', dependentCard.id)));
+                            }}
+                            title={dependentCard.name}
+                          >
+                            <Icon
+                              name={dependentCard.isClosed ? 'check circle' : 'circle outline'}
+                              className={styles.dependencyCardIcon}
+                            />
+                            <span className={styles.dependencyCardName}>
+                              {dependentCard.name}
+                              {dependentCardList && (
+                                <span className={styles.dependencyCardListName}>
+                                  {' '}
+                                  ({dependentCardList.name})
+                                </span>
+                              )}
+                            </span>
+                            <Icon
+                              name="external alternate"
+                              className={styles.dependencyCardLinkIcon}
+                            />
+                          </button>
+                        );
+                      })}
+                    </div>
+                  </div>
+                )}
+              </div>
+            </div>
+          )}
           {(card.startDate ||
             card.dueDate ||
             card.stopwatch ||
@@ -433,6 +726,50 @@ const ProjectContent = React.memo(() => {
                       </button>
                     </LabelsPopup>
                   )}
+                </div>
+              )}
+              {(dependsOnCards.length > 0 || dependentCards.length > 0) && (
+                <div className={styles.attachments}>
+                  <div className={styles.text}>
+                    {t('common.dependencies', {
+                      context: 'title',
+                    })}
+                  </div>
+                  {dependsOnCards.length > 0 && (
+                    <span className={styles.attachment}>
+                      <DependenciesPopup cardId={card.id}>
+                        <button
+                          type="button"
+                          className={classNames(styles.attachment, styles.dependencyButton)}
+                        >
+                          <Icon name="arrow left" size="small" />
+                          <span>
+                            {t('common.blockedBy')} ({dependsOnCards.length})
+                          </span>
+                        </button>
+                      </DependenciesPopup>
+                    </span>
+                  )}
+                  {dependentCards.length > 0 && (
+                    <span className={styles.attachment}>
+                      <DependenciesPopup cardId={card.id}>
+                        <button
+                          type="button"
+                          className={classNames(styles.attachment, styles.dependencyButton)}
+                        >
+                          <Icon name="arrow right" size="small" />
+                          <span>
+                            {t('common.blocking')} ({dependentCards.length})
+                          </span>
+                        </button>
+                      </DependenciesPopup>
+                    </span>
+                  )}
+                  <DependenciesPopup cardId={card.id}>
+                    <button type="button" className={classNames(styles.attachment, styles.dueDate)}>
+                      <Icon name="add" size="small" className={styles.addAttachment} />
+                    </button>
+                  </DependenciesPopup>
                 </div>
               )}
               {card.startDate && (
@@ -573,6 +910,176 @@ const ProjectContent = React.memo(() => {
           )}
           <CustomFieldGroups />
           <TaskLists />
+          <div className={styles.contentModule}>
+            <div className={styles.moduleWrapper}>
+              <Icon name="tasks" className={styles.moduleIcon} />
+              <div className={styles.moduleHeader}>{t('common.subTasks')}</div>
+              <div className={styles.childTasksSection}>
+                {childCards && childCards.length > 0 && (
+                  <>
+                    <div className={styles.tableHeader}>
+                      <div className={styles.tableHeaderCell}>{t('common.taskName')}</div>
+                      <div className={styles.tableHeaderCell}>{t('common.list')}</div>
+                      <div className={styles.tableHeaderCell}>{t('common.action')}</div>
+                    </div>
+
+                    <div className={styles.tableBody}>
+                      {paginatedChildCards.map((childCard) => {
+                        const childCardList = childCardLists[childCard.id];
+
+                        return (
+                          <div
+                            key={childCard.id}
+                            className={styles.tableRow}
+                            onClick={() => handleChildCardClick(childCard.id)}
+                            role="button"
+                            tabIndex={0}
+                            onKeyDown={(e) => {
+                              if (e.key === 'Enter' || e.key === ' ') {
+                                handleChildCardClick(childCard.id);
+                              }
+                            }}
+                          >
+                            <div className={styles.tableCell}>
+                              <Icon name="tasks" className={styles.taskIcon} />
+                              <span className={styles.taskName}>{childCard.name}</span>
+                            </div>
+                            <div className={styles.tableCell}>
+                              {canUseLists ? (
+                                <Dropdown
+                                  value={childCard.listId}
+                                  options={availableLists.map((availableList) => ({
+                                    key: availableList.id,
+                                    value: availableList.id,
+                                    text: availableList.name,
+                                  }))}
+                                  onChange={(e, { value }) => {
+                                    e.stopPropagation();
+                                    handleChildCardListChange(childCard.id, value);
+                                  }}
+                                  onClick={(e) => e.stopPropagation()}
+                                  selection
+                                  compact
+                                  className={styles.listDropdown}
+                                />
+                              ) : (
+                                <span className={styles.listName}>
+                                  {childCardList?.name || '-'}
+                                </span>
+                              )}
+                            </div>
+                            <div className={styles.tableCell}>
+                              <span
+                                className={classNames(styles.statusBadge, {
+                                  [styles.statusCompleted]: childCard.isCompleted,
+                                  [styles.statusOpen]: !childCard.isCompleted,
+                                })}
+                              >
+                                {childCard.isCompleted ? t('common.completed') : t('common.open')}
+                              </span>
+                            </div>
+                          </div>
+                        );
+                      })}
+                    </div>
+
+                    {totalPages > 1 && (
+                      <div className={styles.paginationContainer}>
+                        <div className={styles.paginationInfo}>
+                          {t('common.showing')} {(currentPage - 1) * itemsPerPage + 1}-
+                          {Math.min(currentPage * itemsPerPage, childCards.length)} {t('common.of')}{' '}
+                          {childCards.length}
+                        </div>
+                        <div className={styles.paginationControls}>
+                          <button
+                            className={classNames(styles.paginationButton, {
+                              [styles.disabled]: currentPage === 1,
+                            })}
+                            onClick={() => handlePageChange(currentPage - 1)}
+                            disabled={currentPage === 1}
+                            type="button"
+                          >
+                            <Icon name="chevron left" />
+                          </button>
+
+                          {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
+                            <button
+                              key={page}
+                              className={classNames(styles.paginationButton, styles.pageNumber, {
+                                [styles.active]: page === currentPage,
+                              })}
+                              onClick={() => handlePageChange(page)}
+                              type="button"
+                            >
+                              {page}
+                            </button>
+                          ))}
+
+                          <button
+                            className={classNames(styles.paginationButton, {
+                              [styles.disabled]: currentPage === totalPages,
+                            })}
+                            onClick={() => handlePageChange(currentPage + 1)}
+                            disabled={currentPage === totalPages}
+                            type="button"
+                          >
+                            <Icon name="chevron right" />
+                          </button>
+                        </div>
+                      </div>
+                    )}
+                  </>
+                )}
+
+                {isCreatingSubTask ? (
+                  <div className={styles.inlineCreateRow}>
+                    <Icon name="tasks" className={styles.taskIcon} />
+                    <input
+                      ref={inlineInputRef}
+                      type="text"
+                      className={styles.inlineInput}
+                      placeholder={t('common.enterSubTaskName')}
+                      value={newSubTaskName}
+                      onChange={handleNewSubTaskNameChange}
+                      onKeyDown={handleSubTaskKeyDown}
+                      onBlur={handleCancelInlineSubTask}
+                    />
+                    <div className={styles.inlineActions}>
+                      <Button
+                        size="tiny"
+                        primary
+                        content={t('action.create')}
+                        onClick={handleCreateInlineSubTask}
+                        disabled={!newSubTaskName.trim()}
+                        onMouseDown={(e) => e.preventDefault()}
+                      />
+                      <Button
+                        size="tiny"
+                        content={t('action.cancel')}
+                        onClick={handleCancelInlineSubTask}
+                        onMouseDown={(e) => e.preventDefault()}
+                      />
+                    </div>
+                  </div>
+                ) : (
+                  <div
+                    className={styles.addSubTaskRow}
+                    onClick={handleAddSubTaskClick}
+                    role="button"
+                    tabIndex={0}
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter' || e.key === ' ') {
+                        handleAddSubTaskClick();
+                      }
+                    }}
+                  >
+                    <Icon name="plus" className={styles.addIcon} />
+                    <span>{t('action.addSubTask')}</span>
+                  </div>
+                )}
+              </div>
+            </div>
+          </div>
           {attachmentIds.length > 0 && (
             <div className={styles.contentModule}>
               <div className={styles.moduleWrapper}>
@@ -616,32 +1123,60 @@ const ProjectContent = React.memo(() => {
               {card.type === CardTypes.PROJECT && (
                 <div className={classNames(styles.attachments, styles.attachmentsList)}>
                   <div className={classNames(styles.text, styles.textList)}>
-                    {t('common.story')}
+                    {parentCard && parentCard.type === CardTypes.PROJECT
+                      ? t('common.parentTask')
+                      : t('common.story')}
                   </div>
                   {parentCard ? (
                     <div className={styles.storyContainer} title={parentCard.name}>
                       <span className={styles.list}>
-                        <Icon name="book" size="small" className={styles.listIcon} />
+                        <Icon
+                          name={
+                            parentCard.type === CardTypes.PROJECT
+                              ? CardTypeIcons[CardTypes.PROJECT]
+                              : 'book'
+                          }
+                          size="small"
+                          className={styles.listIcon}
+                        />
                         <span className={styles.hidable}>{parentCard.name}</span>
                       </span>
                       <button
                         type="button"
                         className={styles.removeStoryButton}
                         onClick={handleRemoveParentStory}
-                        title={t('action.removeFromStory')}
+                        title={
+                          parentCard.type === CardTypes.PROJECT
+                            ? t('action.removeFromTask')
+                            : t('action.removeFromStory')
+                        }
                       >
                         <Icon name="times" size="small" />
                       </button>
                     </div>
                   ) : (
-                    <StoriesPopup onSelect={handleStorySelect}>
-                      <button type="button" className={styles.listButton}>
-                        <span className={classNames(styles.list, styles.listHoverable)}>
-                          <Icon name="book" size="small" className={styles.listIcon} />
-                          <span className={styles.hidable}>{t('action.addToStory')}</span>
-                        </span>
-                      </button>
-                    </StoriesPopup>
+                    <>
+                      <StoriesPopup onSelect={handleStorySelect}>
+                        <button type="button" className={styles.listButton}>
+                          <span className={classNames(styles.list, styles.listHoverable)}>
+                            <Icon name="book" size="small" className={styles.listIcon} />
+                            <span className={styles.hidable}>{t('action.addToStory')}</span>
+                          </span>
+                        </button>
+                      </StoriesPopup>
+                      <SubTasksPopup currentCardId={card.id} onSelect={handleTaskSelect}>
+                        <button type="button" className={styles.listButton}>
+                          <span className={classNames(styles.list, styles.listHoverable)}>
+                            <Icon
+                              name={CardTypeIcons[CardTypes.PROJECT]}
+                              size="small"
+                              className={styles.listIcon}
+                            />
+                            <span className={styles.hidable}>{t('action.addToTask')}</span>
+                          </span>
+                        </button>
+                      </SubTasksPopup>
+                    </>
                   )}
                 </div>
               )}
@@ -681,6 +1216,12 @@ const ProjectContent = React.memo(() => {
                     </Button>
                   </LabelsPopup>
                 )}
+                <DependenciesPopup cardId={card.id}>
+                  <Button fluid className={classNames(styles.actionButton, styles.hidable)}>
+                    <Icon name="random" className={styles.actionIcon} />
+                    {t('common.dependencies')}
+                  </Button>
+                </DependenciesPopup>
                 {canEditStartDate && (
                   <EditStartDatePopup cardId={card.id}>
                     <Button fluid className={classNames(styles.actionButton, styles.hidable)}>

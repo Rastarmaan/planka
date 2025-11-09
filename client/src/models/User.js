@@ -6,10 +6,10 @@
 import orderBy from 'lodash/orderBy';
 import { attr } from 'redux-orm';
 
-import BaseModel from './BaseModel';
-import buildSearchParts from '../utils/build-search-parts';
 import ActionTypes from '../constants/ActionTypes';
 import { UserRoles } from '../constants/Enums';
+import buildSearchParts from '../utils/build-search-parts';
+import BaseModel from './BaseModel';
 
 const DEFAULT_EMAIL_UPDATE_FORM = {
   data: {
@@ -38,10 +38,21 @@ const DEFAULT_USERNAME_UPDATE_FORM = {
   error: null,
 };
 
-const filterProjectModels = (projectModels, search, isHidden) => {
+const filterProjectModels = (projectModels, search, isHidden, categoryId) => {
   let filteredProjectModels = projectModels.filter(
     (projectModel) => projectModel.isHidden === isHidden,
   );
+
+  if (categoryId) {
+    const categoryIdString = String(categoryId);
+
+    filteredProjectModels = filteredProjectModels.filter((projectModel) => {
+      const assignments = projectModel.categoryAssignments.toModelArray();
+      const projectCategoryIds = assignments.map((assignment) => assignment.ref.categoryId);
+
+      return projectCategoryIds.some((id) => String(id) === categoryIdString);
+    });
+  }
 
   if (filteredProjectModels.length > 0 && search) {
     const searchParts = buildSearchParts(search);
@@ -424,11 +435,11 @@ export default class extends BaseModel {
     return projectModels;
   }
 
-  getFilteredSeparatedProjectsModelArray(search, isHidden, orderByArgs) {
+  getFilteredSeparatedProjectsModelArray(search, isHidden, categoryId, orderByArgs) {
     const separatedProjectModels = this.getSeparatedProjectsModelArray();
 
     return Object.entries(separatedProjectModels).reduce((result, [key, projectModels]) => {
-      let filteredProjectModels = filterProjectModels(projectModels, search, isHidden);
+      let filteredProjectModels = filterProjectModels(projectModels, search, isHidden, categoryId);
 
       if (orderByArgs) {
         filteredProjectModels = orderBy(filteredProjectModels, ...orderByArgs);
@@ -441,9 +452,9 @@ export default class extends BaseModel {
     }, {});
   }
 
-  getFilteredProjectsModelArray(search, isHidden, orderByArgs) {
+  getFilteredProjectsModelArray(search, isHidden, categoryId, orderByArgs) {
     let projectModels = this.getProjectsModelArray();
-    projectModels = filterProjectModels(projectModels, search, isHidden);
+    projectModels = filterProjectModels(projectModels, search, isHidden, categoryId);
 
     if (orderByArgs) {
       projectModels = orderBy(projectModels, ...orderByArgs);

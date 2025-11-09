@@ -84,5 +84,27 @@ export default function* cardsWatchers() {
     takeEvery(EntryActionTypes.CARD_CHILDREN_FETCH, ({ payload: { parentId } }) =>
       services.fetchChildCards(parentId),
     ),
+    takeEvery(EntryActionTypes.DEPENDENCY_TO_CARD_ADD, ({ payload: { cardId, dependsOnCardId } }) =>
+      services.addDependencyToCard(cardId, dependsOnCardId),
+    ),
+    takeEvery(EntryActionTypes.DEPENDENCY_TO_CURRENT_CARD_ADD, ({ payload: { dependsOnCardId } }) =>
+      services.addDependencyToCurrentCard(dependsOnCardId),
+    ),
+    takeEvery(EntryActionTypes.CARD_DEPENDENCY_CREATE_HANDLE, ({ payload: { cardDependency } }) =>
+      services.handleCardDependencyCreate(cardDependency),
+    ),
+    takeEvery(
+      EntryActionTypes.DEPENDENCY_FROM_CARD_REMOVE,
+      ({ payload: { id, cardId, dependsOnCardId } }) =>
+        services.removeDependencyFromCard(id, cardId, dependsOnCardId),
+    ),
+    takeEvery(
+      EntryActionTypes.DEPENDENCY_FROM_CURRENT_CARD_REMOVE,
+      ({ payload: { id, dependsOnCardId } }) =>
+        services.removeDependencyFromCurrentCard(id, dependsOnCardId),
+    ),
+    takeEvery(EntryActionTypes.CARD_DEPENDENCY_DELETE_HANDLE, ({ payload: { cardDependency } }) =>
+      services.handleCardDependencyDelete(cardDependency),
+    ),
   ]);
 }

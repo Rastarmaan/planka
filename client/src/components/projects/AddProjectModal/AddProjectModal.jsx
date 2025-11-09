@@ -4,19 +4,19 @@
  */
 
 import React, { useCallback, useEffect } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
 import { useTranslation } from 'react-i18next';
+import { useDispatch, useSelector } from 'react-redux';
 import TextareaAutosize from 'react-textarea-autosize';
-import { Button, Form, Header, Icon, TextArea } from 'semantic-ui-react';
-import { usePopup } from '../../../lib/popup';
+import { Button, Dropdown, Form, Header, Icon, TextArea } from 'semantic-ui-react';
 import { Input } from '../../../lib/custom-ui';
+import { usePopup } from '../../../lib/popup';
 
-import selectors from '../../../selectors';
-import entryActions from '../../../entry-actions';
-import { useClosableModal, useForm, useNestedRef } from '../../../hooks';
-import { isModifierKeyPressed } from '../../../utils/event-helpers';
 import { ProjectTypes } from '../../../constants/Enums';
 import { ProjectTypeIcons } from '../../../constants/Icons';
+import entryActions from '../../../entry-actions';
+import { useClosableModal, useForm, useNestedRef } from '../../../hooks';
+import selectors from '../../../selectors';
+import { isModifierKeyPressed } from '../../../utils/event-helpers';
 import SelectTypeStep from './SelectTypeStep';
 
 import styles from './AddProjectModal.module.scss';
@@ -27,6 +27,7 @@ const AddProjectModal = React.memo(() => {
   );
 
   const { data: defaultData, isSubmitting } = useSelector(selectors.selectProjectCreateForm);
+  const projectCategories = useSelector(selectors.selectProjectCategoriesOrderedByName);
 
   const dispatch = useDispatch();
   const [t] = useTranslation();
@@ -35,6 +36,7 @@ const AddProjectModal = React.memo(() => {
     name: '',
     description: '',
     type: ProjectTypes.PRIVATE,
+    categoryIds: [],
     ...defaultData,
     ...(defaultType && {
       type: defaultType,
@@ -80,6 +82,16 @@ const AddProjectModal = React.memo(() => {
       setData((prevData) => ({
         ...prevData,
         type,
+      }));
+    },
+    [setData],
+  );
+
+  const handleCategoryChange = useCallback(
+    (event, { value }) => {
+      setData((prevData) => ({
+        ...prevData,
+        categoryIds: value,
       }));
     },
     [setData],
@@ -133,6 +145,26 @@ const AddProjectModal = React.memo(() => {
             onKeyDown={handleDescriptionKeyDown}
             onChange={handleFieldChange}
           />
+          {projectCategories.length > 0 && (
+            <>
+              <div className={styles.text}>{t('common.categories')}</div>
+              <Dropdown
+                fluid
+                multiple
+                selection
+                search
+                options={projectCategories.map((category) => ({
+                  key: category.id,
+                  text: category.name,
+                  value: category.id,
+                }))}
+                value={data.categoryIds}
+                placeholder={t('common.selectCategories')}
+                className={styles.field}
+                onChange={handleCategoryChange}
+              />
+            </>
+          )}
           <Button
             inverted
             color="green"

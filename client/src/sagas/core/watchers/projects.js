@@ -5,8 +5,8 @@
 
 import { all, takeEvery } from 'redux-saga/effects';
 
-import services from '../services';
 import EntryActionTypes from '../../../constants/EntryActionTypes';
+import services from '../services';
 
 export default function* projectsWatchers() {
   yield all([
@@ -15,6 +15,9 @@ export default function* projectsWatchers() {
     ),
     takeEvery(EntryActionTypes.PROJECTS_ORDER_UPDATE, ({ payload: { value } }) =>
       services.updateProjectsOrder(value),
+    ),
+    takeEvery(EntryActionTypes.PROJECTS_CATEGORY_FILTER_UPDATE, ({ payload: { categoryId } }) =>
+      services.updateProjectsCategoryFilter(categoryId),
     ),
     takeEvery(EntryActionTypes.HIDDEN_PROJECTS_TOGGLE, ({ payload: { isVisible } }) =>
       services.toggleHiddenProjects(isVisible),
@@ -37,6 +40,11 @@ export default function* projectsWatchers() {
     takeEvery(EntryActionTypes.CURRENT_PROJECT_DELETE, () => services.deleteCurrentProject()),
     takeEvery(EntryActionTypes.PROJECT_DELETE_HANDLE, ({ payload: { project } }) =>
       services.handleProjectDelete(project),
+    ),
+    takeEvery(
+      EntryActionTypes.PROJECT_CATEGORIES_UPDATE,
+      ({ payload: { projectId, categoryIds } }) =>
+        services.updateProjectCategories(projectId, categoryIds),
     ),
   ]);
 }

@@ -6,8 +6,8 @@
 import { LOCATION_CHANGE_HANDLE } from '../lib/redux-router';
 
 import ActionTypes from '../constants/ActionTypes';
-import ModalTypes from '../constants/ModalTypes';
 import { HomeViews, ProjectOrders } from '../constants/Enums';
+import ModalTypes from '../constants/ModalTypes';
 
 const initialState = {
   isContentFetching: false,
@@ -22,6 +22,7 @@ const initialState = {
   homeView: HomeViews.GROUPED_PROJECTS,
   projectsSearch: '',
   projectsOrder: ProjectOrders.BY_DEFAULT,
+  projectsCategoryFilter: null,
   isHiddenProjectsVisible: false, // TODO: refactor?
 };
 
@@ -111,6 +112,11 @@ export default (state = initialState, { type, payload }) => {
       return {
         ...state,
         projectsOrder: payload.value,
+      };
+    case ActionTypes.PROJECTS_CATEGORY_FILTER_UPDATE:
+      return {
+        ...state,
+        projectsCategoryFilter: payload.categoryId,
       };
     case ActionTypes.HIDDEN_PROJECTS_TOGGLE:
       return {

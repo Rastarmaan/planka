@@ -13,6 +13,7 @@ import { useClosableModal } from '../../../hooks';
 import selectors from '../../../selectors';
 import BackgroundPane from './BackgroundPane';
 import BaseCustomFieldGroupsPane from './BaseCustomFieldGroupsPane';
+import CategoriesPane from './CategoriesPane';
 import GeneralPane from './GeneralPane';
 import ManagersPane from './ManagersPane';
 import VersionsPane from './VersionsPane';
@@ -42,6 +43,13 @@ const ProjectSettingsModal = React.memo(() => {
         context: 'title',
       }),
       render: () => <GeneralPane />,
+    },
+    {
+      menuItem: t('common.categories', {
+        context: 'title',
+        defaultValue: 'Categories',
+      }),
+      render: () => <CategoriesPane />,
     },
     {
       menuItem: t('common.managers', {

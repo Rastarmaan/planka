@@ -257,6 +257,34 @@ export function* transferBoard(id, projectId) {
   yield put(actions.handleBoardUpdate(board));
 }
 
+export function* importBoardToCurrentProject(data) {
+  const { projectId } = yield select(selectors.selectPath);
+
+  if (!projectId) {
+    return;
+  }
+
+  const response = yield call(request, api.importBoardToProject, projectId, {
+    sourceBoardId: data.sourceBoardId,
+    enableSync: data.syncEnabled,
+    syncDirection: data.syncDirection,
+    includeOptions: {
+      cards: data.importCards,
+      members: data.importMembers,
+      labels: data.importLabels,
+    },
+  });
+
+  if (response.item) {
+    yield call(goToProject, projectId);
+    yield new Promise((resolve) => {
+      setTimeout(resolve, 500);
+    });
+
+    yield call(goToBoard, response.item.id);
+  }
+}
+
 export default {
   createBoard,
   createBoardInCurrentProject,
@@ -274,4 +302,5 @@ export default {
   deleteBoard,
   handleBoardDelete,
   transferBoard,
+  importBoardToCurrentProject,
 };

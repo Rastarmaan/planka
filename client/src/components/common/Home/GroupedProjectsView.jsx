@@ -6,11 +6,11 @@
 import React, { useCallback } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 
-import selectors from '../../../selectors';
-import entryActions from '../../../entry-actions';
-import { isUserAdminOrProjectOwner } from '../../../utils/record-helpers';
 import { ProjectGroups, ProjectTypes } from '../../../constants/Enums';
 import { ProjectGroupIcons } from '../../../constants/Icons';
+import entryActions from '../../../entry-actions';
+import selectors from '../../../selectors';
+import { isUserAdminOrProjectOwner } from '../../../utils/record-helpers';
 import Projects from './Projects';
 
 const TITLE_BY_GROUP = {

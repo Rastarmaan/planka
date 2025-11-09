@@ -1,0 +1,55 @@
+name: Build Docker Image
+
+on:
+  push:
+    branches:
+      - development
+      - production
+
+jobs:
+  deploy:
+    runs-on: ubuntu-24.04
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+        with:
+          submodules: "true" # This initializes and updates submodules
+
+      - name: Set up SSH
+        uses: webfactory/ssh-agent@v0.5.3
+        with:
+          ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
+
+      - name: Set branch name
+        id: branch
+        run: echo "branch=${GITHUB_REF_NAME}" >> $GITHUB_OUTPUT
+
+      # due to some network problems, sometimes the build stage fails.
+      - name: Deploy and Rebuild Services
+        uses: nick-invision/retry@v3
+        with:
+          max_attempts: 1 # (1 initial + 0 retries)
+          timeout_minutes: 15 # Timeout for each attempt
+          command: |
+            ssh -o StrictHostKeyChecking=no -p ${{ secrets.SSH_PORT }} ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} '
+            # Exit immediately if any command fails, ensuring a failed build stops the process.
+            set -e
+            cd /home/deploy/planka
+            BRANCH_NAME="${{ steps.branch.outputs.branch }}"
+            echo "--- Pulling latest code from ${BRANCH_NAME} branch ---"
+            git checkout ${BRANCH_NAME}
+            git pull origin ${BRANCH_NAME}
+
+            IMAGE_NAME="registry.hamdocker.ir/shhm3834/planka-rastarmaan"
+            FULL_IMAGE_NAME="${IMAGE_NAME}:${BRANCH_NAME}"
+
+            echo "--- Building new Docker image: ${FULL_IMAGE_NAME} ---"
+            docker build -t ${FULL_IMAGE_NAME} -t ${IMAGE_NAME}:$(git rev-parse --short HEAD) .
+
+            echo "--- Pushing Docker image to registry ---"
+            docker push ${FULL_IMAGE_NAME}
+            docker push ${IMAGE_NAME}:$(git rev-parse --short HEAD)
+
+            echo "--- Docker image built and pushed successfully! ---"
+            '

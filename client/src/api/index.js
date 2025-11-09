@@ -11,6 +11,7 @@ import baseCustomFieldGroups from './base-custom-field-groups';
 import boardMemberships from './board-memberships';
 import boardVersions from './board-versions';
 import boards from './boards';
+import cardDependencies from './card-dependencies';
 import cardLabels from './card-labels';
 import cardMemberships from './card-memberships';
 import cards from './cards';
@@ -24,6 +25,7 @@ import labels from './labels';
 import lists from './lists';
 import notificationServices from './notification-services';
 import notifications from './notifications';
+import projectCategories from './project-categories';
 import projectManagers from './project-managers';
 import projectVersions from './project-versions';
 import projects from './projects';
@@ -43,6 +45,7 @@ export default {
   ...webhooks,
   ...users,
   ...projects,
+  ...projectCategories,
   ...projectManagers,
   ...projectVersions,
   ...backgroundImages,
@@ -54,6 +57,7 @@ export default {
   ...lists,
   ...cards,
   ...cardMemberships,
+  ...cardDependencies,
   ...cardLabels,
   ...taskLists,
   ...tasks,

@@ -210,6 +210,53 @@ const removeStoryFromCurrentCard = () => ({
   payload: {},
 });
 
+const addDependencyToCard = (id, cardId, dependsOnCardId) => ({
+  type: EntryActionTypes.DEPENDENCY_TO_CARD_ADD,
+  payload: {
+    id,
+    cardId,
+    dependsOnCardId,
+  },
+});
+
+const addDependencyToCurrentCard = (dependsOnCardId) => ({
+  type: EntryActionTypes.DEPENDENCY_TO_CURRENT_CARD_ADD,
+  payload: {
+    dependsOnCardId,
+  },
+});
+
+const handleCardDependencyCreate = (cardDependency) => ({
+  type: EntryActionTypes.CARD_DEPENDENCY_CREATE_HANDLE,
+  payload: {
+    cardDependency,
+  },
+});
+
+const removeDependencyFromCard = (id, cardId, dependsOnCardId) => ({
+  type: EntryActionTypes.DEPENDENCY_FROM_CARD_REMOVE,
+  payload: {
+    id,
+    cardId,
+    dependsOnCardId,
+  },
+});
+
+const removeDependencyFromCurrentCard = (id, dependsOnCardId) => ({
+  type: EntryActionTypes.DEPENDENCY_FROM_CURRENT_CARD_REMOVE,
+  payload: {
+    id,
+    dependsOnCardId,
+  },
+});
+
+const handleCardDependencyDelete = (cardDependency) => ({
+  type: EntryActionTypes.CARD_DEPENDENCY_DELETE_HANDLE,
+  payload: {
+    cardDependency,
+  },
+});
+
 export default {
   fetchCardsInCurrentList,
   handleCardsUpdate,
@@ -239,4 +286,10 @@ export default {
   addCurrentCardToStory,
   addStoryToCurrentCard,
   removeStoryFromCurrentCard,
+  addDependencyToCard,
+  addDependencyToCurrentCard,
+  handleCardDependencyCreate,
+  removeDependencyFromCard,
+  removeDependencyFromCurrentCard,
+  handleCardDependencyDelete,
 };

@@ -3,21 +3,21 @@
  * Licensed under the Fair Use License: https://github.com/plankanban/planka/blob/master/LICENSE.md
  */
 
-import upperFirst from 'lodash/upperFirst';
-import camelCase from 'lodash/camelCase';
-import React, { useCallback, useMemo } from 'react';
-import ReactDOM from 'react-dom';
-import PropTypes from 'prop-types';
 import classNames from 'classnames';
-import { useSelector } from 'react-redux';
+import camelCase from 'lodash/camelCase';
+import upperFirst from 'lodash/upperFirst';
+import PropTypes from 'prop-types';
+import React, { useCallback, useMemo } from 'react';
 import { Draggable } from 'react-beautiful-dnd';
+import ReactDOM from 'react-dom';
+import { useSelector } from 'react-redux';
 import { Button } from 'semantic-ui-react';
 
-import selectors from '../../../selectors';
 import { BoardMembershipRoles } from '../../../constants/Enums';
+import selectors from '../../../selectors';
 
-import styles from './Item.module.scss';
 import globalStyles from '../../../styles.module.scss';
+import styles from './Item.module.scss';
 
 const Item = React.memo(({ id, index, isActive, onSelect, onDeselect, onEdit }) => {
   const selectLabelById = useMemo(() => selectors.makeSelectLabelById(), []);
@@ -25,6 +25,10 @@ const Item = React.memo(({ id, index, isActive, onSelect, onDeselect, onEdit }) 
   const label = useSelector((state) => selectLabelById(state, id));
 
   const canEdit = useSelector((state) => {
+    if (label && label.isGlobal) {
+      return false;
+    }
+
     const boardMembership = selectors.selectCurrentUserMembershipForCurrentBoard(state);
     return !!boardMembership && boardMembership.role === BoardMembershipRoles.EDITOR;
   });

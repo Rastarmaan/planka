@@ -153,6 +153,12 @@ module.exports = {
     const customFields =
       await CustomField.qm.getByBaseCustomFieldGroupIds(baseCustomFieldGroupsIds);
 
+    const projectCategoryAssignments = await ProjectCategoryAssignment.find({
+      projectId: projectIds,
+    });
+
+    const projectCategories = await ProjectCategory.find();
+
     let notificationServices = [];
     if (managerProjectIds.length > 0) {
       const managerProjectIdsSet = new Set(managerProjectIds);
@@ -181,6 +187,8 @@ module.exports = {
       items: projects,
       included: {
         projectManagers,
+        projectCategories,
+        projectCategoryAssignments,
         baseCustomFieldGroups,
         boards,
         boardMemberships,

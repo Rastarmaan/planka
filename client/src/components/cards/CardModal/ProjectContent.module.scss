@@ -66,6 +66,325 @@
     gap: 4px;
   }
 
+  .dependencyButton {
+    background: transparent;
+    border: 1px solid #dfe1e6;
+    border-radius: 3px;
+    padding: 4px 8px;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 0.875rem;
+    color: #172b4d;
+    transition: background 0.1s ease;
+
+    &:hover {
+      background: #f4f5f7;
+      border-color: #0079bf;
+    }
+
+    i.icon {
+      margin: 0 !important;
+    }
+  }
+
+  .dependencyCard {
+    background: #fff;
+    border: 1px solid #dfe1e6;
+    border-radius: 3px;
+    padding: 6px 10px;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 0.875rem;
+    color: #172b4d;
+    transition: all 0.1s ease;
+    max-width: 200px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+
+    &:hover {
+      background: #f4f5f7;
+      border-color: #0079bf;
+      color: #0079bf;
+    }
+
+    i.icon {
+      margin: 0 !important;
+      flex-shrink: 0;
+    }
+  }
+
+  // Enhanced Dependencies Section Styles
+  .dependenciesSection {
+    background: #f7f8f9;
+    border: 1px solid #dfe1e6;
+    border-radius: 8px;
+    padding: 16px;
+    margin-bottom: 16px;
+  }
+
+  .dependenciesSectionHeader {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 16px;
+    padding-bottom: 12px;
+    border-bottom: 2px solid #dfe1e6;
+  }
+
+  .dependenciesIcon {
+    color: #5e6c84;
+    font-size: 18px !important;
+    margin: 0 !important;
+  }
+
+  .dependenciesSectionTitle {
+    font-size: 16px;
+    font-weight: 600;
+    color: #172b4d;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+
+  .dependenciesContainer {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+
+  .dependencyGroup {
+    background: #fff;
+    border-radius: 6px;
+    padding: 12px;
+    border: 1px solid #dfe1e6;
+  }
+
+  .dependencyGroupHeader {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 12px;
+  }
+
+  .groupIcon {
+    color: #0079bf;
+    font-size: 16px !important;
+    margin: 0 !important;
+  }
+
+  .dependencyGroupTitle {
+    font-size: 14px;
+    font-weight: 600;
+    color: #172b4d;
+  }
+
+  .dependencyCount {
+    font-size: 12px;
+    color: #5e6c84;
+    background: #f4f5f7;
+    padding: 2px 8px;
+    border-radius: 12px;
+    font-weight: 500;
+  }
+
+  .dependencyCardsList {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .dependencyCardWrapper {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+  }
+
+    .dependencyCardItem {
+    background: #fff;
+    border: 1px solid #dfe1e6;
+    border-radius: 4px;
+    padding: 10px 12px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 14px;
+    color: #172b4d;
+    transition: all 0.2s ease;
+    text-align: left;
+    flex: 1;
+    min-height: 38px;
+
+    &:hover {
+      background: #f4f5f7;
+      border-color: #0079bf;
+      box-shadow: 0 2px 4px rgba(0, 121, 191, 0.1);
+      transform: translateX(4px);
+
+      .dependencyCardLinkIcon {
+        opacity: 1;
+        transform: translateX(0);
+      }
+    }
+
+    &.dependencyCardCompleted {
+      background: #f0f8f5;
+      border-color: #61bd4f;
+
+      .dependencyCardName {
+        text-decoration: line-through;
+        color: #5e6c84;
+      }
+
+      .dependencyCardIcon {
+        color: #61bd4f;
+      }
+    }
+  }
+
+  .dependencyCardIcon {
+    flex-shrink: 0;
+    margin: 0 !important;
+    font-size: 16px !important;
+    color: #5e6c84;
+    line-height: 1 !important;
+  }
+
+  .dependencyCardName {
+    flex: 1;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    font-weight: 500;
+    line-height: 1.4;
+  }
+
+  .dependencyCardListName {
+    font-size: 12px;
+    color: #5e6c84;
+    font-weight: normal;
+  }
+
+  .dependencyCardContent {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    min-width: 0;
+  }
+
+  .dependencyCardMain {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    min-width: 0;
+  }
+
+  .dependencyCardListName {
+    font-size: 12px;
+    color: #5e6c84;
+    padding-left: 5px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    font-weight: normal;
+  }
+
+  .dependencyCardIcon {
+    flex-shrink: 0;
+    margin: 0 !important;
+    font-size: 16px !important;
+    color: #5e6c84;
+    line-height: 1 !important;
+  }
+
+  .dependencyCardName {
+    flex: 1;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    font-weight: 500;
+    line-height: 1.4;
+  }
+
+  .dependencyCardLinkIcon {
+    flex-shrink: 0;
+    margin: 0 !important;
+    font-size: 12px !important;
+    color: #0079bf;
+    opacity: 0;
+    transform: translateX(-4px);
+    transition: all 0.2s ease;
+    line-height: 1 !important;
+  }
+
+  .dependencyRemoveButton {
+    background: #fff;
+    border: 1px solid #dfe1e6;
+    border-radius: 4px;
+    padding: 10px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #6b778c;
+    transition: all 0.2s ease;
+    flex-shrink: 0;
+    width: 38px;
+    height: 38px;
+    min-height: 38px;
+
+    &:hover {
+      background: #eb5a46;
+      border-color: #eb5a46;
+      color: #fff;
+      transform: scale(1.05);
+    }
+
+    i.icon {
+      margin: 0 !important;
+      font-size: 14px !important;
+      line-height: 1 !important;
+    }
+  }
+
+  .addDependencyButton {
+    background: #fff;
+    border: 1px dashed #0079bf;
+    border-radius: 4px;
+    padding: 10px 12px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    font-size: 14px;
+    color: #0079bf;
+    transition: all 0.2s ease;
+    text-align: center;
+    width: 100%;
+    margin-top: 8px;
+    font-weight: 500;
+
+    &:hover {
+      background: #f4f5f7;
+      border-color: #0079bf;
+      border-style: solid;
+      box-shadow: 0 2px 4px rgba(0, 121, 191, 0.1);
+    }
+
+    i.icon {
+      margin: 0 !important;
+      font-size: 14px !important;
+      line-height: 1 !important;
+    }
+  }
+
+
   .attachments {
     display: inline-block;
     margin: 0 8px 8px 0;
@@ -358,5 +677,275 @@
     background: #f5f6f7;
     border-radius: 4px;
     margin: 0;
+  }
+
+  .childTasksSection {
+    margin-top: 8px;
+  }
+
+  .tableHeader {
+    display: grid;
+    grid-template-columns: 2fr 1fr 1fr;
+    gap: 16px;
+    padding: 12px 16px;
+    background: #f4f5f7;
+    border-radius: 4px 4px 0 0;
+    border-bottom: 1px solid #dfe1e6;
+  }
+
+  .tableHeaderCell {
+    font-size: 12px;
+    font-weight: 600;
+    color: #5e6c84;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+
+  .tableBody {
+    background: #ffffff;
+    border-radius: 0 0 4px 4px;
+    border: 1px solid #dfe1e6;
+    border-top: none;
+  }
+
+  .tableRow {
+    display: grid;
+    grid-template-columns: 2fr 1fr 1fr;
+    gap: 16px;
+    padding: 12px 16px;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+    border-bottom: 1px solid #f4f5f7;
+
+    &:last-child {
+      border-bottom: none;
+    }
+
+    &:hover {
+      background-color: #f4f5f7;
+    }
+
+    &:focus {
+      outline: 2px solid #0084ff;
+      outline-offset: -2px;
+    }
+  }
+
+  .tableCell {
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    font-size: 14px;
+    color: #172b4d;
+    min-height: 32px;
+  }
+
+  .taskIcon {
+    margin-right: 8px;
+    color: #5243aa;
+    font-size: 14px;
+    flex-shrink: 0;
+  }
+
+  .taskName {
+    font-weight: 500;
+    flex: 1;
+  }
+
+  .listName {
+    font-size: 12px;
+    color: #6b778c;
+    background: #f4f5f7;
+    padding: 4px 8px;
+    border-radius: 12px;
+    text-transform: uppercase;
+    font-weight: 500;
+    letter-spacing: 0.5px;
+  }
+
+  .listDropdown {
+    min-width: 120px;
+    font-size: 12px;
+
+    :global(.ui.dropdown) {
+      border: 1px solid #dfe1e6;
+      border-radius: 4px;
+      background: #ffffff;
+      font-size: 12px;
+      min-height: 28px;
+
+      &:hover {
+        border-color: #b3bac5;
+      }
+
+      &:focus {
+        border-color: #0084ff;
+        box-shadow: 0 0 0 2px rgba(0, 132, 255, 0.2);
+      }
+    }
+
+    :global(.ui.dropdown > .text) {
+      font-size: 12px;
+      color: #172b4d;
+      font-weight: 500;
+    }
+
+    :global(.ui.dropdown .menu) {
+      border: 1px solid #dfe1e6;
+      border-radius: 4px;
+      box-shadow: 0 4px 8px rgba(9, 30, 66, 0.25);
+      font-size: 12px;
+    }
+
+    :global(.ui.dropdown .menu .item) {
+      font-size: 12px;
+      padding: 8px 12px;
+      color: #172b4d;
+
+      &:hover {
+        background: #f4f5f7;
+      }
+    }
+  }
+
+  .statusBadge {
+    display: inline-block;
+    font-size: 11px;
+    padding: 4px 8px;
+    border-radius: 12px;
+    text-transform: uppercase;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+    line-height: 1.2;
+    vertical-align: middle;
+  }
+
+  .statusCompleted {
+    background: #e3fcef;
+    color: #006644;
+  }
+
+  .statusOpen {
+    background: #deebff;
+    color: #0052cc;
+  }
+
+  .paginationContainer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px 16px;
+    background: #f8f9fa;
+    border-top: 1px solid #dfe1e6;
+    border-radius: 0 0 4px 4px;
+  }
+
+  .paginationInfo {
+    font-size: 12px;
+    color: #6b778c;
+  }
+
+  .paginationControls {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+  }
+
+  .paginationButton {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    border: 1px solid #dfe1e6;
+    background: #ffffff;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    font-size: 12px;
+    font-weight: 500;
+    color: #172b4d;
+
+    &:hover:not(.disabled) {
+      background: #f4f5f7;
+      border-color: #b3bac5;
+    }
+
+    &.disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
+    &.active {
+      background: #0084ff;
+      border-color: #0084ff;
+      color: #ffffff;
+    }
+  }
+
+  .pageNumber {
+    min-width: 32px;
+    width: auto;
+    padding: 0 8px;
+  }
+
+  .inlineCreateRow {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 12px 16px;
+    background: #ffffff;
+    border-top: 1px solid #dfe1e6;
+  }
+
+  .inlineInput {
+    flex: 1;
+    padding: 8px 12px;
+    border: 2px solid #0052cc;
+    border-radius: 3px;
+    font-size: 14px;
+    font-family: inherit;
+    outline: none;
+    transition: border-color 0.2s ease;
+
+    &:focus {
+      border-color: #0065ff;
+    }
+
+    &::placeholder {
+      color: #8993a4;
+    }
+  }
+
+  .inlineActions {
+    display: flex;
+    gap: 8px;
+  }
+
+  .addSubTaskRow {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 12px 16px;
+    background: #ffffff;
+    border-top: 1px solid #dfe1e6;
+    cursor: pointer;
+    transition: background 0.2s ease;
+    color: #172b4d;
+    font-size: 14px;
+
+    &:hover {
+      background: #f4f5f7;
+    }
+
+    &:focus {
+      outline: 2px solid #0052cc;
+      outline-offset: -2px;
+    }
+  }
+
+  .addIcon {
+    color: #5e6c84;
+    font-size: 14px;
   }
 }

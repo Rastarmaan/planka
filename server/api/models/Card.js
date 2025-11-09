@@ -275,5 +275,15 @@ module.exports = {
       collection: 'Action',
       via: 'cardId',
     },
+    dependencies: {
+      collection: 'Card',
+      via: 'cardId',
+      through: 'CardDependency',
+    },
+    dependents: {
+      collection: 'Card',
+      via: 'dependsOnCardId',
+      through: 'CardDependency',
+    },
   },
 };

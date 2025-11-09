@@ -128,6 +128,11 @@ module.exports = {
       isIn: COLORS,
       required: true,
     },
+    isGlobal: {
+      type: 'boolean',
+      defaultsTo: false,
+      columnName: 'is_global',
+    },
 
     //  ╔═╗╔╦╗╔╗ ╔═╗╔╦╗╔═╗
     //  ║╣ ║║║╠╩╗║╣  ║║╚═╗
@@ -139,7 +144,7 @@ module.exports = {
 
     boardId: {
       model: 'Board',
-      required: true,
+      required: false,
       columnName: 'board_id',
     },
     cards: {

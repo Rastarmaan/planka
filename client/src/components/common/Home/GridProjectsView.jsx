@@ -6,8 +6,8 @@
 import React, { useCallback } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 
-import selectors from '../../../selectors';
 import entryActions from '../../../entry-actions';
+import selectors from '../../../selectors';
 import Projects from './Projects';
 
 const GridProjectsView = React.memo(() => {

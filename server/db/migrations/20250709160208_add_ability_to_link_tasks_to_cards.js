@@ -3,16 +3,22 @@
  * Licensed under the Fair Use License: https://github.com/plankanban/planka/blob/master/LICENSE.md
  */
 
-exports.up = async (knex) =>
-  knex.schema.alterTable('task', (table) => {
-    /* Columns */
+exports.up = async (knex) => {
+  // Check if linked_card_id column already exists before adding it
+  const hasLinkedCardId = await knex.schema.hasColumn('task', 'linked_card_id');
 
-    table.bigInteger('linked_card_id');
+  if (!hasLinkedCardId) {
+    await knex.schema.alterTable('task', (table) => {
+      /* Columns */
 
-    /* Indexes */
+      table.bigInteger('linked_card_id');
 
-    table.index('linked_card_id');
-  });
+      /* Indexes */
+
+      table.index('linked_card_id');
+    });
+  }
+};
 
 exports.down = (knex) =>
   knex.schema.table('task', (table) => {

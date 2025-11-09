@@ -91,8 +91,15 @@ module.exports.routes = {
   'POST /api/projects': 'projects/create',
   'GET /api/projects/:id': 'projects/show',
   'PATCH /api/projects/:id': 'projects/update',
+  'PATCH /api/projects/:id/categories': 'projects/update-categories',
   'POST /api/projects/:projectId/duplicate': 'projects/duplicate',
   'DELETE /api/projects/:id': 'projects/delete',
+
+  'GET /api/project-categories': 'project-categories/index',
+  'POST /api/project-categories': 'project-categories/create',
+  'GET /api/project-categories/:id': 'project-categories/show',
+  'PATCH /api/project-categories/:id': 'project-categories/update',
+  'DELETE /api/project-categories/:id': 'project-categories/delete',
 
   'POST /api/projects/:projectId/project-managers': 'project-managers/create',
   'DELETE /api/project-managers/:id': 'project-managers/delete',
@@ -110,15 +117,25 @@ module.exports.routes = {
   'DELETE /api/projects/:projectId/versions/:versionId': 'project-versions/delete',
 
   'POST /api/projects/:projectId/boards': 'boards/create',
+  'POST /api/projects/:projectId/boards/import': 'projects/import-board',
   'GET /api/boards/:id': 'boards/show',
   'PATCH /api/boards/:id': 'boards/update',
   'PATCH /api/boards/:id/transfer': 'boards/transfer',
   'POST /api/boards/:boardId/duplicate': 'boards/duplicate',
   'DELETE /api/boards/:id': 'boards/delete',
 
+  'GET /api/boards/:boardId/links': 'board-links/show',
+  'PATCH /api/board-links/:id': 'board-links/update',
+  'DELETE /api/board-links/:id': 'board-links/delete',
+
   'POST /api/boards/:boardId/board-memberships': 'board-memberships/create',
   'PATCH /api/board-memberships/:id': 'board-memberships/update',
   'DELETE /api/board-memberships/:id': 'board-memberships/delete',
+
+  'GET /api/global-labels': 'global-labels/index',
+  'POST /api/global-labels': 'global-labels/create',
+  'PATCH /api/global-labels/:id': 'global-labels/update',
+  'DELETE /api/global-labels/:id': 'global-labels/delete',
 
   'POST /api/boards/:boardId/labels': 'labels/create',
   'PATCH /api/labels/:id': 'labels/update',
@@ -149,6 +166,9 @@ module.exports.routes = {
   'DELETE /api/cards/:cardId/card-memberships/userId::userId': 'card-memberships/delete',
   'POST /api/cards/:cardId/card-labels': 'card-labels/create',
   'DELETE /api/cards/:cardId/card-labels/labelId::labelId': 'card-labels/delete',
+  'POST /api/cards/:cardId/card-dependencies': 'card-dependencies/create',
+  'DELETE /api/cards/:cardId/card-dependencies/dependsOnCardId::dependsOnCardId':
+    'card-dependencies/delete',
 
   'POST /api/cards/:cardId/task-lists': 'task-lists/create',
   'GET /api/task-lists/:id': 'task-lists/show',

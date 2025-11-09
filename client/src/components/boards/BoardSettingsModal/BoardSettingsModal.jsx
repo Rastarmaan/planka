@@ -4,16 +4,17 @@
  */
 
 import React, { useCallback } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
 import { useTranslation } from 'react-i18next';
+import { useDispatch, useSelector } from 'react-redux';
 import { Tab } from 'semantic-ui-react';
 
-import selectors from '../../../selectors';
 import entryActions from '../../../entry-actions';
 import { useClosableModal } from '../../../hooks';
+import selectors from '../../../selectors';
 import GeneralPane from './GeneralPane';
-import PreferencesPane from './PreferencesPane';
 import NotificationsPane from './NotificationsPane';
+import PreferencesPane from './PreferencesPane';
+import SyncPane from './SyncPane';
 
 const BoardSettingsModal = React.memo(() => {
   const openPreferences = useSelector(
@@ -41,6 +42,12 @@ const BoardSettingsModal = React.memo(() => {
         context: 'title',
       }),
       render: () => <PreferencesPane />,
+    },
+    {
+      menuItem: t('common.sync', {
+        context: 'title',
+      }),
+      render: () => <SyncPane />,
     },
     {
       menuItem: t('common.notifications', {

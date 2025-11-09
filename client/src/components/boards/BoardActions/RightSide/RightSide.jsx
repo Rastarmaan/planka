@@ -8,10 +8,10 @@ import { useDispatch, useSelector } from 'react-redux';
 import { Icon } from 'semantic-ui-react';
 import { usePopup } from '../../../../lib/popup';
 
-import selectors from '../../../../selectors';
-import entryActions from '../../../../entry-actions';
 import { BoardContexts, BoardViews } from '../../../../constants/Enums';
 import { BoardViewIcons } from '../../../../constants/Icons';
+import entryActions from '../../../../entry-actions';
+import selectors from '../../../../selectors';
 import ActionsStep from './ActionsStep';
 
 import styles from './RightSide.module.scss';
@@ -30,7 +30,7 @@ const RightSide = React.memo(() => {
 
   const ActionsPopup = usePopup(ActionsStep);
 
-  const views = [BoardViews.GRID, BoardViews.LIST];
+  const views = [BoardViews.GRID, BoardViews.LIST, BoardViews.GANTT];
   if (board.context === BoardContexts.BOARD) {
     views.unshift(BoardViews.KANBAN);
   }

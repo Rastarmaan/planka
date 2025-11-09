@@ -3,15 +3,15 @@
  * Licensed under the Fair Use License: https://github.com/plankanban/planka/blob/master/LICENSE.md
  */
 
-import React, { useCallback } from 'react';
 import PropTypes from 'prop-types';
+import React, { useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Button } from 'semantic-ui-react';
 import { FilePicker, Popup } from '../../../../lib/custom-ui';
 
 import styles from './ImportStep.module.scss';
 
-const ImportStep = React.memo(({ onSelect, onBack }) => {
+const ImportStep = React.memo(({ onSelect, onBack, onImportFromPlanka }) => {
   const [t] = useTranslation();
 
   const handleFileSelect = useCallback(
@@ -26,6 +26,10 @@ const ImportStep = React.memo(({ onSelect, onBack }) => {
     [onSelect, onBack],
   );
 
+  const handlePlankaImport = useCallback(() => {
+    onImportFromPlanka();
+  }, [onImportFromPlanka]);
+
   return (
     <>
       <Popup.Header onBack={onBack}>
@@ -34,6 +38,13 @@ const ImportStep = React.memo(({ onSelect, onBack }) => {
         })}
       </Popup.Header>
       <Popup.Content>
+        <Button
+          fluid
+          content={t('common.fromPlankaBoard')}
+          icon="linkify"
+          className={styles.button}
+          onClick={handlePlankaImport}
+        />
         <FilePicker accept=".json" onSelect={(file) => handleFileSelect('trello', file)}>
           <Button fluid content={t('common.fromTrello')} icon="trello" className={styles.button} />
         </FilePicker>
@@ -45,6 +56,7 @@ const ImportStep = React.memo(({ onSelect, onBack }) => {
 ImportStep.propTypes = {
   onSelect: PropTypes.func.isRequired,
   onBack: PropTypes.func.isRequired,
+  onImportFromPlanka: PropTypes.func.isRequired,
 };
 
 export default ImportStep;

@@ -3,32 +3,36 @@
  * Licensed under the Fair Use License: https://github.com/plankanban/planka/blob/master/LICENSE.md
  */
 
-import router from './router';
-import common from './common';
-import core from './core';
-import modals from './modals';
-import positioning from './positioning';
-import webhooks from './webhooks';
-import users from './users';
-import projects from './projects';
-import projectManagers from './project-managers';
+import activities from './activities';
+import attachments from './attachments';
 import backgroundImages from './background-images';
 import baseCustomFieldGroups from './base-custom-field-groups';
-import boards from './boards';
+import boardLinks from './board-links';
 import boardMemberships from './board-memberships';
+import boards from './boards';
+import cardDependencies from './card-dependencies';
+import cards from './cards';
+import comments from './comments';
+import common from './common';
+import core from './core';
+import customFieldGroups from './custom-field-groups';
+import customFieldValues from './custom-field-values';
+import customFields from './custom-fields';
+import globalLabels from './global-labels';
 import labels from './labels';
 import lists from './lists';
-import cards from './cards';
+import modals from './modals';
+import notificationServices from './notification-services';
+import notifications from './notifications';
+import positioning from './positioning';
+import projectCategories from './project-categories';
+import projectManagers from './project-managers';
+import projects from './projects';
+import router from './router';
 import taskLists from './task-lists';
 import tasks from './tasks';
-import attachments from './attachments';
-import customFieldGroups from './custom-field-groups';
-import customFields from './custom-fields';
-import customFieldValues from './custom-field-values';
-import comments from './comments';
-import activities from './activities';
-import notifications from './notifications';
-import notificationServices from './notification-services';
+import users from './users';
+import webhooks from './webhooks';
 
 export default {
   ...router,
@@ -39,12 +43,16 @@ export default {
   ...webhooks,
   ...users,
   ...projects,
+  ...projectCategories,
   ...projectManagers,
   ...backgroundImages,
   ...baseCustomFieldGroups,
   ...boards,
+  ...boardLinks,
   ...boardMemberships,
+  ...cardDependencies,
   ...labels,
+  ...globalLabels,
   ...lists,
   ...cards,
   ...taskLists,

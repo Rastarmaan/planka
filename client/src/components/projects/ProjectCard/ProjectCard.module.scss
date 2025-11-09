@@ -192,5 +192,30 @@
       -webkit-line-clamp: 2;
       margin: 0 20px 14px 20px;
     }
+
+    .categories {
+      margin-bottom: 8px;
+    }
+  }
+
+  .categories {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px;
+    margin: 8px 20px 0 20px;
+    position: relative;
+    z-index: 1;
+  }
+
+  .categoryBadge {
+    background: rgba(255, 255, 255, 0.9) !important;
+    color: #333 !important;
+    font-size: 10px !important;
+    font-weight: 600 !important;
+    padding: 4px 8px !important;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 120px;
   }
 }

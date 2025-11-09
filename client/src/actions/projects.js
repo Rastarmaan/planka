@@ -19,6 +19,13 @@ const updateProjectsOrder = (value) => ({
   },
 });
 
+const updateProjectsCategoryFilter = (categoryId) => ({
+  type: ActionTypes.PROJECTS_CATEGORY_FILTER_UPDATE,
+  payload: {
+    categoryId,
+  },
+});
+
 const toggleHiddenProjects = (isVisible) => ({
   type: ActionTypes.HIDDEN_PROJECTS_TOGGLE,
   payload: {
@@ -33,11 +40,12 @@ const createProject = (data) => ({
   },
 });
 
-createProject.success = (project, projectManagers) => ({
+createProject.success = (project, projectManagers, projectCategoryAssignments) => ({
   type: ActionTypes.PROJECT_CREATE__SUCCESS,
   payload: {
     project,
     projectManagers,
+    projectCategoryAssignments,
   },
 });
 
@@ -58,6 +66,7 @@ const handleProjectCreate = (
   boardMemberships,
   customFields,
   notificationServices,
+  projectCategoryAssignments,
 ) => ({
   type: ActionTypes.PROJECT_CREATE_HANDLE,
   payload: {
@@ -70,6 +79,7 @@ const handleProjectCreate = (
     boardMemberships,
     customFields,
     notificationServices,
+    projectCategoryAssignments,
   },
 });
 
@@ -181,6 +191,7 @@ const handleProjectDelete = (project) => ({
 export default {
   searchProjects,
   updateProjectsOrder,
+  updateProjectsCategoryFilter,
   toggleHiddenProjects,
   createProject,
   handleProjectCreate,

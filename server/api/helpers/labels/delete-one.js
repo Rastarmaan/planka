@@ -3,6 +3,8 @@
  * Licensed under the Fair Use License: https://github.com/plankanban/planka/blob/master/LICENSE.md
  */
 
+const boardSync = require('../../../utils/board-sync');
+
 module.exports = {
   inputs: {
     record: {
@@ -27,6 +29,16 @@ module.exports = {
   },
 
   async fn(inputs) {
+    try {
+      await boardSync.deleteLabelFromLinkedBoards(
+        inputs.record.id,
+        inputs.record.boardId,
+        inputs.request,
+      );
+    } catch (error) {
+      sails.log.error('Error syncing label deletion to linked boards:', error);
+    }
+
     await sails.helpers.labels.deleteRelated(inputs.record);
 
     const label = await Label.qm.deleteOne(inputs.record.id);

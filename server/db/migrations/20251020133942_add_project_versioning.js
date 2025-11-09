@@ -8,41 +8,74 @@ exports.up = async (knex) => {
     CREATE SEQUENCE IF NOT EXISTS project_version_id_seq;
   `);
 
-  await knex.schema.createTable('project_version', (table) => {
-    table.bigInteger('id').primary().defaultTo(knex.raw('next_id()'));
+  // Check if table exists before creating it
+  const tableExists = await knex.schema.hasTable('project_version');
 
-    table.bigInteger('project_id').notNullable();
-    table.bigInteger('creator_user_id');
-    table.string('name').notNullable();
-    table.text('description');
-    table.json('snapshot_data').notNullable();
-    table.json('metadata');
-    table.boolean('is_auto_created').defaultTo(false);
-    table.timestamp('created_at', { useTz: true });
-    table.timestamp('updated_at', { useTz: true });
+  if (!tableExists) {
+    await knex.schema.createTable('project_version', (table) => {
+      table.bigInteger('id').primary().defaultTo(knex.raw('next_id()'));
 
-    table.index('project_id');
-    table.index('creator_user_id');
-    table.index('created_at');
-    table.index(['project_id', 'created_at']);
-  });
+      table.bigInteger('project_id').notNullable();
+      table.bigInteger('creator_user_id');
+      table.string('name').notNullable();
+      table.text('description');
+      table.json('snapshot_data').notNullable();
+      table.json('metadata');
+      table.boolean('is_auto_created').defaultTo(false);
+      table.timestamp('created_at', { useTz: true });
+      table.timestamp('updated_at', { useTz: true });
 
+      table.index('project_id');
+      table.index('creator_user_id');
+      table.index('created_at');
+      table.index(['project_id', 'created_at']);
+    });
+  }
+
+  // Add foreign key constraints if they don't exist
   await knex.raw(`
-    ALTER TABLE project_version
-    ADD CONSTRAINT project_version_project_id_fkey
-    FOREIGN KEY (project_id) REFERENCES project(id) ON DELETE CASCADE;
+    DO $$
+    BEGIN
+      IF NOT EXISTS (
+        SELECT 1 FROM pg_constraint WHERE conname = 'project_version_project_id_fkey'
+      ) THEN
+        ALTER TABLE project_version
+        ADD CONSTRAINT project_version_project_id_fkey
+        FOREIGN KEY (project_id) REFERENCES project(id) ON DELETE CASCADE;
+      END IF;
+    END $$;
   `);
 
   await knex.raw(`
-    ALTER TABLE project_version
-    ADD CONSTRAINT project_version_creator_user_id_fkey
-    FOREIGN KEY (creator_user_id) REFERENCES "user_account"(id) ON DELETE SET NULL;
+    DO $$
+    BEGIN
+      IF NOT EXISTS (
+        SELECT 1 FROM pg_constraint WHERE conname = 'project_version_creator_user_id_fkey'
+      ) THEN
+        ALTER TABLE project_version
+        ADD CONSTRAINT project_version_creator_user_id_fkey
+        FOREIGN KEY (creator_user_id) REFERENCES "user_account"(id) ON DELETE SET NULL;
+      END IF;
+    END $$;
   `);
 
-  await knex.schema.alterTable('project', (table) => {
-    table.integer('version_count').defaultTo(0);
-    table.timestamp('last_version_created_at', { useTz: true });
-  });
+  // Add columns to project table if they don't exist
+  const projectHasVersionCount = await knex.schema.hasColumn('project', 'version_count');
+  const projectHasLastVersionCreated = await knex.schema.hasColumn(
+    'project',
+    'last_version_created_at',
+  );
+
+  if (!projectHasVersionCount || !projectHasLastVersionCreated) {
+    await knex.schema.alterTable('project', (table) => {
+      if (!projectHasVersionCount) {
+        table.integer('version_count').defaultTo(0);
+      }
+      if (!projectHasLastVersionCreated) {
+        table.timestamp('last_version_created_at', { useTz: true });
+      }
+    });
+  }
 
   await knex.raw(`
     CREATE OR REPLACE FUNCTION update_project_version_count()
@@ -65,10 +98,21 @@ exports.up = async (knex) => {
     $$ LANGUAGE plpgsql;
   `);
 
+  // Create trigger if it doesn't exist
   await knex.raw(`
-    CREATE TRIGGER project_version_count_trigger
-    AFTER INSERT OR DELETE ON project_version
-    FOR EACH ROW EXECUTE FUNCTION update_project_version_count();
+    DO $$
+    BEGIN
+      IF NOT EXISTS (
+        SELECT 1 FROM pg_trigger t 
+        JOIN pg_class c ON t.tgrelid = c.oid 
+        WHERE t.tgname = 'project_version_count_trigger' 
+        AND c.relname = 'project_version'
+      ) THEN
+        CREATE TRIGGER project_version_count_trigger
+        AFTER INSERT OR DELETE ON project_version
+        FOR EACH ROW EXECUTE FUNCTION update_project_version_count();
+      END IF;
+    END $$;
   `);
 
   await knex.raw(`
@@ -91,10 +135,21 @@ exports.up = async (knex) => {
     $$ LANGUAGE plpgsql;
   `);
 
+  // Create second trigger if it doesn't exist
   await knex.raw(`
-    CREATE TRIGGER project_version_limit_trigger
-    BEFORE INSERT ON project_version
-    FOR EACH ROW EXECUTE FUNCTION validate_project_version_limit();
+    DO $$
+    BEGIN
+      IF NOT EXISTS (
+        SELECT 1 FROM pg_trigger t 
+        JOIN pg_class c ON t.tgrelid = c.oid 
+        WHERE t.tgname = 'project_version_limit_trigger' 
+        AND c.relname = 'project_version'
+      ) THEN
+        CREATE TRIGGER project_version_limit_trigger
+        BEFORE INSERT ON project_version
+        FOR EACH ROW EXECUTE FUNCTION validate_project_version_limit();
+      END IF;
+    END $$;
   `);
 };
 

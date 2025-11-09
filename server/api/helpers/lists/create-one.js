@@ -3,6 +3,8 @@
  * Licensed under the Fair Use License: https://github.com/plankanban/planka/blob/master/LICENSE.md
  */
 
+const boardSync = require('../../../utils/board-sync');
+
 module.exports = {
   inputs: {
     values: {
@@ -62,6 +64,12 @@ module.exports = {
       position,
       boardId: values.board.id,
     });
+
+    try {
+      await boardSync.syncList(list, inputs.request);
+    } catch (error) {
+      sails.log.error('Error syncing list to linked boards:', error);
+    }
 
     sails.sockets.broadcast(
       `board:${list.boardId}`,

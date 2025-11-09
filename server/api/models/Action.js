@@ -74,6 +74,8 @@ const Types = {
   REMOVE_MEMBER_FROM_CARD: 'removeMemberFromCard',
   COMPLETE_TASK: 'completeTask',
   UNCOMPLETE_TASK: 'uncompleteTask',
+  ADD_DEPENDENCY_TO_CARD: 'addDependencyToCard',
+  REMOVE_DEPENDENCY_FROM_CARD: 'removeDependencyFromCard',
 };
 
 const INTERNAL_NOTIFIABLE_TYPES = [Types.MOVE_CARD, Types.ADD_MEMBER_TO_CARD];

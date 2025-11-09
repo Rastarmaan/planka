@@ -1,0 +1,155 @@
+.headerActions {
+  margin-bottom: 1.5rem;
+}
+
+.categoryItem {
+  padding: 0.5rem 0 !important;
+}
+
+.categoryForm {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  padding: 0.75rem;
+  background: #f8f9fa;
+  border: 1px solid #e1e4e8;
+  border-radius: 4px;
+
+  input,
+  textarea {
+    width: 100%;
+    padding: 0.5rem 0.75rem;
+    font-size: 0.95rem;
+    line-height: 1.5;
+    border: 1px solid #d1d5da;
+    border-radius: 4px;
+    background-color: #ffffff;
+    transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+
+    &:focus {
+      border-color: #2185d0;
+      outline: none;
+      box-shadow: 0 0 0 3px rgba(33, 133, 208, 0.1);
+    }
+
+    &::placeholder {
+      color: #959da5;
+    }
+  }
+
+  textarea {
+    resize: vertical;
+    min-height: 60px;
+    font-family: inherit;
+  }
+
+  .actions {
+    display: flex;
+    gap: 0.5rem;
+    justify-content: flex-end;
+  }
+}
+
+.category {
+  display: flex;
+  align-items: flex-start;
+  gap: 1rem;
+  width: 100%;
+}
+
+.categoryInfo {
+  flex: 1;
+  min-width: 0;
+}
+
+.categoryName {
+  font-weight: 600;
+  font-size: 1rem;
+  display: block;
+  margin-bottom: 0.25rem;
+}
+
+.categoryDescription {
+  color: rgba(0, 0, 0, 0.6);
+  font-size: 0.9rem;
+  display: block;
+  word-wrap: break-word;
+}
+
+.actions {
+  display: flex;
+  gap: 0.5rem;
+  justify-content: flex-end;
+  flex-shrink: 0;
+}
+
+.categoriesList {
+  margin-top: 1rem !important;
+}
+
+.createForm {
+  margin-bottom: 1.5rem;
+  padding: 1.25rem;
+  background: #f8f9fa;
+  border: 1px solid #e1e4e8;
+  border-radius: 6px;
+
+  label {
+    display: block;
+    margin-bottom: 0.5rem;
+    font-weight: 600;
+    font-size: 0.95rem;
+    color: #24292e;
+  }
+
+  .optional {
+    font-weight: 400;
+    color: #6a737d;
+    font-size: 0.875rem;
+  }
+
+  input,
+  textarea {
+    width: 100%;
+    padding: 0.625rem 0.875rem;
+    font-size: 0.95rem;
+    line-height: 1.5;
+    border: 1px solid #d1d5da;
+    border-radius: 4px;
+    background-color: #ffffff;
+    transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+
+    &:focus {
+      border-color: #2185d0;
+      outline: none;
+      box-shadow: 0 0 0 3px rgba(33, 133, 208, 0.1);
+    }
+
+    &::placeholder {
+      color: #959da5;
+    }
+  }
+
+  textarea {
+    resize: vertical;
+    min-height: 70px;
+    font-family: inherit;
+  }
+
+  .actions {
+    margin-top: 1rem;
+    display: flex;
+    gap: 0.5rem;
+  }
+}
+
+.emptyState {
+  text-align: center;
+  padding: 3rem 2rem;
+  color: rgba(0, 0, 0, 0.4);
+
+  p {
+    margin: 0;
+    font-size: 1rem;
+  }
+}

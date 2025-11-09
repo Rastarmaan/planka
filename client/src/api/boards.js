@@ -35,6 +35,9 @@ const deleteBoard = (id, headers) => socket.delete(`/boards/${id}`, undefined, h
 const transferBoard = (id, projectId, headers) =>
   socket.patch(`/boards/${id}/transfer`, { projectId }, headers);
 
+const importBoardToProject = (projectId, data, headers) =>
+  http.post(`/projects/${projectId}/boards/import`, data, headers);
+
 export default {
   createBoard,
   createBoardWithImport,
@@ -42,4 +45,5 @@ export default {
   updateBoard,
   transferBoard,
   deleteBoard,
+  importBoardToProject,
 };

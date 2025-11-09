@@ -9,7 +9,8 @@ import React, { useCallback, useMemo } from 'react';
 import { shallowEqual, useDispatch, useSelector } from 'react-redux';
 import { Icon } from 'semantic-ui-react';
 
-import { BoardMembershipRoles, BoardViews } from '../../../constants/Enums';
+import { BoardMembershipRoles, BoardViews, CardTypes } from '../../../constants/Enums';
+import { CardTypeIcons } from '../../../constants/Icons';
 import entryActions from '../../../entry-actions';
 import selectors from '../../../selectors';
 import { isListArchiveOrTrash } from '../../../utils/record-helpers';
@@ -152,8 +153,18 @@ const ProjectContent = React.memo(({ cardId }) => {
     <div className={styles.wrapper}>
       <div className={classNames(styles.name, card.isClosed && styles.nameClosed)}>{card.name}</div>
       {parentCard && (
-        <div className={styles.storyBadge}>
-          <Icon name="book" />
+        <div
+          className={classNames(
+            styles.storyBadge,
+            parentCard.type === CardTypes.PROJECT && styles.subTaskBadge,
+            parentCard.type === CardTypes.EPIC && styles.epicBadge,
+          )}
+        >
+          {parentCard.type === CardTypes.PROJECT && (
+            <Icon name={CardTypeIcons[CardTypes.PROJECT]} />
+          )}
+          {parentCard.type === CardTypes.EPIC && <Icon name="sitemap" />}
+          {parentCard.type === CardTypes.STORY && <Icon name="book" />}
           <span className={styles.storyBadgeText}>{parentCard.name}</span>
         </div>
       )}
