@@ -52,15 +52,17 @@ import styles from './ProjectContent.module.scss';
 
 const ProjectContent = React.memo(() => {
   const selectListById = useMemo(() => selectors.makeSelectListById(), []);
-  const selectPrevListById = useMemo(() => selectors.makeSelectListById(), []);
   const selectCardById = useMemo(() => selectors.makeSelectCardById(), []);
 
   const card = useSelector(selectors.selectCurrentCard);
   const board = useSelector(selectors.selectCurrentBoard);
-  const userIds = useSelector(selectors.selectUserIdsForCurrentCard);
-  const labelIds = useSelector(selectors.selectLabelIdsForCurrentCard);
-  const attachmentIds = useSelector(selectors.selectAttachmentIdsForCurrentCard);
-  const childCards = useSelector((state) => selectors.selectChildCardsByParentId(state, card?.id));
+  const userIds = useSelector(selectors.selectUserIdsForCurrentCard, shallowEqual);
+  const labelIds = useSelector(selectors.selectLabelIdsForCurrentCard, shallowEqual);
+  const attachmentIds = useSelector(selectors.selectAttachmentIdsForCurrentCard, shallowEqual);
+  const childCards = useSelector(
+    (state) => selectors.selectChildCardsByParentId(state, card?.id),
+    shallowEqual,
+  );
 
   // Use singleton selectors to avoid memoization issues
   const selectDependsOnCardsByCardId = useMemo(
@@ -73,52 +75,42 @@ const ProjectContent = React.memo(() => {
   );
   const selectDependenciesByCardId = useMemo(() => selectors.makeSelectDependenciesByCardId(), []);
 
-  const dependsOnCards = useSelector((state) =>
-    card?.id ? selectDependsOnCardsByCardId(state, card.id) : [],
+  const dependsOnCards = useSelector(
+    (state) => (card?.id ? selectDependsOnCardsByCardId(state, card.id) : []),
+    shallowEqual,
   );
-  const dependentCards = useSelector((state) =>
-    card?.id ? selectDependentCardsByCardId(state, card.id) : [],
+  const dependentCards = useSelector(
+    (state) => (card?.id ? selectDependentCardsByCardId(state, card.id) : []),
+    shallowEqual,
   );
-  const dependencyRecords = useSelector((state) =>
-    card?.id ? selectDependenciesByCardId(state, card.id) : [],
+  const dependencyRecords = useSelector(
+    (state) => (card?.id ? selectDependenciesByCardId(state, card.id) : []),
+    shallowEqual,
   );
 
-  const childCardLists = useSelector((state) => {
-    if (!childCards) return {};
-    const lists = {};
-    childCards.forEach((childCard) => {
-      const childList = selectListById(state, childCard.listId);
-      if (childList) {
-        lists[childCard.id] = childList;
-      }
-    });
-    return lists;
-  });
+  const childCardLists = useSelector(
+    (state) => selectors.selectChildCardListsByParentId(state, card?.id),
+    shallowEqual,
+  );
 
-  const dependencyCardLists = useSelector((state) => {
-    const lists = {};
-    [...dependsOnCards, ...dependentCards].forEach((dependencyCard) => {
-      const depList = selectListById(state, dependencyCard.listId);
-      if (depList) {
-        lists[dependencyCard.id] = depList;
-      }
-    });
-    return lists;
-  });
+  const dependencyCardLists = useSelector(
+    (state) => selectors.selectDependencyCardLists(state, dependsOnCards, dependentCards),
+    shallowEqual,
+  );
 
-  const availableLists = useSelector(selectors.selectAvailableListsForCurrentBoard);
+  const availableLists = useSelector(selectors.selectAvailableListsForCurrentBoard, shallowEqual);
 
   const parentCard = useSelector((state) =>
-    card.parentCardId ? selectCardById(state, card.parentCardId) : null,
+    card?.parentCardId ? selectCardById(state, card.parentCardId) : null,
   );
 
   const isJoined = useSelector(selectors.selectIsCurrentUserInCurrentCard);
 
-  const list = useSelector((state) => selectListById(state, card.listId));
+  const list = useSelector((state) => selectListById(state, card?.listId));
 
   // TODO: check availability?
   const prevList = useSelector(
-    (state) => card.prevListId && selectPrevListById(state, card.prevListId),
+    (state) => card?.prevListId && selectListById(state, card.prevListId),
   );
 
   const isInArchiveList = list.type === ListTypes.ARCHIVE;

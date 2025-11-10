@@ -43,55 +43,49 @@ import styles from './StoryContent.module.scss';
 
 const StoryContent = React.memo(() => {
   const selectListById = useMemo(() => selectors.makeSelectListById(), []);
-  const selectPrevListById = useMemo(() => selectors.makeSelectListById(), []);
   const selectAttachmentById = useMemo(() => selectors.makeSelectAttachmentById(), []);
-  const selectChildCardListById = useMemo(() => selectors.makeSelectListById(), []);
   const selectCardById = useMemo(() => selectors.makeSelectCardById(), []);
 
   const dispatch = useDispatch();
 
   const card = useSelector(selectors.selectCurrentCard);
   const board = useSelector(selectors.selectCurrentBoard);
-  const userIds = useSelector(selectors.selectUserIdsForCurrentCard);
-  const labelIds = useSelector(selectors.selectLabelIdsForCurrentCard);
-  const attachmentIds = useSelector(selectors.selectAttachmentIdsForCurrentCard);
-  const childCards = useSelector((state) => selectors.selectChildCardsByParentId(state, card?.id));
+  const userIds = useSelector(selectors.selectUserIdsForCurrentCard, shallowEqual);
+  const labelIds = useSelector(selectors.selectLabelIdsForCurrentCard, shallowEqual);
+  const attachmentIds = useSelector(selectors.selectAttachmentIdsForCurrentCard, shallowEqual);
+  const childCards = useSelector(
+    (state) => selectors.selectChildCardsByParentId(state, card?.id),
+    shallowEqual,
+  );
 
-  // Get list data for all child cards
-  const childCardLists = useSelector((state) => {
-    if (!childCards || childCards.length === 0) return {};
-
-    const lists = {};
-    childCards.forEach((childCard) => {
-      if (childCard.listId) {
-        lists[childCard.id] = selectChildCardListById(state, childCard.listId);
-      }
-    });
-    return lists;
-  });
+  const childCardLists = useSelector(
+    (state) => selectors.selectChildCardListsByParentId(state, card?.id),
+    shallowEqual,
+  );
 
   // Get available lists for the current board
-  const availableLists = useSelector(selectors.selectAvailableListsForCurrentBoard);
+  const availableLists = useSelector(selectors.selectAvailableListsForCurrentBoard, shallowEqual);
 
   const imageAttachmentIdsExceptCover = useSelector(
     selectors.selectImageAttachmentIdsExceptCoverForCurrentCard,
+    shallowEqual,
   );
 
   const isJoined = useSelector(selectors.selectIsCurrentUserInCurrentCard);
 
-  const list = useSelector((state) => selectListById(state, card.listId));
+  const list = useSelector((state) => selectListById(state, card?.listId));
 
   const parentCard = useSelector((state) =>
-    card.parentCardId ? selectCardById(state, card.parentCardId) : null,
+    card?.parentCardId ? selectCardById(state, card.parentCardId) : null,
   );
 
   // TODO: check availability?
   const prevList = useSelector(
-    (state) => card.prevListId && selectPrevListById(state, card.prevListId),
+    (state) => card?.prevListId && selectListById(state, card.prevListId),
   );
 
   const coverAttachment = useSelector((state) =>
-    selectAttachmentById(state, card.coverAttachmentId),
+    card?.coverAttachmentId ? selectAttachmentById(state, card.coverAttachmentId) : null,
   );
 
   const isInArchiveList = list.type === ListTypes.ARCHIVE;

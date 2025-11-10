@@ -4,6 +4,7 @@
  */
 
 import { createSelector } from 'redux-orm';
+import { createSelector as createReselectSelector } from 'reselect';
 
 import { buildCustomFieldValueId } from '../models/CustomFieldValue';
 import orm from '../orm';
@@ -11,6 +12,7 @@ import { isLocalId } from '../utils/local-id';
 import { selectRecentCardId } from './core';
 import { selectPath } from './router';
 import { selectCurrentUserId } from './users';
+import { makeSelectListById } from './lists';
 
 export const makeSelectCardById = () =>
   createSelector(
@@ -514,6 +516,55 @@ export const selectChildCardsByParentId = createSelector(
   },
 );
 
+export const selectChildCardListsByParentId = createReselectSelector(
+  [(state, parentId) => selectChildCardsByParentId(state, parentId), (state) => state],
+  (childCards, state) => {
+    if (!childCards || childCards.length === 0) {
+      return {};
+    }
+
+    const selectListById = makeSelectListById();
+    const lists = {};
+
+    childCards.forEach((childCard) => {
+      if (childCard.listId) {
+        lists[childCard.id] = selectListById(state, childCard.listId);
+      }
+    });
+
+    return lists;
+  },
+);
+
+export const selectDependencyCardLists = createReselectSelector(
+  [
+    (state, dependsOnCards, dependentCards) => [
+      ...(dependsOnCards || []),
+      ...(dependentCards || []),
+    ],
+    (state) => state,
+  ],
+  (allDependencyCards, state) => {
+    if (!allDependencyCards || allDependencyCards.length === 0) {
+      return {};
+    }
+
+    const selectListById = makeSelectListById();
+    const lists = {};
+
+    allDependencyCards.forEach((dependencyCard) => {
+      if (dependencyCard.listId) {
+        const depList = selectListById(state, dependencyCard.listId);
+        if (depList) {
+          lists[dependencyCard.id] = depList;
+        }
+      }
+    });
+
+    return lists;
+  },
+);
+
 export default {
   makeSelectCardById,
   selectCardById,
@@ -550,4 +601,6 @@ export default {
   selectPrevCardId,
   selectNextCardId,
   selectChildCardsByParentId,
+  selectChildCardListsByParentId,
+  selectDependencyCardLists,
 };
