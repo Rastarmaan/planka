@@ -96,6 +96,12 @@
  *                     type: number
  *                     description: Total time in seconds
  *                     example: 3600
+ *               weight:
+ *                 type: number
+ *                 minimum: 1
+ *                 maximum: 10
+ *                 description: Weight/priority of the card (1-10)
+ *                 example: 5
  *               isSubscribed:
  *                 type: boolean
  *                 description: Whether the current user is subscribed to the card
@@ -210,6 +216,11 @@ module.exports = {
       ...idInput,
       allowNull: true,
     },
+    weight: {
+      type: 'number',
+      min: 1,
+      max: 10,
+    },
   },
 
   exits: {
@@ -273,6 +284,7 @@ module.exports = {
         'isDueCompleted',
         'stopwatch',
         'parentCardId',
+        'weight',
       );
     }
 
@@ -336,6 +348,7 @@ module.exports = {
       'stopwatch',
       'isSubscribed',
       'parentCardId',
+      'weight',
     ]);
 
     card = await sails.helpers.cards.updateOne
