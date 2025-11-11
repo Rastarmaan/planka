@@ -38,6 +38,7 @@ import DueDateChip from '../DueDateChip';
 import EditDueDateStep from '../EditDueDateStep';
 import EditStartDateStep from '../EditStartDateStep';
 import EditStopwatchStep from '../EditStopwatchStep';
+import EditWeightStep from '../EditWeightStep';
 import StartDateChip from '../StartDateChip';
 import StopwatchChip from '../StopwatchChip';
 import Communication from './Communication';
@@ -123,6 +124,7 @@ const ProjectContent = React.memo(() => {
     canEditStartDate,
     canEditDueDate,
     canEditStopwatch,
+    canEditWeight,
     canSubscribe,
     canJoin,
     canDuplicate,
@@ -155,6 +157,7 @@ const ProjectContent = React.memo(() => {
         canEditStartDate: false,
         canEditDueDate: false,
         canEditStopwatch: false,
+        canEditWeight: false,
         canSubscribe: isMember,
         canJoin: false,
         canDuplicate: false,
@@ -178,6 +181,7 @@ const ProjectContent = React.memo(() => {
       canEditStartDate: isEditor,
       canEditDueDate: isEditor,
       canEditStopwatch: isEditor,
+      canEditWeight: isEditor,
       canSubscribe: isMember,
       canJoin: isEditor,
       canDuplicate: isEditor,
@@ -445,10 +449,10 @@ const ProjectContent = React.memo(() => {
   }, [isEditDescriptionOpened]);
 
   useEffect(() => {
-    if (card?.id) {
+    if (card?.id && (card.type === CardTypes.EPIC || card.type === CardTypes.STORY)) {
       dispatch(entryActions.fetchChildCards(card.id));
     }
-  }, [card?.id, dispatch]);
+  }, [card?.id, card?.type, dispatch]);
 
   const CreationDetailsPopup = usePopupInClosableContext(CreationDetailsStep);
   const BoardMembershipsPopup = usePopupInClosableContext(BoardMembershipsStep);
@@ -458,6 +462,7 @@ const ProjectContent = React.memo(() => {
   const EditStartDatePopup = usePopupInClosableContext(EditStartDateStep);
   const EditDueDatePopup = usePopupInClosableContext(EditDueDateStep);
   const EditStopwatchPopup = usePopupInClosableContext(EditStopwatchStep);
+  const EditWeightPopup = usePopupInClosableContext(EditWeightStep);
   const AddTaskListPopup = usePopupInClosableContext(AddTaskListStep);
   const AddAttachmentPopup = usePopupInClosableContext(AddAttachmentStep);
   const AddCustomFieldGroupPopup = usePopupInClosableContext(AddCustomFieldGroupStep);
@@ -848,6 +853,26 @@ const ProjectContent = React.memo(() => {
                       />
                     </button>
                   )}
+                </div>
+              )}
+              {card.weight && card.weight > 1 && (
+                <div className={styles.attachments}>
+                  <div className={styles.text}>Weight</div>
+                  <span className={styles.attachment}>
+                    {canEditWeight ? (
+                      <EditWeightPopup cardId={card.id}>
+                        <div className={styles.weightChip}>
+                          <Icon name="balance scale" size="small" />
+                          {card.weight}
+                        </div>
+                      </EditWeightPopup>
+                    ) : (
+                      <div className={styles.weightChip}>
+                        <Icon name="balance scale" size="small" />
+                        {card.weight}
+                      </div>
+                    )}
+                  </span>
                 </div>
               )}
             </div>
@@ -1241,6 +1266,14 @@ const ProjectContent = React.memo(() => {
                       {t('common.stopwatch')}
                     </Button>
                   </EditStopwatchPopup>
+                )}
+                {canEditWeight && (
+                  <EditWeightPopup cardId={card.id}>
+                    <Button fluid className={classNames(styles.actionButton, styles.hidable)}>
+                      <Icon name="balance scale" className={styles.actionIcon} />
+                      Weight
+                    </Button>
+                  </EditWeightPopup>
                 )}
                 {canAddTaskList && (
                   <AddTaskListPopup>

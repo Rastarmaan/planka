@@ -59,13 +59,21 @@ const InlineContent = React.memo(({ cardId }) => {
       <span className={styles.attachments}>
         <UserAvatar withCreatorIndicator id={card.creatorUserId} />
       </span>
-      {(notificationsTotal > 0 || listName) && (
+      {(notificationsTotal > 0 || listName || card.weight > 1) && (
         <span className={styles.attachments}>
           {notificationsTotal > 0 && (
             <span
               className={classNames(styles.attachment, styles.attachmentLeft, styles.notification)}
             >
               {notificationsTotal}
+            </span>
+          )}
+          {card.weight > 1 && (
+            <span className={classNames(styles.attachment, styles.attachmentLeft)}>
+              <span className={styles.attachmentContent}>
+                <Icon name="balance scale" />
+                {card.weight}
+              </span>
             </span>
           )}
           {listName && (
@@ -92,6 +100,16 @@ const InlineContent = React.memo(({ cardId }) => {
       >
         <div className={styles.hidable}>{card.name}</div>
       </span>
+      {card.weight > 1 && (
+        <span className={styles.attachments}>
+          <span className={classNames(styles.attachment, styles.attachmentLeft)}>
+            <span className={styles.attachmentContent}>
+              <Icon name="balance scale" />
+              {card.weight}
+            </span>
+          </span>
+        </span>
+      )}
       {descriptionText && (
         <span className={classNames(styles.attachments, styles.descriptionText, styles.hidable)}>
           {descriptionText}

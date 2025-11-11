@@ -23,6 +23,7 @@ import styles from './AddCard.module.scss';
 
 const DEFAULT_DATA = {
   name: '',
+  weight: 1,
 };
 
 const AddCard = React.memo(({ isOpened, className, onCreate, onClose }) => {
@@ -44,6 +45,24 @@ const AddCard = React.memo(({ isOpened, className, onCreate, onClose }) => {
   const [submitButtonRef, handleSubmitButtonRef] = useNestedRef();
   const [selectTypeButtonRef, handleSelectTypeButtonRef] = useNestedRef();
 
+  const handleWeightChange = useCallback(
+    (event) => {
+      const value = parseInt(event.target.value, 10);
+      if (!Number.isNaN(value) && value >= 1 && value <= 10) {
+        setData((prevData) => ({
+          ...prevData,
+          weight: value,
+        }));
+      } else if (event.target.value === '') {
+        setData((prevData) => ({
+          ...prevData,
+          weight: '',
+        }));
+      }
+    },
+    [setData],
+  );
+
   const submit = useCallback(
     (autoOpen) => {
       const cleanData = {
@@ -61,6 +80,7 @@ const AddCard = React.memo(({ isOpened, className, onCreate, onClose }) => {
       setData({
         ...DEFAULT_DATA,
         type: defaultType,
+        weight: 1,
       });
 
       if (autoOpen) {
@@ -169,6 +189,23 @@ const AddCard = React.memo(({ isOpened, className, onCreate, onClose }) => {
           className={styles.field}
           onKeyDown={handleFieldKeyDown}
           onChange={handleFieldChange}
+        />
+      </div>
+      <div className={styles.weightWrapper}>
+        {/* eslint-disable-next-line jsx-a11y/label-has-associated-control */}
+        <label htmlFor="weight-input" className={styles.weightLabel}>
+          Weight:
+        </label>
+        <input
+          {...clickAwayProps} // eslint-disable-line react/jsx-props-no-spreading
+          type="number"
+          id="weight-input"
+          name="weight"
+          min="1"
+          max="10"
+          value={data.weight}
+          className={styles.weightInput}
+          onChange={handleWeightChange}
         />
       </div>
       <div className={styles.controls}>

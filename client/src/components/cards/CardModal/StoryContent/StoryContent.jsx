@@ -32,6 +32,7 @@ import LabelChip from '../../../labels/LabelChip';
 import LabelsStep from '../../../labels/LabelsStep';
 import ListsStep from '../../../lists/ListsStep';
 import UserAvatar from '../../../users/UserAvatar';
+import EditWeightStep from '../../EditWeightStep';
 import Communication from '../Communication';
 import CreationDetailsStep from '../CreationDetailsStep';
 import CustomFieldGroups from '../CustomFieldGroups';
@@ -95,6 +96,7 @@ const StoryContent = React.memo(() => {
     canEditType,
     canEditName,
     canEditDescription,
+    canEditWeight,
     canSubscribe,
     canJoin,
     canDuplicate,
@@ -123,6 +125,7 @@ const StoryContent = React.memo(() => {
         canEditType: false,
         canEditName: false,
         canEditDescription: false,
+        canEditWeight: false,
         canSubscribe: isMember,
         canJoin: false,
         canDuplicate: false,
@@ -142,6 +145,7 @@ const StoryContent = React.memo(() => {
       canEditType: isEditor,
       canEditName: isEditor,
       canEditDescription: isEditor,
+      canEditWeight: isEditor,
       canSubscribe: isMember,
       canJoin: isEditor,
       canDuplicate: isEditor,
@@ -349,6 +353,7 @@ const StoryContent = React.memo(() => {
   const BoardMembershipsPopup = usePopupInClosableContext(BoardMembershipsStep);
   const LabelsPopup = usePopupInClosableContext(LabelsStep);
   const ListsPopup = usePopupInClosableContext(ListsStep);
+  const EditWeightPopup = usePopupInClosableContext(EditWeightStep);
   const AddAttachmentPopup = usePopupInClosableContext(AddAttachmentStep);
   const AddCustomFieldGroupPopup = usePopupInClosableContext(AddCustomFieldGroupStep);
   const MoreActionsPopup = usePopupInClosableContext(MoreActionsStep);
@@ -465,6 +470,25 @@ const StoryContent = React.memo(() => {
                         </button>
                       </LabelsPopup>
                     )}
+                  </div>
+                )}
+                {card.weight && card.weight > 1 && (
+                  <div className={styles.attachments}>
+                    <span className={styles.attachment}>
+                      {canEditWeight ? (
+                        <EditWeightPopup cardId={card.id}>
+                          <div className={styles.weightChip}>
+                            <Icon name="balance scale" size="small" />
+                            {card.weight}
+                          </div>
+                        </EditWeightPopup>
+                      ) : (
+                        <div className={styles.weightChip}>
+                          <Icon name="balance scale" size="small" />
+                          {card.weight}
+                        </div>
+                      )}
+                    </span>
                   </div>
                 )}
               </div>
@@ -749,6 +773,14 @@ const StoryContent = React.memo(() => {
                       {t('common.attachment')}
                     </Button>
                   </AddAttachmentPopup>
+                )}
+                {canEditWeight && (
+                  <EditWeightPopup cardId={card.id}>
+                    <Button fluid className={classNames(styles.actionButton, styles.hidable)}>
+                      <Icon name="balance scale" className={styles.actionIcon} />
+                      Weight
+                    </Button>
+                  </EditWeightPopup>
                 )}
                 {canAddCustomFieldGroup && (
                   <AddCustomFieldGroupPopup onCreate={handleCustomFieldGroupCreate}>

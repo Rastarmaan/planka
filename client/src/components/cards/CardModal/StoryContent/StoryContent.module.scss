@@ -3,7 +3,7 @@
  * Licensed under the Fair Use License: https://github.com/plankanban/planka/blob/master/LICENSE.md
  */
 
- :global(#app) {
+:global(#app) {
   .actionButton {
     background: #ebeef0;
     box-shadow: 0 1px 0 0 rgba(9, 30, 66, 0.13);
@@ -668,4 +668,16 @@
   &:active {
     background: rgba(9, 30, 66, 0.13);
   }
+}
+
+.weightChip {
+  background: #f1f2f4;
+  border: 1px solid #dfe1e6;
+  border-radius: 3px;
+  padding: 4px 8px;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 0.875rem;
+  color: #172b4d;
 }
