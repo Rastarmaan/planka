@@ -152,16 +152,16 @@ const ProjectContent = React.memo(({ cardId }) => {
   return (
     <div className={styles.wrapper}>
       <div className={classNames(styles.name, card.isClosed && styles.nameClosed)}>{card.name}</div>
-      {card.weight > 1 && (
-        <span className={styles.attachments}>
-          <span className={classNames(styles.attachment, styles.attachmentLeft)}>
-            <span className={styles.attachmentContent}>
-              <Icon name="balance scale" />
-              {card.weight}
-            </span>
+
+      <span className={styles.attachments}>
+        <span className={classNames(styles.attachment, styles.attachmentLeft)}>
+          <span className={styles.attachmentContent}>
+            <Icon name="balance scale" />
+            {card.weight}
           </span>
         </span>
-      )}
+      </span>
+
       {parentCard && (
         <div
           className={classNames(
@@ -217,14 +217,14 @@ const ProjectContent = React.memo(({ cardId }) => {
               {notificationsTotal}
             </span>
           )}
-          {card.weight > 1 && (
-            <span className={classNames(styles.attachment, styles.attachmentLeft)}>
-              <span className={styles.attachmentContent}>
-                <Icon name="balance scale" />
-                {card.weight}
-              </span>
+
+          <span className={classNames(styles.attachment, styles.attachmentLeft)}>
+            <span className={styles.attachmentContent}>
+              <Icon name="balance scale" />
+              {card.weight}
             </span>
-          )}
+          </span>
+
           {card.dueDate && (
             <span className={classNames(styles.attachment, styles.attachmentLeft)}>
               <DueDateChip

@@ -472,7 +472,7 @@ const StoryContent = React.memo(() => {
                     )}
                   </div>
                 )}
-                {card.weight && card.weight > 1 && (
+                {card.weight && (
                   <div className={styles.attachments}>
                     <span className={styles.attachment}>
                       {canEditWeight ? (

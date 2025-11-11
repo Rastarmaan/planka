@@ -855,7 +855,7 @@ const ProjectContent = React.memo(() => {
                   )}
                 </div>
               )}
-              {card.weight && card.weight > 1 && (
+              {card.weight && (
                 <div className={styles.attachments}>
                   <div className={styles.text}>Weight</div>
                   <span className={styles.attachment}>
