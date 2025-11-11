@@ -472,25 +472,6 @@ const StoryContent = React.memo(() => {
                     )}
                   </div>
                 )}
-                {card.weight && (
-                  <div className={styles.attachments}>
-                    <span className={styles.attachment}>
-                      {canEditWeight ? (
-                        <EditWeightPopup cardId={card.id}>
-                          <div className={styles.weightChip}>
-                            <Icon name="balance scale" size="small" />
-                            {card.weight}
-                          </div>
-                        </EditWeightPopup>
-                      ) : (
-                        <div className={styles.weightChip}>
-                          <Icon name="balance scale" size="small" />
-                          {card.weight}
-                        </div>
-                      )}
-                    </span>
-                  </div>
-                )}
               </div>
             )}
             {(card.description || canEditDescription) && (

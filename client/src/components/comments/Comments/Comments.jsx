@@ -3,9 +3,8 @@
  * Licensed under the Fair Use License: https://github.com/plankanban/planka/blob/master/LICENSE.md
  */
 
-import React, { useMemo } from 'react';
+import React, { useEffect, useMemo } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { useInView } from 'react-intersection-observer';
 import { Comment, Loader } from 'semantic-ui-react';
 
 import selectors from '../../../selectors';
@@ -46,14 +45,9 @@ const Comments = React.memo(() => {
 
   const dispatch = useDispatch();
 
-  const [inViewRef] = useInView({
-    threshold: 1,
-    onChange: (inView) => {
-      if (inView) {
-        dispatch(entryActions.fetchCommentsInCurrentCard());
-      }
-    },
-  });
+  useEffect(() => {
+    dispatch(entryActions.fetchCommentsInCurrentCard());
+  }, [dispatch]);
 
   return (
     <>
@@ -67,11 +61,7 @@ const Comments = React.memo(() => {
       </div>
       {isCommentsFetching !== undefined && isAllCommentsFetched !== undefined && (
         <div className={styles.loaderWrapper}>
-          {isCommentsFetching ? (
-            <Loader active inverted inline="centered" size="small" />
-          ) : (
-            !isAllCommentsFetched && <div ref={inViewRef} />
-          )}
+          {isCommentsFetching && <Loader active inverted inline="centered" size="small" />}
         </div>
       )}
     </>

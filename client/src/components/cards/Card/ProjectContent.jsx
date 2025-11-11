@@ -218,13 +218,6 @@ const ProjectContent = React.memo(({ cardId }) => {
             </span>
           )}
 
-          <span className={classNames(styles.attachment, styles.attachmentLeft)}>
-            <span className={styles.attachmentContent}>
-              <Icon name="balance scale" />
-              {card.weight}
-            </span>
-          </span>
-
           {card.dueDate && (
             <span className={classNames(styles.attachment, styles.attachmentLeft)}>
               <DueDateChip

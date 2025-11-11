@@ -113,6 +113,12 @@ const StoryContent = React.memo(({ cardId }) => {
         <div className={classNames(styles.name, card.isClosed && styles.nameClosed)}>
           {card.name}
         </div>
+        <span className={classNames(styles.attachment, styles.attachmentLeft)}>
+          <span className={styles.attachmentContent}>
+            <Icon name="balance scale" />
+            {card.weight}
+          </span>
+        </span>
         {parentCard && (
           <div className={styles.epicBadge}>
             <Icon name="sitemap" />
@@ -133,13 +139,6 @@ const StoryContent = React.memo(({ cardId }) => {
                 {notificationsTotal}
               </span>
             )}
-
-            <span className={classNames(styles.attachment, styles.attachmentLeft)}>
-              <span className={styles.attachmentContent}>
-                <Icon name="balance scale" />
-                {card.weight}
-              </span>
-            </span>
 
             {listName && (
               <span className={classNames(styles.attachment, styles.attachmentLeft)}>

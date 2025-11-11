@@ -101,15 +101,6 @@ const InlineContent = React.memo(({ cardId }) => {
         <div className={styles.hidable}>{card.name}</div>
       </span>
 
-      <span className={styles.attachments}>
-        <span className={classNames(styles.attachment, styles.attachmentLeft)}>
-          <span className={styles.attachmentContent}>
-            <Icon name="balance scale" />
-            {card.weight}
-          </span>
-        </span>
-      </span>
-
       {descriptionText && (
         <span className={classNames(styles.attachments, styles.descriptionText, styles.hidable)}>
           {descriptionText}

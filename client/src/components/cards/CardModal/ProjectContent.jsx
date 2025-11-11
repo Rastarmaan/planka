@@ -65,7 +65,8 @@ const ProjectContent = React.memo(() => {
     shallowEqual,
   );
 
-  // Use singleton selectors to avoid memoization issues
+  const [isDependenciesLoaded, setIsDependenciesLoaded] = useState(false);
+
   const selectDependsOnCardsByCardId = useMemo(
     () => selectors.makeSelectDependsOnCardsByCardId(),
     [],
@@ -77,15 +78,17 @@ const ProjectContent = React.memo(() => {
   const selectDependenciesByCardId = useMemo(() => selectors.makeSelectDependenciesByCardId(), []);
 
   const dependsOnCards = useSelector(
-    (state) => (card?.id ? selectDependsOnCardsByCardId(state, card.id) : []),
+    (state) =>
+      card?.id && isDependenciesLoaded ? selectDependsOnCardsByCardId(state, card.id) : [],
     shallowEqual,
   );
   const dependentCards = useSelector(
-    (state) => (card?.id ? selectDependentCardsByCardId(state, card.id) : []),
+    (state) =>
+      card?.id && isDependenciesLoaded ? selectDependentCardsByCardId(state, card.id) : [],
     shallowEqual,
   );
   const dependencyRecords = useSelector(
-    (state) => (card?.id ? selectDependenciesByCardId(state, card.id) : []),
+    (state) => (card?.id && isDependenciesLoaded ? selectDependenciesByCardId(state, card.id) : []),
     shallowEqual,
   );
 
@@ -95,7 +98,10 @@ const ProjectContent = React.memo(() => {
   );
 
   const dependencyCardLists = useSelector(
-    (state) => selectors.selectDependencyCardLists(state, dependsOnCards, dependentCards),
+    (state) =>
+      isDependenciesLoaded && (dependsOnCards.length > 0 || dependentCards.length > 0)
+        ? selectors.selectDependencyCardLists(state, dependsOnCards, dependentCards)
+        : {},
     shallowEqual,
   );
 
@@ -197,6 +203,12 @@ const ProjectContent = React.memo(() => {
       canAddCustomFieldGroup: isEditor,
     };
   }, shallowEqual);
+
+  useEffect(() => {
+    if (card?.id && canUseLists && !isDependenciesLoaded) {
+      setIsDependenciesLoaded(true);
+    }
+  }, [card?.id, canUseLists, isDependenciesLoaded]);
 
   const dispatch = useDispatch();
   const [t] = useTranslation();
@@ -450,9 +462,11 @@ const ProjectContent = React.memo(() => {
 
   useEffect(() => {
     if (card?.id && (card.type === CardTypes.EPIC || card.type === CardTypes.STORY)) {
-      dispatch(entryActions.fetchChildCards(card.id));
+      if (childCards?.length > 0 || canUseLists) {
+        dispatch(entryActions.fetchChildCards(card.id));
+      }
     }
-  }, [card?.id, card?.type, dispatch]);
+  }, [card?.id, card?.type, childCards?.length, canUseLists, dispatch]);
 
   const CreationDetailsPopup = usePopupInClosableContext(CreationDetailsStep);
   const BoardMembershipsPopup = usePopupInClosableContext(BoardMembershipsStep);
@@ -725,50 +739,7 @@ const ProjectContent = React.memo(() => {
                   )}
                 </div>
               )}
-              {(dependsOnCards.length > 0 || dependentCards.length > 0) && (
-                <div className={styles.attachments}>
-                  <div className={styles.text}>
-                    {t('common.dependencies', {
-                      context: 'title',
-                    })}
-                  </div>
-                  {dependsOnCards.length > 0 && (
-                    <span className={styles.attachment}>
-                      <DependenciesPopup cardId={card.id}>
-                        <button
-                          type="button"
-                          className={classNames(styles.attachment, styles.dependencyButton)}
-                        >
-                          <Icon name="arrow left" size="small" />
-                          <span>
-                            {t('common.blockedBy')} ({dependsOnCards.length})
-                          </span>
-                        </button>
-                      </DependenciesPopup>
-                    </span>
-                  )}
-                  {dependentCards.length > 0 && (
-                    <span className={styles.attachment}>
-                      <DependenciesPopup cardId={card.id}>
-                        <button
-                          type="button"
-                          className={classNames(styles.attachment, styles.dependencyButton)}
-                        >
-                          <Icon name="arrow right" size="small" />
-                          <span>
-                            {t('common.blocking')} ({dependentCards.length})
-                          </span>
-                        </button>
-                      </DependenciesPopup>
-                    </span>
-                  )}
-                  <DependenciesPopup cardId={card.id}>
-                    <button type="button" className={classNames(styles.attachment, styles.dueDate)}>
-                      <Icon name="add" size="small" className={styles.addAttachment} />
-                    </button>
-                  </DependenciesPopup>
-                </div>
-              )}
+
               {card.startDate && (
                 <div className={styles.attachments}>
                   <div className={styles.text}>
@@ -853,26 +824,6 @@ const ProjectContent = React.memo(() => {
                       />
                     </button>
                   )}
-                </div>
-              )}
-              {card.weight && (
-                <div className={styles.attachments}>
-                  <div className={styles.text}>Weight</div>
-                  <span className={styles.attachment}>
-                    {canEditWeight ? (
-                      <EditWeightPopup cardId={card.id}>
-                        <div className={styles.weightChip}>
-                          <Icon name="balance scale" size="small" />
-                          {card.weight}
-                        </div>
-                      </EditWeightPopup>
-                    ) : (
-                      <div className={styles.weightChip}>
-                        <Icon name="balance scale" size="small" />
-                        {card.weight}
-                      </div>
-                    )}
-                  </span>
                 </div>
               )}
             </div>
@@ -1233,12 +1184,6 @@ const ProjectContent = React.memo(() => {
                     </Button>
                   </LabelsPopup>
                 )}
-                <DependenciesPopup cardId={card.id}>
-                  <Button fluid className={classNames(styles.actionButton, styles.hidable)}>
-                    <Icon name="random" className={styles.actionIcon} />
-                    {t('common.dependencies')}
-                  </Button>
-                </DependenciesPopup>
                 {canEditStartDate && (
                   <EditStartDatePopup cardId={card.id}>
                     <Button fluid className={classNames(styles.actionButton, styles.hidable)}>
