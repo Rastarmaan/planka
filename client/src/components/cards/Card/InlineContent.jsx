@@ -7,10 +7,12 @@ import React, { useMemo } from 'react';
 import PropTypes from 'prop-types';
 import classNames from 'classnames';
 import { useSelector } from 'react-redux';
+import { useTranslation } from 'react-i18next';
 import { Icon } from 'semantic-ui-react';
 
 import selectors from '../../../selectors';
 import markdownToText from '../../../utils/markdown-to-text';
+import { getTextDirectionStyles } from '../../../utils/text-direction';
 import { BoardViews } from '../../../constants/Enums';
 import UserAvatar from '../../users/UserAvatar';
 import LabelChip from '../../labels/LabelChip';
@@ -52,6 +54,13 @@ const InlineContent = React.memo(({ cardId }) => {
   const descriptionText = useMemo(
     () => card.description && markdownToText(card.description),
     [card.description],
+  );
+
+  const { i18n } = useTranslation();
+
+  const nameDirectionStyles = useMemo(
+    () => getTextDirectionStyles(card?.name || '', i18n.language),
+    [card?.name, i18n.language],
   );
 
   return (
@@ -98,7 +107,9 @@ const InlineContent = React.memo(({ cardId }) => {
       <span
         className={classNames(styles.attachments, styles.name, card.isClosed && styles.nameClosed)}
       >
-        <div className={styles.hidable}>{card.name}</div>
+        <div className={styles.hidable} style={nameDirectionStyles}>
+          {card.name}
+        </div>
       </span>
 
       {descriptionText && (

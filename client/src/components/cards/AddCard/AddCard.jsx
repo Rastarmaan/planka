@@ -3,7 +3,7 @@
  * Licensed under the Fair Use License: https://github.com/plankanban/planka/blob/master/LICENSE.md
  */
 
-import React, { useCallback, useEffect } from 'react';
+import React, { useCallback, useEffect, useMemo } from 'react';
 import PropTypes from 'prop-types';
 import classNames from 'classnames';
 import { useSelector } from 'react-redux';
@@ -16,6 +16,7 @@ import { usePopup } from '../../../lib/popup';
 import selectors from '../../../selectors';
 import { useClosable, useForm, useNestedRef } from '../../../hooks';
 import { isModifierKeyPressed } from '../../../utils/event-helpers';
+import { getTextDirectionStyles } from '../../../utils/text-direction';
 import { CardTypeIcons } from '../../../constants/Icons';
 import SelectCardTypeStep from '../SelectCardTypeStep';
 
@@ -30,13 +31,18 @@ const AddCard = React.memo(({ isOpened, className, onCreate, onClose }) => {
   const { defaultCardType: defaultType, limitCardTypesToDefaultOne: limitTypesToDefaultOne } =
     useSelector(selectors.selectCurrentBoard);
 
-  const [t] = useTranslation();
+  const [t, i18n] = useTranslation();
   const prevDefaultType = usePrevious(defaultType);
 
   const [data, handleFieldChange, setData] = useForm(() => ({
     ...DEFAULT_DATA,
     type: defaultType,
   }));
+
+  const inputDirectionStyles = useMemo(
+    () => getTextDirectionStyles(data.name, i18n.language),
+    [data.name, i18n.language],
+  );
 
   const [focusNameFieldState, focusNameField] = useToggle();
   const [isClosableActiveRef, activateClosable, deactivateClosable] = useClosable();
@@ -187,6 +193,7 @@ const AddCard = React.memo(({ isOpened, className, onCreate, onClose }) => {
           maxLength={1024}
           minRows={3}
           className={styles.field}
+          style={inputDirectionStyles}
           onKeyDown={handleFieldKeyDown}
           onChange={handleFieldChange}
         />

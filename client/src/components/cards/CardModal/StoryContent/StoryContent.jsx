@@ -18,6 +18,7 @@ import Paths from '../../../../constants/Paths';
 import { ClosableContext } from '../../../../contexts';
 import entryActions from '../../../../entry-actions';
 import { usePopupInClosableContext } from '../../../../hooks';
+import { getTextDirectionStyles } from '../../../../utils/text-direction';
 import selectors from '../../../../selectors';
 import { isUsableMarkdownElement } from '../../../../utils/element-helpers';
 import AddAttachmentStep from '../../../attachments/AddAttachmentStep';
@@ -161,8 +162,13 @@ const StoryContent = React.memo(() => {
     };
   }, shallowEqual);
 
-  const [t] = useTranslation();
+  const [t, i18n] = useTranslation();
   const [descriptionDraft, setDescriptionDraft] = useState(null);
+
+  const titleDirectionStyles = useMemo(
+    () => getTextDirectionStyles(card?.name || '', i18n.language),
+    [card?.name, i18n.language],
+  );
   const [isEditDescriptionOpened, setIsEditDescriptionOpened] = useState(false);
   const [activateClosable, deactivateClosable, setIsClosableActive] = useContext(ClosableContext);
 
@@ -372,7 +378,9 @@ const StoryContent = React.memo(() => {
               {canEditName ? (
                 <NameField defaultValue={card.name} size="large" onUpdate={handleNameUpdate} />
               ) : (
-                <div className={styles.headerTitle}>{card.name}</div>
+                <div className={styles.headerTitle} style={titleDirectionStyles}>
+                  {card.name}
+                </div>
               )}
             </div>
           </div>

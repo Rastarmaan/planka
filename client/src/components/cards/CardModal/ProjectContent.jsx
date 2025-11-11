@@ -18,6 +18,7 @@ import { ClosableContext } from '../../../contexts';
 import entryActions from '../../../entry-actions';
 import { usePopupInClosableContext } from '../../../hooks';
 import selectors from '../../../selectors';
+import { getTextDirectionStyles } from '../../../utils/text-direction';
 import { isUsableMarkdownElement } from '../../../utils/element-helpers';
 import { startStopwatch, stopStopwatch } from '../../../utils/stopwatch';
 import AddAttachmentStep from '../../attachments/AddAttachmentStep';
@@ -211,8 +212,13 @@ const ProjectContent = React.memo(() => {
   }, [card?.id, canUseLists, isDependenciesLoaded]);
 
   const dispatch = useDispatch();
-  const [t] = useTranslation();
+  const [t, i18n] = useTranslation();
   const [descriptionDraft, setDescriptionDraft] = useState(null);
+
+  const titleDirectionStyles = useMemo(
+    () => getTextDirectionStyles(card?.name || '', i18n.language),
+    [card?.name, i18n.language],
+  );
   const [isEditDescriptionOpened, setIsEditDescriptionOpened] = useState(false);
   const [, , setIsClosableActive] = useContext(ClosableContext);
 
@@ -493,7 +499,9 @@ const ProjectContent = React.memo(() => {
               {canEditName ? (
                 <NameField defaultValue={card.name} onUpdate={handleNameUpdate} />
               ) : (
-                <div className={styles.headerTitle}>{card.name}</div>
+                <div className={styles.headerTitle} style={titleDirectionStyles}>
+                  {card.name}
+                </div>
               )}
             </div>
           </div>
