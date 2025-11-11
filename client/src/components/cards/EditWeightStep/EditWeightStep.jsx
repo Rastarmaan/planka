@@ -7,7 +7,7 @@ import React, { useCallback, useMemo, useState } from 'react';
 import PropTypes from 'prop-types';
 import { useDispatch, useSelector } from 'react-redux';
 import { useTranslation } from 'react-i18next';
-import { Button, Form } from 'semantic-ui-react';
+import { Button, Dropdown, Form } from 'semantic-ui-react';
 import { Popup } from '../../../lib/custom-ui';
 
 import selectors from '../../../selectors';
@@ -26,13 +26,18 @@ const EditWeightStep = React.memo(({ cardId, onBack, onClose }) => {
 
   const [weight, setWeight] = useState(defaultValue);
 
-  const handleWeightChange = useCallback((event) => {
-    const value = parseInt(event.target.value, 10);
-    if (!Number.isNaN(value) && value >= 1 && value <= 10) {
-      setWeight(value);
-    } else if (event.target.value === '') {
-      setWeight('');
-    }
+  const weightOptions = useMemo(
+    () =>
+      Array.from({ length: 10 }, (_, i) => ({
+        key: i + 1,
+        value: i + 1,
+        text: `${i + 1}`,
+      })),
+    [],
+  );
+
+  const handleWeightChange = useCallback((event, { value }) => {
+    setWeight(value);
   }, []);
 
   const handleSubmit = useCallback(() => {
@@ -60,19 +65,15 @@ const EditWeightStep = React.memo(({ cardId, onBack, onClose }) => {
         <Form onSubmit={handleSubmit}>
           <div className={styles.fieldWrapper}>
             {/* eslint-disable-next-line jsx-a11y/label-has-associated-control */}
-            <label htmlFor="weight" className={styles.label}>
-              Weight (1-10):
-            </label>
+            <label className={styles.label}>Weight (1-10):</label>
 
-            <input
-              type="number"
-              id="weight"
-              name="weight"
-              min="1"
-              max="10"
+            <Dropdown
+              selection
+              compact
               value={weight}
-              className={styles.input}
+              options={weightOptions}
               onChange={handleWeightChange}
+              className={styles.dropdown}
             />
           </div>
           <Button positive content={t('action.save')} />
