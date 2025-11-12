@@ -155,13 +155,14 @@ module.exports = {
 
     const isProjectManager = await sails.helpers.users.isProjectManager(currentUser.id, project.id);
     const isBoardMember = await sails.helpers.users.isBoardMember(currentUser.id, board.id);
+    const isAdminOrProjectOwner = sails.helpers.users.isAdminOrProjectOwner(currentUser);
 
-    if (!isProjectManager && !isBoardMember) {
+    if (!isProjectManager && !isBoardMember && !isAdminOrProjectOwner) {
       throw Errors.BOARD_NOT_FOUND; // Forbidden
     }
 
     const availableInputKeys = ['id'];
-    if (isProjectManager) {
+    if (isProjectManager || isAdminOrProjectOwner) {
       availableInputKeys.push(
         'position',
         'name',
