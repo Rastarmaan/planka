@@ -137,6 +137,7 @@ module.exports.routes = {
   'PATCH /api/global-labels/:id': 'global-labels/update',
   'DELETE /api/global-labels/:id': 'global-labels/delete',
 
+  'GET /api/labels': 'labels/index',
   'POST /api/boards/:boardId/labels': 'labels/create',
   'PATCH /api/labels/:id': 'labels/update',
   'DELETE /api/labels/:id': 'labels/delete',
@@ -156,6 +157,7 @@ module.exports.routes = {
 
   'GET /api/lists/:listId/cards': 'cards/index',
   'POST /api/lists/:listId/cards': 'cards/create',
+  'GET /api/cards/filter': 'cards/filter',
   'GET /api/cards/:id': 'cards/show',
   'GET /api/cards/:id/children': 'cards/get-children',
   'PATCH /api/cards/:id': 'cards/update',

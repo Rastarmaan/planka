@@ -16,6 +16,7 @@ import Paths from '../../constants/Paths';
 import Login from './Login';
 import Core from './Core';
 import NotFound from './NotFound';
+import HomePage from './HomePage';
 
 import 'react-datepicker/dist/react-datepicker.css';
 import 'photoswipe/dist/photoswipe.css';
@@ -33,7 +34,7 @@ function Root({ store, history }) {
             <Routes>
               <Route path={Paths.LOGIN} element={<Login />} />
               <Route path={Paths.OIDC_CALLBACK} element={<Login />} />
-              <Route path={Paths.ROOT} element={<Core />} />
+              <Route path={Paths.ROOT} element={<HomePage />} />
               <Route path={Paths.PROJECTS} element={<Core />} />
               <Route path={Paths.BOARDS} element={<Core />} />
               <Route path={Paths.CARDS} element={<Core />} />

@@ -7,6 +7,8 @@ import socket from './socket';
 
 /* Actions */
 
+const getAllLabels = (headers) => socket.get('/labels', undefined, headers);
+
 const getGlobalLabels = (headers) => socket.get('/global-labels', undefined, headers);
 
 const createGlobalLabel = (data, headers) => socket.post('/global-labels', data, headers);
@@ -25,6 +27,7 @@ const updateLabel = (id, data, headers) => socket.patch(`/labels/${id}`, data, h
 const deleteLabel = (id, headers) => socket.delete(`/labels/${id}`, undefined, headers);
 
 export default {
+  getAllLabels,
   getGlobalLabels,
   createGlobalLabel,
   updateGlobalLabel,

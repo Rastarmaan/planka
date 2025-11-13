@@ -119,6 +119,22 @@ const getChildCards = (parentId, headers) =>
     },
   }));
 
+const filterCards = (filters, headers) => {
+  const queryParams = new URLSearchParams();
+  Object.keys(filters).forEach((key) => {
+    if (filters[key] !== undefined && filters[key] !== null) {
+      queryParams.append(key, filters[key]);
+    }
+  });
+  const queryString = queryParams.toString();
+  const url = `/cards/filter${queryString ? `?${queryString}` : ''}`;
+
+  return socket.get(url, undefined, headers).then((body) => ({
+    ...body,
+    items: body.items.map(transformCard),
+  }));
+};
+
 /* Event handlers */
 
 const makeHandleCardsUpdate = (next) => (body) => {
@@ -152,6 +168,7 @@ export default {
   readCardNotifications,
   deleteCard,
   getChildCards,
+  filterCards,
   makeHandleCardsUpdate,
   makeHandleCardCreate,
   makeHandleCardUpdate,
