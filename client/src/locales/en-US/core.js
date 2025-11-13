@@ -402,6 +402,7 @@ export default {
       selectProject: 'Select project',
       selectRole_title: 'Select Role',
       selectType_title: 'Select Type',
+      selectWeight: 'Select Weight',
       sequentialDisplayOfCards: 'Sequential display of cards.',
       settings: 'Settings',
       shared: 'Shared',
@@ -517,6 +518,16 @@ export default {
       children: 'children',
       selectCardsToIncludeInThisRelease:
         'Select the cards you want to include in this release. Selecting a parent will automatically select all its children.',
+      selectProjects: 'Select Projects',
+      selectUsers: 'Select Users',
+      selectLabels: 'Select Labels',
+      to: 'To',
+      weight: 'Weight',
+      selectFiltersToSearch: 'Select filters and click "Filter" to search for cards.',
+      cardsFilter: 'Cards Filter',
+      projectsAndMembers: 'Projects & Members',
+      dates: 'Dates',
+      results: 'Results',
     },
 
     action: {
@@ -668,6 +679,10 @@ export default {
       selectCardsForRelease: 'Select Cards for Release',
       searchCards: 'Search cards...',
       release_action: 'Release',
+      backToProjects: 'Back to Projects',
+      filter: 'Filter',
+      reset: 'Reset',
+      selectWeight: 'Select Weight',
     },
   },
 };

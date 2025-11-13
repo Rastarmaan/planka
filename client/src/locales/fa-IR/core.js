@@ -338,6 +338,7 @@ export default {
       selectProject: 'انتخاب پروژه',
       selectRole_title: null,
       selectType_title: null,
+      selectWeight: 'انتخاب وزن',
       sequentialDisplayOfCards: null,
       settings: 'تنظیمات',
       shared: null,
@@ -441,6 +442,17 @@ export default {
       children: 'فرزند',
       selectCardsToIncludeInThisRelease:
         'کارت‌هایی که می‌خواهید در این نسخه انتشار قرار گیرند را انتخاب کنید. انتخاب والد به طور خودکار تمام فرزندان را انتخاب می‌کند.',
+      selectProjects: 'انتخاب پروژه‌ها',
+      selectUsers: 'انتخاب کاربران',
+      selectLabels: 'انتخاب برچسب‌ها',
+      to: 'تا',
+      weight: 'وزن',
+      selectFiltersToSearch:
+        'فیلترها را انتخاب کنید و روی "فیلتر" کلیک کنید تا کارت‌ها را جستجو کنید.',
+      cardsFilter: 'فیلتر کارت‌ها',
+      projectsAndMembers: 'پروژه‌ها و اعضا',
+      dates: 'تاریخ‌ها',
+      results: 'نتایج',
     },
 
     action: {
@@ -584,6 +596,10 @@ export default {
       transferBoard: 'انتقال برد',
       selectCardsForRelease: 'انتخاب کارت‌ها برای نسخه انتشار',
       searchCards: 'جستجوی کارت‌ها...',
+      backToProjects: 'بازگشت به پروژه‌ها',
+      filter: 'فیلتر',
+      reset: 'بازنشانی',
+      selectWeight: 'انتخاب وزن',
     },
   },
 };
