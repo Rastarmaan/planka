@@ -298,5 +298,10 @@ module.exports = {
       via: 'dependsOnCardId',
       through: 'CardDependency',
     },
+    boardReleases: {
+      collection: 'BoardRelease',
+      via: 'cardId',
+      through: 'ReleaseCard',
+    },
   },
 };

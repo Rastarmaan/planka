@@ -220,6 +220,7 @@ module.exports = {
     const users = await User.qm.getByIds(userIds);
     const cardMemberships = await CardMembership.qm.getByCardIds(cardIds);
     const cardLabels = await CardLabel.qm.getByCardIds(cardIds);
+    const releaseCards = await ReleaseCard.qm.getByCardIds(cardIds);
 
     const cardDependencies1 = await CardDependency.qm.getByCardIds(cardIds);
     const cardDependencies2 = await CardDependency.qm.getByDependsOnCardIds(cardIds);
@@ -239,6 +240,8 @@ module.exports = {
 
     const customFields = await CustomField.qm.getByCustomFieldGroupIds(customFieldGroupIds);
     const customFieldValues = await CustomFieldValue.qm.getByCardIds(cardIds);
+
+    const boardReleases = await BoardRelease.qm.getByBoardId(board.id);
 
     const cardSubscriptions = await CardSubscription.qm.getByCardIdsAndUserId(
       cardIds,
@@ -277,6 +280,8 @@ module.exports = {
         customFieldGroups,
         customFields,
         customFieldValues,
+        boardReleases,
+        releaseCards,
         users: sails.helpers.users.presentMany(users, currentUser),
         projects: [project],
         attachments: sails.helpers.attachments.presentMany(attachments),

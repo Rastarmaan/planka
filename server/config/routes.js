@@ -124,6 +124,15 @@ module.exports.routes = {
   'POST /api/boards/:boardId/duplicate': 'boards/duplicate',
   'DELETE /api/boards/:id': 'boards/delete',
 
+  'GET /api/boards/:boardId/releases': 'board-releases/index',
+  'POST /api/boards/:boardId/releases': 'board-releases/create',
+  'PUT /api/boards/:boardId/releases/:id': 'board-releases/update',
+  'PATCH /api/boards/:boardId/releases/:id/status': 'board-releases/update-status',
+  'DELETE /api/boards/:boardId/releases/:id': 'board-releases/delete',
+
+  'POST /api/releases/:releaseId/cards': 'releases/add-card',
+  'DELETE /api/releases/:releaseId/cards/:cardId': 'releases/remove-card',
+
   'GET /api/boards/:boardId/links': 'board-links/show',
   'PATCH /api/board-links/:id': 'board-links/update',
   'DELETE /api/board-links/:id': 'board-links/delete',
@@ -169,6 +178,8 @@ module.exports.routes = {
   'POST /api/cards/:cardId/card-dependencies': 'card-dependencies/create',
   'DELETE /api/cards/:cardId/card-dependencies/dependsOnCardId::dependsOnCardId':
     'card-dependencies/delete',
+
+  'PATCH /api/cards/:cardId/release': 'cards/release/update',
 
   'POST /api/cards/:cardId/task-lists': 'task-lists/create',
   'GET /api/task-lists/:id': 'task-lists/show',
