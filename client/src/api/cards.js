@@ -68,14 +68,18 @@ const createCard = (listId, data, headers) =>
   }));
 
 const getCard = (id, headers) =>
-  socket.get(`/cards/${id}`, undefined, headers).then((body) => ({
-    ...body,
-    item: transformCard(body.item),
-    included: {
-      ...body.included,
-      attachments: body.included.attachments.map(transformAttachment),
-    },
-  }));
+  socket.get(`/cards/${id}`, undefined, headers).then((body) => {
+    return {
+      ...body,
+      item: transformCard(body.item),
+      included: {
+        ...body.included,
+        attachments: body.included.attachments.map(transformAttachment),
+        releaseCards: body.included.releaseCards || [],
+        boardReleases: body.included.boardReleases || [],
+      },
+    };
+  });
 
 const updateCard = (id, data, headers) =>
   socket.patch(`/cards/${id}`, transformCardData(data), headers).then((body) => ({

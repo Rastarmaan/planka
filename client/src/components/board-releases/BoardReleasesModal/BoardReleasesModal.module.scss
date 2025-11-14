@@ -1,0 +1,112 @@
+.container {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px 0;
+  border-bottom: 1px solid #e2e8f0;
+}
+
+.headerText {
+  h3 {
+    margin: 0 0 4px 0;
+    font-size: 18px;
+    font-weight: 600;
+    color: #1e293b;
+  }
+
+  p {
+    margin: 0;
+    font-size: 13px;
+    color: #64748b;
+  }
+}
+
+.button {
+  box-shadow: 0 1px 0 #cbcccc;
+}
+
+.createForm {
+  padding: 16px;
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 3px;
+  margin-bottom: 8px;
+}
+
+.releasesList {
+  display: flex;
+  flex-direction: column;
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 3px;
+  overflow: visible;
+  position: relative;
+}
+
+.tableHeader {
+  display: grid;
+  grid-template-columns: 1.5fr 1.5fr 140px 140px 140px 80px 80px;
+  gap: 16px;
+  align-items: center;
+  padding: 12px 20px;
+  background: #f8fafc;
+  border-bottom: 2px solid #e2e8f0;
+  font-size: 12px;
+  font-weight: 600;
+  color: #64748b;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.tableHeader .nameColumn,
+.tableHeader .targetColumn,
+.tableHeader .dateColumn,
+.tableHeader .statusColumn,
+.tableHeader .cardsColumn,
+.tableHeader .actionsColumn {
+  display: flex;
+  align-items: center;
+}
+
+.tableHeader .dateColumn {
+  justify-content: flex-start;
+}
+
+.tableHeader .statusColumn {
+  justify-content: flex-start;
+}
+
+.tableHeader .actionsColumn {
+  justify-content: flex-end;
+}
+
+.emptyState {
+  text-align: center;
+  padding: 48px 20px;
+  color: #64748b;
+
+  .icon {
+    font-size: 48px;
+    color: #cbd5e1;
+    margin-bottom: 16px;
+  }
+
+  .title {
+    font-size: 16px;
+    font-weight: 600;
+    margin-bottom: 8px;
+    color: #475569;
+  }
+
+  .description {
+    font-size: 14px;
+    line-height: 1.5;
+    color: #64748b;
+  }
+}

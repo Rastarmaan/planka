@@ -44,6 +44,8 @@ export function* initializeCore() {
     customFieldValues,
     notifications,
     notificationServices,
+    boardReleases,
+    releaseCards,
   } = yield call(requests.fetchCore); // TODO: handle error
 
   yield call(i18n.changeLanguage, user.language);
@@ -76,6 +78,8 @@ export function* initializeCore() {
       customFieldValues,
       notifications,
       notificationServices,
+      boardReleases,
+      releaseCards,
     ),
   );
 }

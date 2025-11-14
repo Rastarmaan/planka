@@ -303,6 +303,25 @@ export const selectLabelIdsForCurrentCard = createSelector(
   },
 );
 
+export const selectReleaseIdsForCurrentCard = createSelector(
+  orm,
+  (state) => selectPath(state).cardId,
+  ({ Card }, id) => {
+    if (!id) {
+      return id;
+    }
+
+    const cardModel = Card.withId(id);
+
+    if (!cardModel) {
+      return cardModel;
+    }
+
+    const releaseIds = cardModel.releases.toRefArray().map((release) => release.id);
+    return releaseIds;
+  },
+);
+
 export const selectTaskListIdsForCurrentCard = createSelector(
   orm,
   (state) => selectPath(state).cardId,
@@ -565,6 +584,20 @@ export const selectDependencyCardLists = createReselectSelector(
   },
 );
 
+export const selectCardsForCurrentBoard = createSelector(
+  orm,
+  (state) => selectPath(state).boardId,
+  ({ Card }, boardId) => {
+    if (!boardId) {
+      return [];
+    }
+
+    return Card.all()
+      .filter((card) => card.boardId === boardId)
+      .toRefArray();
+  },
+);
+
 export default {
   makeSelectCardById,
   selectCardById,
@@ -590,6 +623,7 @@ export default {
   selectCurrentCard,
   selectUserIdsForCurrentCard,
   selectLabelIdsForCurrentCard,
+  selectReleaseIdsForCurrentCard,
   selectTaskListIdsForCurrentCard,
   selectAttachmentIdsForCurrentCard,
   selectImageAttachmentIdsExceptCoverForCurrentCard,
@@ -603,4 +637,5 @@ export default {
   selectChildCardsByParentId,
   selectChildCardListsByParentId,
   selectDependencyCardLists,
+  selectCardsForCurrentBoard,
 };

@@ -43,6 +43,20 @@ export const selectPath = createReduxOrmSelector(
             projectId: projectModel.id,
           };
         }
+        case Paths.PROJECT_RELEASES: {
+          const projectModel = Project.withId(pathsMatch.params.id);
+
+          if (!projectModel || !projectModel.isAvailableForUser(currentUserModel)) {
+            return {
+              projectId: null,
+            };
+          }
+
+          return {
+            projectId: projectModel.id,
+            showReleases: true,
+          };
+        }
         case Paths.BOARDS: {
           const boardModel = Board.withId(pathsMatch.params.id);
 
@@ -83,8 +97,14 @@ export const selectPath = createReduxOrmSelector(
   },
 );
 
+export const selectCurrentProjectId = createReselectSelector(
+  selectPath,
+  ({ projectId }) => projectId,
+);
+
 export default {
   selectPathname,
   selectPathsMatch,
   selectPath,
+  selectCurrentProjectId,
 };

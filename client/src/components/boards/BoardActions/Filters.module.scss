@@ -15,6 +15,7 @@
     display: inline-block;
     outline: none;
     padding: 0;
+    text-decoration: none;
 
     &:not(:first-of-type) {
       margin-left: 6px;

@@ -60,6 +60,8 @@ export function* fetchCore() {
   let customFieldGroups;
   let customFields2;
   let customFieldValues;
+  let boardReleases;
+  let releaseCards;
 
   try {
     ({
@@ -79,6 +81,8 @@ export function* fetchCore() {
       boardMemberships: boardMemberships2,
       cards: cards1,
       customFields: customFields2,
+      boardReleases,
+      releaseCards,
     } = yield call(fetchBoardByCurrentPath));
   } catch {
     /* empty */
@@ -132,6 +136,8 @@ export function* fetchCore() {
     cards: mergeRecords(card && [card], cards1),
     customFields: mergeRecords(customFields1, customFields2),
     notificationServices: mergeRecords(notificationServices1, notificationServices2),
+    boardReleases,
+    releaseCards,
   };
 }
 

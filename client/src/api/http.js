@@ -8,12 +8,20 @@ import Config from '../constants/Config';
 const http = {};
 
 // TODO: add all methods
-['GET', 'POST', 'DELETE'].forEach((method) => {
+['GET', 'POST', 'PUT', 'PATCH', 'DELETE'].forEach((method) => {
   http[method.toLowerCase()] = (url, data, headers) => {
     const formData =
       data &&
       Object.keys(data).reduce((result, key) => {
-        result.append(key, data[key]);
+        const value = data[key];
+
+        if (Array.isArray(value)) {
+          value.forEach((item) => {
+            result.append(`${key}[]`, item);
+          });
+        } else {
+          result.append(key, value);
+        }
 
         return result;
       }, new FormData());

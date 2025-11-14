@@ -86,6 +86,11 @@ export default class extends BaseModel {
       as: 'coverAttachment',
       relatedName: 'coveredCard',
     }),
+    releases: many({
+      to: 'BoardRelease',
+      through: 'ReleaseCard',
+      relatedName: 'cards',
+    }),
     users: many('User', 'cards'),
     labels: many('Label', 'cards'),
   };

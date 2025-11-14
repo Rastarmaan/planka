@@ -104,6 +104,8 @@ export function* fetchBoard(id) {
   let customFieldGroups;
   let customFields;
   let customFieldValues;
+  let boardReleases;
+  let releaseCards;
 
   try {
     ({
@@ -123,6 +125,8 @@ export function* fetchBoard(id) {
         customFieldGroups,
         customFields,
         customFieldValues,
+        boardReleases,
+        releaseCards,
       },
     } = yield call(request, api.getBoard, id, true));
   } catch (error) {
@@ -147,6 +151,8 @@ export function* fetchBoard(id) {
       customFieldGroups,
       customFields,
       customFieldValues,
+      boardReleases,
+      releaseCards,
     ),
   );
 }
@@ -250,6 +256,7 @@ export function* transferBoard(id, projectId) {
   try {
     ({ item: board } = yield call(request, api.transferBoard, id, projectId));
   } catch (error) {
+    // eslint-disable-next-line no-console
     console.error('Transfer board failed:', error);
     return;
   }

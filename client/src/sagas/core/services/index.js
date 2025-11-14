@@ -8,6 +8,7 @@ import attachments from './attachments';
 import backgroundImages from './background-images';
 import baseCustomFieldGroups from './base-custom-field-groups';
 import boardMemberships from './board-memberships';
+import boardReleases from './board-releases';
 import boards from './boards';
 import cards from './cards';
 import comments from './comments';
@@ -45,6 +46,7 @@ export default {
   ...baseCustomFieldGroups,
   ...boards,
   ...boardMemberships,
+  ...boardReleases,
   ...labels,
   ...globalLabels,
   ...lists,

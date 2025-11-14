@@ -10,6 +10,7 @@ import { BoardContexts, BoardViews } from '../../../constants/Enums';
 import ModalTypes from '../../../constants/ModalTypes';
 import selectors from '../../../selectors';
 import BoardActivitiesModal from '../../activities/BoardActivitiesModal';
+import BoardReleasesModal from '../../board-releases/BoardReleasesModal';
 import BoardVersionsModal from '../../board-versions/BoardVersionsModal';
 import CardModal from '../../cards/CardModal';
 import EndlessContent from './EndlessContent';
@@ -53,6 +54,10 @@ const Board = React.memo(() => {
         break;
       case ModalTypes.BOARD_VERSIONS:
         modalNode = <BoardVersionsModal />;
+
+        break;
+      case ModalTypes.BOARD_RELEASES:
+        modalNode = <BoardReleasesModal />;
 
         break;
       default:

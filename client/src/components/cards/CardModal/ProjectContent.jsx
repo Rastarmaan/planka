@@ -15,6 +15,7 @@ import { BoardMembershipRoles, CardTypes, ListTypes } from '../../../constants/E
 import { CardTypeIcons } from '../../../constants/Icons';
 import Paths from '../../../constants/Paths';
 import { ClosableContext } from '../../../contexts';
+import actions from '../../../actions';
 import entryActions from '../../../entry-actions';
 import { usePopupInClosableContext } from '../../../hooks';
 import selectors from '../../../selectors';
@@ -49,6 +50,7 @@ import DependenciesStep from './DependenciesStep';
 import MoreActionsStep from './MoreActionsStep';
 import NameField from './NameField';
 import TaskLists from './TaskLists';
+import ReleaseChip from '../../board-releases/ReleaseChip';
 
 import styles from './ProjectContent.module.scss';
 
@@ -58,9 +60,12 @@ const ProjectContent = React.memo(() => {
 
   const card = useSelector(selectors.selectCurrentCard);
   const board = useSelector(selectors.selectCurrentBoard);
+  const boardReleases = useSelector(selectors.selectActiveBoardReleasesForCurrentBoard);
   const userIds = useSelector(selectors.selectUserIdsForCurrentCard, shallowEqual);
   const labelIds = useSelector(selectors.selectLabelIdsForCurrentCard, shallowEqual);
+  const releaseIds = useSelector(selectors.selectReleaseIdsForCurrentCard, shallowEqual);
   const attachmentIds = useSelector(selectors.selectAttachmentIdsForCurrentCard, shallowEqual);
+
   const childCards = useSelector(
     (state) => selectors.selectChildCardsByParentId(state, card?.id),
     shallowEqual,
@@ -352,6 +357,20 @@ const ProjectContent = React.memo(() => {
       dispatch(entryActions.addStoryToCurrentCard(taskId));
     },
     [dispatch],
+  );
+
+  const handleReleaseSelect = useCallback(
+    (releaseId) => {
+      dispatch(actions.releaseCardAdd(releaseId, card.id));
+    },
+    [dispatch, card.id],
+  );
+
+  const handleRemoveRelease = useCallback(
+    (releaseId) => {
+      dispatch(actions.releaseCardRemove(releaseId, card.id));
+    },
+    [dispatch, card.id],
   );
 
   const handleCreateSubTask = useCallback(
@@ -745,6 +764,20 @@ const ProjectContent = React.memo(() => {
                       </button>
                     </LabelsPopup>
                   )}
+                </div>
+              )}
+              {releaseIds.length > 0 && (
+                <div className={styles.attachments}>
+                  <div className={styles.text}>
+                    {t('common.releases', {
+                      context: 'title',
+                    })}
+                  </div>
+                  {releaseIds.map((releaseId) => (
+                    <span key={releaseId} className={styles.attachment}>
+                      <ReleaseChip id={releaseId} />
+                    </span>
+                  ))}
                 </div>
               )}
 
@@ -1153,6 +1186,50 @@ const ProjectContent = React.memo(() => {
                         </button>
                       </SubTasksPopup>
                     </>
+                  )}
+                </div>
+              )}
+              {card.type === CardTypes.PROJECT && (
+                <div className={classNames(styles.attachments, styles.attachmentsList)}>
+                  <div className={classNames(styles.text, styles.textList)}>
+                    {t('common.releases', { context: 'title' })}
+                  </div>
+                  {releaseIds.length > 0 ? (
+                    releaseIds.map((releaseId) => {
+                      const release = boardReleases.find((r) => r.id === releaseId);
+                      return release ? (
+                        <div key={releaseId} className={styles.storyContainer}>
+                          <span className={styles.list}>
+                            <Icon name="flag checkered" size="small" className={styles.listIcon} />
+                            <span className={styles.hidable}>
+                              {release.version} - {release.name}
+                            </span>
+                          </span>
+                          <button
+                            type="button"
+                            className={styles.removeStoryButton}
+                            onClick={() => handleRemoveRelease(releaseId)}
+                            title={t('action.removeFromRelease')}
+                          >
+                            <Icon name="times" size="small" />
+                          </button>
+                        </div>
+                      ) : null;
+                    })
+                  ) : (
+                    <Dropdown
+                      placeholder={t('action.selectRelease')}
+                      selection
+                      search
+                      fluid
+                      options={boardReleases.map((release) => ({
+                        key: release.id,
+                        value: release.id,
+                        text: `${release.version} - ${release.name}`,
+                      }))}
+                      onChange={(e, { value }) => handleReleaseSelect(value)}
+                      className={styles.listButton}
+                    />
                   )}
                 </div>
               )}

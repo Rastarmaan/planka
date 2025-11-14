@@ -60,6 +60,8 @@ fetchBoard.success = (
   customFieldGroups,
   customFields,
   customFieldValues,
+  boardReleases,
+  releaseCards,
 ) => ({
   type: ActionTypes.BOARD_FETCH__SUCCESS,
   payload: {
@@ -78,6 +80,8 @@ fetchBoard.success = (
     customFieldGroups,
     customFields,
     customFieldValues,
+    boardReleases,
+    releaseCards,
   },
 });
 

@@ -4,9 +4,11 @@
  */
 
 import core from './core';
+import boardReleases from './board-releases';
 import boards from './boards';
 
 export default {
   ...core,
   ...boards,
+  ...boardReleases,
 };
