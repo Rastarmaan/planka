@@ -192,8 +192,14 @@ module.exports = async function filterCards(req, res) {
   });
   const accessibleBoardIds = accessibleBoards.map((b) => b.id);
 
-  const cardQuery = {
+  const nonTrashLists = await List.find({
     boardId: accessibleBoardIds,
+    type: { '!=': List.Types.TRASH },
+  });
+  const nonTrashListIds = nonTrashLists.map((l) => l.id);
+
+  const cardQuery = {
+    listId: nonTrashListIds,
   };
 
   if (cardType) {

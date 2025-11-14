@@ -179,6 +179,7 @@ export default {
       display: 'Display',
       dropFileToUpload: 'Drop file to upload',
       startDate_title: 'Start Date',
+      dueDate: 'Due Date',
       dueDate_title: 'Due Date',
       dueDateCannotBeBeforeStartDate: 'Due date cannot be before start date',
       startDateCannotBeAfterDueDate: 'Start date cannot be after due date',

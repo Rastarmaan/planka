@@ -130,10 +130,6 @@ module.exports = {
       required: true,
       columnName: 'project_id',
     },
-    cards: {
-      collection: 'Card',
-      via: 'releaseId',
-    },
   },
 
   customToJSON() {
