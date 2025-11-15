@@ -20,6 +20,7 @@ import config from './config';
 import customFieldGroups from './custom-field-groups';
 import customFieldValues from './custom-field-values';
 import customFields from './custom-fields';
+import googleCalendar from './google-calendar';
 import http from './http';
 import labels from './labels';
 import lists from './lists';
@@ -69,4 +70,5 @@ export default {
   ...activities,
   ...notifications,
   ...notificationServices,
+  ...googleCalendar,
 };

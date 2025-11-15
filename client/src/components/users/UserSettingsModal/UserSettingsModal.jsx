@@ -4,17 +4,18 @@
  */
 
 import React, { useCallback } from 'react';
-import { useDispatch } from 'react-redux';
 import { useTranslation } from 'react-i18next';
+import { useDispatch } from 'react-redux';
 import { Tab } from 'semantic-ui-react';
 
 import entryActions from '../../../entry-actions';
 import { useClosableModal } from '../../../hooks';
-import AccountPane from './AccountPane';
-import PreferencesPane from './PreferencesPane';
-import NotificationsPane from './NotificationsPane';
-import TermsPane from './TermsPane';
 import AboutPane from './AboutPane';
+import AccountPane from './AccountPane';
+import GoogleCalendarPane from './GoogleCalendarPane';
+import NotificationsPane from './NotificationsPane';
+import PreferencesPane from './PreferencesPane';
+import TermsPane from './TermsPane';
 
 const UserSettingsModal = React.memo(() => {
   const dispatch = useDispatch();
@@ -38,6 +39,12 @@ const UserSettingsModal = React.memo(() => {
         context: 'title',
       }),
       render: () => <PreferencesPane />,
+    },
+    {
+      menuItem: t('common.googleCalendar', {
+        context: 'title',
+      }),
+      render: () => <GoogleCalendarPane />,
     },
     {
       menuItem: t('common.notifications', {

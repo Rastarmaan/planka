@@ -6,8 +6,8 @@
 import React from 'react';
 import { useSearchParams } from 'react-router-dom';
 
-import Core from './Core';
 import FiltersStep from '../filters';
+import Core from './Core';
 
 const HomePage = React.memo(() => {
   const [searchParams] = useSearchParams();

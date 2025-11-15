@@ -47,4 +47,10 @@ module.exports.policies = {
   'access-tokens/exchange-with-oidc': true,
   'access-tokens/accept-terms': true,
   'access-tokens/revoke-pending-token': true,
+
+  'google-calendar/authorize': 'is-authenticated',
+  'google-calendar/callback': true,
+  'google-calendar/status': 'is-authenticated',
+  'google-calendar/disconnect': 'is-authenticated',
+  'google-calendar/toggle': 'is-authenticated',
 };

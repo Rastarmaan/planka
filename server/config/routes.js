@@ -227,6 +227,14 @@ module.exports.routes = {
   'PATCH /api/notifications/:id': 'notifications/update',
   'POST /api/notifications/read-all': 'notifications/read-all',
 
+  'GET /api/google/oauth/authorize': 'google-calendar/authorize',
+  'GET /api/google/oauth/callback': 'google-calendar/callback',
+  'GET /api/google-calendar/status': 'google-calendar/status',
+  'GET /api/google-calendar/calendars': 'google-calendar/list-calendars',
+  'PATCH /api/google-calendar/calendar': 'google-calendar/update-calendar',
+  'POST /api/google-calendar/disconnect': 'google-calendar/disconnect',
+  'PATCH /api/google-calendar/toggle': 'google-calendar/toggle',
+
   'POST /api/users/:userId/notification-services': 'notification-services/create-in-user',
   'POST /api/boards/:boardId/notification-services': 'notification-services/create-in-board',
   'PATCH /api/notification-services/:id': 'notification-services/update',

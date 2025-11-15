@@ -423,6 +423,93 @@ module.exports = {
       // Continue even if sync fails
     }
 
+    const hadDatesBefore = !!(inputs.record.startDate || inputs.record.dueDate);
+    const hasDatesAfter = !!(card.startDate || card.dueDate);
+    const datesAdded = !hadDatesBefore && hasDatesAfter;
+    const datesChanged =
+      (values.startDate !== undefined && values.startDate !== inputs.record.startDate) ||
+      (values.dueDate !== undefined && values.dueDate !== inputs.record.dueDate);
+    const datesRemoved =
+      (values.startDate === null && inputs.record.startDate) ||
+      (values.dueDate === null && inputs.record.dueDate);
+
+    if (datesAdded || datesChanged || datesRemoved || values.isClosed !== undefined) {
+      const cardMemberships = await CardMembership.qm.getByCardId(card.id);
+      const assignedUserIds = cardMemberships.map((m) => String(m.userId));
+
+      const allCalendarEvents = await CardCalendarEvent.find({ cardId: card.id });
+
+      // eslint-disable-next-line no-restricted-syntax
+      for (const calendarEvent of allCalendarEvents) {
+        const eventUserId = String(calendarEvent.userId);
+        if (!assignedUserIds.includes(eventUserId)) {
+          try {
+            // eslint-disable-next-line no-await-in-loop
+            const sync = await GoogleCalendarSync.findOne({ userId: calendarEvent.userId });
+            if (sync && sync.isEnabled) {
+              try {
+                // eslint-disable-next-line no-await-in-loop
+                const { calendar, calendarId } = await sails.helpers.googleCalendar.getClient.with({
+                  sync,
+                });
+
+                // eslint-disable-next-line no-await-in-loop
+                await calendar.events.delete({
+                  calendarId: calendarEvent.calendarId || calendarId,
+                  eventId: calendarEvent.eventId,
+                });
+
+                // eslint-disable-next-line no-await-in-loop
+                await CardCalendarEvent.qm.deleteOne(calendarEvent.id);
+              } catch (err) {
+                if (err === 'tokenRefreshFailed' || (err && err.code === 'tokenRefreshFailed')) {
+                  sails.log.warn(
+                    `[Card Update] Google Calendar token decryption failed for user ${calendarEvent.userId}. User needs to reconnect their Google Calendar account.`,
+                  );
+                } else {
+                  sails.log.error(
+                    `[Card Update] Error deleting calendar event for user ${calendarEvent.userId}:`,
+                    err,
+                  );
+                }
+              }
+            } else {
+              // eslint-disable-next-line no-await-in-loop
+              await CardCalendarEvent.qm.deleteOne(calendarEvent.id);
+            }
+          } catch (err) {
+            sails.log.error('[Card Update] Error checking Google Calendar sync:', err);
+          }
+        }
+      }
+
+      if (cardMemberships.length > 0) {
+        // eslint-disable-next-line no-restricted-syntax
+        for (const membership of cardMemberships) {
+          // eslint-disable-next-line no-await-in-loop
+          const sync = await GoogleCalendarSync.qm.getOneByUserId(membership.userId);
+          if (sync && sync.isEnabled) {
+            try {
+              // eslint-disable-next-line no-await-in-loop
+              await sails.helpers.googleCalendar.syncCard.with({
+                card,
+                userId: String(membership.userId),
+                sync,
+              });
+            } catch (err) {
+              if (err === 'tokenRefreshFailed' || (err && err.code === 'tokenRefreshFailed')) {
+                sails.log.warn(
+                  `[Card Update] Google Calendar token decryption failed for user ${membership.userId}. User needs to reconnect their Google Calendar account.`,
+                );
+              } else if (err !== 'noDate' && err !== 'cardNotAssigned') {
+                sails.log.error('Error syncing card to Google Calendar:', err);
+              }
+            }
+          }
+        }
+      }
+    }
+
     return card;
   },
 };

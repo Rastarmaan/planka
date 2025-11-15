@@ -31,6 +31,39 @@ module.exports = {
   },
 
   async fn(inputs) {
+    const cardCalendarEvents = await CardCalendarEvent.qm.getByCardId(inputs.record.id);
+    if (cardCalendarEvents.length > 0) {
+      // eslint-disable-next-line no-restricted-syntax
+      for (const calendarEvent of cardCalendarEvents) {
+        // eslint-disable-next-line no-await-in-loop
+        const sync = await GoogleCalendarSync.qm.getOneById(calendarEvent.syncId);
+        if (sync && sync.isEnabled) {
+          try {
+            // eslint-disable-next-line no-await-in-loop
+            const { calendar, calendarId } = await sails.helpers.googleCalendar.getClient.with({
+              sync,
+            });
+
+            // eslint-disable-next-line no-await-in-loop
+            await calendar.events.delete({
+              calendarId: calendarEvent.calendarId || calendarId,
+              eventId: calendarEvent.eventId,
+            });
+          } catch (err) {
+            if (err === 'tokenRefreshFailed' || (err && err.code === 'tokenRefreshFailed')) {
+              sails.log.warn(
+                `[Card Delete] Google Calendar token decryption failed for sync ${calendarEvent.syncId}. User needs to reconnect their Google Calendar account.`,
+              );
+            } else {
+              sails.log.error('Error deleting calendar event:', err);
+            }
+          }
+        }
+        // eslint-disable-next-line no-await-in-loop
+        await CardCalendarEvent.qm.deleteOne(calendarEvent.id);
+      }
+    }
+
     await sails.helpers.cards.deleteRelated(inputs.record);
 
     const card = await Card.qm.deleteOne(inputs.record.id);

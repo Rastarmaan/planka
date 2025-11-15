@@ -51,6 +51,7 @@
     "escape-html": "^1.0.3",
     "escape-markdown": "^1.0.4",
     "fs-extra": "^11.3.1",
+    "googleapis": "^166.0.0",
     "ico-to-png": "^0.2.2",
     "istextorbinary": "^9.5.0",
     "jsonwebtoken": "^9.0.2",
