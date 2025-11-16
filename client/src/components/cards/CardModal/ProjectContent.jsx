@@ -234,6 +234,11 @@ const ProjectContent = React.memo(() => {
   const [isCreatingSubTask, setIsCreatingSubTask] = useState(false);
   const inlineInputRef = useRef(null);
 
+  const subTaskInputDirectionStyles = useMemo(
+    () => getTextDirectionStyles(newSubTaskName, i18n.language),
+    [newSubTaskName, i18n.language],
+  );
+
   const paginatedChildCards = useMemo(() => {
     if (!childCards) return [];
     const startIndex = (currentPage - 1) * itemsPerPage;
@@ -1049,6 +1054,7 @@ const ProjectContent = React.memo(() => {
                       className={styles.inlineInput}
                       placeholder={t('common.enterSubTaskName')}
                       value={newSubTaskName}
+                      style={subTaskInputDirectionStyles}
                       onChange={handleNewSubTaskNameChange}
                       onKeyDown={handleSubTaskKeyDown}
                       onBlur={handleCancelInlineSubTask}

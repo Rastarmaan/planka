@@ -15,6 +15,7 @@ import selectors from '../../../../selectors';
 import entryActions from '../../../../entry-actions';
 import { useField, useNestedRef } from '../../../../hooks';
 import { focusEnd } from '../../../../utils/element-helpers';
+import { getTextDirectionStyles } from '../../../../utils/text-direction';
 
 import styles from './EditName.module.scss';
 
@@ -24,11 +25,16 @@ const EditName = React.memo(({ taskId, onClose }) => {
   const defaultValue = useSelector((state) => selectTaskById(state, taskId).name);
 
   const dispatch = useDispatch();
-  const [t] = useTranslation();
+  const [t, i18n] = useTranslation();
   const [value, handleFieldChange] = useField(defaultValue);
 
   const [fieldRef, handleFieldRef] = useNestedRef();
   const [buttonRef, handleButtonRef] = useNestedRef();
+
+  const inputDirectionStyles = useMemo(
+    () => getTextDirectionStyles(value, i18n.language),
+    [value, i18n.language],
+  );
 
   const submit = useCallback(() => {
     const cleanValue = value.trim();
@@ -80,6 +86,7 @@ const EditName = React.memo(({ taskId, onClose }) => {
         maxLength={1024}
         minRows={2}
         className={styles.field}
+        style={inputDirectionStyles}
         onKeyDown={handleFieldKeyDown}
         onChange={handleFieldChange}
       />

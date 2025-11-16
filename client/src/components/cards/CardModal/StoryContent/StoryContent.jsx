@@ -169,6 +169,12 @@ const StoryContent = React.memo(() => {
     () => getTextDirectionStyles(card?.name || '', i18n.language),
     [card?.name, i18n.language],
   );
+
+  const descriptionDirectionStyles = useMemo(
+    () => getTextDirectionStyles(card?.description || '', i18n.language),
+    [card?.description, i18n.language],
+  );
+
   const [isEditDescriptionOpened, setIsEditDescriptionOpened] = useState(false);
   const [activateClosable, deactivateClosable, setIsClosableActive] = useContext(ClosableContext);
 
@@ -509,7 +515,9 @@ const StoryContent = React.memo(() => {
                             <Button className={styles.editButton}>
                               <Icon fitted name="pencil" size="small" />
                             </Button>
-                            <Markdown>{card.description}</Markdown>
+                            <div style={descriptionDirectionStyles}>
+                              <Markdown>{card.description}</Markdown>
+                            </div>
                           </div>
                         ) : (
                           <button
@@ -526,7 +534,9 @@ const StoryContent = React.memo(() => {
                     ))}
                   {!canEditDescription && (
                     <div className={styles.descriptionText}>
-                      <Markdown>{card.description}</Markdown>
+                      <div style={descriptionDirectionStyles}>
+                        <Markdown>{card.description}</Markdown>
+                      </div>
                     </div>
                   )}
                   {imageAttachmentIdsExceptCover.length > 0 && (

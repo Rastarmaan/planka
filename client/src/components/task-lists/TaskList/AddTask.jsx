@@ -3,7 +3,7 @@
  * Licensed under the Fair Use License: https://github.com/plankanban/planka/blob/master/LICENSE.md
  */
 
-import React, { useCallback, useEffect } from 'react';
+import React, { useCallback, useEffect, useMemo } from 'react';
 import PropTypes from 'prop-types';
 import { useDispatch, useSelector } from 'react-redux';
 import { useTranslation } from 'react-i18next';
@@ -16,6 +16,7 @@ import entryActions from '../../../entry-actions';
 import { useForm, useNestedRef } from '../../../hooks';
 import { focusEnd } from '../../../utils/element-helpers';
 import { isModifierKeyPressed } from '../../../utils/event-helpers';
+import { getTextDirectionStyles } from '../../../utils/text-direction';
 
 import styles from './AddTask.module.scss';
 
@@ -30,7 +31,7 @@ const AddTask = React.memo(({ children, taskListId, isOpened, onClose }) => {
   const cards = useSelector(selectors.selectCardsExceptCurrentForCurrentBoard);
 
   const dispatch = useDispatch();
-  const [t] = useTranslation();
+  const [t, i18n] = useTranslation();
   const [data, handleFieldChange, setData] = useForm(DEFAULT_DATA);
   const [isLinkingToCard, toggleLinkingToCard] = useToggle();
   const [focusFieldState, focusField] = useToggle();
@@ -111,6 +112,11 @@ const AddTask = React.memo(({ children, taskListId, isOpened, onClose }) => {
     }
   }, [isLinkingToCard, fieldRef]);
 
+  const inputDirectionStyles = useMemo(
+    () => getTextDirectionStyles(data.name, i18n.language),
+    [data.name, i18n.language],
+  );
+
   const clickAwayProps = useClickAwayListener(
     [fieldRef, submitButtonRef, toggleLinkingButtonRef],
     onClose,
@@ -160,7 +166,6 @@ const AddTask = React.memo(({ children, taskListId, isOpened, onClose }) => {
         />
       ) : (
         <TextArea
-          {...clickAwayProps} // eslint-disable-line react/jsx-props-no-spreading
           ref={handleFieldRef}
           as={TextareaAutosize}
           name="name"
@@ -171,6 +176,8 @@ const AddTask = React.memo(({ children, taskListId, isOpened, onClose }) => {
           className={styles.field}
           onKeyDown={handleFieldKeyDown}
           onChange={handleFieldChange}
+          {...clickAwayProps} // eslint-disable-line react/jsx-props-no-spreading
+          style={inputDirectionStyles}
         />
       )}
       <div className={styles.controls}>
