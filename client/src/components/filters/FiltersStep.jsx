@@ -46,6 +46,7 @@ function FiltersStep() {
   const [isDataLoaded, setIsDataLoaded] = useState(false);
 
   const [selectedProjectIds, setSelectedProjectIds] = useState([]);
+  const [selectedBoardIds, setSelectedBoardIds] = useState([]);
   const [selectedUserIds, setSelectedUserIds] = useState([]);
   const [selectedLabelIds, setSelectedLabelIds] = useState([]);
   const [isJalali, setIsJalali] = useState(false);
@@ -53,8 +54,8 @@ function FiltersStep() {
   const [startDateTo, setStartDateTo] = useState(null);
   const [dueDateFrom, setDueDateFrom] = useState(null);
   const [dueDateTo, setDueDateTo] = useState(null);
-  const [weightFrom, setWeightFrom] = useState('');
-  const [weightTo, setWeightTo] = useState('');
+  const [weightFrom, setWeightFrom] = useState([]);
+  const [weightTo, setWeightTo] = useState([]);
 
   const [filteredCards, setFilteredCards] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
@@ -78,6 +79,7 @@ function FiltersStep() {
       try {
         const parsed = JSON.parse(savedState);
         setSelectedProjectIds(parsed.selectedProjectIds || []);
+        setSelectedBoardIds(parsed.selectedBoardIds || []);
         setSelectedUserIds(parsed.selectedUserIds || []);
         setSelectedLabelIds(parsed.selectedLabelIds || []);
 
@@ -86,8 +88,8 @@ function FiltersStep() {
         setDueDateFrom(parsed.dueDateFrom ? new Date(parsed.dueDateFrom) : null);
         setDueDateTo(parsed.dueDateTo ? new Date(parsed.dueDateTo) : null);
 
-        setWeightFrom(parsed.weightFrom || '');
-        setWeightTo(parsed.weightTo || '');
+        setWeightFrom(parsed.weightFrom || []);
+        setWeightTo(parsed.weightTo || []);
       } catch (e) {
         // eslint-disable-next-line no-console
         console.error('Failed to parse saved filter state:', e);
@@ -98,6 +100,7 @@ function FiltersStep() {
   const saveFilterState = useCallback(() => {
     const state = {
       selectedProjectIds,
+      selectedBoardIds,
       selectedUserIds,
       selectedLabelIds,
       startDateFrom,
@@ -111,6 +114,7 @@ function FiltersStep() {
   }, [
     currentUserId,
     selectedProjectIds,
+    selectedBoardIds,
     selectedUserIds,
     selectedLabelIds,
     startDateFrom,
@@ -128,10 +132,22 @@ function FiltersStep() {
 
         const projectsResponse = await api.getProjects(headers);
         const fetchedProjects = projectsResponse.items || [];
-        setProjects(fetchedProjects);
 
+        // Fetch full project details including boards
         if (fetchedProjects.length > 0) {
-          await Promise.all(fetchedProjects.map((project) => api.getProject(project.id, headers)));
+          const projectDetailsPromises = fetchedProjects.map((project) =>
+            api.getProject(project.id, headers),
+          );
+          const projectDetails = await Promise.all(projectDetailsPromises);
+
+          const projectsWithBoards = projectDetails.map((response) => ({
+            ...response.item,
+            boards: response.included?.boards || [],
+          }));
+
+          setProjects(projectsWithBoards);
+        } else {
+          setProjects(fetchedProjects);
         }
 
         const labelsResponse = await api.getAllLabels(headers);
@@ -165,6 +181,9 @@ function FiltersStep() {
     if (selectedProjectIds.length > 0) {
       filters.projectIds = selectedProjectIds.join(',');
     }
+    if (selectedBoardIds.length > 0) {
+      filters.boardIds = selectedBoardIds.join(',');
+    }
     if (selectedUserIds.length > 0) {
       filters.userIds = selectedUserIds.join(',');
     }
@@ -191,11 +210,11 @@ function FiltersStep() {
       endOfDay.setHours(23, 59, 59, 999);
       filters.dueDateTo = endOfDay.toISOString();
     }
-    if (weightFrom) {
-      filters.weightFrom = weightFrom;
+    if (weightFrom && weightFrom.length > 0) {
+      filters.weightFrom = Math.min(...weightFrom);
     }
-    if (weightTo) {
-      filters.weightTo = weightTo;
+    if (weightTo && weightTo.length > 0) {
+      filters.weightTo = Math.max(...weightTo);
     }
 
     try {
@@ -228,6 +247,7 @@ function FiltersStep() {
     }
   }, [
     selectedProjectIds,
+    selectedBoardIds,
     selectedUserIds,
     selectedLabelIds,
     startDateFrom,
@@ -242,14 +262,15 @@ function FiltersStep() {
 
   const handleReset = useCallback(() => {
     setSelectedProjectIds([]);
+    setSelectedBoardIds([]);
     setSelectedUserIds([]);
     setSelectedLabelIds([]);
     setStartDateFrom('');
     setStartDateTo('');
     setDueDateFrom('');
     setDueDateTo('');
-    setWeightFrom('');
-    setWeightTo('');
+    setWeightFrom([]);
+    setWeightTo([]);
     setFilteredCards([]);
     localStorage.removeItem(`${STORAGE_KEY}_${currentUserId}`);
   }, [currentUserId]);
@@ -263,6 +284,29 @@ function FiltersStep() {
       })),
     [projects],
   );
+
+  const boardOptions = useMemo(() => {
+    if (selectedProjectIds.length === 0) {
+      return [];
+    }
+    const selectedProjects = projects.filter((project) => selectedProjectIds.includes(project.id));
+    const boards = selectedProjects.flatMap((project) => project.boards || []);
+    return boards.map((board) => ({
+      key: board.id,
+      text: board.name,
+      value: board.id,
+    }));
+  }, [projects, selectedProjectIds]);
+
+  useEffect(() => {
+    if (selectedProjectIds.length === 0) {
+      setSelectedBoardIds([]);
+    } else {
+      const validBoardIds = boardOptions.map((option) => option.value);
+      setSelectedBoardIds((prev) => prev.filter((id) => validBoardIds.includes(id)));
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [selectedProjectIds]);
 
   const userOptions = useMemo(
     () =>
@@ -292,6 +336,185 @@ function FiltersStep() {
         value: i + 1,
       })),
     [],
+  );
+
+  const projectOptionsWithSelectAll = useMemo(() => {
+    if (projects.length === 0) return [];
+    const allSelected = selectedProjectIds.length === projects.length;
+    return [
+      {
+        key: 'SELECT_ALL',
+        text: allSelected
+          ? t('action.deselectAll', { defaultValue: '✓ Deselect All' })
+          : t('action.selectAll', { defaultValue: 'Select All' }),
+        value: 'SELECT_ALL',
+      },
+      ...projectOptions,
+    ];
+  }, [projectOptions, projects.length, selectedProjectIds.length, t]);
+
+  const boardOptionsWithSelectAll = useMemo(() => {
+    if (boardOptions.length === 0) return [];
+    const allSelected = selectedBoardIds.length === boardOptions.length;
+    return [
+      {
+        key: 'SELECT_ALL',
+        text: allSelected
+          ? t('action.deselectAll', { defaultValue: '✓ Deselect All' })
+          : t('action.selectAll', { defaultValue: 'Select All' }),
+        value: 'SELECT_ALL',
+      },
+      ...boardOptions,
+    ];
+  }, [boardOptions, selectedBoardIds.length, t]);
+
+  const userOptionsWithSelectAll = useMemo(() => {
+    if (users.length === 0) return [];
+    const allSelected = selectedUserIds.length === users.length;
+    return [
+      {
+        key: 'SELECT_ALL',
+        text: allSelected
+          ? t('action.deselectAll', { defaultValue: '✓ Deselect All' })
+          : t('action.selectAll', { defaultValue: 'Select All' }),
+        value: 'SELECT_ALL',
+      },
+      ...userOptions,
+    ];
+  }, [userOptions, users.length, selectedUserIds.length, t]);
+
+  const labelOptionsWithSelectAll = useMemo(() => {
+    if (allLabels.length === 0) return [];
+    const allSelected = selectedLabelIds.length === allLabels.length;
+    return [
+      {
+        key: 'SELECT_ALL',
+        text: allSelected
+          ? t('action.deselectAll', { defaultValue: '✓ Deselect All' })
+          : t('action.selectAll', { defaultValue: 'Select All' }),
+        value: 'SELECT_ALL',
+      },
+      ...labelOptions,
+    ];
+  }, [labelOptions, allLabels.length, selectedLabelIds.length, t]);
+
+  const weightOptionsWithSelectAll = useMemo(() => {
+    if (weightOptions.length === 0) return [];
+    const allSelectedFrom = weightFrom.length === weightOptions.length;
+    const allSelectedTo = weightTo.length === weightOptions.length;
+
+    return {
+      from: [
+        {
+          key: 'SELECT_ALL',
+          text: allSelectedFrom
+            ? t('action.deselectAll', { defaultValue: '✓ Deselect All' })
+            : t('action.selectAll', { defaultValue: 'Select All' }),
+          value: 'SELECT_ALL',
+        },
+        ...weightOptions,
+      ],
+      to: [
+        {
+          key: 'SELECT_ALL',
+          text: allSelectedTo
+            ? t('action.deselectAll', { defaultValue: '✓ Deselect All' })
+            : t('action.selectAll', { defaultValue: 'Select All' }),
+          value: 'SELECT_ALL',
+        },
+        ...weightOptions,
+      ],
+    };
+  }, [weightOptions, weightFrom.length, weightTo.length, t]);
+
+  const handleProjectsChange = useCallback(
+    (e, { value }) => {
+      if (value.includes('SELECT_ALL')) {
+        if (selectedProjectIds.length === projects.length) {
+          setSelectedProjectIds([]);
+        } else {
+          setSelectedProjectIds(projects.map((p) => p.id));
+        }
+      } else {
+        setSelectedProjectIds(value);
+      }
+    },
+    [projects, selectedProjectIds.length],
+  );
+
+  const handleBoardsChange = useCallback(
+    (e, { value }) => {
+      if (value.includes('SELECT_ALL')) {
+        if (selectedBoardIds.length === boardOptions.length) {
+          setSelectedBoardIds([]);
+        } else {
+          setSelectedBoardIds(boardOptions.map((b) => b.value));
+        }
+      } else {
+        setSelectedBoardIds(value);
+      }
+    },
+    [boardOptions, selectedBoardIds.length],
+  );
+
+  const handleUsersChange = useCallback(
+    (e, { value }) => {
+      if (value.includes('SELECT_ALL')) {
+        if (selectedUserIds.length === users.length) {
+          setSelectedUserIds([]);
+        } else {
+          setSelectedUserIds(users.map((u) => u.id));
+        }
+      } else {
+        setSelectedUserIds(value);
+      }
+    },
+    [users, selectedUserIds.length],
+  );
+
+  const handleLabelsChange = useCallback(
+    (e, { value }) => {
+      if (value.includes('SELECT_ALL')) {
+        if (selectedLabelIds.length === allLabels.length) {
+          setSelectedLabelIds([]);
+        } else {
+          setSelectedLabelIds(allLabels.map((l) => l.id));
+        }
+      } else {
+        setSelectedLabelIds(value);
+      }
+    },
+    [allLabels, selectedLabelIds.length],
+  );
+
+  const handleWeightFromChange = useCallback(
+    (e, { value }) => {
+      if (value.includes('SELECT_ALL')) {
+        if (weightFrom.length === weightOptions.length) {
+          setWeightFrom([]);
+        } else {
+          setWeightFrom(weightOptions.map((w) => w.value));
+        }
+      } else {
+        setWeightFrom(value);
+      }
+    },
+    [weightOptions, weightFrom.length],
+  );
+
+  const handleWeightToChange = useCallback(
+    (e, { value }) => {
+      if (value.includes('SELECT_ALL')) {
+        if (weightTo.length === weightOptions.length) {
+          setWeightTo([]);
+        } else {
+          setWeightTo(weightOptions.map((w) => w.value));
+        }
+      } else {
+        setWeightTo(value);
+      }
+    },
+    [weightOptions, weightTo.length],
   );
 
   if (!isDataLoaded) {
@@ -332,7 +555,7 @@ function FiltersStep() {
                 <Grid.Column>
                   <Form.Field>
                     {/* eslint-disable-next-line jsx-a11y/label-has-associated-control */}
-                    <label>{t('common.projects', { defaultValue: 'Projects' })}</label>
+                    <label>{t('common.filtersProjects', { defaultValue: 'Projects' })}</label>
                     <Dropdown
                       placeholder={t('common.selectProjects', {
                         defaultValue: 'Select Projects',
@@ -341,9 +564,9 @@ function FiltersStep() {
                       multiple
                       search
                       selection
-                      options={projectOptions}
+                      options={projectOptionsWithSelectAll}
                       value={selectedProjectIds}
-                      onChange={(e, { value }) => setSelectedProjectIds(value)}
+                      onChange={handleProjectsChange}
                     />
                   </Form.Field>
                 </Grid.Column>
@@ -351,16 +574,23 @@ function FiltersStep() {
                 <Grid.Column>
                   <Form.Field>
                     {/* eslint-disable-next-line jsx-a11y/label-has-associated-control */}
-                    <label>{t('common.users', { defaultValue: 'Users' })}</label>
+                    <label>{t('common.boards', { defaultValue: 'Boards' })}</label>
                     <Dropdown
-                      placeholder={t('common.selectUsers', { defaultValue: 'Select Users' })}
+                      placeholder={
+                        selectedProjectIds.length === 0
+                          ? t('common.selectProjectsFirst', {
+                              defaultValue: 'Select projects first',
+                            })
+                          : t('common.selectBoards', { defaultValue: 'Select Boards' })
+                      }
                       fluid
                       multiple
                       search
                       selection
-                      options={userOptions}
-                      value={selectedUserIds}
-                      onChange={(e, { value }) => setSelectedUserIds(value)}
+                      options={boardOptionsWithSelectAll}
+                      value={selectedBoardIds}
+                      onChange={handleBoardsChange}
+                      disabled={selectedProjectIds.length === 0}
                     />
                   </Form.Field>
                 </Grid.Column>
@@ -375,9 +605,27 @@ function FiltersStep() {
                       multiple
                       search
                       selection
-                      options={labelOptions}
+                      options={labelOptionsWithSelectAll}
                       value={selectedLabelIds}
-                      onChange={(e, { value }) => setSelectedLabelIds(value)}
+                      onChange={handleLabelsChange}
+                    />
+                  </Form.Field>
+                </Grid.Column>
+              </Grid.Row>
+              <Grid.Row>
+                <Grid.Column>
+                  <Form.Field>
+                    {/* eslint-disable-next-line jsx-a11y/label-has-associated-control */}
+                    <label>{t('common.users', { defaultValue: 'Users' })}</label>
+                    <Dropdown
+                      placeholder={t('common.selectUsers', { defaultValue: 'Select Users' })}
+                      fluid
+                      multiple
+                      search
+                      selection
+                      options={userOptionsWithSelectAll}
+                      value={selectedUserIds}
+                      onChange={handleUsersChange}
                     />
                   </Form.Field>
                 </Grid.Column>
@@ -541,16 +789,17 @@ function FiltersStep() {
                 <Grid.Column>
                   <Form.Field>
                     {/* eslint-disable-next-line jsx-a11y/label-has-associated-control */}
-                    <label>{t('common.weight', { defaultValue: 'Weight From' })}</label>
+                    <label>{t('common.from', { defaultValue: 'Weight From' })}</label>
                     <Dropdown
                       placeholder={t('action.selectWeight', { defaultValue: 'Select Weight' })}
                       fluid
+                      multiple
                       search
                       selection
                       clearable
-                      options={weightOptions}
+                      options={weightOptionsWithSelectAll.from}
                       value={weightFrom}
-                      onChange={(e, { value }) => setWeightFrom(value)}
+                      onChange={handleWeightFromChange}
                     />
                   </Form.Field>
                 </Grid.Column>
@@ -562,12 +811,13 @@ function FiltersStep() {
                     <Dropdown
                       placeholder={t('action.selectWeight', { defaultValue: 'Select Weight' })}
                       fluid
+                      multiple
                       search
                       selection
                       clearable
-                      options={weightOptions}
+                      options={weightOptionsWithSelectAll.to}
                       value={weightTo}
-                      onChange={(e, { value }) => setWeightTo(value)}
+                      onChange={handleWeightToChange}
                     />
                   </Form.Field>
                 </Grid.Column>
