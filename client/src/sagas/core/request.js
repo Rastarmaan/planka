@@ -5,9 +5,9 @@
 
 import { call, join, put, select, spawn, take } from 'redux-saga/effects';
 
-import selectors from '../../selectors';
-import entryActions from '../../entry-actions';
 import ErrorCodes from '../../constants/ErrorCodes';
+import entryActions from '../../entry-actions';
+import selectors from '../../selectors';
 
 let lastRequestTask;
 

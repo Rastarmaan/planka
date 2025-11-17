@@ -1,0 +1,78 @@
+/*!
+ * Copyright (c) 2024 PLANKA Software GmbH
+ * Licensed under the Fair Use License: https://github.com/plankanban/planka/blob/master/LICENSE.md
+ */
+
+:global(#app) {
+  .fieldWrapper {
+    display: flex;
+    align-items: center;
+    margin-bottom: 16px;
+    justify-content: space-between;
+  }
+
+  .label {
+    font-weight: 600;
+    margin-right: 12px;
+    font-size: 14px;
+    color: #5e6c84;
+    min-width: 80px;
+  }
+
+  .dropdown {
+    width: 80px !important;
+    min-width: 80px !important;
+    font-size: 14px;
+
+    :global(.ui.selection.dropdown) {
+      border: 1px solid #dfe1e6;
+      border-radius: 3px;
+      padding: 6px 8px;
+      min-height: 32px;
+      line-height: 1.2;
+      background: white;
+    }
+
+    :global(.ui.selection.dropdown:focus),
+    :global(.ui.selection.dropdown.active) {
+      border-color: #0079bf;
+      box-shadow: 0 0 0 2px rgba(0, 121, 191, 0.2);
+    }
+
+    :global(.ui.selection.dropdown .dropdown.icon) {
+      top: 50%;
+      transform: translateY(-50%);
+      right: 6px;
+      font-size: 12px;
+    }
+
+    :global(.ui.selection.dropdown .text) {
+      padding-right: 18px;
+      font-size: 14px;
+      color: #172b4d;
+    }
+
+    :global(.ui.selection.dropdown .menu) {
+      border: 1px solid #dfe1e6;
+      border-radius: 3px;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+      margin-top: 2px;
+    }
+
+    :global(.ui.selection.dropdown .menu .item) {
+      padding: 6px 8px !important;
+      font-size: 14px;
+      border-bottom: none;
+    }
+
+    :global(.ui.selection.dropdown .menu .item:hover) {
+      background-color: #f4f5f7;
+    }
+
+    :global(.ui.selection.dropdown .menu .item.selected) {
+      background-color: #e4f0f6;
+      color: #0079bf;
+      font-weight: 500;
+    }
+  }
+}

@@ -8,6 +8,7 @@ import attachments from './attachments';
 import backgroundImages from './background-images';
 import baseCustomFieldGroups from './base-custom-field-groups';
 import boardMemberships from './board-memberships';
+import boardReleases from './board-releases';
 import boards from './boards';
 import cards from './cards';
 import comments from './comments';
@@ -16,6 +17,7 @@ import customFieldGroups from './custom-field-groups';
 import customFieldValues from './custom-field-values';
 import customFields from './custom-fields';
 import globalLabels from './global-labels';
+import googleCalendar from './google-calendar';
 import labels from './labels';
 import lists from './lists';
 import login from './login';
@@ -47,6 +49,7 @@ export default {
   ...baseCustomFieldGroups,
   ...boards,
   ...boardMemberships,
+  ...boardReleases,
   ...labels,
   ...globalLabels,
   ...lists,
@@ -61,4 +64,5 @@ export default {
   ...activities,
   ...notifications,
   ...notificationServices,
+  ...googleCalendar,
 };

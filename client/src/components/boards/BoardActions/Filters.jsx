@@ -3,23 +3,23 @@
  * Licensed under the Fair Use License: https://github.com/plankanban/planka/blob/master/LICENSE.md
  */
 
+import classNames from 'classnames';
 import debounce from 'lodash/debounce';
 import React, { useCallback, useMemo, useState } from 'react';
-import classNames from 'classnames';
-import { useDispatch, useSelector } from 'react-redux';
 import { useTranslation } from 'react-i18next';
+import { useDispatch, useSelector } from 'react-redux';
 import { Icon } from 'semantic-ui-react';
+import { Input } from '../../../lib/custom-ui';
 import { useDidUpdate } from '../../../lib/hooks';
 import { usePopup } from '../../../lib/popup';
-import { Input } from '../../../lib/custom-ui';
 
-import selectors from '../../../selectors';
 import entryActions from '../../../entry-actions';
 import { useNestedRef } from '../../../hooks';
-import UserAvatar from '../../users/UserAvatar';
+import selectors from '../../../selectors';
 import BoardMembershipsStep from '../../board-memberships/BoardMembershipsStep';
 import LabelChip from '../../labels/LabelChip';
 import LabelsStep from '../../labels/LabelsStep';
+import UserAvatar from '../../users/UserAvatar';
 
 import styles from './Filters.module.scss';
 
@@ -29,11 +29,12 @@ const Filters = React.memo(() => {
   const labelIds = useSelector(selectors.selectFilterLabelIdsForCurrentBoard);
   const currentUserId = useSelector(selectors.selectCurrentUserId);
 
+  const dispatch = useDispatch();
+
   const withCurrentUserSelector = useSelector(
     (state) => !!selectors.selectCurrentUserMembershipForCurrentBoard(state),
   );
 
-  const dispatch = useDispatch();
   const [t] = useTranslation();
   const [search, setSearch] = useState(board.search);
   const [isSearchFocused, setIsSearchFocused] = useState(false);
@@ -192,6 +193,7 @@ const Filters = React.memo(() => {
           </span>
         ))}
       </span>
+
       <span className={styles.filter}>
         <Input
           ref={handleSearchFieldRef}

@@ -125,6 +125,28 @@
     padding: 8px 8px 0;
   }
 
+  .weightBadge {
+    background: #61bd4f;
+    border-radius: 3px;
+    color: #fff;
+    display: inline-flex;
+    align-items: center;
+    justify-content: flex-start;
+    font-size: 11px;
+    line-height: 1;
+    margin-bottom: 4px;
+    padding: 4px 6px;
+    max-width: 100%;
+
+    :global(.icon) {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      line-height: 1;
+      margin-right: 4px;
+    }
+  }
+
   :global(.card):hover {
     .cover {
       filter: brightness(1.1);

@@ -7,11 +7,13 @@ import classNames from 'classnames';
 import PropTypes from 'prop-types';
 import React, { useMemo } from 'react';
 import { useSelector } from 'react-redux';
+import { useTranslation } from 'react-i18next';
 import { Icon } from 'semantic-ui-react';
 
 import { BoardViews } from '../../../constants/Enums';
 import selectors from '../../../selectors';
 import markdownToText from '../../../utils/markdown-to-text';
+import { getTextDirectionStyles } from '../../../utils/text-direction';
 import CustomFieldValueChip from '../../custom-field-values/CustomFieldValueChip';
 import LabelChip from '../../labels/LabelChip';
 
@@ -76,6 +78,13 @@ const StoryContent = React.memo(({ cardId }) => {
     return attachment && attachment.data.thumbnailUrls.outside360;
   });
 
+  const { i18n } = useTranslation();
+
+  const nameDirectionStyles = useMemo(
+    () => getTextDirectionStyles(card?.name || '', i18n.language),
+    [card?.name, i18n.language],
+  );
+
   const descriptionText = useMemo(
     () => card.description && markdownToText(card.description),
     [card.description],
@@ -110,9 +119,18 @@ const StoryContent = React.memo(({ cardId }) => {
             ))}
           </span>
         )}
-        <div className={classNames(styles.name, card.isClosed && styles.nameClosed)}>
+        <div
+          className={classNames(styles.name, card.isClosed && styles.nameClosed)}
+          style={nameDirectionStyles}
+        >
           {card.name}
         </div>
+        <span className={classNames(styles.attachment, styles.attachmentLeft)}>
+          <span className={styles.attachmentContent}>
+            <Icon name="balance scale" />
+            {card.weight}
+          </span>
+        </span>
         {parentCard && (
           <div className={styles.epicBadge}>
             <Icon name="sitemap" />
@@ -133,6 +151,7 @@ const StoryContent = React.memo(({ cardId }) => {
                 {notificationsTotal}
               </span>
             )}
+
             {listName && (
               <span className={classNames(styles.attachment, styles.attachmentLeft)}>
                 <span className={styles.attachmentContent}>

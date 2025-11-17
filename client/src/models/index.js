@@ -10,6 +10,7 @@ import BaseCustomFieldGroup from './BaseCustomFieldGroup';
 import Board from './Board';
 import BoardLink from './BoardLink';
 import BoardMembership from './BoardMembership';
+import BoardRelease from './BoardRelease';
 import Card from './Card';
 import CardDependency from './CardDependency';
 import Comment from './Comment';
@@ -24,6 +25,7 @@ import Project from './Project';
 import ProjectCategory from './ProjectCategory';
 import ProjectCategoryAssignment from './ProjectCategoryAssignment';
 import ProjectManager from './ProjectManager';
+import ReleaseCard from './ReleaseCard';
 import Task from './Task';
 import TaskList from './TaskList';
 import User from './User';
@@ -37,6 +39,7 @@ export {
   Board,
   BoardLink,
   BoardMembership,
+  BoardRelease,
   Card,
   CardDependency,
   Comment,
@@ -51,6 +54,7 @@ export {
   ProjectCategory,
   ProjectCategoryAssignment,
   ProjectManager,
+  ReleaseCard,
   Task,
   TaskList,
   User,

@@ -8,6 +8,7 @@ import ReactDOM from 'react-dom';
 import PropTypes from 'prop-types';
 import classNames from 'classnames';
 import { shallowEqual, useDispatch, useSelector } from 'react-redux';
+import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router-dom';
 import { Draggable } from 'react-beautiful-dnd';
 import { Button, Checkbox, Icon } from 'semantic-ui-react';
@@ -17,6 +18,7 @@ import selectors from '../../../../selectors';
 import entryActions from '../../../../entry-actions';
 import { usePopupInClosableContext } from '../../../../hooks';
 import { isListArchiveOrTrash } from '../../../../utils/record-helpers';
+import { getTextDirectionStyles } from '../../../../utils/text-direction';
 import { BoardMembershipRoles } from '../../../../constants/Enums';
 import { ClosableContext } from '../../../../contexts';
 import Paths from '../../../../constants/Paths';
@@ -60,8 +62,14 @@ const Task = React.memo(({ id, index }) => {
   }, shallowEqual);
 
   const dispatch = useDispatch();
+  const [, i18n] = useTranslation();
   const [isEditNameOpened, setIsEditNameOpened] = useState(false);
   const [, , setIsClosableActive] = useContext(ClosableContext);
+
+  const taskDirectionStyles = useMemo(
+    () => getTextDirectionStyles(task?.name || '', i18n.language),
+    [task?.name, i18n.language],
+  );
 
   const handleToggleChange = useCallback(() => {
     dispatch(
@@ -181,7 +189,9 @@ const Task = React.memo(({ id, index }) => {
                           task.isCompleted && styles.nameCompleted,
                         )}
                       >
-                        <Linkify linkStopPropagation>{task.name}</Linkify>
+                        <span style={taskDirectionStyles}>
+                          <Linkify linkStopPropagation>{task.name}</Linkify>
+                        </span>
                       </span>
                     )}
                   </span>

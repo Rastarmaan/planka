@@ -108,4 +108,11 @@ module.exports.custom = {
   smtpTlsRejectUnauthorized: process.env.SMTP_TLS_REJECT_UNAUTHORIZED !== 'false',
 
   gravatarBaseUrl: process.env.GRAVATAR_BASE_URL,
+
+  googleOAuthClientId: process.env.GOOGLE_OAUTH_CLIENT_ID,
+  googleOAuthClientSecret: process.env.GOOGLE_OAUTH_CLIENT_SECRET,
+  googleOAuthRedirectUri:
+    process.env.GOOGLE_OAUTH_REDIRECT_URI || `${baseUrl}/api/google/oauth/callback`,
+
+  encryptionKey: process.env.ENCRYPTION_KEY,
 };

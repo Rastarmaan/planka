@@ -106,23 +106,7 @@ module.exports.models = {
    */
 
   dataEncryptionKeys: {
-    default: 'fKSf/hPekelUegjM7IyM/EhHbd7HI9Kiec5Lxy2t+7w=',
+    default: 'dcodpLq/YLWfdd9iIhKOzRQdRtCDiluB+1FIQREuBug=',
   },
-
-  /**
-   *
-   * Whether or not implicit records for associations should be cleaned up
-   * automatically using the built-in polyfill.  This is especially useful
-   * during development with sails-disk.
-   *
-   * Depending on which databases you're using, you may want to disable this
-   * polyfill in your production environment.
-   *
-   * (For production configuration, see `config/env/production.js`.)
-   *
-   */
-
-  // cascadeOnDestroy: true,
-
   archiveModelIdentity: false,
 };

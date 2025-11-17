@@ -126,6 +126,13 @@
  *           default: false
  *           description: Whether the card is closed
  *           example: false
+ *         weight:
+ *           type: number
+ *           minimum: 1
+ *           maximum: 10
+ *           default: 1
+ *           description: Weight/priority of the card (1-10)
+ *           example: 5
  *         listChangedAt:
  *           type: string
  *           format: date-time
@@ -208,6 +215,12 @@ module.exports = {
       type: 'ref',
       columnName: 'list_changed_at',
     },
+    weight: {
+      type: 'number',
+      min: 1,
+      max: 10,
+      defaultsTo: 1,
+    },
 
     //  ╔═╗╔╦╗╔╗ ╔═╗╔╦╗╔═╗
     //  ║╣ ║║║╠╩╗║╣  ║║╚═╗
@@ -284,6 +297,11 @@ module.exports = {
       collection: 'Card',
       via: 'dependsOnCardId',
       through: 'CardDependency',
+    },
+    boardReleases: {
+      collection: 'BoardRelease',
+      via: 'cardId',
+      through: 'ReleaseCard',
     },
   },
 };

@@ -3,17 +3,18 @@
  * Licensed under the Fair Use License: https://github.com/plankanban/planka/blob/master/LICENSE.md
  */
 
-import React, { useCallback, useMemo } from 'react';
-import PropTypes from 'prop-types';
 import classNames from 'classnames';
+import PropTypes from 'prop-types';
+import React, { useCallback, useMemo } from 'react';
+import { Draggable } from 'react-beautiful-dnd';
 import { useDispatch, useSelector } from 'react-redux';
 import { Link } from 'react-router-dom';
-import { Draggable } from 'react-beautiful-dnd';
 import { Button, Icon } from 'semantic-ui-react';
 
-import selectors from '../../../selectors';
-import entryActions from '../../../entry-actions';
 import Paths from '../../../constants/Paths';
+import entryActions from '../../../entry-actions';
+import selectors from '../../../selectors';
+import { isUserAdminOrProjectOwner } from '../../../utils/record-helpers';
 
 import styles from './Item.module.scss';
 
@@ -28,6 +29,7 @@ const Item = React.memo(({ id, index }) => {
   const board = useSelector((state) => selectBoardById(state, id));
   const notificationsTotal = useSelector((state) => selectNotificationsTotalByBoardId(state, id));
   const isActive = useSelector((state) => id === selectors.selectPath(state).boardId);
+  const currentUser = useSelector(selectors.selectCurrentUser);
 
   const canEdit = useSelector((state) => {
     const isEditModeEnabled = selectors.selectIsEditModeEnabled(state); // TODO: move out?
@@ -36,7 +38,10 @@ const Item = React.memo(({ id, index }) => {
       return isEditModeEnabled;
     }
 
-    return selectors.selectIsCurrentUserManagerForCurrentProject(state);
+    return (
+      isUserAdminOrProjectOwner(currentUser) ||
+      selectors.selectIsCurrentUserManagerForCurrentProject(state)
+    );
   });
 
   const dispatch = useDispatch();

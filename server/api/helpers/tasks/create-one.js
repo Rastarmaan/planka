@@ -119,6 +119,26 @@ module.exports = {
       user: inputs.actorUser,
     });
 
+    if (task.assigneeUserId) {
+      const sync = await GoogleCalendarSync.qm.getOneByUserId(task.assigneeUserId);
+      if (sync && sync.isEnabled) {
+        try {
+          await sails.helpers.googleCalendar.syncTask({
+            task,
+            sync,
+          });
+        } catch (err) {
+          if (err === 'tokenRefreshFailed' || (err && err.code === 'tokenRefreshFailed')) {
+            sails.log.warn(
+              `[Task Create] Google Calendar token decryption failed for user ${task.assigneeUserId}. User needs to reconnect their Google Calendar account.`,
+            );
+          } else if (err !== 'noDate' && err !== 'taskNotAssigned') {
+            sails.log.error('Error syncing task to Google Calendar:', err);
+          }
+        }
+      }
+    }
+
     return task;
   },
 };

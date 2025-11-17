@@ -15,9 +15,11 @@ import { BoardMembershipRoles, CardTypes, ListTypes } from '../../../constants/E
 import { CardTypeIcons } from '../../../constants/Icons';
 import Paths from '../../../constants/Paths';
 import { ClosableContext } from '../../../contexts';
+import actions from '../../../actions';
 import entryActions from '../../../entry-actions';
 import { usePopupInClosableContext } from '../../../hooks';
 import selectors from '../../../selectors';
+import { getTextDirectionStyles } from '../../../utils/text-direction';
 import { isUsableMarkdownElement } from '../../../utils/element-helpers';
 import { startStopwatch, stopStopwatch } from '../../../utils/stopwatch';
 import AddAttachmentStep from '../../attachments/AddAttachmentStep';
@@ -38,6 +40,7 @@ import DueDateChip from '../DueDateChip';
 import EditDueDateStep from '../EditDueDateStep';
 import EditStartDateStep from '../EditStartDateStep';
 import EditStopwatchStep from '../EditStopwatchStep';
+import EditWeightStep from '../EditWeightStep';
 import StartDateChip from '../StartDateChip';
 import StopwatchChip from '../StopwatchChip';
 import Communication from './Communication';
@@ -47,22 +50,29 @@ import DependenciesStep from './DependenciesStep';
 import MoreActionsStep from './MoreActionsStep';
 import NameField from './NameField';
 import TaskLists from './TaskLists';
+import ReleaseChip from '../../board-releases/ReleaseChip';
 
 import styles from './ProjectContent.module.scss';
 
 const ProjectContent = React.memo(() => {
   const selectListById = useMemo(() => selectors.makeSelectListById(), []);
-  const selectPrevListById = useMemo(() => selectors.makeSelectListById(), []);
   const selectCardById = useMemo(() => selectors.makeSelectCardById(), []);
 
   const card = useSelector(selectors.selectCurrentCard);
   const board = useSelector(selectors.selectCurrentBoard);
-  const userIds = useSelector(selectors.selectUserIdsForCurrentCard);
-  const labelIds = useSelector(selectors.selectLabelIdsForCurrentCard);
-  const attachmentIds = useSelector(selectors.selectAttachmentIdsForCurrentCard);
-  const childCards = useSelector((state) => selectors.selectChildCardsByParentId(state, card?.id));
+  const boardReleases = useSelector(selectors.selectActiveBoardReleasesForCurrentBoard);
+  const userIds = useSelector(selectors.selectUserIdsForCurrentCard, shallowEqual);
+  const labelIds = useSelector(selectors.selectLabelIdsForCurrentCard, shallowEqual);
+  const releaseIds = useSelector(selectors.selectReleaseIdsForCurrentCard, shallowEqual);
+  const attachmentIds = useSelector(selectors.selectAttachmentIdsForCurrentCard, shallowEqual);
 
-  // Use singleton selectors to avoid memoization issues
+  const childCards = useSelector(
+    (state) => selectors.selectChildCardsByParentId(state, card?.id),
+    shallowEqual,
+  );
+
+  const [isDependenciesLoaded, setIsDependenciesLoaded] = useState(false);
+
   const selectDependsOnCardsByCardId = useMemo(
     () => selectors.makeSelectDependsOnCardsByCardId(),
     [],
@@ -73,52 +83,47 @@ const ProjectContent = React.memo(() => {
   );
   const selectDependenciesByCardId = useMemo(() => selectors.makeSelectDependenciesByCardId(), []);
 
-  const dependsOnCards = useSelector((state) =>
-    card?.id ? selectDependsOnCardsByCardId(state, card.id) : [],
+  const dependsOnCards = useSelector(
+    (state) =>
+      card?.id && isDependenciesLoaded ? selectDependsOnCardsByCardId(state, card.id) : [],
+    shallowEqual,
   );
-  const dependentCards = useSelector((state) =>
-    card?.id ? selectDependentCardsByCardId(state, card.id) : [],
+  const dependentCards = useSelector(
+    (state) =>
+      card?.id && isDependenciesLoaded ? selectDependentCardsByCardId(state, card.id) : [],
+    shallowEqual,
   );
-  const dependencyRecords = useSelector((state) =>
-    card?.id ? selectDependenciesByCardId(state, card.id) : [],
+  const dependencyRecords = useSelector(
+    (state) => (card?.id && isDependenciesLoaded ? selectDependenciesByCardId(state, card.id) : []),
+    shallowEqual,
   );
 
-  const childCardLists = useSelector((state) => {
-    if (!childCards) return {};
-    const lists = {};
-    childCards.forEach((childCard) => {
-      const childList = selectListById(state, childCard.listId);
-      if (childList) {
-        lists[childCard.id] = childList;
-      }
-    });
-    return lists;
-  });
+  const childCardLists = useSelector(
+    (state) => selectors.selectChildCardListsByParentId(state, card?.id),
+    shallowEqual,
+  );
 
-  const dependencyCardLists = useSelector((state) => {
-    const lists = {};
-    [...dependsOnCards, ...dependentCards].forEach((dependencyCard) => {
-      const depList = selectListById(state, dependencyCard.listId);
-      if (depList) {
-        lists[dependencyCard.id] = depList;
-      }
-    });
-    return lists;
-  });
+  const dependencyCardLists = useSelector(
+    (state) =>
+      isDependenciesLoaded && (dependsOnCards.length > 0 || dependentCards.length > 0)
+        ? selectors.selectDependencyCardLists(state, dependsOnCards, dependentCards)
+        : {},
+    shallowEqual,
+  );
 
-  const availableLists = useSelector(selectors.selectAvailableListsForCurrentBoard);
+  const availableLists = useSelector(selectors.selectAvailableListsForCurrentBoard, shallowEqual);
 
   const parentCard = useSelector((state) =>
-    card.parentCardId ? selectCardById(state, card.parentCardId) : null,
+    card?.parentCardId ? selectCardById(state, card.parentCardId) : null,
   );
 
   const isJoined = useSelector(selectors.selectIsCurrentUserInCurrentCard);
 
-  const list = useSelector((state) => selectListById(state, card.listId));
+  const list = useSelector((state) => selectListById(state, card?.listId));
 
   // TODO: check availability?
   const prevList = useSelector(
-    (state) => card.prevListId && selectPrevListById(state, card.prevListId),
+    (state) => card?.prevListId && selectListById(state, card.prevListId),
   );
 
   const isInArchiveList = list.type === ListTypes.ARCHIVE;
@@ -131,6 +136,7 @@ const ProjectContent = React.memo(() => {
     canEditStartDate,
     canEditDueDate,
     canEditStopwatch,
+    canEditWeight,
     canSubscribe,
     canJoin,
     canDuplicate,
@@ -163,6 +169,7 @@ const ProjectContent = React.memo(() => {
         canEditStartDate: false,
         canEditDueDate: false,
         canEditStopwatch: false,
+        canEditWeight: false,
         canSubscribe: isMember,
         canJoin: false,
         canDuplicate: false,
@@ -186,6 +193,7 @@ const ProjectContent = React.memo(() => {
       canEditStartDate: isEditor,
       canEditDueDate: isEditor,
       canEditStopwatch: isEditor,
+      canEditWeight: isEditor,
       canSubscribe: isMember,
       canJoin: isEditor,
       canDuplicate: isEditor,
@@ -202,9 +210,20 @@ const ProjectContent = React.memo(() => {
     };
   }, shallowEqual);
 
+  useEffect(() => {
+    if (card?.id && canUseLists && !isDependenciesLoaded) {
+      setIsDependenciesLoaded(true);
+    }
+  }, [card?.id, canUseLists, isDependenciesLoaded]);
+
   const dispatch = useDispatch();
-  const [t] = useTranslation();
+  const [t, i18n] = useTranslation();
   const [descriptionDraft, setDescriptionDraft] = useState(null);
+
+  const titleDirectionStyles = useMemo(
+    () => getTextDirectionStyles(card?.name || '', i18n.language),
+    [card?.name, i18n.language],
+  );
   const [isEditDescriptionOpened, setIsEditDescriptionOpened] = useState(false);
   const [, , setIsClosableActive] = useContext(ClosableContext);
 
@@ -214,6 +233,11 @@ const ProjectContent = React.memo(() => {
   const [newSubTaskName, setNewSubTaskName] = useState('');
   const [isCreatingSubTask, setIsCreatingSubTask] = useState(false);
   const inlineInputRef = useRef(null);
+
+  const subTaskInputDirectionStyles = useMemo(
+    () => getTextDirectionStyles(newSubTaskName, i18n.language),
+    [newSubTaskName, i18n.language],
+  );
 
   const paginatedChildCards = useMemo(() => {
     if (!childCards) return [];
@@ -340,6 +364,20 @@ const ProjectContent = React.memo(() => {
     [dispatch],
   );
 
+  const handleReleaseSelect = useCallback(
+    (releaseId) => {
+      dispatch(actions.releaseCardAdd(releaseId, card.id));
+    },
+    [dispatch, card.id],
+  );
+
+  const handleRemoveRelease = useCallback(
+    (releaseId) => {
+      dispatch(actions.releaseCardRemove(releaseId, card.id));
+    },
+    [dispatch, card.id],
+  );
+
   const handleCreateSubTask = useCallback(
     (name) => {
       dispatch(
@@ -453,10 +491,12 @@ const ProjectContent = React.memo(() => {
   }, [isEditDescriptionOpened]);
 
   useEffect(() => {
-    if (card?.id) {
-      dispatch(entryActions.fetchChildCards(card.id));
+    if (card?.id && (card.type === CardTypes.EPIC || card.type === CardTypes.STORY)) {
+      if (childCards?.length > 0 || canUseLists) {
+        dispatch(entryActions.fetchChildCards(card.id));
+      }
     }
-  }, [card?.id, dispatch]);
+  }, [card?.id, card?.type, childCards?.length, canUseLists, dispatch]);
 
   const CreationDetailsPopup = usePopupInClosableContext(CreationDetailsStep);
   const BoardMembershipsPopup = usePopupInClosableContext(BoardMembershipsStep);
@@ -466,6 +506,7 @@ const ProjectContent = React.memo(() => {
   const EditStartDatePopup = usePopupInClosableContext(EditStartDateStep);
   const EditDueDatePopup = usePopupInClosableContext(EditDueDateStep);
   const EditStopwatchPopup = usePopupInClosableContext(EditStopwatchStep);
+  const EditWeightPopup = usePopupInClosableContext(EditWeightStep);
   const AddTaskListPopup = usePopupInClosableContext(AddTaskListStep);
   const AddAttachmentPopup = usePopupInClosableContext(AddAttachmentStep);
   const AddCustomFieldGroupPopup = usePopupInClosableContext(AddCustomFieldGroupStep);
@@ -482,7 +523,9 @@ const ProjectContent = React.memo(() => {
               {canEditName ? (
                 <NameField defaultValue={card.name} onUpdate={handleNameUpdate} />
               ) : (
-                <div className={styles.headerTitle}>{card.name}</div>
+                <div className={styles.headerTitle} style={titleDirectionStyles}>
+                  {card.name}
+                </div>
               )}
             </div>
           </div>
@@ -728,50 +771,21 @@ const ProjectContent = React.memo(() => {
                   )}
                 </div>
               )}
-              {(dependsOnCards.length > 0 || dependentCards.length > 0) && (
+              {releaseIds.length > 0 && (
                 <div className={styles.attachments}>
                   <div className={styles.text}>
-                    {t('common.dependencies', {
+                    {t('common.releases', {
                       context: 'title',
                     })}
                   </div>
-                  {dependsOnCards.length > 0 && (
-                    <span className={styles.attachment}>
-                      <DependenciesPopup cardId={card.id}>
-                        <button
-                          type="button"
-                          className={classNames(styles.attachment, styles.dependencyButton)}
-                        >
-                          <Icon name="arrow left" size="small" />
-                          <span>
-                            {t('common.blockedBy')} ({dependsOnCards.length})
-                          </span>
-                        </button>
-                      </DependenciesPopup>
+                  {releaseIds.map((releaseId) => (
+                    <span key={releaseId} className={styles.attachment}>
+                      <ReleaseChip id={releaseId} />
                     </span>
-                  )}
-                  {dependentCards.length > 0 && (
-                    <span className={styles.attachment}>
-                      <DependenciesPopup cardId={card.id}>
-                        <button
-                          type="button"
-                          className={classNames(styles.attachment, styles.dependencyButton)}
-                        >
-                          <Icon name="arrow right" size="small" />
-                          <span>
-                            {t('common.blocking')} ({dependentCards.length})
-                          </span>
-                        </button>
-                      </DependenciesPopup>
-                    </span>
-                  )}
-                  <DependenciesPopup cardId={card.id}>
-                    <button type="button" className={classNames(styles.attachment, styles.dueDate)}>
-                      <Icon name="add" size="small" className={styles.addAttachment} />
-                    </button>
-                  </DependenciesPopup>
+                  ))}
                 </div>
               )}
+
               {card.startDate && (
                 <div className={styles.attachments}>
                   <div className={styles.text}>
@@ -1040,6 +1054,7 @@ const ProjectContent = React.memo(() => {
                       className={styles.inlineInput}
                       placeholder={t('common.enterSubTaskName')}
                       value={newSubTaskName}
+                      style={subTaskInputDirectionStyles}
                       onChange={handleNewSubTaskNameChange}
                       onKeyDown={handleSubTaskKeyDown}
                       onBlur={handleCancelInlineSubTask}
@@ -1180,6 +1195,50 @@ const ProjectContent = React.memo(() => {
                   )}
                 </div>
               )}
+              {card.type === CardTypes.PROJECT && (
+                <div className={classNames(styles.attachments, styles.attachmentsList)}>
+                  <div className={classNames(styles.text, styles.textList)}>
+                    {t('common.releases', { context: 'title' })}
+                  </div>
+                  {releaseIds.length > 0 ? (
+                    releaseIds.map((releaseId) => {
+                      const release = boardReleases.find((r) => r.id === releaseId);
+                      return release ? (
+                        <div key={releaseId} className={styles.storyContainer}>
+                          <span className={styles.list}>
+                            <Icon name="flag checkered" size="small" className={styles.listIcon} />
+                            <span className={styles.hidable}>
+                              {release.version} - {release.name}
+                            </span>
+                          </span>
+                          <button
+                            type="button"
+                            className={styles.removeStoryButton}
+                            onClick={() => handleRemoveRelease(releaseId)}
+                            title={t('action.removeFromRelease')}
+                          >
+                            <Icon name="times" size="small" />
+                          </button>
+                        </div>
+                      ) : null;
+                    })
+                  ) : (
+                    <Dropdown
+                      placeholder={t('action.selectRelease')}
+                      selection
+                      search
+                      fluid
+                      options={boardReleases.map((release) => ({
+                        key: release.id,
+                        value: release.id,
+                        text: `${release.version} - ${release.name}`,
+                      }))}
+                      onChange={(e, { value }) => handleReleaseSelect(value)}
+                      className={styles.listButton}
+                    />
+                  )}
+                </div>
+              )}
             </div>
             {(canEditStartDate ||
               canEditDueDate ||
@@ -1216,12 +1275,6 @@ const ProjectContent = React.memo(() => {
                     </Button>
                   </LabelsPopup>
                 )}
-                <DependenciesPopup cardId={card.id}>
-                  <Button fluid className={classNames(styles.actionButton, styles.hidable)}>
-                    <Icon name="random" className={styles.actionIcon} />
-                    {t('common.dependencies')}
-                  </Button>
-                </DependenciesPopup>
                 {canEditStartDate && (
                   <EditStartDatePopup cardId={card.id}>
                     <Button fluid className={classNames(styles.actionButton, styles.hidable)}>
@@ -1249,6 +1302,14 @@ const ProjectContent = React.memo(() => {
                       {t('common.stopwatch')}
                     </Button>
                   </EditStopwatchPopup>
+                )}
+                {canEditWeight && (
+                  <EditWeightPopup cardId={card.id}>
+                    <Button fluid className={classNames(styles.actionButton, styles.hidable)}>
+                      <Icon name="balance scale" className={styles.actionIcon} />
+                      Weight
+                    </Button>
+                  </EditWeightPopup>
                 )}
                 {canAddTaskList && (
                   <AddTaskListPopup>

@@ -11,6 +11,7 @@ import { Tab } from 'semantic-ui-react';
 import entryActions from '../../../entry-actions';
 import { useClosableModal } from '../../../hooks';
 import selectors from '../../../selectors';
+import { isUserAdminOrProjectOwner } from '../../../utils/record-helpers';
 import BackgroundPane from './BackgroundPane';
 import BaseCustomFieldGroupsPane from './BaseCustomFieldGroupsPane';
 import CategoriesPane from './CategoriesPane';
@@ -21,7 +22,9 @@ import VersionsPane from './VersionsPane';
 import styles from './ProjectSettingsModal.module.scss';
 
 const ProjectSettingsModal = React.memo(() => {
-  const withManagablePanes = useSelector(selectors.selectIsCurrentUserManagerForCurrentProject);
+  const currentUser = useSelector(selectors.selectCurrentUser);
+  const isManager = useSelector(selectors.selectIsCurrentUserManagerForCurrentProject);
+  const withManagablePanes = isUserAdminOrProjectOwner(currentUser) || isManager;
 
   const dispatch = useDispatch();
   const [t] = useTranslation();

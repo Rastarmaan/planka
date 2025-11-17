@@ -45,6 +45,8 @@ export function* handleSocketReconnect() {
   let customFieldValues;
   let notifications;
   let notificationServices;
+  let boardReleases;
+  let releaseCards;
 
   try {
     ({ item: config } = yield call(request, api.getConfig));
@@ -73,6 +75,8 @@ export function* handleSocketReconnect() {
       customFieldValues,
       notifications,
       notificationServices,
+      boardReleases,
+      releaseCards,
     } = yield call(requests.fetchCore));
   } catch {
     return;
@@ -104,6 +108,8 @@ export function* handleSocketReconnect() {
       customFieldValues,
       notifications,
       notificationServices,
+      boardReleases,
+      releaseCards,
     ),
   );
 

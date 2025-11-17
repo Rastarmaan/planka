@@ -4,14 +4,16 @@
  */
 
 import upperFirst from 'lodash/upperFirst';
-import React, { useCallback, useRef } from 'react';
+import React, { useCallback, useRef, useMemo } from 'react';
 import PropTypes from 'prop-types';
 import classNames from 'classnames';
 import TextareaAutosize from 'react-textarea-autosize';
 import { TextArea } from 'semantic-ui-react';
+import { useTranslation } from 'react-i18next';
 import { useDidUpdate, usePrevious, useToggle } from '../../../lib/hooks';
 
 import { useEscapeInterceptor, useField, useNestedRef } from '../../../hooks';
+import { getTextDirectionStyles } from '../../../utils/text-direction';
 
 import styles from './NameField.module.scss';
 
@@ -24,9 +26,15 @@ const NameField = React.memo(({ defaultValue, size, onUpdate }) => {
   const prevDefaultValue = usePrevious(defaultValue);
   const [value, handleChange, setValue] = useField(defaultValue);
   const [blurFieldState, blurField] = useToggle();
+  const { i18n } = useTranslation();
 
   const [fiedRef, handleFieldRef] = useNestedRef();
   const isFocusedRef = useRef(false);
+
+  const textDirectionStyles = useMemo(
+    () => getTextDirectionStyles(value, i18n.language),
+    [value, i18n.language],
+  );
 
   const handleEscape = useCallback(() => {
     setValue(defaultValue);
@@ -83,6 +91,7 @@ const NameField = React.memo(({ defaultValue, size, onUpdate }) => {
       value={value}
       maxLength={1024}
       className={classNames(styles.field, styles[`field${upperFirst(size)}`])}
+      style={textDirectionStyles}
       onFocus={handleFocus}
       onKeyDown={handleKeyDown}
       onChange={handleChange}

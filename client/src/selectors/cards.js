@@ -4,6 +4,7 @@
  */
 
 import { createSelector } from 'redux-orm';
+import { createSelector as createReselectSelector } from 'reselect';
 
 import { buildCustomFieldValueId } from '../models/CustomFieldValue';
 import orm from '../orm';
@@ -11,6 +12,7 @@ import { isLocalId } from '../utils/local-id';
 import { selectRecentCardId } from './core';
 import { selectPath } from './router';
 import { selectCurrentUserId } from './users';
+import { makeSelectListById } from './lists';
 
 export const makeSelectCardById = () =>
   createSelector(
@@ -301,6 +303,25 @@ export const selectLabelIdsForCurrentCard = createSelector(
   },
 );
 
+export const selectReleaseIdsForCurrentCard = createSelector(
+  orm,
+  (state) => selectPath(state).cardId,
+  ({ Card }, id) => {
+    if (!id) {
+      return id;
+    }
+
+    const cardModel = Card.withId(id);
+
+    if (!cardModel) {
+      return cardModel;
+    }
+
+    const releaseIds = cardModel.releases.toRefArray().map((release) => release.id);
+    return releaseIds;
+  },
+);
+
 export const selectTaskListIdsForCurrentCard = createSelector(
   orm,
   (state) => selectPath(state).cardId,
@@ -514,6 +535,69 @@ export const selectChildCardsByParentId = createSelector(
   },
 );
 
+export const selectChildCardListsByParentId = createReselectSelector(
+  [(state, parentId) => selectChildCardsByParentId(state, parentId), (state) => state],
+  (childCards, state) => {
+    if (!childCards || childCards.length === 0) {
+      return {};
+    }
+
+    const selectListById = makeSelectListById();
+    const lists = {};
+
+    childCards.forEach((childCard) => {
+      if (childCard.listId) {
+        lists[childCard.id] = selectListById(state, childCard.listId);
+      }
+    });
+
+    return lists;
+  },
+);
+
+export const selectDependencyCardLists = createReselectSelector(
+  [
+    (state, dependsOnCards, dependentCards) => [
+      ...(dependsOnCards || []),
+      ...(dependentCards || []),
+    ],
+    (state) => state,
+  ],
+  (allDependencyCards, state) => {
+    if (!allDependencyCards || allDependencyCards.length === 0) {
+      return {};
+    }
+
+    const selectListById = makeSelectListById();
+    const lists = {};
+
+    allDependencyCards.forEach((dependencyCard) => {
+      if (dependencyCard.listId) {
+        const depList = selectListById(state, dependencyCard.listId);
+        if (depList) {
+          lists[dependencyCard.id] = depList;
+        }
+      }
+    });
+
+    return lists;
+  },
+);
+
+export const selectCardsForCurrentBoard = createSelector(
+  orm,
+  (state) => selectPath(state).boardId,
+  ({ Card }, boardId) => {
+    if (!boardId) {
+      return [];
+    }
+
+    return Card.all()
+      .filter((card) => card.boardId === boardId)
+      .toRefArray();
+  },
+);
+
 export default {
   makeSelectCardById,
   selectCardById,
@@ -539,6 +623,7 @@ export default {
   selectCurrentCard,
   selectUserIdsForCurrentCard,
   selectLabelIdsForCurrentCard,
+  selectReleaseIdsForCurrentCard,
   selectTaskListIdsForCurrentCard,
   selectAttachmentIdsForCurrentCard,
   selectImageAttachmentIdsExceptCoverForCurrentCard,
@@ -550,4 +635,7 @@ export default {
   selectPrevCardId,
   selectNextCardId,
   selectChildCardsByParentId,
+  selectChildCardListsByParentId,
+  selectDependencyCardLists,
+  selectCardsForCurrentBoard,
 };

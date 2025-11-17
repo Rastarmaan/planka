@@ -15,6 +15,7 @@ import selectors from '../../../selectors';
 import entryActions from '../../../entry-actions';
 import { usePopupInClosableContext } from '../../../hooks';
 import { isListArchiveOrTrash } from '../../../utils/record-helpers';
+import { getTextDirectionStyles } from '../../../utils/text-direction';
 import { StaticUserIds } from '../../../constants/StaticUsers';
 import { BoardMembershipRoles } from '../../../constants/Enums';
 import { ClosableContext } from '../../../contexts';
@@ -72,9 +73,14 @@ const Item = React.memo(({ id }) => {
   }, shallowEqual);
 
   const dispatch = useDispatch();
-  const [t] = useTranslation();
+  const [t, i18n] = useTranslation();
   const [isEditOpened, setIsEditOpened] = useState(false);
   const [, , setIsClosableActive] = useContext(ClosableContext);
+
+  const commentDirectionStyles = useMemo(
+    () => getTextDirectionStyles(comment.text, i18n.language),
+    [comment.text, i18n.language],
+  );
 
   const handleDeleteConfirm = useCallback(() => {
     dispatch(entryActions.deleteComment(id));
@@ -113,7 +119,9 @@ const Item = React.memo(({ id }) => {
                   })
                 : user.name}
             </div>
-            <Markdown>{comment.text}</Markdown>
+            <div style={commentDirectionStyles}>
+              <Markdown>{comment.text}</Markdown>
+            </div>
             <Comment.Actions className={styles.information}>
               <span className={styles.date}>
                 <TimeAgo date={comment.createdAt} />

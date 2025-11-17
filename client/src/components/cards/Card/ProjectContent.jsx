@@ -7,6 +7,7 @@ import classNames from 'classnames';
 import PropTypes from 'prop-types';
 import React, { useCallback, useMemo } from 'react';
 import { shallowEqual, useDispatch, useSelector } from 'react-redux';
+import { useTranslation } from 'react-i18next';
 import { Icon } from 'semantic-ui-react';
 
 import { BoardMembershipRoles, BoardViews, CardTypes } from '../../../constants/Enums';
@@ -15,6 +16,7 @@ import entryActions from '../../../entry-actions';
 import selectors from '../../../selectors';
 import { isListArchiveOrTrash } from '../../../utils/record-helpers';
 import { startStopwatch, stopStopwatch } from '../../../utils/stopwatch';
+import { getTextDirectionStyles } from '../../../utils/text-direction';
 import CustomFieldValueChip from '../../custom-field-values/CustomFieldValueChip';
 import LabelChip from '../../labels/LabelChip';
 import UserAvatar from '../../users/UserAvatar';
@@ -74,6 +76,13 @@ const ProjectContent = React.memo(({ cardId }) => {
 
   const notificationsTotal = useSelector((state) =>
     selectNotificationsTotalByCardId(state, cardId),
+  );
+
+  const { i18n } = useTranslation();
+
+  const nameDirectionStyles = useMemo(
+    () => getTextDirectionStyles(card?.name || '', i18n.language),
+    [card?.name, i18n.language],
   );
 
   const coverUrl = useSelector((state) => {
@@ -151,7 +160,22 @@ const ProjectContent = React.memo(({ cardId }) => {
 
   return (
     <div className={styles.wrapper}>
-      <div className={classNames(styles.name, card.isClosed && styles.nameClosed)}>{card.name}</div>
+      <div
+        className={classNames(styles.name, card.isClosed && styles.nameClosed)}
+        style={nameDirectionStyles}
+      >
+        {card.name}
+      </div>
+
+      <span className={styles.attachments}>
+        <span className={classNames(styles.attachment, styles.attachmentLeft)}>
+          <span className={styles.attachmentContent}>
+            <Icon name="balance scale" />
+            {card.weight}
+          </span>
+        </span>
+      </span>
+
       {parentCard && (
         <div
           className={classNames(
@@ -207,6 +231,7 @@ const ProjectContent = React.memo(({ cardId }) => {
               {notificationsTotal}
             </span>
           )}
+
           {card.dueDate && (
             <span className={classNames(styles.attachment, styles.attachmentLeft)}>
               <DueDateChip

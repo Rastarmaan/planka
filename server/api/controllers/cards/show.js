@@ -158,6 +158,19 @@ module.exports = {
     const users = card.creatorUserId ? await User.qm.getByIds([card.creatorUserId]) : [];
     const cardMemberships = await CardMembership.qm.getByCardId(card.id);
     const cardLabels = await CardLabel.qm.getByCardId(card.id);
+    const releaseCards = await ReleaseCard.qm.getByCardId(card.id);
+
+    const releaseIds = releaseCards.map((rc) => rc.releaseId);
+    const cardBoardReleases =
+      releaseIds.length > 0 ? await BoardRelease.qm.getByIds(releaseIds) : [];
+
+    const allBoardReleases = await BoardRelease.qm.getByBoardId(card.boardId);
+
+    const boardReleasesMap = new Map();
+    [...cardBoardReleases, ...allBoardReleases].forEach((release) => {
+      boardReleasesMap.set(release.id, release);
+    });
+    const boardReleases = Array.from(boardReleasesMap.values());
 
     const cardDependencies1 = await CardDependency.qm.getByCardId(card.id);
 
@@ -182,6 +195,8 @@ module.exports = {
       included: {
         cardMemberships,
         cardLabels,
+        releaseCards,
+        boardReleases,
         cardDependencies,
         taskLists,
         tasks,

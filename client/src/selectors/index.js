@@ -9,6 +9,7 @@ import backgroundImages from './background-images';
 import baseCustomFieldGroups from './base-custom-field-groups';
 import boardLinks from './board-links';
 import boardMemberships from './board-memberships';
+import boardReleases from './board-releases';
 import boards from './boards';
 import cardDependencies from './card-dependencies';
 import cards from './cards';
@@ -19,6 +20,7 @@ import customFieldGroups from './custom-field-groups';
 import customFieldValues from './custom-field-values';
 import customFields from './custom-fields';
 import globalLabels from './global-labels';
+import googleCalendar from './google-calendar';
 import labels from './labels';
 import lists from './lists';
 import modals from './modals';
@@ -50,6 +52,7 @@ export default {
   ...boards,
   ...boardLinks,
   ...boardMemberships,
+  ...boardReleases,
   ...cardDependencies,
   ...labels,
   ...globalLabels,
@@ -65,4 +68,5 @@ export default {
   ...activities,
   ...notifications,
   ...notificationServices,
+  ...googleCalendar,
 };

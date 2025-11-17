@@ -206,6 +206,7 @@ module.exports = {
       project.id,
       currentUser.id,
     );
+    const isAdminOrProjectOwner = sails.helpers.users.isAdminOrProjectOwner(currentUser);
 
     const availableInputKeys = ['id', 'isFavorite'];
     if (project.ownerProjectManagerId) {
@@ -222,7 +223,7 @@ module.exports = {
       availableInputKeys.push('isHidden');
     }
 
-    if (projectManager) {
+    if (projectManager || isAdminOrProjectOwner) {
       availableInputKeys.push(
         'backgroundImageId',
         'name',

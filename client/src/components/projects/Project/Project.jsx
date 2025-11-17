@@ -6,11 +6,11 @@
 import React from 'react';
 import { useSelector } from 'react-redux';
 
-import selectors from '../../../selectors';
 import ModalTypes from '../../../constants/ModalTypes';
-import ProjectSettingsModal from '../ProjectSettingsModal';
+import selectors from '../../../selectors';
 import Boards from '../../boards/Boards';
 import BoardSettingsModal from '../../boards/BoardSettingsModal';
+import ProjectSettingsModal from '../ProjectSettingsModal';
 
 import styles from './Project.module.scss';
 

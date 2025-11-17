@@ -124,6 +124,15 @@ module.exports.routes = {
   'POST /api/boards/:boardId/duplicate': 'boards/duplicate',
   'DELETE /api/boards/:id': 'boards/delete',
 
+  'GET /api/boards/:boardId/releases': 'board-releases/index',
+  'POST /api/boards/:boardId/releases': 'board-releases/create',
+  'PUT /api/boards/:boardId/releases/:id': 'board-releases/update',
+  'PATCH /api/boards/:boardId/releases/:id/status': 'board-releases/update-status',
+  'DELETE /api/boards/:boardId/releases/:id': 'board-releases/delete',
+
+  'POST /api/releases/:releaseId/cards': 'releases/add-card',
+  'DELETE /api/releases/:releaseId/cards/:cardId': 'releases/remove-card',
+
   'GET /api/boards/:boardId/links': 'board-links/show',
   'PATCH /api/board-links/:id': 'board-links/update',
   'DELETE /api/board-links/:id': 'board-links/delete',
@@ -137,6 +146,7 @@ module.exports.routes = {
   'PATCH /api/global-labels/:id': 'global-labels/update',
   'DELETE /api/global-labels/:id': 'global-labels/delete',
 
+  'GET /api/labels': 'labels/index',
   'POST /api/boards/:boardId/labels': 'labels/create',
   'PATCH /api/labels/:id': 'labels/update',
   'DELETE /api/labels/:id': 'labels/delete',
@@ -156,6 +166,7 @@ module.exports.routes = {
 
   'GET /api/lists/:listId/cards': 'cards/index',
   'POST /api/lists/:listId/cards': 'cards/create',
+  'GET /api/cards/filter': 'cards/filter',
   'GET /api/cards/:id': 'cards/show',
   'GET /api/cards/:id/children': 'cards/get-children',
   'PATCH /api/cards/:id': 'cards/update',
@@ -169,6 +180,8 @@ module.exports.routes = {
   'POST /api/cards/:cardId/card-dependencies': 'card-dependencies/create',
   'DELETE /api/cards/:cardId/card-dependencies/dependsOnCardId::dependsOnCardId':
     'card-dependencies/delete',
+
+  'PATCH /api/cards/:cardId/release': 'cards/release/update',
 
   'POST /api/cards/:cardId/task-lists': 'task-lists/create',
   'GET /api/task-lists/:id': 'task-lists/show',
@@ -213,6 +226,14 @@ module.exports.routes = {
   'GET /api/notifications/:id': 'notifications/show',
   'PATCH /api/notifications/:id': 'notifications/update',
   'POST /api/notifications/read-all': 'notifications/read-all',
+
+  'GET /api/google/oauth/authorize': 'google-calendar/authorize',
+  'GET /api/google/oauth/callback': 'google-calendar/callback',
+  'GET /api/google-calendar/status': 'google-calendar/status',
+  'GET /api/google-calendar/calendars': 'google-calendar/list-calendars',
+  'PATCH /api/google-calendar/calendar': 'google-calendar/update-calendar',
+  'POST /api/google-calendar/disconnect': 'google-calendar/disconnect',
+  'PATCH /api/google-calendar/toggle': 'google-calendar/toggle',
 
   'POST /api/users/:userId/notification-services': 'notification-services/create-in-user',
   'POST /api/boards/:boardId/notification-services': 'notification-services/create-in-board',

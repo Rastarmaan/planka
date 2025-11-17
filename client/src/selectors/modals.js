@@ -5,12 +5,12 @@
 
 import { createSelector } from 'redux-orm';
 
+import { UserRoles } from '../constants/Enums';
+import ModalTypes from '../constants/ModalTypes';
 import orm from '../orm';
+import { isUserAdminOrProjectOwner } from '../utils/record-helpers';
 import { selectPath } from './router';
 import { selectCurrentUserId } from './users';
-import { isUserAdminOrProjectOwner } from '../utils/record-helpers';
-import ModalTypes from '../constants/ModalTypes';
-import { UserRoles } from '../constants/Enums';
 
 export const selectCurrentModal = ({ core: { modal } }) => modal;
 
@@ -30,7 +30,14 @@ export const isCurrentModalAvailableForCurrentUser = createSelector(
           return isUserAdminOrProjectOwner(currentUserModel);
         case ModalTypes.PROJECT_SETTINGS: {
           const projectModel = Project.withId(currentProjectId);
-          return !!projectModel && projectModel.isExternalAccessibleForUser(currentUserModel);
+          if (!projectModel) {
+            return false;
+          }
+
+          return (
+            isUserAdminOrProjectOwner(currentUserModel) ||
+            projectModel.isExternalAccessibleForUser(currentUserModel)
+          );
         }
         case ModalTypes.BOARD_SETTINGS: {
           const boardModel = Board.withId(currentModal.params.id);
@@ -39,7 +46,10 @@ export const isCurrentModalAvailableForCurrentUser = createSelector(
             return false;
           }
 
-          return boardModel.project.hasManagerWithUserId(currentUserId);
+          return (
+            isUserAdminOrProjectOwner(currentUserModel) ||
+            boardModel.project.hasManagerWithUserId(currentUserId)
+          );
         }
         case ModalTypes.BOARD_ACTIVITIES: {
           const boardModel = Board.withId(currentModal.params.id);

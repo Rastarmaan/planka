@@ -79,6 +79,11 @@ const ActionsStep = React.memo(({ onClose }) => {
     onClose();
   }, [onClose, dispatch]);
 
+  const handleReleasesClick = useCallback(() => {
+    dispatch(entryActions.openBoardReleasesModal());
+    onClose();
+  }, [onClose, dispatch]);
+
   const handleEmptyTrashConfirm = useCallback(() => {
     dispatch(entryActions.clearTrashListInCurrentBoard());
     onClose();
@@ -149,6 +154,12 @@ const ActionsStep = React.memo(({ onClose }) => {
             {t('common.versions', {
               context: 'title',
               defaultValue: 'Versions',
+            })}
+          </Menu.Item>
+          <Menu.Item className={styles.menuItem} onClick={handleReleasesClick}>
+            <Icon name="flag checkered" className={styles.menuItemIcon} />
+            {t('common.releases', {
+              context: 'title',
             })}
           </Menu.Item>
           {withTrashEmptier && (

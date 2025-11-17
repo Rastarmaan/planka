@@ -16,6 +16,7 @@ import entryActions from '../../../entry-actions';
 import { useEscapeInterceptor, useForm, useNestedRef } from '../../../hooks';
 import { isUsernameChar, mentionTextToMarkup } from '../../../utils/mentions';
 import { isModifierKeyPressed } from '../../../utils/event-helpers';
+import { getTextDirectionStyles } from '../../../utils/text-direction';
 import UserAvatar from '../../users/UserAvatar';
 
 import styles from './Add.module.scss';
@@ -28,7 +29,7 @@ const Add = React.memo(() => {
   const boardMemberships = useSelector(selectors.selectMembershipsForCurrentBoard);
 
   const dispatch = useDispatch();
-  const [t] = useTranslation();
+  const [t, i18n] = useTranslation();
   const [data, , setData] = useForm(DEFAULT_DATA);
   const [isOpened, setIsOpened] = useState(false);
   const [selectTextFieldState, selectTextField] = useToggle();
@@ -37,6 +38,11 @@ const Add = React.memo(() => {
   const textMentionsRef = useRef(null);
   const textInputRef = useRef(null);
   const [buttonRef, handleButtonRef] = useNestedRef();
+
+  const inputDirectionStyles = useMemo(
+    () => getTextDirectionStyles(data.text, i18n.language),
+    [data.text, i18n.language],
+  );
 
   const userByUsername = useMemo(
     () =>
@@ -156,6 +162,7 @@ const Add = React.memo(() => {
             control: {
               minHeight: isOpened ? '79px' : '37px',
             },
+            input: inputDirectionStyles,
           }}
           onFocus={handleFieldFocus}
           onChange={handleFieldChange}

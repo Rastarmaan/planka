@@ -189,5 +189,9 @@ module.exports = {
       collection: 'Label',
       via: 'boardId',
     },
+    releases: {
+      collection: 'BoardRelease',
+      via: 'boardId',
+    },
   },
 };

@@ -3,7 +3,7 @@
  * Licensed under the Fair Use License: https://github.com/plankanban/planka/blob/master/LICENSE.md
  */
 
-import React, { useCallback, useRef, useState } from 'react';
+import React, { useCallback, useRef, useState, useMemo } from 'react';
 import PropTypes from 'prop-types';
 import { useDispatch, useSelector } from 'react-redux';
 import { useTranslation } from 'react-i18next';
@@ -13,6 +13,7 @@ import { useClickAwayListener } from '../../../lib/hooks';
 import selectors from '../../../selectors';
 import entryActions from '../../../entry-actions';
 import { useNestedRef } from '../../../hooks';
+import { getTextDirectionStyles } from '../../../utils/text-direction';
 import MarkdownEditor from '../MarkdownEditor';
 
 import styles from './EditMarkdown.module.scss';
@@ -23,12 +24,17 @@ const EditMarkdown = React.memo(({ defaultValue, draftValue, onUpdate, onClose }
   const defaultMode = useSelector((state) => selectors.selectCurrentUser(state).defaultEditorMode);
 
   const dispatch = useDispatch();
-  const [t] = useTranslation();
+  const [t, i18n] = useTranslation();
   const [value, setValue] = useState(() => draftValue || defaultValue || '');
 
   const fieldRef = useRef(null);
   const [submitButtonRef, handleSubmitButtonRef] = useNestedRef();
   const [cancelButtonRef, handleCancelButtonRef] = useNestedRef();
+
+  const editorDirectionStyles = useMemo(
+    () => getTextDirectionStyles(value, i18n.language),
+    [value, i18n.language],
+  );
 
   const handleModeChange = useCallback(
     (mode) => {
@@ -87,6 +93,7 @@ const EditMarkdown = React.memo(({ defaultValue, draftValue, onUpdate, onClose }
         defaultValue={value}
         defaultMode={defaultMode}
         isError={isExceeded}
+        style={editorDirectionStyles}
         onChange={handleChange}
         onSubmit={handleSubmit}
         onCancel={handleCancel}

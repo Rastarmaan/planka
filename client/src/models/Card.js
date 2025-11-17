@@ -23,6 +23,9 @@ export default class extends BaseModel {
     isDueCompleted: attr(),
     stopwatch: attr(),
     isClosed: attr(),
+    weight: attr({
+      getDefault: () => 1,
+    }),
     commentsTotal: attr({
       getDefault: () => 0,
     }),
@@ -82,6 +85,11 @@ export default class extends BaseModel {
       to: 'Attachment',
       as: 'coverAttachment',
       relatedName: 'coveredCard',
+    }),
+    releases: many({
+      to: 'BoardRelease',
+      through: 'ReleaseCard',
+      relatedName: 'cards',
     }),
     users: many('User', 'cards'),
     labels: many('Label', 'cards'),

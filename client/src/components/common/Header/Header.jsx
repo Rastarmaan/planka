@@ -3,20 +3,20 @@
  * Licensed under the Fair Use License: https://github.com/plankanban/planka/blob/master/LICENSE.md
  */
 
-import React, { useCallback } from 'react';
 import classNames from 'classnames';
+import React, { useCallback } from 'react';
 import { shallowEqual, useDispatch, useSelector } from 'react-redux';
 import { Link } from 'react-router-dom';
 import { Button, Icon, Menu } from 'semantic-ui-react';
 import { usePopup } from '../../../lib/popup';
 
-import selectors from '../../../selectors';
-import entryActions from '../../../entry-actions';
-import Paths from '../../../constants/Paths';
 import { BoardMembershipRoles, BoardViews, UserRoles } from '../../../constants/Enums';
+import Paths from '../../../constants/Paths';
+import entryActions from '../../../entry-actions';
+import selectors from '../../../selectors';
+import NotificationsStep from '../../notifications/NotificationsStep';
 import UserAvatar from '../../users/UserAvatar';
 import UserStep from '../../users/UserStep';
-import NotificationsStep from '../../notifications/NotificationsStep';
 
 import styles from './Header.module.scss';
 
@@ -45,10 +45,10 @@ const Header = React.memo(() => {
       };
     }
 
-    const isAdminInSharedProject = user.role === UserRoles.ADMIN && !project.ownerProjectManagerId;
+    const isAdmin = user.role === UserRoles.ADMIN;
     const isManager = selectors.selectIsCurrentUserManagerForCurrentProject(state);
 
-    if (isAdminInSharedProject || isManager) {
+    if (isAdmin || isManager) {
       return {
         withEditModeToggler: true,
         canEditProject: isEditModeEnabled,

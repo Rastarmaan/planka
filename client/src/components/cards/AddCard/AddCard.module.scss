@@ -54,6 +54,34 @@
     text-decoration: none;
   }
 
+  .weightWrapper {
+    display: flex;
+    align-items: center;
+    margin-bottom: 8px;
+    padding: 0 8px;
+  }
+
+  .weightLabel {
+    font-weight: 600;
+    margin-right: 8px;
+    font-size: 14px;
+    color: #5e6c84;
+  }
+
+  .weightInput {
+    border: 1px solid #dfe1e6;
+    border-radius: 3px;
+    padding: 4px 8px;
+    width: 60px;
+    font-size: 14px;
+
+    &:focus {
+      border-color: #0079bf;
+      outline: none;
+      box-shadow: 0 0 0 2px rgba(0, 121, 191, 0.2);
+    }
+  }
+
   .wrapperClosed {
     display: none;
   }

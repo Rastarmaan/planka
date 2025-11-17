@@ -84,6 +84,43 @@ module.exports = {
         });
       }
 
+      try {
+        const sync = await GoogleCalendarSync.findOne({ userId: cardMembership.userId });
+        if (sync && sync.isEnabled) {
+          const calendarEvent = await CardCalendarEvent.qm.getOneByCardIdAndUserId(
+            cardMembership.cardId,
+            cardMembership.userId,
+          );
+          if (calendarEvent) {
+            try {
+              const { calendar, calendarId } = await sails.helpers.googleCalendar.getClient.with({
+                sync,
+              });
+
+              await calendar.events.delete({
+                calendarId: calendarEvent.calendarId || calendarId,
+                eventId: calendarEvent.eventId,
+              });
+
+              await CardCalendarEvent.qm.deleteOne(calendarEvent.id);
+            } catch (err) {
+              if (err === 'tokenRefreshFailed' || (err && err.code === 'tokenRefreshFailed')) {
+                sails.log.warn(
+                  `[Card Membership Delete] Google Calendar token decryption failed for user ${cardMembership.userId}. User needs to reconnect their Google Calendar account.`,
+                );
+              } else {
+                sails.log.error(
+                  `[Card Membership Delete] Error deleting calendar event for user ${cardMembership.userId}:`,
+                  err,
+                );
+              }
+            }
+          }
+        }
+      } catch (err) {
+        sails.log.error('[Card Membership Delete] Error checking Google Calendar sync:', err);
+      }
+
       await sails.helpers.actions.createOne.with({
         webhooks,
         values: {

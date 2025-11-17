@@ -18,6 +18,7 @@ import Paths from '../../../../constants/Paths';
 import { ClosableContext } from '../../../../contexts';
 import entryActions from '../../../../entry-actions';
 import { usePopupInClosableContext } from '../../../../hooks';
+import { getTextDirectionStyles } from '../../../../utils/text-direction';
 import selectors from '../../../../selectors';
 import { isUsableMarkdownElement } from '../../../../utils/element-helpers';
 import AddAttachmentStep from '../../../attachments/AddAttachmentStep';
@@ -32,6 +33,7 @@ import LabelChip from '../../../labels/LabelChip';
 import LabelsStep from '../../../labels/LabelsStep';
 import ListsStep from '../../../lists/ListsStep';
 import UserAvatar from '../../../users/UserAvatar';
+import EditWeightStep from '../../EditWeightStep';
 import Communication from '../Communication';
 import CreationDetailsStep from '../CreationDetailsStep';
 import CustomFieldGroups from '../CustomFieldGroups';
@@ -43,55 +45,49 @@ import styles from './StoryContent.module.scss';
 
 const StoryContent = React.memo(() => {
   const selectListById = useMemo(() => selectors.makeSelectListById(), []);
-  const selectPrevListById = useMemo(() => selectors.makeSelectListById(), []);
   const selectAttachmentById = useMemo(() => selectors.makeSelectAttachmentById(), []);
-  const selectChildCardListById = useMemo(() => selectors.makeSelectListById(), []);
   const selectCardById = useMemo(() => selectors.makeSelectCardById(), []);
 
   const dispatch = useDispatch();
 
   const card = useSelector(selectors.selectCurrentCard);
   const board = useSelector(selectors.selectCurrentBoard);
-  const userIds = useSelector(selectors.selectUserIdsForCurrentCard);
-  const labelIds = useSelector(selectors.selectLabelIdsForCurrentCard);
-  const attachmentIds = useSelector(selectors.selectAttachmentIdsForCurrentCard);
-  const childCards = useSelector((state) => selectors.selectChildCardsByParentId(state, card?.id));
+  const userIds = useSelector(selectors.selectUserIdsForCurrentCard, shallowEqual);
+  const labelIds = useSelector(selectors.selectLabelIdsForCurrentCard, shallowEqual);
+  const attachmentIds = useSelector(selectors.selectAttachmentIdsForCurrentCard, shallowEqual);
+  const childCards = useSelector(
+    (state) => selectors.selectChildCardsByParentId(state, card?.id),
+    shallowEqual,
+  );
 
-  // Get list data for all child cards
-  const childCardLists = useSelector((state) => {
-    if (!childCards || childCards.length === 0) return {};
-
-    const lists = {};
-    childCards.forEach((childCard) => {
-      if (childCard.listId) {
-        lists[childCard.id] = selectChildCardListById(state, childCard.listId);
-      }
-    });
-    return lists;
-  });
+  const childCardLists = useSelector(
+    (state) => selectors.selectChildCardListsByParentId(state, card?.id),
+    shallowEqual,
+  );
 
   // Get available lists for the current board
-  const availableLists = useSelector(selectors.selectAvailableListsForCurrentBoard);
+  const availableLists = useSelector(selectors.selectAvailableListsForCurrentBoard, shallowEqual);
 
   const imageAttachmentIdsExceptCover = useSelector(
     selectors.selectImageAttachmentIdsExceptCoverForCurrentCard,
+    shallowEqual,
   );
 
   const isJoined = useSelector(selectors.selectIsCurrentUserInCurrentCard);
 
-  const list = useSelector((state) => selectListById(state, card.listId));
+  const list = useSelector((state) => selectListById(state, card?.listId));
 
   const parentCard = useSelector((state) =>
-    card.parentCardId ? selectCardById(state, card.parentCardId) : null,
+    card?.parentCardId ? selectCardById(state, card.parentCardId) : null,
   );
 
   // TODO: check availability?
   const prevList = useSelector(
-    (state) => card.prevListId && selectPrevListById(state, card.prevListId),
+    (state) => card?.prevListId && selectListById(state, card.prevListId),
   );
 
   const coverAttachment = useSelector((state) =>
-    selectAttachmentById(state, card.coverAttachmentId),
+    card?.coverAttachmentId ? selectAttachmentById(state, card.coverAttachmentId) : null,
   );
 
   const isInArchiveList = list.type === ListTypes.ARCHIVE;
@@ -101,6 +97,7 @@ const StoryContent = React.memo(() => {
     canEditType,
     canEditName,
     canEditDescription,
+    canEditWeight,
     canSubscribe,
     canJoin,
     canDuplicate,
@@ -129,6 +126,7 @@ const StoryContent = React.memo(() => {
         canEditType: false,
         canEditName: false,
         canEditDescription: false,
+        canEditWeight: false,
         canSubscribe: isMember,
         canJoin: false,
         canDuplicate: false,
@@ -148,6 +146,7 @@ const StoryContent = React.memo(() => {
       canEditType: isEditor,
       canEditName: isEditor,
       canEditDescription: isEditor,
+      canEditWeight: isEditor,
       canSubscribe: isMember,
       canJoin: isEditor,
       canDuplicate: isEditor,
@@ -163,8 +162,19 @@ const StoryContent = React.memo(() => {
     };
   }, shallowEqual);
 
-  const [t] = useTranslation();
+  const [t, i18n] = useTranslation();
   const [descriptionDraft, setDescriptionDraft] = useState(null);
+
+  const titleDirectionStyles = useMemo(
+    () => getTextDirectionStyles(card?.name || '', i18n.language),
+    [card?.name, i18n.language],
+  );
+
+  const descriptionDirectionStyles = useMemo(
+    () => getTextDirectionStyles(card?.description || '', i18n.language),
+    [card?.description, i18n.language],
+  );
+
   const [isEditDescriptionOpened, setIsEditDescriptionOpened] = useState(false);
   const [activateClosable, deactivateClosable, setIsClosableActive] = useContext(ClosableContext);
 
@@ -355,6 +365,7 @@ const StoryContent = React.memo(() => {
   const BoardMembershipsPopup = usePopupInClosableContext(BoardMembershipsStep);
   const LabelsPopup = usePopupInClosableContext(LabelsStep);
   const ListsPopup = usePopupInClosableContext(ListsStep);
+  const EditWeightPopup = usePopupInClosableContext(EditWeightStep);
   const AddAttachmentPopup = usePopupInClosableContext(AddAttachmentStep);
   const AddCustomFieldGroupPopup = usePopupInClosableContext(AddCustomFieldGroupStep);
   const MoreActionsPopup = usePopupInClosableContext(MoreActionsStep);
@@ -373,7 +384,9 @@ const StoryContent = React.memo(() => {
               {canEditName ? (
                 <NameField defaultValue={card.name} size="large" onUpdate={handleNameUpdate} />
               ) : (
-                <div className={styles.headerTitle}>{card.name}</div>
+                <div className={styles.headerTitle} style={titleDirectionStyles}>
+                  {card.name}
+                </div>
               )}
             </div>
           </div>
@@ -502,7 +515,9 @@ const StoryContent = React.memo(() => {
                             <Button className={styles.editButton}>
                               <Icon fitted name="pencil" size="small" />
                             </Button>
-                            <Markdown>{card.description}</Markdown>
+                            <div style={descriptionDirectionStyles}>
+                              <Markdown>{card.description}</Markdown>
+                            </div>
                           </div>
                         ) : (
                           <button
@@ -519,7 +534,9 @@ const StoryContent = React.memo(() => {
                     ))}
                   {!canEditDescription && (
                     <div className={styles.descriptionText}>
-                      <Markdown>{card.description}</Markdown>
+                      <div style={descriptionDirectionStyles}>
+                        <Markdown>{card.description}</Markdown>
+                      </div>
                     </div>
                   )}
                   {imageAttachmentIdsExceptCover.length > 0 && (
@@ -755,6 +772,14 @@ const StoryContent = React.memo(() => {
                       {t('common.attachment')}
                     </Button>
                   </AddAttachmentPopup>
+                )}
+                {canEditWeight && (
+                  <EditWeightPopup cardId={card.id}>
+                    <Button fluid className={classNames(styles.actionButton, styles.hidable)}>
+                      <Icon name="balance scale" className={styles.actionIcon} />
+                      Weight
+                    </Button>
+                  </EditWeightPopup>
                 )}
                 {canAddCustomFieldGroup && (
                   <AddCustomFieldGroupPopup onCreate={handleCustomFieldGroupCreate}>

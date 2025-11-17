@@ -189,6 +189,8 @@ export function* handleCardCreate(card) {
   let customFieldGroups;
   let customFields;
   let customFieldValues;
+  let releaseCards;
+  let boardReleases;
 
   try {
     ({
@@ -197,6 +199,8 @@ export function* handleCardCreate(card) {
         users,
         cardMemberships,
         cardLabels,
+        releaseCards,
+        boardReleases,
         taskLists,
         tasks,
         attachments,
@@ -215,6 +219,8 @@ export function* handleCardCreate(card) {
       users,
       cardMemberships,
       cardLabels,
+      releaseCards,
+      boardReleases,
       taskLists,
       tasks,
       attachments,
@@ -299,6 +305,8 @@ export function* handleCardUpdate(card) {
   let users;
   let cardMemberships;
   let cardLabels;
+  let releaseCards;
+  let boardReleases;
   let taskLists;
   let tasks;
   let attachments;
@@ -314,6 +322,8 @@ export function* handleCardUpdate(card) {
           users,
           cardMemberships,
           cardLabels,
+          releaseCards,
+          boardReleases,
           taskLists,
           tasks,
           attachments,
@@ -334,6 +344,8 @@ export function* handleCardUpdate(card) {
       users,
       cardMemberships,
       cardLabels,
+      releaseCards,
+      boardReleases,
       taskLists,
       tasks,
       attachments,

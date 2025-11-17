@@ -68,6 +68,35 @@ module.exports = {
         }),
         user: inputs.actorUser,
       });
+
+      if (task.assigneeUserId) {
+        const sync = await GoogleCalendarSync.qm.getOneByUserId(task.assigneeUserId);
+        if (sync && sync.isEnabled) {
+          const calendarEvent = await TaskCalendarEvent.qm.getOneByTaskId(task.id);
+          if (calendarEvent) {
+            try {
+              const { calendar, calendarId } = await sails.helpers.googleCalendar.getClient({
+                sync,
+              });
+
+              await calendar.events.delete({
+                calendarId,
+                eventId: calendarEvent.eventId,
+              });
+
+              await TaskCalendarEvent.qm.deleteOne(calendarEvent.id);
+            } catch (err) {
+              if (err === 'tokenRefreshFailed' || (err && err.code === 'tokenRefreshFailed')) {
+                sails.log.warn(
+                  `[Task Delete] Google Calendar token decryption failed for user ${task.assigneeUserId}. User needs to reconnect their Google Calendar account.`,
+                );
+              } else {
+                sails.log.error('Error deleting calendar event:', err);
+              }
+            }
+          }
+        }
+      }
     }
 
     return task;

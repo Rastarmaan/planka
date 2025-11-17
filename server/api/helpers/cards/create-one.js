@@ -159,6 +159,35 @@ module.exports = {
       // Continue even if sync fails
     }
 
+    if ((card.startDate || card.dueDate) && !card.isClosed) {
+      const cardMemberships = await CardMembership.qm.getByCardId(card.id);
+      if (cardMemberships.length > 0) {
+        // eslint-disable-next-line no-restricted-syntax
+        for (const membership of cardMemberships) {
+          // eslint-disable-next-line no-await-in-loop
+          const sync = await GoogleCalendarSync.qm.getOneByUserId(membership.userId);
+          if (sync && sync.isEnabled) {
+            try {
+              // eslint-disable-next-line no-await-in-loop
+              await sails.helpers.googleCalendar.syncCard({
+                card,
+                userId: membership.userId,
+                sync,
+              });
+            } catch (err) {
+              if (err === 'tokenRefreshFailed' || (err && err.code === 'tokenRefreshFailed')) {
+                sails.log.warn(
+                  `[Card Create] Google Calendar token decryption failed for user ${membership.userId}. User needs to reconnect their Google Calendar account.`,
+                );
+              } else if (err !== 'noDate' && err !== 'cardNotAssigned') {
+                sails.log.error('Error syncing card to Google Calendar:', err);
+              }
+            }
+          }
+        }
+      }
+    }
+
     return card;
   },
 };

@@ -31,6 +31,8 @@ const initializeCore = (
   customFieldValues,
   notifications,
   notificationServices,
+  boardReleases,
+  releaseCards,
 ) => ({
   type: ActionTypes.CORE_INITIALIZE,
   payload: {
@@ -59,6 +61,8 @@ const initializeCore = (
     customFieldValues,
     notifications,
     notificationServices,
+    boardReleases,
+    releaseCards,
   },
 });
 

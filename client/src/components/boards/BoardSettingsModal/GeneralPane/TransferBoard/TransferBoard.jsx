@@ -25,9 +25,7 @@ const TransferBoard = React.memo(() => {
   const projects = useSelector((state) =>
     allProjectIds
       .map((id) => selectors.selectProjectById(state, id))
-      .filter(
-        (project) => project && project.id !== board.projectId && !project.ownerProjectManagerId,
-      ),
+      .filter((project) => project && project.id !== board.projectId),
   );
 
   const [selectedProjectId, setSelectedProjectId] = useState(null);

@@ -19,6 +19,7 @@ import { useForm, useNestedRef } from '../../../hooks';
 import { isUsernameChar, mentionTextToMarkup } from '../../../utils/mentions';
 import { focusEnd } from '../../../utils/element-helpers';
 import { isModifierKeyPressed } from '../../../utils/event-helpers';
+import { getTextDirectionStyles } from '../../../utils/text-direction';
 import UserAvatar from '../../users/UserAvatar';
 
 import styles from './Edit.module.scss';
@@ -30,7 +31,7 @@ const Edit = React.memo(({ commentId, onClose }) => {
   const boardMemberships = useSelector(selectors.selectMembershipsForCurrentBoard);
 
   const dispatch = useDispatch();
-  const [t] = useTranslation();
+  const [t, i18n] = useTranslation();
 
   const defaultData = useMemo(
     () => ({
@@ -43,6 +44,11 @@ const Edit = React.memo(({ commentId, onClose }) => {
     text: '',
     ...defaultData,
   }));
+
+  const inputDirectionStyles = useMemo(
+    () => getTextDirectionStyles(data.text, i18n.language),
+    [data.text, i18n.language],
+  );
 
   const textFieldRef = useRef(null);
   const textMentionsRef = useRef(null);
@@ -148,6 +154,7 @@ const Edit = React.memo(({ commentId, onClose }) => {
             control: {
               minHeight: '79px',
             },
+            input: inputDirectionStyles,
           }}
           onChange={handleFieldChange}
           onKeyDown={handleFieldKeyDown}

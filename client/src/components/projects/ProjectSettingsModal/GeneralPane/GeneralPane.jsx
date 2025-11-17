@@ -4,15 +4,16 @@
  */
 
 import React, { useCallback } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
 import { useTranslation } from 'react-i18next';
+import { useDispatch, useSelector } from 'react-redux';
 import { Button, Divider, Header, Radio, Tab } from 'semantic-ui-react';
 
-import selectors from '../../../../selectors';
 import entryActions from '../../../../entry-actions';
 import { usePopupInClosableContext } from '../../../../hooks';
-import EditInformation from './EditInformation';
+import selectors from '../../../../selectors';
+import { isUserAdminOrProjectOwner } from '../../../../utils/record-helpers';
 import ConfirmationStep from '../../../common/ConfirmationStep';
+import EditInformation from './EditInformation';
 
 import styles from './GeneralPane.module.scss';
 
@@ -23,7 +24,9 @@ const GeneralPane = React.memo(() => {
     (state) => selectors.selectBoardIdsForCurrentProject(state).length > 0,
   );
 
-  const canEdit = useSelector(selectors.selectIsCurrentUserManagerForCurrentProject);
+  const currentUser = useSelector(selectors.selectCurrentUser);
+  const isManager = useSelector(selectors.selectIsCurrentUserManagerForCurrentProject);
+  const canEdit = isUserAdminOrProjectOwner(currentUser) || isManager;
 
   const dispatch = useDispatch();
   const [t] = useTranslation();

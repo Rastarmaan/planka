@@ -21,6 +21,7 @@ import LabelsStep from '../../labels/LabelsStep';
 import EditDueDateStep from '../EditDueDateStep';
 import EditStartDateStep from '../EditStartDateStep';
 import EditStopwatchStep from '../EditStopwatchStep';
+import EditWeightStep from '../EditWeightStep';
 import MoveCardStep from '../MoveCardStep';
 import SelectCardTypeStep from '../SelectCardTypeStep';
 
@@ -33,6 +34,7 @@ const StepTypes = {
   EDIT_START_DATE: 'EDIT_START_DATE',
   EDIT_DUE_DATE: 'EDIT_DUE_DATE',
   EDIT_STOPWATCH: 'EDIT_STOPWATCH',
+  EDIT_WEIGHT: 'EDIT_WEIGHT',
   MOVE: 'MOVE',
   ARCHIVE: 'ARCHIVE',
   DELETE: 'DELETE',
@@ -63,6 +65,7 @@ const ActionsStep = React.memo(({ cardId, onNameEdit, onClose }) => {
     canEditStartDate,
     canEditDueDate,
     canEditStopwatch,
+    canEditWeight,
     canDuplicate,
     canMove,
     canRestore,
@@ -81,6 +84,7 @@ const ActionsStep = React.memo(({ cardId, onNameEdit, onClose }) => {
         canEditStartDate: false,
         canEditDueDate: false,
         canEditStopwatch: false,
+        canEditWeight: false,
         canDuplicate: false,
         canMove: false,
         canRestore: isEditor,
@@ -97,6 +101,7 @@ const ActionsStep = React.memo(({ cardId, onNameEdit, onClose }) => {
       canEditStartDate: isEditor,
       canEditDueDate: isEditor,
       canEditStopwatch: isEditor,
+      canEditWeight: isEditor,
       canDuplicate: isEditor,
       canMove: isEditor,
       canRestore: null,
@@ -209,6 +214,10 @@ const ActionsStep = React.memo(({ cardId, onNameEdit, onClose }) => {
     openStep(StepTypes.EDIT_STOPWATCH);
   }, [openStep]);
 
+  const handleEditWeightClick = useCallback(() => {
+    openStep(StepTypes.EDIT_WEIGHT);
+  }, [openStep]);
+
   const handleMoveClick = useCallback(() => {
     openStep(StepTypes.MOVE);
   }, [openStep]);
@@ -260,6 +269,8 @@ const ActionsStep = React.memo(({ cardId, onNameEdit, onClose }) => {
         return <EditDueDateStep cardId={cardId} onBack={handleBack} onClose={onClose} />;
       case StepTypes.EDIT_STOPWATCH:
         return <EditStopwatchStep cardId={cardId} onBack={handleBack} onClose={onClose} />;
+      case StepTypes.EDIT_WEIGHT:
+        return <EditWeightStep cardId={cardId} onBack={handleBack} onClose={onClose} />;
       case StepTypes.MOVE:
         return <MoveCardStep id={cardId} onBack={handleBack} onClose={onClose} />;
       case StepTypes.ARCHIVE:
@@ -361,6 +372,12 @@ const ActionsStep = React.memo(({ cardId, onNameEdit, onClose }) => {
               {t('action.editStopwatch', {
                 context: 'title',
               })}
+            </Menu.Item>
+          )}
+          {canEditWeight && (
+            <Menu.Item className={styles.menuItem} onClick={handleEditWeightClick}>
+              <Icon name="balance scale" className={styles.menuItemIcon} />
+              Edit Weight
             </Menu.Item>
           )}
           {canDuplicate && (
