@@ -174,6 +174,14 @@ const ProjectContent = React.memo(({ cardId }) => {
             {card.weight}
           </span>
         </span>
+        {card.storyPoints && (
+          <span className={classNames(styles.attachment, styles.attachmentLeft)}>
+            <span className={styles.storyPointsBadge}>
+              <Icon name="flag" />
+              {card.storyPoints}
+            </span>
+          </span>
+        )}
       </span>
 
       {parentCard && (

@@ -960,4 +960,56 @@
     color: #5e6c84;
     font-size: 14px;
   }
+
+  .weightBadge {
+    background: #61bd4f;
+    border-radius: 3px;
+    color: #fff;
+    display: inline-flex;
+    align-items: center;
+    justify-content: flex-start;
+    font-size: 14px;
+    line-height: 1;
+    padding: 8px 12px;
+    margin-right: 8px;
+    font-weight: 500;
+    border: none;
+    cursor: pointer;
+    transition: background 0.2s ease;
+
+    &:hover {
+      background: #51ad3f;
+    }
+
+    :global(.icon) {
+      margin-right: 6px !important;
+    }
+  }
+
+  .storyPointsBadge {
+    background: #baf3db;
+    border-radius: 3px;
+    color: #164b35;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 14px;
+    font-weight: 700;
+    line-height: 1;
+    padding: 8px 12px;
+    min-width: 40px;
+    border: none;
+    cursor: pointer;
+    transition: background 0.2s ease;
+
+    &:hover {
+      background: #a8e8c8;
+    }
+
+    :global(.icon) {
+      margin-right: 6px !important;
+      color: #164b35;
+    }
+  }
 }
+

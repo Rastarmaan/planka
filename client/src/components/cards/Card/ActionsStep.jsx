@@ -22,6 +22,7 @@ import EditDueDateStep from '../EditDueDateStep';
 import EditStartDateStep from '../EditStartDateStep';
 import EditStopwatchStep from '../EditStopwatchStep';
 import EditWeightStep from '../EditWeightStep';
+import EditStoryPointsStep from '../EditStoryPointsStep';
 import MoveCardStep from '../MoveCardStep';
 import SelectCardTypeStep from '../SelectCardTypeStep';
 
@@ -35,6 +36,7 @@ const StepTypes = {
   EDIT_DUE_DATE: 'EDIT_DUE_DATE',
   EDIT_STOPWATCH: 'EDIT_STOPWATCH',
   EDIT_WEIGHT: 'EDIT_WEIGHT',
+  EDIT_STORY_POINTS: 'EDIT_STORY_POINTS',
   MOVE: 'MOVE',
   ARCHIVE: 'ARCHIVE',
   DELETE: 'DELETE',
@@ -66,6 +68,7 @@ const ActionsStep = React.memo(({ cardId, onNameEdit, onClose }) => {
     canEditDueDate,
     canEditStopwatch,
     canEditWeight,
+    canEditStoryPoints,
     canDuplicate,
     canMove,
     canRestore,
@@ -85,6 +88,7 @@ const ActionsStep = React.memo(({ cardId, onNameEdit, onClose }) => {
         canEditDueDate: false,
         canEditStopwatch: false,
         canEditWeight: false,
+        canEditStoryPoints: false,
         canDuplicate: false,
         canMove: false,
         canRestore: isEditor,
@@ -102,6 +106,7 @@ const ActionsStep = React.memo(({ cardId, onNameEdit, onClose }) => {
       canEditDueDate: isEditor,
       canEditStopwatch: isEditor,
       canEditWeight: isEditor,
+      canEditStoryPoints: isEditor,
       canDuplicate: isEditor,
       canMove: isEditor,
       canRestore: null,
@@ -218,6 +223,10 @@ const ActionsStep = React.memo(({ cardId, onNameEdit, onClose }) => {
     openStep(StepTypes.EDIT_WEIGHT);
   }, [openStep]);
 
+  const handleEditStoryPointsClick = useCallback(() => {
+    openStep(StepTypes.EDIT_STORY_POINTS);
+  }, [openStep]);
+
   const handleMoveClick = useCallback(() => {
     openStep(StepTypes.MOVE);
   }, [openStep]);
@@ -271,6 +280,8 @@ const ActionsStep = React.memo(({ cardId, onNameEdit, onClose }) => {
         return <EditStopwatchStep cardId={cardId} onBack={handleBack} onClose={onClose} />;
       case StepTypes.EDIT_WEIGHT:
         return <EditWeightStep cardId={cardId} onBack={handleBack} onClose={onClose} />;
+      case StepTypes.EDIT_STORY_POINTS:
+        return <EditStoryPointsStep cardId={cardId} onBack={handleBack} onClose={onClose} />;
       case StepTypes.MOVE:
         return <MoveCardStep id={cardId} onBack={handleBack} onClose={onClose} />;
       case StepTypes.ARCHIVE:
@@ -378,6 +389,12 @@ const ActionsStep = React.memo(({ cardId, onNameEdit, onClose }) => {
             <Menu.Item className={styles.menuItem} onClick={handleEditWeightClick}>
               <Icon name="balance scale" className={styles.menuItemIcon} />
               Edit Weight
+            </Menu.Item>
+          )}
+          {canEditStoryPoints && (
+            <Menu.Item className={styles.menuItem} onClick={handleEditStoryPointsClick}>
+              <Icon name="flag" className={styles.menuItemIcon} />
+              Edit Story Points
             </Menu.Item>
           )}
           {canDuplicate && (

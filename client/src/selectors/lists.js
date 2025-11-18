@@ -65,6 +65,25 @@ export const makeSelectFilteredCardIdsByListId = () =>
 
 export const selectFilteredCardIdsByListId = makeSelectFilteredCardIdsByListId();
 
+export const makeSelectStoryPointsTotalByListId = () =>
+  createSelector(
+    orm,
+    (_, id) => id,
+    ({ List }, id) => {
+      const listModel = List.withId(id);
+
+      if (!listModel) {
+        return 0;
+      }
+
+      return listModel
+        .getFilteredCardsModelArray()
+        .reduce((total, cardModel) => total + (cardModel.storyPoints || 0), 0);
+    },
+  );
+
+export const selectStoryPointsTotalByListId = makeSelectStoryPointsTotalByListId();
+
 export const selectIsListWithIdAvailableForCurrentUser = createSelector(
   orm,
   (_, id) => id,
@@ -171,6 +190,8 @@ export default {
   selectCardIdsByListId,
   makeSelectFilteredCardIdsByListId,
   selectFilteredCardIdsByListId,
+  makeSelectStoryPointsTotalByListId,
+  selectStoryPointsTotalByListId,
   selectIsListWithIdAvailableForCurrentUser,
   selectCurrentListId,
   selectCurrentList,

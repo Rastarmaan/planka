@@ -1,0 +1,93 @@
+.wrapper {
+  min-width: 300px;
+  max-width: 400px;
+}
+
+.emptyMessage {
+  padding: 20px;
+  text-align: center;
+  color: #6b808c;
+  font-style: italic;
+}
+
+.totalSection {
+  padding: 16px;
+  background: #f4f5f7;
+  border-radius: 3px;
+  margin-bottom: 12px;
+}
+
+.totalLabel {
+  font-size: 12px;
+  font-weight: 600;
+  color: #5e6c84;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 8px;
+}
+
+.totalValue {
+  display: flex;
+  align-items: center;
+  font-size: 24px;
+  font-weight: bold;
+  color: #172b4d;
+  
+  i.icon {
+    margin-right: 8px !important;
+    color: #0079bf;
+  }
+}
+
+.divider {
+  height: 1px;
+  background: #dfe1e6;
+  margin: 16px 0;
+}
+
+.listSection {
+  max-height: 400px;
+  overflow-y: auto;
+}
+
+.listItem {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 12px;
+  border-radius: 3px;
+  margin-bottom: 4px;
+  transition: background 0.2s;
+  
+  &:hover {
+    background: #f4f5f7;
+  }
+}
+
+.listName {
+  display: flex;
+  align-items: center;
+  flex: 1;
+  font-size: 14px;
+  color: #172b4d;
+  font-weight: 500;
+  
+  i.icon {
+    margin-right: 8px !important;
+    font-size: 10px;
+  }
+}
+
+.listValue {
+  display: flex;
+  align-items: center;
+  font-size: 16px;
+  font-weight: 600;
+  color: #0079bf;
+  margin-left: 16px;
+  
+  i.icon {
+    margin-right: 6px !important;
+    font-size: 14px;
+  }
+}

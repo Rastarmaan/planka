@@ -41,6 +41,7 @@ import EditDueDateStep from '../EditDueDateStep';
 import EditStartDateStep from '../EditStartDateStep';
 import EditStopwatchStep from '../EditStopwatchStep';
 import EditWeightStep from '../EditWeightStep';
+import EditStoryPointsStep from '../EditStoryPointsStep';
 import StartDateChip from '../StartDateChip';
 import StopwatchChip from '../StopwatchChip';
 import Communication from './Communication';
@@ -137,6 +138,7 @@ const ProjectContent = React.memo(() => {
     canEditDueDate,
     canEditStopwatch,
     canEditWeight,
+    canEditStoryPoints,
     canSubscribe,
     canJoin,
     canDuplicate,
@@ -170,6 +172,7 @@ const ProjectContent = React.memo(() => {
         canEditDueDate: false,
         canEditStopwatch: false,
         canEditWeight: false,
+        canEditStoryPoints: false,
         canSubscribe: isMember,
         canJoin: false,
         canDuplicate: false,
@@ -194,6 +197,7 @@ const ProjectContent = React.memo(() => {
       canEditDueDate: isEditor,
       canEditStopwatch: isEditor,
       canEditWeight: isEditor,
+      canEditStoryPoints: isEditor,
       canSubscribe: isMember,
       canJoin: isEditor,
       canDuplicate: isEditor,
@@ -507,6 +511,7 @@ const ProjectContent = React.memo(() => {
   const EditDueDatePopup = usePopupInClosableContext(EditDueDateStep);
   const EditStopwatchPopup = usePopupInClosableContext(EditStopwatchStep);
   const EditWeightPopup = usePopupInClosableContext(EditWeightStep);
+  const EditStoryPointsPopup = usePopupInClosableContext(EditStoryPointsStep);
   const AddTaskListPopup = usePopupInClosableContext(AddTaskListStep);
   const AddAttachmentPopup = usePopupInClosableContext(AddAttachmentStep);
   const AddCustomFieldGroupPopup = usePopupInClosableContext(AddCustomFieldGroupStep);
@@ -872,6 +877,30 @@ const ProjectContent = React.memo(() => {
                   )}
                 </div>
               )}
+            </div>
+          )}
+          {(card.weight || card.storyPoints) && (
+            <div className={styles.contentModule}>
+              <div className={styles.moduleWrapper}>
+                <div className={styles.attachments}>
+                  {card.weight && (
+                    <EditWeightPopup cardId={card.id}>
+                      <button type="button" className={styles.weightBadge}>
+                        <Icon name="balance scale" />
+                        {card.weight}
+                      </button>
+                    </EditWeightPopup>
+                  )}
+                  {card.storyPoints && (
+                    <EditStoryPointsPopup cardId={card.id}>
+                      <button type="button" className={styles.storyPointsBadge}>
+                        <Icon name="flag" />
+                        {card.storyPoints}
+                      </button>
+                    </EditStoryPointsPopup>
+                  )}
+                </div>
+              </div>
             </div>
           )}
           {(card.description || canEditDescription) && (
@@ -1310,6 +1339,14 @@ const ProjectContent = React.memo(() => {
                       Weight
                     </Button>
                   </EditWeightPopup>
+                )}
+                {canEditStoryPoints && (
+                  <EditStoryPointsPopup cardId={card.id}>
+                    <Button fluid className={classNames(styles.actionButton, styles.hidable)}>
+                      <Icon name="flag" className={styles.actionIcon} />
+                      Story Points
+                    </Button>
+                  </EditStoryPointsPopup>
                 )}
                 {canAddTaskList && (
                   <AddTaskListPopup>

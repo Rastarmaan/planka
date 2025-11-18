@@ -96,6 +96,13 @@
  *                 default: 1
  *                 description: Weight/priority of the card (1-10)
  *                 example: 5
+ *               storyPoints:
+ *                 type: number
+ *                 minimum: 1
+ *                 maximum: 50
+ *                 nullable: true
+ *                 description: Story points for the card (1-50)
+ *                 example: 8
  *     responses:
  *       200:
  *         description: Card created successfully
@@ -193,6 +200,12 @@ module.exports = {
       min: 1,
       max: 10,
     },
+    storyPoints: {
+      type: 'number',
+      min: 1,
+      max: 50,
+      allowNull: true,
+    },
   },
 
   exits: {
@@ -262,6 +275,7 @@ module.exports = {
       'stopwatch',
       'parentCardId',
       'weight',
+      'storyPoints',
     ]);
 
     const card = await sails.helpers.cards.createOne

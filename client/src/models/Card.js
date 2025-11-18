@@ -26,6 +26,9 @@ export default class extends BaseModel {
     weight: attr({
       getDefault: () => 1,
     }),
+    storyPoints: attr({
+      getDefault: () => null,
+    }),
     commentsTotal: attr({
       getDefault: () => 0,
     }),
