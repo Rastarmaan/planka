@@ -18,7 +18,7 @@ import MarkdownEditor from '../MarkdownEditor';
 
 import styles from './EditMarkdown.module.scss';
 
-const MAX_LENGTH = 1048576;
+const MAX_LENGTH = null;
 
 const EditMarkdown = React.memo(({ defaultValue, draftValue, onUpdate, onClose }) => {
   const defaultMode = useSelector((state) => selectors.selectCurrentUser(state).defaultEditorMode);
@@ -47,7 +47,7 @@ const EditMarkdown = React.memo(({ defaultValue, draftValue, onUpdate, onClose }
     [dispatch],
   );
 
-  const isExceeded = value.length > MAX_LENGTH;
+  const isExceeded = MAX_LENGTH !== null && value.length > MAX_LENGTH;
 
   const submit = useCallback(() => {
     const cleanValue = value.trim() || null;
