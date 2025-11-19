@@ -241,6 +241,7 @@ export default {
       hideFromProjectListAndFavorites: 'Hide from project list and favorites',
       hours: 'Hours',
       importBoard_title: 'Import Board',
+      importingBoard: 'Importing board...',
       invalidCurrentPassword: 'Invalid current password',
       kanban: 'Kanban',
       labels: 'Labels',

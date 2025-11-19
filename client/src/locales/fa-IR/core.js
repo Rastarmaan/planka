@@ -226,6 +226,7 @@ export default {
       hideFromProjectListAndFavorites: null,
       hours: 'ساعت‌ها',
       importBoard_title: 'وارد کردن برد',
+      importingBoard: 'در حال وارد کردن برد...',
       invalidCurrentPassword: 'رمز عبور فعلی نامعتبر است',
       kanban: 'کانبان',
       labels: 'برچسب‌ها',
