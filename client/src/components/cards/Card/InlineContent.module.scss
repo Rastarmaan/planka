@@ -93,4 +93,28 @@
       margin-right: 4px;
     }
   }
+
+  .storyPointsBadge {
+    background: #baf3db;
+    border-radius: 3px;
+    color: #164b35;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 11px;
+    font-weight: 700;
+    line-height: 1;
+    padding: 4px 6px;
+    min-width: 28px;
+    height: 20px;
+
+    :global(.icon) {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      line-height: 1;
+      margin-right: 3px;
+      color: #164b35;
+    }
+  }
 }

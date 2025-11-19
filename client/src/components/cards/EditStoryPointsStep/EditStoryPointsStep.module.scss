@@ -1,0 +1,60 @@
+.fieldWrapper {
+  margin-bottom: 1rem;
+}
+
+.label {
+  display: block;
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+  color: #172b4d;
+}
+
+.presetButtons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-bottom: 0.75rem;
+}
+
+.additionalButtons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+}
+
+.presetButton {
+  min-width: 50px !important;
+}
+
+.customInput {
+  margin-top: 1rem;
+  padding-top: 1rem;
+  border-top: 1px solid #dfe1e6;
+}
+
+.customLabel {
+  display: block;
+  font-size: 0.9rem;
+  margin-bottom: 0.5rem;
+  color: #5e6c84;
+}
+
+.input {
+  width: 100%;
+  padding: 0.5rem;
+  border: 1px solid #dfe1e6;
+  border-radius: 3px;
+  font-size: 14px;
+  
+  &:focus {
+    outline: none;
+    border-color: #0079bf;
+    box-shadow: 0 0 0 1px #0079bf;
+  }
+}
+
+.actions {
+  display: flex;
+  gap: 0.5rem;
+}

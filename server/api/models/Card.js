@@ -133,6 +133,13 @@
  *           default: 1
  *           description: Weight/priority of the card (1-10)
  *           example: 5
+ *         storyPoints:
+ *           type: number
+ *           minimum: 1
+ *           maximum: 50
+ *           nullable: true
+ *           description: Story points for the card (1-50)
+ *           example: 8
  *         listChangedAt:
  *           type: string
  *           format: date-time
@@ -220,6 +227,13 @@ module.exports = {
       min: 1,
       max: 10,
       defaultsTo: 1,
+    },
+    storyPoints: {
+      type: 'number',
+      min: 1,
+      max: 50,
+      allowNull: true,
+      columnName: 'story_points',
     },
 
     //  ╔═╗╔╦╗╔╗ ╔═╗╔╦╗╔═╗

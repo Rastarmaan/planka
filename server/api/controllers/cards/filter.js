@@ -237,7 +237,7 @@ module.exports = async function filterCards(req, res) {
 
   if (userIds && userIds.length > 0) {
     const cardIdsWithUsers = await CardMembership.find({
-      userId: userIds,
+      userId: { in: userIds },
     }).then((memberships) => memberships.map((m) => m.cardId));
 
     cards = cards.filter((card) => cardIdsWithUsers.includes(card.id));
@@ -245,7 +245,7 @@ module.exports = async function filterCards(req, res) {
 
   if (labelIds && labelIds.length > 0) {
     const cardIdsWithLabels = await CardLabel.find({
-      labelId: labelIds,
+      labelId: { in: labelIds },
     }).then((cardLabels) => cardLabels.map((cl) => cl.cardId));
 
     cards = cards.filter((card) => cardIdsWithLabels.includes(card.id));

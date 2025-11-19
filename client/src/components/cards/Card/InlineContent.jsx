@@ -68,7 +68,7 @@ const InlineContent = React.memo(({ cardId }) => {
       <span className={styles.attachments}>
         <UserAvatar withCreatorIndicator id={card.creatorUserId} />
       </span>
-      {(notificationsTotal > 0 || listName) && (
+      {(notificationsTotal > 0 || card.storyPoints || listName) && (
         <span className={styles.attachments}>
           {notificationsTotal > 0 && (
             <span
@@ -84,6 +84,15 @@ const InlineContent = React.memo(({ cardId }) => {
               {card.weight}
             </span>
           </span>
+
+          {card.storyPoints && (
+            <span className={classNames(styles.attachment, styles.attachmentLeft)}>
+              <span className={styles.storyPointsBadge}>
+                <Icon name="flag" />
+                {card.storyPoints}
+              </span>
+            </span>
+          )}
 
           {listName && (
             <span className={classNames(styles.attachment, styles.attachmentLeft)}>

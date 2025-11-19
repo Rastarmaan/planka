@@ -20,6 +20,7 @@ import BoardMembershipsStep from '../../board-memberships/BoardMembershipsStep';
 import LabelChip from '../../labels/LabelChip';
 import LabelsStep from '../../labels/LabelsStep';
 import UserAvatar from '../../users/UserAvatar';
+import StoryPointsSummaryStep from './StoryPointsSummaryStep';
 
 import styles from './Filters.module.scss';
 
@@ -145,6 +146,7 @@ const Filters = React.memo(() => {
 
   const BoardMembershipsPopup = usePopup(BoardMembershipsStep);
   const LabelsPopup = usePopup(LabelsStep);
+  const StoryPointsSummaryPopup = usePopup(StoryPointsSummaryStep);
 
   const isSearchActive = search || isSearchFocused;
 
@@ -192,6 +194,14 @@ const Filters = React.memo(() => {
             <LabelChip id={labelId} size="small" onClick={handleLabelClick} />
           </span>
         ))}
+      </span>
+
+      <span className={styles.filter}>
+        <StoryPointsSummaryPopup>
+          <button type="button" className={styles.filterButton}>
+            <span className={styles.filterTitle}>Story Points</span>
+          </button>
+        </StoryPointsSummaryPopup>
       </span>
 
       <span className={styles.filter}>
