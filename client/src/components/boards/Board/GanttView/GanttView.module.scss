@@ -16,12 +16,27 @@
   background-color: white;
   border-radius: 4px;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  gap: 16px;
+  flex-wrap: wrap;
 }
 
 .viewModeSelector {
   display: flex;
   align-items: center;
   gap: 12px;
+}
+
+.boardSelector {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex: 1;
+  min-width: 300px;
+}
+
+.boardDropdown {
+  min-width: 250px;
+  max-width: 200px;
 }
 
 .label {
@@ -116,8 +131,11 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  height: 100%;
+  flex: 1;
   min-height: 400px;
+  background-color: white;
+  border-radius: 4px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
 }
 
 .emptyStateContent {
@@ -166,4 +184,67 @@
   padding-top: 4px;
   border-top: 1px solid rgba(255, 255, 255, 0.2);
   font-weight: 500;
+}
+
+.ganttTableHeader {
+  display: flex;
+  border-bottom: 2px solid #e0e0e0;
+  background-color: #f5f5f5;
+  font-weight: 500;
+  color: #333;
+}
+
+.ganttTableHeaderItem {
+  padding: 10px 6px;
+  display: flex;
+  align-items: center;
+  border-right: 1px solid #e0e0e0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 13px;
+
+  &:last-child {
+    border-right: none;
+  }
+}
+
+.ganttTableBody {
+  background-color: #fff;
+}
+
+.ganttTableRow {
+  display: flex;
+  border-bottom: 1px solid #e9ecef;
+  min-height: 50px;
+
+  &:hover {
+    background-color: #f8f9fa;
+  }
+}
+
+.ganttTableCell {
+  padding: 6px 6px;
+  display: flex;
+  align-items: center;
+  border-right: 1px solid #e0e0e0;
+  overflow: hidden;
+  flex-shrink: 0;
+
+  &:last-child {
+    border-right: none;
+  }
+}
+
+.ganttTableCellText {
+  font-size: 13px;
+  color: #495057;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+  line-height: 1.4;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }

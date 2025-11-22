@@ -488,6 +488,7 @@ export default {
         'Add start or due dates to cards to see them in the Gantt chart.',
       progress: 'Progress',
       locale: 'en-US',
+      selectBoards: 'Select boards to view',
       webhooks: 'Webhooks',
       withoutBaseGroup: 'Without base group',
       writeComment: 'Write a comment...',

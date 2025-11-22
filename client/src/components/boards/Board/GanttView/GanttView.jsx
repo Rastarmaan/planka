@@ -7,7 +7,7 @@
 import { Gantt, ViewMode } from 'gantt-task-react';
 import 'gantt-task-react/dist/index.css';
 import PropTypes from 'prop-types';
-import React, { useCallback, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import DateObject from 'react-date-object';
 import persian from 'react-date-object/calendars/persian';
 import persianEn from 'react-date-object/locales/persian_en';
@@ -51,6 +51,123 @@ TooltipContent.propTypes = {
   t: PropTypes.func.isRequired,
   formatDate: PropTypes.func.isRequired,
 };
+
+function TaskListHeaderDefault({ headerHeight, showBoardColumns }) {
+  return (
+    <div
+      className={styles.ganttTableHeader}
+      style={{
+        height: headerHeight - 2,
+      }}
+    >
+      {showBoardColumns && (
+        <div className={styles.ganttTableHeaderItem} style={{ minWidth: 140 }}>
+          Board / List
+        </div>
+      )}
+      <div
+        className={styles.ganttTableHeaderItem}
+        style={{ minWidth: showBoardColumns ? 180 : 220 }}
+      >
+        Task
+      </div>
+      <div className={styles.ganttTableHeaderItem} style={{ minWidth: 100 }}>
+        From
+      </div>
+      <div className={styles.ganttTableHeaderItem} style={{ minWidth: 100 }}>
+        To
+      </div>
+    </div>
+  );
+}
+
+TaskListHeaderDefault.propTypes = {
+  headerHeight: PropTypes.number.isRequired,
+  showBoardColumns: PropTypes.bool.isRequired,
+};
+
+function formatDateLong(date, isJalali) {
+  if (!date) return '';
+
+  if (isJalali) {
+    const dateObj = new DateObject({
+      date,
+      calendar: persian,
+      locale: persianEn,
+    });
+    return dateObj.format('dddd, D MMMM YYYY');
+  }
+
+  const options = {
+    weekday: 'long',
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric',
+  };
+  return date.toLocaleDateString(undefined, options);
+}
+
+function TaskListTableDefault({ rowHeight, tasks, formatDate, showBoardColumns, isJalali }) {
+  return (
+    <div className={styles.ganttTableBody}>
+      {tasks.map((task) => (
+        <div
+          key={task.id}
+          className={styles.ganttTableRow}
+          style={{
+            height: rowHeight,
+          }}
+        >
+          {showBoardColumns && (
+            <div
+              className={styles.ganttTableCell}
+              style={{ minWidth: 140, maxWidth: 140 }}
+              title={`${task.boardName || '-'} / ${task.listName || '-'}`}
+            >
+              <div className={styles.ganttTableCellText}>
+                {task.boardName || '-'} / {task.listName || '-'}
+              </div>
+            </div>
+          )}
+          <div
+            className={styles.ganttTableCell}
+            style={{
+              minWidth: showBoardColumns ? 180 : 220,
+              maxWidth: showBoardColumns ? 180 : 220,
+            }}
+            title={task.name}
+          >
+            <div className={styles.ganttTableCellText}>{task.name}</div>
+          </div>
+          <div
+            className={styles.ganttTableCell}
+            style={{ minWidth: 100, maxWidth: 100 }}
+            title={formatDateLong(task.start, isJalali)}
+          >
+            <div className={styles.ganttTableCellText}>{formatDate(task.start)}</div>
+          </div>
+          <div
+            className={styles.ganttTableCell}
+            style={{ minWidth: 100, maxWidth: 100 }}
+            title={formatDateLong(task.end, isJalali)}
+          >
+            <div className={styles.ganttTableCellText}>{formatDate(task.end)}</div>
+          </div>
+        </div>
+      ))}
+    </div>
+  );
+}
+
+TaskListTableDefault.propTypes = {
+  rowHeight: PropTypes.number.isRequired,
+  tasks: PropTypes.array.isRequired, // eslint-disable-line react/forbid-prop-types
+  formatDate: PropTypes.func.isRequired,
+  showBoardColumns: PropTypes.bool.isRequired,
+  isJalali: PropTypes.bool.isRequired,
+};
+
+TaskListTableDefault.defaultProps = {};
 
 function getColumnWidth(mode, isJalali) {
   if (mode === ViewMode.Month) return 300;
@@ -98,31 +215,41 @@ function parseDate(dateString) {
   return null;
 }
 
-const makeSelectCardsForGantt = () =>
+const makeSelectCardsForMultipleBoards = () =>
   createSelector(
     orm,
-    (_, cardIds) => cardIds,
-    ({ Card }, cardIds) => {
+    (_, boardIds) => boardIds,
+    ({ Board }, boardIds) => {
       const result = [];
 
-      cardIds.forEach((cardId) => {
-        const cardModel = Card.withId(cardId);
-        if (!cardModel) return;
+      if (!boardIds || boardIds.length === 0) {
+        return result;
+      }
 
-        const card = cardModel.ref;
-        const list = cardModel.list ? cardModel.list.ref : null;
-        const labels = cardModel.labels ? cardModel.labels.toRefArray() : [];
+      boardIds.forEach((boardId) => {
+        const boardModel = Board.withId(boardId);
+        if (!boardModel) return;
 
-        result.push({
-          id: card.id,
-          name: card.name,
-          startDate: card.startDate,
-          dueDate: card.dueDate,
-          isDueCompleted: card.isDueCompleted,
-          parentCardId: card.parentCardId,
-          type: card.type,
-          listName: list?.name || 'No List',
-          labels,
+        boardModel.lists.toModelArray().forEach((listModel) => {
+          listModel.cards.toModelArray().forEach((cardModel) => {
+            const card = cardModel.ref;
+            const list = listModel.ref;
+            const board = boardModel.ref;
+            const labels = cardModel.labels ? cardModel.labels.toRefArray() : [];
+
+            result.push({
+              id: card.id,
+              name: card.name,
+              startDate: card.startDate,
+              dueDate: card.dueDate,
+              isDueCompleted: card.isDueCompleted,
+              parentCardId: card.parentCardId,
+              type: card.type,
+              listName: list?.name || 'No List',
+              boardName: board?.name || 'No Board',
+              labels,
+            });
+          });
         });
       });
 
@@ -130,20 +257,40 @@ const makeSelectCardsForGantt = () =>
     },
   );
 
-const selectCardsForGantt = makeSelectCardsForGantt();
+const selectCardsForMultipleBoards = makeSelectCardsForMultipleBoards();
 
-const GanttView = React.memo(({ cardIds }) => {
+const GanttView = React.memo(() => {
   const dispatch = useDispatch();
   const [t] = useTranslation();
   const [viewMode, setViewMode] = useState(ViewMode.Week);
+
+  const board = useSelector(selectors.selectCurrentBoard);
+  const availableBoards = useSelector(selectors.selectAllAvailableBoards);
+  const [selectedBoardIds, setSelectedBoardIds] = useState(() => {
+    return board?.id ? [board.id] : [];
+  });
 
   const canEditCard = useSelector((state) => {
     const boardMembership = selectors.selectCurrentUserMembershipForCurrentBoard(state);
     return !!boardMembership && boardMembership.role === BoardMembershipRoles.EDITOR;
   });
 
-  const board = useSelector(selectors.selectCurrentBoard);
   const isJalali = board?.calendarType === 'jalali';
+
+  useEffect(() => {
+    if (board?.id && !selectedBoardIds.includes(board.id)) {
+      setSelectedBoardIds([board.id]);
+    }
+  }, [board?.id]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  useEffect(() => {
+    selectedBoardIds.forEach((boardId) => {
+      const boardData = availableBoards.find((b) => b.id === boardId);
+      if (boardData && !boardData.isFetched) {
+        dispatch(entryActions.fetchBoard(boardId));
+      }
+    });
+  }, [selectedBoardIds, availableBoards, dispatch]);
 
   const formatDate = useCallback(
     (date) => {
@@ -161,11 +308,38 @@ const GanttView = React.memo(({ cardIds }) => {
     [isJalali],
   );
 
-  const cardsData = useSelector((state) => selectCardsForGantt(state, cardIds));
+  const cardsData = useSelector((state) => {
+    if (selectedBoardIds.length > 0) {
+      return selectCardsForMultipleBoards(state, selectedBoardIds);
+    }
+    return [];
+  });
 
   const GanttTooltip = useCallback(
     ({ task }) => <TooltipContent task={task} t={t} formatDate={formatDate} />,
     [t, formatDate],
+  );
+
+  const showBoardColumns = selectedBoardIds.length > 1;
+
+  const TaskListHeader = useCallback(
+    ({ headerHeight }) => (
+      <TaskListHeaderDefault headerHeight={headerHeight} showBoardColumns={showBoardColumns} />
+    ),
+    [showBoardColumns],
+  );
+
+  const TaskListTable = useCallback(
+    ({ rowHeight, tasks }) => (
+      <TaskListTableDefault
+        rowHeight={rowHeight}
+        tasks={tasks}
+        formatDate={formatDate}
+        showBoardColumns={showBoardColumns}
+        isJalali={isJalali}
+      />
+    ),
+    [formatDate, showBoardColumns, isJalali],
   );
 
   const tasks = (() => {
@@ -266,6 +440,8 @@ const GanttView = React.memo(({ cardIds }) => {
         const ganttTask = {
           id: card.id,
           name: card.name,
+          boardName: card.boardName,
+          listName: card.listName,
           start: cardStart,
           end: cardEnd,
           progress: card.isDueCompleted ? 100 : 0,
@@ -354,12 +530,62 @@ const GanttView = React.memo(({ cardIds }) => {
     setViewMode(value);
   }, []);
 
+  const handleBoardSelectionChange = useCallback((e, { value }) => {
+    setSelectedBoardIds(value);
+  }, []);
+
+  const boardOptions = availableBoards.map((b) => ({
+    key: b.id,
+    text: `${b.projectName} - ${b.name}`,
+    value: b.id,
+  }));
+
+  const renderControls = () => (
+    <div className={styles.controls}>
+      <div className={styles.viewModeSelector}>
+        <span className={styles.label}>{t('common.viewMode')}:</span>
+        <Dropdown
+          selection
+          compact
+          options={VIEW_MODE_OPTIONS}
+          value={viewMode}
+          onChange={handleViewModeChange}
+        />
+      </div>
+      <div className={styles.boardSelector}>
+        <span className={styles.label}>{t('common.boards')}:</span>
+        <Dropdown
+          placeholder={t('common.selectBoards')}
+          fluid
+          multiple
+          search
+          selection
+          options={boardOptions}
+          value={selectedBoardIds}
+          onChange={handleBoardSelectionChange}
+          className={styles.boardDropdown}
+        />
+      </div>
+      {/* <Button
+        size="small"
+        onClick={() => {
+          // TODO: Implement scroll to today functionality
+        }}
+      >
+        {t('action.goToToday')}
+      </Button> */}
+    </div>
+  );
+
   if (tasks.length === 0) {
     return (
-      <div className={styles.emptyState}>
-        <div className={styles.emptyStateContent}>
-          <h3>{t('common.noCardsWithDates')}</h3>
-          <p>{t('common.addStartOrDueDateToCardsToSeeGanttChart')}</p>
+      <div className={styles.wrapper}>
+        {renderControls()}
+        <div className={styles.emptyState}>
+          <div className={styles.emptyStateContent}>
+            <h3>{t('common.noCardsWithDates')}</h3>
+            <p>{t('common.addStartOrDueDateToCardsToSeeGanttChart')}</p>
+          </div>
         </div>
       </div>
     );
@@ -367,26 +593,7 @@ const GanttView = React.memo(({ cardIds }) => {
 
   return (
     <div className={styles.wrapper}>
-      <div className={styles.controls}>
-        <div className={styles.viewModeSelector}>
-          <span className={styles.label}>{t('common.viewMode')}:</span>
-          <Dropdown
-            selection
-            compact
-            options={VIEW_MODE_OPTIONS}
-            value={viewMode}
-            onChange={handleViewModeChange}
-          />
-        </div>
-        {/* <Button
-          size="small"
-          onClick={() => {
-            // TODO: Implement scroll to today functionality
-          }}
-        >
-          {t('action.goToToday')}
-        </Button> */}
-      </div>
+      {renderControls()}
       <div className={styles.ganttContainer}>
         <Gantt
           tasks={tasks}
@@ -399,6 +606,8 @@ const GanttView = React.memo(({ cardIds }) => {
           barFill={60}
           todayColor="rgba(252, 248, 227, 0.5)"
           TooltipContent={GanttTooltip}
+          TaskListHeader={TaskListHeader}
+          TaskListTable={TaskListTable}
           rowHeight={50}
           headerHeight={50}
           fontSize="14px"
@@ -408,8 +617,6 @@ const GanttView = React.memo(({ cardIds }) => {
   );
 });
 
-GanttView.propTypes = {
-  cardIds: PropTypes.array.isRequired, // eslint-disable-line react/forbid-prop-types
-};
+GanttView.propTypes = {};
 
 export default GanttView;

@@ -1,5 +1,5 @@
 diff --git a/node_modules/gantt-task-react/dist/index.modern.js b/node_modules/gantt-task-react/dist/index.modern.js
-index b372269..1d6b412 100644
+index b372269..70bcc83 100644
 --- a/node_modules/gantt-task-react/dist/index.modern.js
 +++ b/node_modules/gantt-task-react/dist/index.modern.js
 @@ -310,7 +310,24 @@ var toLocaleDateStringFactory = function toLocaleDateStringFactory(locale) {
@@ -73,7 +73,7 @@ index b372269..1d6b412 100644
          var xText = void 0;
 
          if (rtl) {
-@@ -805,11 +836,13 @@ var Calendar = function Calendar(_ref) {
+@@ -805,8 +836,10 @@ var Calendar = function Calendar(_ref) {
        var date = dates[i];
        var topValue = "";
 
@@ -85,8 +85,4 @@ index b372269..1d6b412 100644
 +        });
        }
 
-# -      var bottomValue = "W" + getWeekNumberISO8601(date);
-# +      var bottomValue = (locale === 'fa' || locale === 'fa-IR' ? 'ه' : 'W') + getWeekNumberISO8601(date);
-#        bottomValues.push(React.createElement("text", {
-#          key: date.getTime(),
-#          y: headerHeight * 0.8,
+       var bottomValue = "W" + getWeekNumberISO8601(date);
