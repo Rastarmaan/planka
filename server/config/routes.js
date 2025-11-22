@@ -95,6 +95,36 @@ module.exports.routes = {
   'POST /api/projects/:projectId/duplicate': 'projects/duplicate',
   'DELETE /api/projects/:id': 'projects/delete',
 
+  'GET /api/spaces': 'spaces/index',
+  'POST /api/spaces': 'spaces/create',
+  'GET /api/spaces/:id': 'spaces/show',
+  'PATCH /api/spaces/:id': 'spaces/update',
+  'DELETE /api/spaces/:id': 'spaces/delete',
+
+  'GET /api/spaces/:spaceId/folders': 'folders/index',
+  'POST /api/spaces/:spaceId/folders': 'folders/create',
+  'POST /api/folders/:folderId/folders': 'folders/create',
+  'GET /api/folders/:id': 'folders/show',
+  'PATCH /api/folders/:id': 'folders/update',
+  'DELETE /api/folders/:id': 'folders/delete',
+
+  'POST /api/spaces/:spaceId/upload': 'document-files/upload',
+  'GET /api/files/:id': 'document-files/show',
+  'GET /api/files/:id/download': 'document-files/download',
+  'PATCH /api/files/:id': 'document-files/update',
+  'DELETE /api/files/:id': 'document-files/delete',
+
+  'POST /api/share-links': 'share-links/create',
+  'GET /api/share-links': 'share-links/index',
+  'DELETE /api/share-links/:id': 'share-links/delete',
+  'GET /api/public/:token': 'share-links/access',
+  'POST /api/public/:token': 'share-links/access',
+  'GET /api/public/:token/download': 'share-links/download',
+
+  'POST /api/permissions': 'permissions/create',
+  'GET /api/permissions': 'permissions/index',
+  'DELETE /api/permissions/:id': 'permissions/delete',
+
   'GET /api/project-categories': 'project-categories/index',
   'POST /api/project-categories': 'project-categories/create',
   'GET /api/project-categories/:id': 'project-categories/show',
