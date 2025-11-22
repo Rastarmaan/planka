@@ -136,6 +136,17 @@ module.exports = {
         board: inputs.board,
         list: inputs.list,
       });
+
+      try {
+        // eslint-disable-next-line global-require
+        const boardSync = require('../../../utils/board-sync');
+        await boardSync.syncCardMemberships(inputs.card.id, inputs.request);
+      } catch (syncError) {
+        sails.log.error(
+          'Error syncing card memberships to linked boards after deletion:',
+          syncError,
+        );
+      }
     }
 
     return cardMembership;

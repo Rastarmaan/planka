@@ -81,6 +81,14 @@ module.exports = {
       }
     }
 
+    try {
+      // eslint-disable-next-line global-require
+      const boardSync = require('../../../utils/board-sync');
+      await boardSync.syncCardAttachments(values.card.id, inputs.request);
+    } catch (syncError) {
+      sails.log.error('Error syncing attachments to linked boards:', syncError);
+    }
+
     return attachment;
   },
 };
