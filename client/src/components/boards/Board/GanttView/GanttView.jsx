@@ -2,11 +2,15 @@
  * Copyright (c) 2024 PLANKA Software GmbH
  * Licensed under the Fair Use License: https://github.com/plankanban/planka/blob/master/LICENSE.md
  */
+/* eslint-disable import/no-extraneous-dependencies */
 
 import { Gantt, ViewMode } from 'gantt-task-react';
 import 'gantt-task-react/dist/index.css';
 import PropTypes from 'prop-types';
 import React, { useCallback, useState } from 'react';
+import DateObject from 'react-date-object';
+import persian from 'react-date-object/calendars/persian';
+import persianEn from 'react-date-object/locales/persian_en';
 import { useTranslation } from 'react-i18next';
 import { useDispatch, useSelector } from 'react-redux';
 import { createSelector } from 'redux-orm';
@@ -25,12 +29,12 @@ const VIEW_MODE_OPTIONS = [
   { key: 'month', text: 'Month', value: ViewMode.Month },
 ];
 
-function TooltipContent({ task, t }) {
+function TooltipContent({ task, t, formatDate }) {
   return (
     <div className={styles.tooltip}>
       <div className={styles.tooltipTitle}>{task.name}</div>
       <div className={styles.tooltipDates}>
-        {task.start.toLocaleDateString()} - {task.end.toLocaleDateString()}
+        {formatDate(task.start)} - {formatDate(task.end)}
       </div>
       {task.project && <div className={styles.tooltipList}>{task.project}</div>}
       {task.progress > 0 && (
@@ -45,11 +49,13 @@ function TooltipContent({ task, t }) {
 TooltipContent.propTypes = {
   task: PropTypes.object.isRequired, // eslint-disable-line react/forbid-prop-types
   t: PropTypes.func.isRequired,
+  formatDate: PropTypes.func.isRequired,
 };
 
-function getColumnWidth(mode) {
+function getColumnWidth(mode, isJalali) {
   if (mode === ViewMode.Month) return 300;
   if (mode === ViewMode.Week) return 250;
+  if (mode === ViewMode.Day && isJalali) return 100;
   return 60;
 }
 
@@ -136,9 +142,31 @@ const GanttView = React.memo(({ cardIds }) => {
     return !!boardMembership && boardMembership.role === BoardMembershipRoles.EDITOR;
   });
 
+  const board = useSelector(selectors.selectCurrentBoard);
+  const isJalali = board?.calendarType === 'jalali';
+
+  const formatDate = useCallback(
+    (date) => {
+      if (isJalali) {
+        const dateObj = new DateObject({
+          date,
+          calendar: persian,
+          locale: persianEn,
+        });
+        return dateObj.format('YYYY/MM/DD');
+      }
+
+      return date.toLocaleDateString();
+    },
+    [isJalali],
+  );
+
   const cardsData = useSelector((state) => selectCardsForGantt(state, cardIds));
 
-  const GanttTooltip = useCallback(({ task }) => <TooltipContent task={task} t={t} />, [t]);
+  const GanttTooltip = useCallback(
+    ({ task }) => <TooltipContent task={task} t={t} formatDate={formatDate} />,
+    [t, formatDate],
+  );
 
   const tasks = (() => {
     const result = [];
@@ -365,8 +393,8 @@ const GanttView = React.memo(({ cardIds }) => {
           viewMode={viewMode}
           onDateChange={handleTaskChange}
           onClick={handleTaskClick}
-          columnWidth={getColumnWidth(viewMode)}
-          locale={t('common.locale')}
+          columnWidth={getColumnWidth(viewMode, isJalali)}
+          locale={isJalali ? 'fa' : t('common.locale')}
           barCornerRadius={4}
           barFill={60}
           todayColor="rgba(252, 248, 227, 0.5)"
