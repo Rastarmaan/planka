@@ -22,7 +22,10 @@ import PlusMathIcon from '../../../../assets/images/plus-math-icon.svg?react';
 import styles from './KanbanContent.module.scss';
 import globalStyles from '../../../../styles.module.scss';
 
+const scrollPositionByBoardId = {};
+
 const KanbanContent = React.memo(() => {
+  const { boardId, cardId } = useSelector(selectors.selectPath);
   const listIds = useSelector(selectors.selectFiniteListIdsForCurrentBoard);
 
   const canAddList = useSelector((state) => {
@@ -42,6 +45,22 @@ const KanbanContent = React.memo(() => {
 
   const wrapperRef = useRef(null);
   const prevPositionRef = useRef(null);
+
+  const handleScroll = useCallback(() => {
+    if (!cardId && wrapperRef.current) {
+      scrollPositionByBoardId[boardId] = {
+        x: wrapperRef.current.scrollLeft,
+        y: window.scrollY,
+      };
+    }
+  }, [boardId, cardId]);
+
+  useEffect(() => {
+    if (scrollPositionByBoardId[boardId] && wrapperRef.current) {
+      wrapperRef.current.scrollLeft = scrollPositionByBoardId[boardId].x;
+      window.scrollTo(window.scrollX, scrollPositionByBoardId[boardId].y);
+    }
+  }, [boardId, cardId]);
 
   const handleDragStart = useCallback(() => {
     document.body.classList.add(globalStyles.dragging);
@@ -104,13 +123,13 @@ const KanbanContent = React.memo(() => {
   }, []);
 
   const handleWindowMouseMove = useCallback((event) => {
-    if (prevPositionRef.current === null) {
+    if (prevPositionRef.current === null || !wrapperRef.current) {
       return;
     }
 
     event.preventDefault();
 
-    window.scrollBy({
+    wrapperRef.current.scrollBy({
       left: prevPositionRef.current - event.clientX,
     });
 
@@ -143,14 +162,19 @@ const KanbanContent = React.memo(() => {
   }, [handleWindowMouseMove, handleWindowMouseRelease]);
 
   useDidUpdate(() => {
-    if (isAddListOpened) {
-      window.scroll(document.body.scrollWidth, 0);
+    if (isAddListOpened && wrapperRef.current) {
+      wrapperRef.current.scrollTo(wrapperRef.current.scrollWidth, 0);
     }
   }, [listIds, isAddListOpened]);
 
   return (
     // eslint-disable-next-line jsx-a11y/no-static-element-interactions
-    <div ref={wrapperRef} className={styles.wrapper} onMouseDown={handleMouseDown}>
+    <div
+      ref={wrapperRef}
+      className={styles.wrapper}
+      onMouseDown={handleMouseDown}
+      onScroll={handleScroll}
+    >
       <div>
         <DragDropContext onDragStart={handleDragStart} onDragEnd={handleDragEnd}>
           <Droppable droppableId="board" type={DroppableTypes.LIST} direction="horizontal">
