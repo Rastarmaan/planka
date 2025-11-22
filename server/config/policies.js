@@ -41,6 +41,34 @@ module.exports.policies = {
   'project-categories/update': ['is-authenticated', 'is-external', 'is-admin'],
   'project-categories/delete': ['is-authenticated', 'is-external', 'is-admin'],
 
+  'spaces/index': ['is-authenticated', 'is-external', 'is-admin'],
+  'spaces/create': ['is-authenticated', 'is-external', 'is-admin'],
+  'spaces/show': ['is-authenticated', 'is-external', 'is-admin'],
+  'spaces/update': ['is-authenticated', 'is-external', 'is-admin'],
+  'spaces/delete': ['is-authenticated', 'is-external', 'is-admin'],
+
+  'folders/index': ['is-authenticated', 'is-external', 'is-admin'],
+  'folders/create': ['is-authenticated', 'is-external', 'is-admin'],
+  'folders/show': ['is-authenticated', 'is-external', 'is-admin'],
+  'folders/update': ['is-authenticated', 'is-external', 'is-admin'],
+  'folders/delete': ['is-authenticated', 'is-external', 'is-admin'],
+
+  'document-files/upload': ['is-authenticated', 'is-external', 'is-admin'],
+  'document-files/show': ['is-authenticated', 'is-external', 'is-admin'],
+  'document-files/download': ['is-authenticated', 'is-external', 'is-admin'],
+  'document-files/update': ['is-authenticated', 'is-external', 'is-admin'],
+  'document-files/delete': ['is-authenticated', 'is-external', 'is-admin'],
+
+  'share-links/create': ['is-authenticated', 'is-external', 'is-admin'],
+  'share-links/index': ['is-authenticated', 'is-external', 'is-admin'],
+  'share-links/delete': ['is-authenticated', 'is-external', 'is-admin'],
+  'share-links/access': true,
+  'share-links/download': true,
+
+  'permissions/create': ['is-authenticated', 'is-external', 'is-admin'],
+  'permissions/index': ['is-authenticated', 'is-external', 'is-admin'],
+  'permissions/delete': ['is-authenticated', 'is-external', 'is-admin'],
+
   'config/show': true,
   'terms/show': true,
   'access-tokens/create': true,
