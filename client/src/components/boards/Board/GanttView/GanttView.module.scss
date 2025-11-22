@@ -213,6 +213,22 @@
   background-color: #fff;
 }
 
+.ganttTableBoardGroup {
+  display: flex;
+  position: relative;
+}
+
+.ganttTableListsGroup {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+}
+
+.ganttTableListGroup {
+  display: flex;
+  position: relative;
+}
+
 .ganttTableGroup {
   display: flex;
   position: relative;

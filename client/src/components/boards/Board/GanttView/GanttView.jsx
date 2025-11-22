@@ -60,16 +60,12 @@ function TaskListHeaderDefault({ headerHeight, showBoardColumns }) {
         height: headerHeight - 2,
       }}
     >
-      {showBoardColumns && (
-        <>
-          <div className={styles.ganttTableHeaderItem} style={{ minWidth: 100 }}>
-            Board
-          </div>
-          <div className={styles.ganttTableHeaderItem} style={{ minWidth: 100 }}>
-            List
-          </div>
-        </>
-      )}
+      <div className={styles.ganttTableHeaderItem} style={{ minWidth: 100 }}>
+        Board
+      </div>
+      <div className={styles.ganttTableHeaderItem} style={{ minWidth: 100 }}>
+        List
+      </div>
       <div
         className={styles.ganttTableHeaderItem}
         style={{ minWidth: showBoardColumns ? 180 : 220 }}
@@ -114,93 +110,103 @@ function formatDateLong(date, isJalali) {
 
 function TaskListTableDefault({ rowHeight, tasks, formatDate, showBoardColumns, isJalali }) {
   const groupedTasks = React.useMemo(() => {
-    const groups = [];
-    let currentGroup = null;
+    const boardGroups = {};
 
     tasks.forEach((task) => {
       const boardName = task.boardName || '-';
       const listName = task.listName || '-';
-      const boardList = `${boardName} / ${listName}`;
 
-      if (!currentGroup || currentGroup.boardList !== boardList) {
-        currentGroup = { boardList, boardName, listName, tasks: [] };
-        groups.push(currentGroup);
+      if (!boardGroups[boardName]) {
+        boardGroups[boardName] = {};
       }
 
-      currentGroup.tasks.push(task);
+      if (!boardGroups[boardName][listName]) {
+        boardGroups[boardName][listName] = [];
+      }
+
+      boardGroups[boardName][listName].push(task);
     });
 
-    return groups;
+    return boardGroups;
   }, [tasks]);
 
   return (
     <div className={styles.ganttTableBody}>
-      {groupedTasks.map((group) => (
-        <div key={`group-${group.boardList}`} className={styles.ganttTableGroup}>
-          {showBoardColumns && (
-            <>
-              <div
-                className={styles.ganttTableCellMerged}
-                style={{
-                  minWidth: 100,
-                  maxWidth: 100,
-                  height: `${rowHeight * group.tasks.length}px`,
-                }}
-                title={group.boardName}
-              >
-                <div className={styles.ganttTableCellText}>{group.boardName}</div>
-              </div>
-              <div
-                className={styles.ganttTableCellMerged}
-                style={{
-                  minWidth: 100,
-                  maxWidth: 100,
-                  height: `${rowHeight * group.tasks.length}px`,
-                }}
-                title={group.listName}
-              >
-                <div className={styles.ganttTableCellText}>{group.listName}</div>
-              </div>
-            </>
-          )}
-          <div className={styles.ganttTableGroupContent}>
-            {group.tasks.map((task) => (
-              <div
-                key={task.id}
-                className={styles.ganttTableRow}
-                style={{
-                  height: rowHeight,
-                }}
-              >
-                <div
-                  className={styles.ganttTableCell}
-                  style={{
-                    minWidth: showBoardColumns ? 180 : 220,
-                    maxWidth: showBoardColumns ? 180 : 220,
-                  }}
-                  title={task.name}
-                >
-                  <div className={styles.ganttTableCellText}>{task.name}</div>
+      {Object.entries(groupedTasks).map(([boardName, lists]) => {
+        const boardTaskCount = Object.values(lists).reduce(
+          (sum, listTasks) => sum + listTasks.length,
+          0,
+        );
+
+        return (
+          <div key={`board-${boardName}`} className={styles.ganttTableBoardGroup}>
+            <div
+              className={styles.ganttTableCellMerged}
+              style={{
+                minWidth: 100,
+                maxWidth: 100,
+                height: `${rowHeight * boardTaskCount}px`,
+              }}
+              title={boardName}
+            >
+              <div className={styles.ganttTableCellText}>{boardName}</div>
+            </div>
+            <div className={styles.ganttTableListsGroup}>
+              {Object.entries(lists).map(([listName, listTasks]) => (
+                <div key={`list-${boardName}-${listName}`} className={styles.ganttTableListGroup}>
+                  <div
+                    className={styles.ganttTableCellMerged}
+                    style={{
+                      minWidth: 100,
+                      maxWidth: 100,
+                      height: `${rowHeight * listTasks.length}px`,
+                    }}
+                    title={listName}
+                  >
+                    <div className={styles.ganttTableCellText}>{listName}</div>
+                  </div>
+                  <div className={styles.ganttTableGroupContent}>
+                    {listTasks.map((task) => (
+                      <div
+                        key={task.id}
+                        className={styles.ganttTableRow}
+                        style={{
+                          height: rowHeight,
+                        }}
+                      >
+                        <div
+                          className={styles.ganttTableCell}
+                          style={{
+                            minWidth: showBoardColumns ? 180 : 220,
+                            maxWidth: showBoardColumns ? 180 : 220,
+                          }}
+                          title={task.name}
+                        >
+                          <div className={styles.ganttTableCellText}>{task.name}</div>
+                        </div>
+                        <div
+                          className={styles.ganttTableCell}
+                          style={{ minWidth: 100, maxWidth: 100 }}
+                          title={formatDateLong(task.start, isJalali)}
+                        >
+                          <div className={styles.ganttTableCellText}>{formatDate(task.start)}</div>
+                        </div>
+                        <div
+                          className={styles.ganttTableCell}
+                          style={{ minWidth: 100, maxWidth: 100 }}
+                          title={formatDateLong(task.end, isJalali)}
+                        >
+                          <div className={styles.ganttTableCellText}>{formatDate(task.end)}</div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
                 </div>
-                <div
-                  className={styles.ganttTableCell}
-                  style={{ minWidth: 100, maxWidth: 100 }}
-                  title={formatDateLong(task.start, isJalali)}
-                >
-                  <div className={styles.ganttTableCellText}>{formatDate(task.start)}</div>
-                </div>
-                <div
-                  className={styles.ganttTableCell}
-                  style={{ minWidth: 100, maxWidth: 100 }}
-                  title={formatDateLong(task.end, isJalali)}
-                >
-                  <div className={styles.ganttTableCellText}>{formatDate(task.end)}</div>
-                </div>
-              </div>
-            ))}
+              ))}
+            </div>
           </div>
-        </div>
-      ))}
+        );
+      })}
     </div>
   );
 }
@@ -368,9 +374,7 @@ const GanttView = React.memo(() => {
 
   const showBoardColumns = selectedBoardIds.length > 1;
 
-  const listCellWidth = showBoardColumns
-    ? 'calc(140px + 180px + 100px + 100px)'
-    : 'calc(220px + 100px + 100px)';
+  const listCellWidth = 'calc(140px + 180px + 100px + 100px)';
 
   const TaskListHeader = useCallback(
     ({ headerHeight }) => (
