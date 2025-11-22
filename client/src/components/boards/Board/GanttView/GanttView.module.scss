@@ -213,6 +213,17 @@
   background-color: #fff;
 }
 
+.ganttTableGroup {
+  display: flex;
+  position: relative;
+}
+
+.ganttTableGroupContent {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+}
+
 .ganttTableRow {
   display: flex;
   border-bottom: 1px solid #e9ecef;
@@ -247,4 +258,24 @@
   -webkit-box-orient: vertical;
   overflow: hidden;
   text-overflow: ellipsis;
+}
+
+.ganttTableCellMerged {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-weight: 500;
+  background-color: #f8f9fa;
+  border-bottom: 1px solid #e0e0e0 !important;
+  border-right: 1px solid #e0e0e0 !important;
+  text-align: center;
+  padding: 6px 6px;
+  overflow: hidden;
+  flex-shrink: 0;
+}
+
+.ganttTableCellEmpty {
+  border-bottom: none !important;
+  border-right: none !important;
+  background-color: #f8f9fa;
 }
