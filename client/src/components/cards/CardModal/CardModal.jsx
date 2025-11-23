@@ -9,7 +9,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { Icon } from 'semantic-ui-react';
 import { push } from '../../../lib/redux-router';
 
-import { BoardMembershipRoles, CardTypes } from '../../../constants/Enums';
+import { BoardMembershipRoles, CardTypes, UserRoles } from '../../../constants/Enums';
 import Paths from '../../../constants/Paths';
 import entryActions from '../../../entry-actions';
 import { useClosableModal } from '../../../hooks';
@@ -40,8 +40,19 @@ const CardModal = React.memo(() => {
       return false;
     }
 
+    const currentUser = selectors.selectCurrentUser(state);
+    const currentProject = selectors.selectCurrentProject(state);
     const boardMembership = selectors.selectCurrentUserMembershipForCurrentBoard(state);
-    return !!boardMembership && boardMembership.role === BoardMembershipRoles.EDITOR;
+
+    const isAdmin = currentUser?.role === UserRoles.ADMIN;
+    const isProjectManager =
+      currentProject && currentUser && selectors.selectIsCurrentUserManagerForCurrentProject(state);
+
+    return (
+      isAdmin ||
+      isProjectManager ||
+      (!!boardMembership && boardMembership.role === BoardMembershipRoles.EDITOR)
+    );
   });
 
   const dispatch = useDispatch();

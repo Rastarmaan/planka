@@ -264,7 +264,7 @@ module.exports = {
     }
 
     if (!_.isUndefined(inputs.isFavorite)) {
-      if (currentUser.role !== User.Roles.ADMIN || project.ownerProjectManagerId) {
+      if (currentUser.role !== User.Roles.ADMIN && project.ownerProjectManagerId) {
         if (!projectManager) {
           const boardMembershipsTotal =
             await sails.helpers.projects.getBoardMembershipsTotalByIdAndUserId(

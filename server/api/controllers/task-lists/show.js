@@ -80,7 +80,7 @@ module.exports = {
       .getPathToProjectById(inputs.id)
       .intercept('pathNotFound', () => Errors.TASK_LIST_NOT_FOUND);
 
-    if (currentUser.role !== User.Roles.ADMIN || project.ownerProjectManagerId) {
+    if (currentUser.role !== User.Roles.ADMIN && project.ownerProjectManagerId) {
       const isProjectManager = await sails.helpers.users.isProjectManager(
         currentUser.id,
         project.id,
