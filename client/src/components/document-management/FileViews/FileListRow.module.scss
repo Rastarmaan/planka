@@ -1,0 +1,118 @@
+/*!
+ * Copyright (c) 2024 PLANKA Software GmbH
+ * Licensed under the Fair Use License: https://github.com/plankanban/planka/blob/master/LICENSE.md
+ */
+
+:global(#app) {
+  .listRow {
+    display: flex;
+    align-items: center;
+    padding: 16px;
+    background: #22252a;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    transition: all 0.2s ease;
+    cursor: pointer;
+
+    &:hover {
+      background: #2a2e34;
+      border-left: 3px solid #216ba5;
+      padding-left: 13px;
+    }
+
+    &.selected {
+      background: rgba(33, 107, 165, 0.2);
+      border-left: 3px solid #216ba5;
+      padding-left: 13px;
+
+      &:hover {
+        background: rgba(33, 107, 165, 0.25);
+      }
+    }
+
+    &.dragging {
+      opacity: 0.5;
+      cursor: grabbing;
+    }
+
+    &.dropTarget {
+      background: rgba(33, 107, 165, 0.3);
+      border-left: 4px solid #216ba5;
+      border-right: 4px solid #216ba5;
+      padding-left: 12px;
+      position: relative;
+
+      &::before {
+        content: 'Drop here to move';
+        position: absolute;
+        right: 16px;
+        top: 50%;
+        transform: translateY(-50%);
+        background: rgba(33, 107, 165, 0.9);
+        color: white;
+        padding: 4px 12px;
+        border-radius: 4px;
+        font-size: 11px;
+        font-weight: 600;
+        pointer-events: none;
+      }
+    }
+
+    &[draggable='true'] {
+      cursor: grab;
+
+      &:active {
+        cursor: grabbing;
+      }
+    }
+
+    &:last-child {
+      border-radius: 0 0 6px 6px;
+    }
+  }
+
+  .listCell {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-size: 14px;
+    color: rgba(255, 255, 255, 0.9);
+    overflow: hidden;
+
+    i.icon {
+      margin: 0;
+      flex-shrink: 0;
+    }
+  }
+
+  .listFileName {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .listActions {
+    width: 40px;
+    display: flex;
+    justify-content: center;
+    opacity: 0;
+    transition: opacity 0.2s ease;
+
+    .listRow:hover & {
+      opacity: 1;
+    }
+  }
+
+  .fileMenu {
+    button {
+      background: transparent;
+      border: none;
+      color: rgba(255, 255, 255, 0.7);
+      padding: 4px 8px;
+
+      &:hover {
+        color: #fff;
+        background: rgba(255, 255, 255, 0.08);
+      }
+    }
+  }
+}

@@ -1,0 +1,137 @@
+/*!
+ * Copyright (c) 2024 PLANKA Software GmbH
+ * Licensed under the Fair Use License: https://github.com/plankanban/planka/blob/master/LICENSE.md
+ */
+
+:global(#app) {
+  .overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.95);
+    z-index: 10000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .modal {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    background: #1a1d21;
+  }
+
+  .header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 16px 24px;
+    background: #22252a;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  }
+
+  .headerLeft,
+  .headerRight {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .headerCenter {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex: 1;
+    justify-content: center;
+  }
+
+  .fileIcon {
+    color: #ff6b6b ;
+    font-size: 20px ;
+    margin: 0 ;
+  }
+
+  .fileName {
+    color: #fff;
+    font-size: 15px;
+    font-weight: 500;
+  }
+
+  .headerButton {
+    background: transparent ;
+    color: rgba(255, 255, 255, 0.9) ;
+    padding: 10px 16px ;
+    border-radius: 6px ;
+    font-size: 14px ;
+
+    &:hover {
+      background: rgba(255, 255, 255, 0.08) ;
+      border-color: rgba(255, 255, 255, 0.3) ;
+      color: #fff ;
+    }
+
+    i.icon {
+      margin-right: 8px ;
+    }
+  }
+
+  .iconButton {
+    background: transparent ;
+    color: rgba(255, 255, 255, 0.7) ;
+    padding: 8px 12px ;
+    border-radius: 6px ;
+
+    &:hover:not([disabled]) {
+      background: rgba(255, 255, 255, 0.08) ;
+      color: #fff ;
+    }
+
+    &[disabled] {
+      opacity: 0.3;
+      cursor: not-allowed;
+    }
+
+    i.icon {
+      margin: 0 ;
+    }
+  }
+
+  .pageInfo {
+    color: rgba(255, 255, 255, 0.9);
+    font-size: 14px;
+    padding: 0 8px;
+  }
+
+  .content {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 40px;
+    overflow: hidden;
+  }
+
+  .imagePreview,
+  .filePreview {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 20px;
+
+    i.icon {
+      color: rgba(255, 255, 255, 0.4) ;
+    }
+  }
+
+  .previewNote,
+  .fileType {
+    color: rgba(255, 255, 255, 0.6);
+    font-size: 16px;
+    margin: 0;
+  }
+}

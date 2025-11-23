@@ -1,0 +1,90 @@
+/*!
+ * Copyright (c) 2024 PLANKA Software GmbH
+ * Licensed under the Fair Use License: https://github.com/plankanban/planka/blob/master/LICENSE.md
+ */
+
+:global(#app) {
+  .filesList {
+    flex: 1;
+    padding: 0 24px 24px;
+    overflow-y: auto;
+
+    @supports (-moz-appearance: none) {
+      scrollbar-color: rgba(255, 255, 255, 0.2) rgba(255, 255, 255, 0.05);
+    }
+
+    &::-webkit-scrollbar {
+      width: 8px;
+    }
+
+    &::-webkit-scrollbar-track {
+      background: rgba(255, 255, 255, 0.05);
+    }
+
+    &::-webkit-scrollbar-thumb {
+      background: rgba(255, 255, 255, 0.2);
+      border-radius: 4px;
+
+      &:hover {
+        background: rgba(255, 255, 255, 0.3);
+      }
+    }
+  }
+
+  .listHeader {
+    display: flex;
+    align-items: center;
+    padding: 16px 16px;
+    background: rgba(255, 255, 255, 0.03);
+    border-radius: 6px 6px 0 0;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    font-weight: 600;
+    font-size: 13px;
+    color: rgba(255, 255, 255, 0.7);
+    text-transform: uppercase;
+  }
+
+  .listHeaderCell {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+
+    i.icon {
+      margin: 0;
+      font-size: 12px;
+    }
+  }
+
+  .listHeaderActions {
+    width: 40px;
+  }
+
+  .emptyState {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 80px 40px;
+    color: rgba(255, 255, 255, 0.5);
+    text-align: center;
+
+    .emptyIcon {
+      font-size: 80px;
+      margin-bottom: 20px;
+      margin: 0;
+      opacity: 0.3;
+    }
+
+    h3 {
+      font-size: 18px;
+      margin: 20px 0 8px;
+      font-weight: 500;
+    }
+
+    p {
+      font-size: 16px;
+      margin: 0;
+      font-weight: 500;
+    }
+  }
+}

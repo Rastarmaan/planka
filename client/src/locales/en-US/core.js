@@ -224,6 +224,7 @@ export default {
       gantt: 'Gantt',
       general: 'General',
       globalLabels_title: 'Global Labels',
+      documentManagement_title: 'Document Management',
       googleCalendar: 'Google Calendar',
       googleCalendarDescription: 'Sync your cards with Google Calendar automatically',
       connectGoogleCalendar: 'Connect Google Calendar',

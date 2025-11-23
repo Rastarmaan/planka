@@ -209,6 +209,7 @@ export default {
       gantt: 'گانت',
       general: 'عمومی',
       globalLabels_title: 'برچسب‌های سراسری',
+      documentManagement_title: 'مدیریت مستندات',
       googleCalendar: 'تقویم Google',
       googleCalendarDescription: 'همگام‌سازی کارت‌های شما با Google Calendar به صورت خودکار',
       connectGoogleCalendar: 'اتصال Google Calendar',

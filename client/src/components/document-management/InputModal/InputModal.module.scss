@@ -1,0 +1,138 @@
+:global(#app) {
+  .overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.7);
+    z-index: 2000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .modal {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 500px;
+    background: #2a2e34;
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    border-radius: 12px;
+    z-index: 2001;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+  }
+
+  .header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 20px 24px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+
+    h3 {
+      margin: 0;
+      color: #fff;
+      font-size: 18px;
+      font-weight: 600;
+    }
+  }
+
+  .closeButton {
+    background: transparent;
+    border: none;
+    padding: 4px;
+    cursor: pointer;
+    color: rgba(255, 255, 255, 0.6);
+    transition: color 0.2s ease;
+    display: flex;
+    align-items: center;
+
+    &:hover {
+      color: #fff;
+    }
+
+    i.icon {
+      margin: 0 !important;
+      font-size: 18px !important;
+    }
+  }
+
+  form {
+    padding: 24px;
+
+    label {
+      display: block;
+      color: #fff !important;
+      font-size: 14px;
+      margin-bottom: 8px;
+      font-weight: 500;
+    }
+  }
+
+  .input {
+    input {
+      background: rgba(255, 255, 255, 0.05) !important;
+      border: 1px solid rgba(255, 255, 255, 0.15) !important;
+      color: #fff !important;
+      border-radius: 8px !important;
+      padding: 12px !important;
+      font-size: 14px !important;
+
+      &:focus {
+        background: rgba(255, 255, 255, 0.08) !important;
+        border-color: rgba(33, 133, 208, 0.5) !important;
+      }
+
+      &::placeholder {
+        color: rgba(255, 255, 255, 0.4) !important;
+      }
+    }
+  }
+
+  .actions {
+    display: flex;
+    gap: 12px;
+    justify-content: flex-end;
+    padding-top: 20px;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+  }
+
+  .cancelButton {
+    background: transparent !important;
+    border: 1px solid rgba(255, 255, 255, 0.2) !important;
+    color: rgba(255, 255, 255, 0.7) !important;
+    padding: 10px 20px !important;
+    border-radius: 8px !important;
+    font-size: 14px !important;
+
+    &:hover {
+      background: rgba(255, 255, 255, 0.05) !important;
+      border-color: rgba(255, 255, 255, 0.3) !important;
+      color: #fff !important;
+    }
+  }
+
+  .createButton {
+    background: rgba(33, 133, 208, 0.2) !important;
+    border: 1px solid rgba(33, 133, 208, 0.4) !important;
+    color: #2185d0 !important;
+    padding: 10px 20px !important;
+    border-radius: 8px !important;
+    font-size: 14px !important;
+    font-weight: 500 !important;
+
+    &:hover:not(:disabled) {
+      background: rgba(33, 133, 208, 0.3) !important;
+      border-color: rgba(33, 133, 208, 0.6) !important;
+      color: #2185d0 !important;
+    }
+
+    &:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+  }
+}

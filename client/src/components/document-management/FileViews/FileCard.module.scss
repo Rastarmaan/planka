@@ -1,0 +1,114 @@
+/*!
+ * Copyright (c) 2024 PLANKA Software GmbH
+ * Licensed under the Fair Use License: https://github.com/plankanban/planka/blob/master/LICENSE.md
+ */
+
+:global(#app) {
+  .fileCard {
+    background: #22252a;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 8px;
+    padding: 16px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+    position: relative;
+
+    &:hover {
+      background: #2a2e34;
+      border-color: rgba(255, 255, 255, 0.2);
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+    }
+
+    &.selected {
+      background: rgba(33, 107, 165, 0.2);
+      border: 2px solid #216ba5;
+      padding: 15px;
+
+      &:hover {
+        background: rgba(33, 107, 165, 0.25);
+      }
+    }
+
+    &.dragging {
+      opacity: 0.5;
+      cursor: grabbing;
+      transform: scale(0.95);
+    }
+
+    &.dropTarget {
+      background: rgba(33, 107, 165, 0.3);
+      border: 2px dashed #216ba5;
+      padding: 15px;
+      transform: scale(1.02);
+
+      &::after {
+        content: 'Drop here';
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        background: rgba(33, 107, 165, 0.9);
+        color: white;
+        padding: 8px 16px;
+        border-radius: 6px;
+        font-size: 12px;
+        font-weight: 600;
+        pointer-events: none;
+        z-index: 10;
+      }
+    }
+
+    &[draggable='true'] {
+      cursor: grab;
+
+      &:active {
+        cursor: grabbing;
+      }
+    }
+  }
+
+  .fileIcon {
+    width: 100%;
+    height: 120px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 6px;
+    margin-bottom: 8px;
+
+    i.icon {
+      margin: 0;
+      color: #ffc107;
+    }
+  }
+
+  .fileThumbnail {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #fff;
+    border-radius: 6px;
+
+    i.icon {
+      color: #2185d0;
+    }
+  }
+
+  .fileName {
+    width: 100%;
+    text-align: center;
+    font-size: 13px;
+    color: rgba(255, 255, 255, 0.9);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+}
