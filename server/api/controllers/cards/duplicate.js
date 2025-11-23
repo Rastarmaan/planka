@@ -160,21 +160,25 @@ module.exports = {
       .getPathToProjectById(inputs.id)
       .intercept('pathNotFound', () => Errors.CARD_NOT_FOUND);
 
+    const isAdmin = currentUser.role === User.Roles.ADMIN;
+    const isProjectManager = await sails.helpers.users.isProjectManager(currentUser.id, project.id);
+
     const boardMembership = await BoardMembership.qm.getOneByBoardIdAndUserId(
       board.id,
       currentUser.id,
     );
 
-    if (!boardMembership) {
-      throw Errors.CARD_NOT_FOUND; // Forbidden
+    const hasEditorRights =
+      isAdmin ||
+      isProjectManager ||
+      (boardMembership && boardMembership.role === BoardMembership.Roles.EDITOR);
+
+    if (!hasEditorRights) {
+      throw Errors.NOT_ENOUGH_RIGHTS;
     }
 
     // TODO: allow for endless lists?
     if (!sails.helpers.lists.isFinite(list)) {
-      throw Errors.NOT_ENOUGH_RIGHTS;
-    }
-
-    if (boardMembership.role !== BoardMembership.Roles.EDITOR) {
       throw Errors.NOT_ENOUGH_RIGHTS;
     }
 
