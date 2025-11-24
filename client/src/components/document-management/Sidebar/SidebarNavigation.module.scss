@@ -63,4 +63,16 @@
     opacity: 0.7;
     cursor: pointer;
   }
+
+  .expandIcon {
+    margin: 0 !important;
+    font-size: 12px !important;
+    opacity: 0.7;
+    cursor: pointer;
+    transition: transform 0.2s ease;
+
+    &:hover {
+      opacity: 1;
+    }
+  }
 }

@@ -5,7 +5,6 @@
 
 import React from 'react';
 import PropTypes from 'prop-types';
-import { Icon } from 'semantic-ui-react';
 
 import FileListRow from './FileListRow';
 import styles from './FileList.module.scss';
@@ -26,14 +25,10 @@ const FileList = React.memo(
   }) => (
     <div className={styles.filesList}>
       <div className={styles.listHeader}>
-        <div className={styles.listHeaderCell} style={{ flex: 2 }}>
+        <div className={styles.listHeaderCell} style={{ flex: 3 }}>
           Name
         </div>
         <div className={styles.listHeaderCell} style={{ flex: 1 }}>
-          Last modified
-          <Icon name="angle down" />
-        </div>
-        <div className={styles.listHeaderCell} style={{ flex: 0.5 }}>
           Size
         </div>
         <div className={styles.listHeaderActions} />
@@ -61,11 +56,11 @@ const FileList = React.memo(
 FileList.propTypes = {
   files: PropTypes.arrayOf(
     PropTypes.shape({
-      id: PropTypes.number,
+      id: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
     }),
   ).isRequired,
-  selectedFile: PropTypes.number,
-  draggedFile: PropTypes.shape({ id: PropTypes.number }),
+  selectedFile: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
+  draggedFile: PropTypes.shape({ id: PropTypes.oneOfType([PropTypes.string, PropTypes.number]) }),
   dropTarget: PropTypes.number,
   onFileSelect: PropTypes.func.isRequired,
   onFolderDoubleClick: PropTypes.func.isRequired,

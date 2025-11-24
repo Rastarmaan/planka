@@ -31,6 +31,10 @@ import taskLists from './task-lists';
 import tasks from './tasks';
 import users from './users';
 import webhooks from './webhooks';
+import spaces from './spaces';
+import folders from './folders';
+import files from './files';
+import permissions from './permissions';
 
 export default {
   ...socket,
@@ -40,6 +44,10 @@ export default {
   ...webhooks,
   ...users,
   ...projects,
+  ...spaces,
+  ...folders,
+  ...files,
+  ...permissions,
   ...projectCategories,
   ...projectManagers,
   ...backgroundImages,

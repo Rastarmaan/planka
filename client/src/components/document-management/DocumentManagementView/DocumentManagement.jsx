@@ -3,9 +3,19 @@
  * Licensed under the Fair Use License: https://github.com/plankanban/planka/blob/master/LICENSE.md
  */
 
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef, useEffect, useMemo, useCallback } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
+import { useDispatch, useSelector } from 'react-redux';
+import { Confirm } from 'semantic-ui-react';
 
+import actions from '../../../actions';
+import api from '../../../api';
+import selectors, {
+  makeSelectSpaces,
+  makeSelectFoldersBySpaceId,
+  makeSelectFilesBySpaceId,
+} from '../../../selectors';
+import { createLocalId } from '../../../utils/local-id';
 import Paths from '../../../constants/Paths';
 import Sidebar from '../Sidebar';
 import TopBar from '../TopBar';
@@ -13,81 +23,187 @@ import SortBar from '../TopBar/SortBar';
 import FileGrid from '../FileViews/FileGrid';
 import FileList from '../FileViews/FileList';
 import FilePreviewModal from '../FilePreviewModal/FilePreviewModal';
+import ShareModal from '../ShareModal/ShareModal';
 import InputModal from '../InputModal/InputModal';
 import styles from './DocumentManagement.module.scss';
 
 const DocumentManagement = React.memo(() => {
   const navigate = useNavigate();
   const location = useLocation();
+  const dispatch = useDispatch();
   const workspacePopupRef = useRef(null);
+  const pendingWorkspaceRef = useRef(null);
 
-  // State
-  const [selectedWorkspace, setSelectedWorkspace] = useState('default');
+  const selectSpaces = useMemo(makeSelectSpaces, []);
+  const spaces = useSelector(selectSpaces);
+  const accessToken = useSelector(selectors.selectAccessToken);
+
+  const [selectedWorkspace, setSelectedWorkspace] = useState(null);
   const [view, setView] = useState('grid');
   const [sortBy, setSortBy] = useState('modified');
   const [selectedFile, setSelectedFile] = useState(null);
   const [previewFile, setPreviewFile] = useState(null);
+  const [shareModalOpen, setShareModalOpen] = useState(false);
+  const [fileToShare, setFileToShare] = useState(null);
   const [modalConfig, setModalConfig] = useState(null);
   const [showWorkspacePopup, setShowWorkspacePopup] = useState(false);
+  const [deleteConfirmWorkspace, setDeleteConfirmWorkspace] = useState(null);
   const [draggedFile, setDraggedFile] = useState(null);
   const [dropTarget, setDropTarget] = useState(null);
   const [currentPath, setCurrentPath] = useState([]);
   const [currentFolderId, setCurrentFolderId] = useState(null);
   const [allFilesExpanded, setAllFilesExpanded] = useState(true);
 
-  // Get current section from URL
+  const selectFolders = useMemo(makeSelectFoldersBySpaceId, []);
+  const selectFiles = useMemo(makeSelectFilesBySpaceId, []);
+
+  const folders = useSelector((state) => selectFolders(state, selectedWorkspace));
+  const filesList = useSelector((state) => selectFiles(state, selectedWorkspace));
+
+  const getFileIcon = useCallback((filename) => {
+    if (!filename) return 'file outline';
+    const ext = filename.split('.').pop().toLowerCase();
+    switch (ext) {
+      case 'pdf':
+        return 'file pdf';
+      case 'doc':
+      case 'docx':
+        return 'file word';
+      case 'xls':
+      case 'xlsx':
+        return 'file excel';
+      case 'ppt':
+      case 'pptx':
+        return 'file powerpoint';
+      case 'jpg':
+      case 'jpeg':
+      case 'png':
+      case 'gif':
+      case 'svg':
+        return 'file image';
+      case 'zip':
+      case 'rar':
+      case '7z':
+      case 'tar':
+      case 'gz':
+        return 'file archive';
+      case 'txt':
+      case 'md':
+        return 'file text';
+      case 'js':
+      case 'jsx':
+      case 'ts':
+      case 'tsx':
+      case 'html':
+      case 'css':
+      case 'json':
+      case 'xml':
+      case 'yml':
+      case 'yaml':
+        return 'file code';
+      case 'mp3':
+      case 'wav':
+      case 'ogg':
+        return 'file audio';
+      case 'mp4':
+      case 'mov':
+      case 'avi':
+      case 'mkv':
+        return 'file video';
+      default:
+        return 'file outline';
+    }
+  }, []);
+
+  const formatFileSize = useCallback((bytes) => {
+    if (!bytes || bytes === '0') return '-';
+    const size = parseInt(bytes, 10);
+    if (size === 0) return '0 B';
+    const k = 1024;
+    const sizes = ['B', 'KB', 'MB', 'GB', 'TB'];
+    const i = Math.floor(Math.log(size) / Math.log(k));
+    return `${parseFloat((size / k ** i).toFixed(2))} ${sizes[i]}`;
+  }, []);
+
+  const files = useMemo(() => {
+    return [
+      ...folders.map((f) => ({ ...f, type: 'folder', icon: 'folder', formattedSize: '-' })),
+      ...filesList.map((f) => ({
+        ...f,
+        type: 'file',
+        icon: getFileIcon(f.name),
+        formattedSize: formatFileSize(f.size),
+      })),
+    ];
+  }, [folders, filesList, getFileIcon, formatFileSize]);
+
+  useEffect(() => {
+    dispatch(actions.fetchSpaces());
+  }, [dispatch]);
+
+  const prevSpaceIdsRef = useRef([]);
+
+  useEffect(() => {
+    if (spaces.length > 0 && !selectedWorkspace) {
+      setSelectedWorkspace(spaces[0].id);
+    }
+  }, [spaces, selectedWorkspace]);
+
+  useEffect(() => {
+    const currentIds = spaces.map((s) => s.id);
+    const newIds = currentIds.filter((id) => !prevSpaceIdsRef.current.includes(id));
+
+    if (newIds.length > 0 && pendingWorkspaceRef.current) {
+      const localIdStillExists = currentIds.includes(pendingWorkspaceRef.current);
+
+      if (!localIdStillExists) {
+        setSelectedWorkspace(newIds[0]);
+        pendingWorkspaceRef.current = null;
+      }
+    }
+
+    prevSpaceIdsRef.current = currentIds;
+  }, [spaces]);
+
+  useEffect(() => {
+    if (selectedWorkspace && !pendingWorkspaceRef.current) {
+      const workspaceExists = spaces.find((s) => s.id === selectedWorkspace);
+      if (workspaceExists) {
+        dispatch(actions.fetchFolders(selectedWorkspace));
+      }
+    }
+  }, [dispatch, selectedWorkspace, spaces]);
+
+  useEffect(() => {
+    if (currentFolderId) {
+      dispatch(actions.fetchFolder(currentFolderId));
+    }
+  }, [dispatch, currentFolderId]);
+
+  useEffect(() => {
+    if (spaces.length > 0) {
+      if (selectedWorkspace && !spaces.find((s) => s.id === selectedWorkspace)) {
+        setSelectedWorkspace(spaces[0].id);
+        setCurrentFolderId(null);
+        setCurrentPath([]);
+      }
+    }
+  }, [spaces, selectedWorkspace]);
+
   const currentSection = location.pathname.split('/').pop() || 'all-files';
 
-  // Mock data
-  const workspaces = [
-    {
-      key: 'default',
-      text: 'Default',
-      value: 'default',
-      description: 'Personal workspace',
-      selected: true,
-    },
-    {
-      key: 'space2',
-      text: 'space2',
-      value: 'space2',
-      description: '1 members',
-    },
-  ];
+  const workspaces = useMemo(
+    () =>
+      spaces.map((space) => ({
+        key: space.id,
+        text: space.name,
+        value: space.id,
+        description: space.description,
+        selected: space.id === selectedWorkspace,
+      })),
+    [spaces, selectedWorkspace],
+  );
 
-  const files = [
-    {
-      id: 1,
-      name: 'Untitled Folder',
-      type: 'folder',
-      icon: 'folder',
-      modified: 'Nov 22, 2025',
-      size: '57 KB',
-      parentId: null,
-    },
-    {
-      id: 2,
-      name: 'Screenshot_20251110_164438_Digikala.jpg',
-      type: 'file',
-      icon: 'file image',
-      modified: 'Nov 14, 2025',
-      size: '208 KB',
-      thumbnail: true,
-      parentId: null,
-    },
-    {
-      id: 3,
-      name: 'me2.webp',
-      type: 'file',
-      icon: 'file image',
-      modified: 'Nov 22, 2025',
-      size: '150 KB',
-      thumbnail: true,
-      parentId: null,
-    },
-  ];
-
-  // Helper functions
   const getSectionTitle = () => {
     switch (currentSection) {
       case 'all-files':
@@ -107,14 +223,48 @@ const DocumentManagement = React.memo(() => {
 
   const getFilteredFiles = () => {
     const baseFiles = currentFolderId
-      ? files.filter((f) => f.parentId === currentFolderId)
-      : files.filter((f) => !f.parentId);
+      ? files.filter((f) => {
+          if (f.type === 'folder') {
+            return f.parentFolderId === currentFolderId;
+          }
+          return f.folderId === currentFolderId;
+        })
+      : files.filter((f) => {
+          if (f.type === 'folder') {
+            return !f.parentFolderId || f.parentFolderId === null;
+          }
+          return !f.folderId || f.folderId === null;
+        });
 
+    let filteredFiles = baseFiles;
     if (currentSection !== 'all-files') {
-      return baseFiles.filter((f) => f.type !== 'folder');
+      filteredFiles = baseFiles.filter((f) => f.type !== 'folder');
     }
 
-    return baseFiles;
+    return filteredFiles.sort((a, b) => {
+      switch (sortBy) {
+        case 'name':
+          return (a.name || '').localeCompare(b.name || '');
+
+        case 'size': {
+          if (a.type === 'folder' && b.type === 'folder') {
+            return (a.name || '').localeCompare(b.name || '');
+          }
+          if (a.type === 'folder') return -1;
+          if (b.type === 'folder') return 1;
+          const sizeA = parseInt(a.size || '0', 10);
+          const sizeB = parseInt(b.size || '0', 10);
+          return sizeB - sizeA;
+        }
+
+        case 'modified':
+        default: {
+          const dateA = new Date(a.updatedAt || a.createdAt || 0);
+          const dateB = new Date(b.updatedAt || b.createdAt || 0);
+          return dateB - dateA;
+        }
+      }
+    });
   };
 
   const handleSectionChange = (path) => {
@@ -126,14 +276,12 @@ const DocumentManagement = React.memo(() => {
     navigate(path);
   };
 
-  // Redirect to all-files if on base document-management path
   useEffect(() => {
     if (location.pathname === Paths.DOCUMENT_MANAGEMENT) {
       navigate(Paths.DOCUMENT_ALL_FILES, { replace: true });
     }
   }, [location.pathname, navigate]);
 
-  // Close workspace popup when clicking outside
   useEffect(() => {
     const handleClickOutside = (event) => {
       if (workspacePopupRef.current && !workspacePopupRef.current.contains(event.target)) {
@@ -150,7 +298,6 @@ const DocumentManagement = React.memo(() => {
     };
   }, [showWorkspacePopup]);
 
-  // File operations
   const handleFileSelect = (fileId) => {
     setSelectedFile((prev) => (prev === fileId ? null : fileId));
   };
@@ -185,13 +332,22 @@ const DocumentManagement = React.memo(() => {
   };
 
   const handleDeleteSelected = () => {
-    // TODO: Implement delete functionality
-    setSelectedFile(null);
+    if (selectedFile) {
+      const file = files.find((f) => f.id === selectedFile);
+      if (file) {
+        if (file.type === 'folder') {
+          dispatch(actions.deleteFolder(file.id));
+        } else {
+          dispatch(actions.deleteFile(file.id));
+        }
+      }
+      setSelectedFile(null);
+    }
   };
 
   const handlePreview = () => {
     const file = files.find((f) => f.id === selectedFile);
-    if (file) {
+    if (file && file.type === 'file' && file.mimeType && file.mimeType.startsWith('image/')) {
       setPreviewFile(file);
     }
   };
@@ -200,36 +356,147 @@ const DocumentManagement = React.memo(() => {
     setPreviewFile(null);
   };
 
-  const handleShare = () => {
-    // TODO: Implement share functionality
+  const handleNavigatePreview = (file) => {
+    setPreviewFile(file);
   };
 
-  const handleDownload = () => {
-    // TODO: Implement download functionality
+  const handleShare = (file) => {
+    if (previewFile) {
+      setPreviewFile(null);
+    }
+
+    const targetFile = file || previewFile || files.find((f) => f.id === selectedFile);
+
+    if (targetFile) {
+      setFileToShare(targetFile);
+      setShareModalOpen(true);
+    }
   };
 
-  const handleCreateFolder = (/* folderName */) => {
-    // TODO: Implement create folder functionality
+  const handleDownload = async () => {
+    if (previewFile) {
+      try {
+        const response = await fetch(`/api/files/${previewFile.id}/download`, {
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+          },
+          credentials: 'include',
+        });
+
+        if (!response.ok) {
+          throw new Error('Download failed');
+        }
+
+        const blob = await response.blob();
+        const url = window.URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = previewFile.name || `file-${previewFile.id}`;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        window.URL.revokeObjectURL(url);
+      } catch (error) {
+        console.error('Download error:', error);
+      }
+    }
   };
 
-  const handleCreateWorkspace = (/* workspaceName */) => {
-    // TODO: Implement create workspace functionality
+  const handleDownloadSelected = async () => {
+    if (selectedFile) {
+      const file = files.find((f) => f.id === selectedFile);
+      if (file && file.type === 'file') {
+        try {
+          const response = await fetch(`/api/files/${file.id}/download`, {
+            headers: {
+              Authorization: `Bearer ${accessToken}`,
+            },
+            credentials: 'include',
+          });
+
+          if (!response.ok) {
+            throw new Error('Download failed');
+          }
+
+          const blob = await response.blob();
+          const url = window.URL.createObjectURL(blob);
+          const link = document.createElement('a');
+          link.href = url;
+          link.download = file.name || `file-${file.id}`;
+          document.body.appendChild(link);
+          link.click();
+          document.body.removeChild(link);
+          window.URL.revokeObjectURL(url);
+        } catch (error) {
+          console.error('Download error:', error);
+        }
+      }
+    }
   };
 
-  const handleRenameWorkspace = (/* newName */) => {
-    // TODO: Implement rename workspace functionality
+  const handleCreateFolder = (folderName) => {
+    if (selectedWorkspace) {
+      const localId = createLocalId();
+      dispatch(
+        actions.createFolder({
+          id: localId,
+          name: folderName,
+          spaceId: selectedWorkspace,
+          parentFolderId: currentFolderId,
+        }),
+      );
+    }
   };
 
-  const handleDeleteWorkspace = (/* workspaceValue */) => {
-    // TODO: Implement delete workspace functionality
+  const handleFileUpload = (e) => {
+    const { files: uploadedFiles } = e.target;
+    if (uploadedFiles.length > 0 && selectedWorkspace) {
+      const localId = createLocalId();
+      const formData = new FormData();
+      Array.from(uploadedFiles).forEach((file) => {
+        formData.append('files', file);
+      });
+
+      dispatch(
+        actions.uploadFile({
+          id: localId,
+          name: 'Uploading...',
+          spaceId: selectedWorkspace,
+          folderId: currentFolderId,
+          formData,
+        }),
+      );
+    }
+  };
+
+  const handleCreateWorkspace = (workspaceName) => {
+    const localId = createLocalId();
+    pendingWorkspaceRef.current = localId;
+    dispatch(
+      actions.createSpace({
+        id: localId,
+        name: workspaceName,
+      }),
+    );
+  };
+
+  const handleRenameWorkspace = (workspaceId, newName) => {
+    if (workspaceId) {
+      dispatch(
+        actions.updateSpace(workspaceId, {
+          name: newName,
+        }),
+      );
+    }
+  };
+
+  const handleDeleteWorkspace = (workspaceValue) => {
+    dispatch(actions.deleteSpace(workspaceValue));
     setShowWorkspacePopup(false);
   };
 
-  // Drag and drop operations
   const handleDragStart = (e, file) => {
-    if (file.type !== 'folder') {
-      setDraggedFile(file);
-    }
+    setDraggedFile(file);
   };
 
   const handleDragEnd = () => {
@@ -239,7 +506,8 @@ const DocumentManagement = React.memo(() => {
 
   const handleDragOver = (e, folder) => {
     e.preventDefault();
-    if (draggedFile && folder.type === 'folder') {
+    if (draggedFile && folder.type === 'folder' && draggedFile.id !== folder.id) {
+      // Prevent dropping a folder into itself
       setDropTarget(folder.id);
     }
   };
@@ -256,14 +524,25 @@ const DocumentManagement = React.memo(() => {
 
   const handleDrop = (e, folder) => {
     e.preventDefault();
-    if (draggedFile && folder.type === 'folder') {
-      // TODO: Implement move file to folder functionality
+    if (draggedFile && folder.type === 'folder' && draggedFile.id !== folder.id) {
+      if (draggedFile.type === 'file') {
+        dispatch(
+          actions.updateFile(draggedFile.id, {
+            folderId: folder.id,
+          }),
+        );
+      } else if (draggedFile.type === 'folder') {
+        dispatch(
+          actions.updateFolder(draggedFile.id, {
+            parentFolderId: folder.id,
+          }),
+        );
+      }
     }
     setDraggedFile(null);
     setDropTarget(null);
   };
 
-  // Modal operations
   const openFolderModal = () => {
     setModalConfig({
       type: 'folder',
@@ -286,26 +565,19 @@ const DocumentManagement = React.memo(() => {
     });
   };
 
-  const openWorkspaceRenameModal = (workspaceName) => {
+  const openWorkspaceRenameModal = (workspace) => {
     setModalConfig({
       type: 'workspace-rename',
       title: 'Rename workspace',
       label: 'Workspace name',
-      defaultValue: workspaceName,
+      defaultValue: workspace.text,
       submitLabel: 'Rename',
-      onSubmit: handleRenameWorkspace,
+      onSubmit: (newName) => handleRenameWorkspace(workspace.value, newName),
     });
   };
 
-  const openWorkspaceDeleteModal = (workspaceValue) => {
-    setModalConfig({
-      type: 'workspace-delete',
-      title: 'Delete workspace',
-      label: 'Type the workspace name to confirm',
-      defaultValue: '',
-      submitLabel: 'Delete',
-      onSubmit: () => handleDeleteWorkspace(workspaceValue),
-    });
+  const openWorkspaceDeleteModal = (workspace) => {
+    setDeleteConfirmWorkspace(workspace);
   };
 
   const currentFiles = getFilteredFiles();
@@ -313,7 +585,6 @@ const DocumentManagement = React.memo(() => {
 
   return (
     <div className={styles.wrapper}>
-      {/* Sidebar */}
       <Sidebar
         currentSection={currentSection}
         currentFolderId={currentFolderId}
@@ -324,6 +595,7 @@ const DocumentManagement = React.memo(() => {
         showWorkspacePopup={showWorkspacePopup}
         workspacePopupRef={workspacePopupRef}
         onFolderCreate={openFolderModal}
+        onFileUpload={handleFileUpload}
         onSectionChange={handleSectionChange}
         onBreadcrumbClick={handleBreadcrumbClick}
         onFolderClick={handleFolderDoubleClick}
@@ -335,12 +607,12 @@ const DocumentManagement = React.memo(() => {
         }}
         onRenameWorkspace={(e, workspace) => {
           e.stopPropagation();
-          openWorkspaceRenameModal(workspace.text);
+          openWorkspaceRenameModal(workspace);
           setShowWorkspacePopup(false);
         }}
         onDeleteWorkspace={(e, workspace) => {
           e.stopPropagation();
-          openWorkspaceDeleteModal(workspace.value);
+          openWorkspaceDeleteModal(workspace);
           setShowWorkspacePopup(false);
         }}
         onCreateWorkspace={() => {
@@ -349,7 +621,6 @@ const DocumentManagement = React.memo(() => {
         }}
       />
 
-      {/* Input Modal */}
       {modalConfig && (
         <InputModal
           title={modalConfig.title}
@@ -361,28 +632,28 @@ const DocumentManagement = React.memo(() => {
         />
       )}
 
-      {/* Main Content */}
       <div className={styles.mainContent}>
-        {/* Top Bar */}
         <TopBar
           sectionTitle={sectionTitle}
           currentPath={currentPath}
           view={view}
           onBreadcrumbClick={handleBreadcrumbClick}
           onFolderCreate={openFolderModal}
+          onFileUpload={handleFileUpload}
           onViewChange={setView}
         />
 
-        {/* Sort Bar */}
         <SortBar
           sortBy={sortBy}
           selectedFile={selectedFile}
+          selectedFileData={files.find((f) => f.id === selectedFile)}
           onSortChange={setSortBy}
           onPreview={handlePreview}
+          onShare={handleShare}
           onDelete={handleDeleteSelected}
+          onDownload={handleDownloadSelected}
         />
 
-        {/* Files Grid or List */}
         {view === 'grid' ? (
           <FileGrid
             files={currentFiles}
@@ -414,16 +685,62 @@ const DocumentManagement = React.memo(() => {
         )}
       </div>
 
-      {/* File Preview Modal */}
       {previewFile && (
         <FilePreviewModal
           file={previewFile}
           files={files}
           onClose={handleClosePreview}
-          onShare={handleShare}
+          onShare={() => handleShare(previewFile)}
           onDownload={handleDownload}
+          onNavigate={handleNavigatePreview}
         />
       )}
+
+      {shareModalOpen && fileToShare && (
+        <ShareModal
+          file={fileToShare}
+          isOpen={shareModalOpen}
+          onClose={() => {
+            setShareModalOpen(false);
+            setFileToShare(null);
+          }}
+          onCreateShareLink={async (linkData) => {
+            try {
+              const result = await api.createShareLink(linkData, {
+                Authorization: `Bearer ${accessToken}`,
+              });
+
+              dispatch(
+                actions.createShareLink.success({
+                  resourceType: 'file',
+                  resourceId: fileToShare.id,
+                  ...result,
+                }),
+              );
+
+              return result;
+            } catch (error) {
+              dispatch(actions.createShareLink.failure(error));
+              throw error;
+            }
+          }}
+        />
+      )}
+
+      <Confirm
+        open={!!deleteConfirmWorkspace}
+        header="Delete workspace"
+        content={`Are you sure you want to delete "${deleteConfirmWorkspace?.text}"? This action cannot be undone.`}
+        confirmButton="Delete"
+        cancelButton="Cancel"
+        onConfirm={() => {
+          if (deleteConfirmWorkspace) {
+            handleDeleteWorkspace(deleteConfirmWorkspace.value);
+            setDeleteConfirmWorkspace(null);
+          }
+        }}
+        onCancel={() => setDeleteConfirmWorkspace(null)}
+      />
     </div>
   );
 });

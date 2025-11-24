@@ -6,6 +6,8 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { Dropdown, Icon } from 'semantic-ui-react';
+import { useSelector } from 'react-redux';
+import selectors from '../../../selectors';
 
 import styles from './FileListRow.module.scss';
 
@@ -22,67 +24,172 @@ const FileListRow = React.memo(
     onDragOver,
     onDragLeave,
     onDrop,
-  }) => (
-    <div
-      role="button"
-      tabIndex={0}
-      className={`${styles.listRow} ${isSelected ? styles.selected : ''} ${
-        isDragging ? styles.dragging : ''
-      } ${isDropTarget ? styles.dropTarget : ''}`}
-      onClick={onSelect}
-      onDoubleClick={onDoubleClick}
-      onKeyDown={(e) => {
-        if (e.key === 'Enter') {
-          onDoubleClick();
-        } else if (e.key === ' ') {
-          e.preventDefault();
-          onSelect();
+  }) => {
+    const accessToken = useSelector(selectors.selectAccessToken);
+    const [imageUrl, setImageUrl] = React.useState(null);
+    const [imageError, setImageError] = React.useState(false);
+    const [imageLoading, setImageLoading] = React.useState(false);
+
+    const isImage = React.useMemo(() => {
+      if (file.type !== 'file') return false;
+
+      if (file.mimeType && file.mimeType.startsWith('image/')) {
+        return true;
+      }
+
+      if (file.name) {
+        const ext = file.name.split('.').pop().toLowerCase();
+        return ['jpg', 'jpeg', 'png', 'gif', 'svg', 'bmp', 'webp', 'ico'].includes(ext);
+      }
+
+      return false;
+    }, [file.type, file.mimeType, file.name]);
+
+    React.useEffect(() => {
+      if (!isImage || !file.id) {
+        return undefined;
+      }
+
+      if (!accessToken) {
+        return undefined;
+      }
+
+      let isMounted = true;
+      let currentUrl = null;
+      const controller = new AbortController();
+
+      const fetchImage = async () => {
+        setImageLoading(true);
+        setImageError(false);
+
+        try {
+          const response = await fetch(`/api/files/${file.id}/download?inline=true`, {
+            headers: {
+              Authorization: `Bearer ${accessToken}`,
+            },
+            credentials: 'include',
+            signal: controller.signal,
+          });
+
+          if (!response.ok) {
+            throw new Error(`Failed to fetch image: ${response.status}`);
+          }
+
+          const blob = await response.blob();
+          const url = URL.createObjectURL(blob);
+          currentUrl = url;
+
+          if (isMounted) {
+            setImageUrl(url);
+            setImageError(false);
+            setImageLoading(false);
+          }
+        } catch (error) {
+          if (error.name !== 'AbortError' && isMounted) {
+            setImageError(true);
+            setImageLoading(false);
+          }
         }
-      }}
-      draggable={file.type !== 'folder'}
-      onDragStart={onDragStart}
-      onDragEnd={onDragEnd}
-      onDragOver={onDragOver}
-      onDragLeave={onDragLeave}
-      onDrop={onDrop}
-    >
-      <div className={styles.listCell} style={{ flex: 2 }}>
-        <Icon name={file.icon} size="large" color={file.type === 'folder' ? 'yellow' : undefined} />
-        <span className={styles.listFileName}>{file.name}</span>
+      };
+
+      fetchImage();
+
+      return () => {
+        isMounted = false;
+        controller.abort();
+        if (currentUrl) {
+          URL.revokeObjectURL(currentUrl);
+        }
+      };
+    }, [isImage, file.id, file.name, accessToken]);
+
+    return (
+      <div
+        role="button"
+        tabIndex={0}
+        className={`${styles.listRow} ${isSelected ? styles.selected : ''} ${
+          isDragging ? styles.dragging : ''
+        } ${isDropTarget ? styles.dropTarget : ''}`}
+        onClick={onSelect}
+        onDoubleClick={onDoubleClick}
+        onKeyDown={(e) => {
+          if (e.key === 'Enter') {
+            onDoubleClick();
+          } else if (e.key === ' ') {
+            e.preventDefault();
+            onSelect();
+          }
+        }}
+        draggable
+        onDragStart={onDragStart}
+        onDragEnd={onDragEnd}
+        onDragOver={onDragOver}
+        onDragLeave={onDragLeave}
+        onDrop={onDrop}
+      >
+        <div className={styles.listCell} style={{ flex: 3 }}>
+          {(() => {
+            if (isImage && imageUrl && !imageError) {
+              return (
+                <img
+                  src={imageUrl}
+                  alt={file.name}
+                  style={{
+                    width: '32px',
+                    height: '32px',
+                    objectFit: 'cover',
+                    borderRadius: '4px',
+                    marginRight: '8px',
+                  }}
+                />
+              );
+            }
+
+            if (isImage && imageLoading) {
+              return <Icon name="spinner" loading size="large" style={{ marginRight: '8px' }} />;
+            }
+
+            return (
+              <Icon
+                name={file.icon}
+                size="large"
+                color={file.type === 'folder' ? 'yellow' : undefined}
+              />
+            );
+          })()}
+          <span className={styles.listFileName}>{file.name}</span>
+        </div>
+        <div className={styles.listCell} style={{ flex: 1 }}>
+          {file.formattedSize}
+        </div>
+        <div className={styles.listActions}>
+          <Dropdown
+            icon="ellipsis vertical"
+            direction="left"
+            className={styles.fileMenu}
+            onClick={(e) => e.stopPropagation()}
+          >
+            <Dropdown.Menu>
+              <Dropdown.Item icon="download" text="Download" />
+              <Dropdown.Item icon="share alternate" text="Share" />
+              <Dropdown.Item icon="pencil" text="Rename" />
+              <Dropdown.Item icon="trash" text="Delete" />
+            </Dropdown.Menu>
+          </Dropdown>
+        </div>
       </div>
-      <div className={styles.listCell} style={{ flex: 1 }}>
-        {file.modified}
-      </div>
-      <div className={styles.listCell} style={{ flex: 0.5 }}>
-        {file.size}
-      </div>
-      <div className={styles.listActions}>
-        <Dropdown
-          icon="ellipsis vertical"
-          direction="left"
-          className={styles.fileMenu}
-          onClick={(e) => e.stopPropagation()}
-        >
-          <Dropdown.Menu>
-            <Dropdown.Item icon="download" text="Download" />
-            <Dropdown.Item icon="share alternate" text="Share" />
-            <Dropdown.Item icon="pencil" text="Rename" />
-            <Dropdown.Item icon="trash" text="Delete" />
-          </Dropdown.Menu>
-        </Dropdown>
-      </div>
-    </div>
-  ),
+    );
+  },
 );
 
 FileListRow.propTypes = {
   file: PropTypes.shape({
-    id: PropTypes.number.isRequired,
+    id: PropTypes.oneOfType([PropTypes.string, PropTypes.number]).isRequired,
     name: PropTypes.string.isRequired,
     type: PropTypes.string.isRequired,
     icon: PropTypes.string.isRequired,
-    modified: PropTypes.string,
-    size: PropTypes.string,
+    mimeType: PropTypes.string,
+    formattedSize: PropTypes.string,
   }).isRequired,
   isSelected: PropTypes.bool.isRequired,
   isDragging: PropTypes.bool.isRequired,

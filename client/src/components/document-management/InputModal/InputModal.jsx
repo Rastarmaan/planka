@@ -5,9 +5,8 @@
 
 import React, { useState, useRef, useEffect } from 'react';
 import PropTypes from 'prop-types';
-import { Button, Form, Input, Icon } from 'semantic-ui-react';
-
-import styles from './InputModal.module.scss';
+import { Button, Form, Modal } from 'semantic-ui-react';
+import { Input } from '../../../lib/custom-ui';
 
 const InputModal = React.memo(({ title, label, defaultValue, submitLabel, onSubmit, onClose }) => {
   const [value, setValue] = useState(defaultValue || '');
@@ -22,8 +21,9 @@ const InputModal = React.memo(({ title, label, defaultValue, submitLabel, onSubm
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    if (value.trim()) {
-      onSubmit(value.trim());
+    const trimmedValue = value.trim();
+    if (trimmedValue) {
+      onSubmit(trimmedValue);
       onClose();
     }
   };
@@ -35,40 +35,36 @@ const InputModal = React.memo(({ title, label, defaultValue, submitLabel, onSubm
   };
 
   return (
-    <>
-      {/* eslint-disable-next-line jsx-a11y/click-events-have-key-events, jsx-a11y/no-static-element-interactions */}
-      <div className={styles.overlay} onClick={onClose} />
-      <div className={styles.modal}>
-        <div className={styles.header}>
-          <h3>{title}</h3>
-          <button type="button" className={styles.closeButton} onClick={onClose} aria-label="Close">
-            <Icon name="close" />
-          </button>
-        </div>
+    <Modal open closeIcon size="tiny" onClose={onClose}>
+      <Modal.Header>{title}</Modal.Header>
+      <Modal.Content>
         <Form onSubmit={handleSubmit}>
           <Form.Field>
             <label htmlFor="input-field">{label}</label>
             <Input
+              fluid
               ref={inputRef}
               id="input-field"
-              fluid
+              name="name"
               value={value}
+              maxLength={128}
               onChange={(e) => setValue(e.target.value)}
               onKeyDown={handleKeyDown}
-              className={styles.input}
             />
           </Form.Field>
-          <div className={styles.actions}>
-            <Button type="button" className={styles.cancelButton} onClick={onClose}>
-              Cancel
-            </Button>
-            <Button type="submit" className={styles.createButton} disabled={!value.trim()}>
-              {submitLabel}
-            </Button>
-          </div>
         </Form>
-      </div>
-    </>
+      </Modal.Content>
+      <Modal.Actions>
+        <Button content="Cancel" onClick={onClose} />
+        <Button
+          positive
+          icon="checkmark"
+          content={submitLabel}
+          disabled={!value.trim()}
+          onClick={handleSubmit}
+        />
+      </Modal.Actions>
+    </Modal>
   );
 });
 

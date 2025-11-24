@@ -9,55 +9,97 @@ import { Button, Dropdown, Icon } from 'semantic-ui-react';
 
 import styles from './TopBar.module.scss';
 
-const SortBar = React.memo(({ sortBy, selectedFile, onSortChange, onPreview, onDelete }) => (
-  <div className={styles.sortBar}>
-    <div className={styles.sortLeft}>
-      <Icon name="sort" />
-      <Dropdown
-        text="Last modified"
-        inline
-        className={styles.sortDropdown}
-        value={sortBy}
-        onChange={(e, { value }) => onSortChange(value)}
-        options={[
-          { key: 'modified', text: 'Last modified', value: 'modified' },
-          { key: 'name', text: 'Name', value: 'name' },
-          { key: 'size', text: 'Size', value: 'size' },
-        ]}
-      />
-    </div>
-    {selectedFile && (
-      <div className={styles.sortActions}>
-        <Button icon className={styles.actionButton} onClick={onPreview}>
-          <Icon name="eye" />
-        </Button>
+const SortBar = React.memo(
+  ({
+    sortBy,
+    selectedFile,
+    selectedFileData,
+    onSortChange,
+    onPreview,
+    onShare,
+    onDelete,
+    onDownload,
+  }) => {
+    const getSortText = () => {
+      switch (sortBy) {
+        case 'name':
+          return 'Name';
+        case 'size':
+          return 'Size';
+        case 'modified':
+        default:
+          return 'Last modified';
+      }
+    };
 
-        <Button icon onClick={onDelete} className={styles.actionButton}>
-          <Icon name="trash alternate outline" />
-        </Button>
-        <Dropdown icon="ellipsis vertical" direction="left" button className={styles.actionButton}>
-          <Dropdown.Menu>
-            <Dropdown.Item icon="share alternate" text="Share" />
-            <Dropdown.Item icon="download" text="Download" />
-            <Dropdown.Item icon="folder" text="Move to" />
-            <Dropdown.Item icon="copy" text="Make a copy" />
-          </Dropdown.Menu>
-        </Dropdown>
+    const isImageFile =
+      selectedFileData?.type === 'file' &&
+      selectedFileData?.mimeType &&
+      selectedFileData.mimeType.startsWith('image/');
+
+    return (
+      <div className={styles.sortBar}>
+        <div className={styles.sortLeft}>
+          <Icon name="sort" />
+          <Dropdown
+            text={getSortText()}
+            inline
+            className={styles.sortDropdown}
+            value={sortBy}
+            onChange={(e, { value }) => onSortChange(value)}
+            options={[
+              { key: 'modified', text: 'Last modified', value: 'modified' },
+              { key: 'name', text: 'Name', value: 'name' },
+              { key: 'size', text: 'Size', value: 'size' },
+            ]}
+          />
+        </div>
+        {selectedFile && (
+          <div className={styles.sortActions}>
+            {isImageFile && (
+              <Button icon className={styles.actionButton} onClick={onPreview}>
+                <Icon name="eye" />
+              </Button>
+            )}
+
+            <Button icon onClick={onDelete} className={styles.actionButton}>
+              <Icon name="trash alternate outline" />
+            </Button>
+            <Dropdown
+              icon="ellipsis vertical"
+              direction="left"
+              button
+              className={styles.actionButton}
+            >
+              <Dropdown.Menu>
+                <Dropdown.Item icon="share alternate" text="Share" onClick={onShare} />
+                <Dropdown.Item icon="download" text="Download" onClick={onDownload} />
+              </Dropdown.Menu>
+            </Dropdown>
+          </div>
+        )}
       </div>
-    )}
-  </div>
-));
+    );
+  },
+);
 
 SortBar.propTypes = {
   sortBy: PropTypes.string.isRequired,
-  selectedFile: PropTypes.number,
+  selectedFile: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
+  selectedFileData: PropTypes.shape({
+    type: PropTypes.string,
+    mimeType: PropTypes.string,
+  }),
   onSortChange: PropTypes.func.isRequired,
   onPreview: PropTypes.func.isRequired,
+  onShare: PropTypes.func.isRequired,
   onDelete: PropTypes.func.isRequired,
+  onDownload: PropTypes.func.isRequired,
 };
 
 SortBar.defaultProps = {
   selectedFile: null,
+  selectedFileData: null,
 };
 
 export default SortBar;

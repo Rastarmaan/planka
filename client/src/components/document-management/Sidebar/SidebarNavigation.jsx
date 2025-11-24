@@ -3,12 +3,90 @@
  * Licensed under the Fair Use License: https://github.com/plankanban/planka/blob/master/LICENSE.md
  */
 
-import React from 'react';
+import React, { useState } from 'react';
 import PropTypes from 'prop-types';
 import { Icon } from 'semantic-ui-react';
 
 import Paths from '../../../constants/Paths';
 import styles from './SidebarNavigation.module.scss';
+
+const FolderTree = React.memo(
+  ({ folder, currentFolderId, allFolders, onFolderClick, level = 0 }) => {
+    const [isExpanded, setIsExpanded] = useState(false);
+    const subFolders = allFolders.filter((f) => f.parentFolderId === folder.id);
+    const hasChildren = subFolders.length > 0;
+
+    return (
+      <>
+        <div
+          role="button"
+          tabIndex={0}
+          className={`${styles.sidebarItem} ${styles.indent} ${
+            currentFolderId === folder.id ? styles.active : ''
+          }`}
+          style={{ paddingLeft: `${(level + 1) * 20}px` }}
+          onClick={() => onFolderClick(folder)}
+          onKeyDown={(e) => {
+            if (e.key === 'Enter' || e.key === ' ') {
+              e.preventDefault();
+              onFolderClick(folder);
+            }
+          }}
+        >
+          <div className={styles.sidebarItemContent}>
+            {hasChildren && (
+              <Icon
+                name={isExpanded ? 'caret down' : 'caret right'}
+                className={styles.expandIcon}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setIsExpanded(!isExpanded);
+                }}
+              />
+            )}
+            <Icon name="folder outline" />
+            <span>{folder.name}</span>
+          </div>
+        </div>
+        {isExpanded &&
+          hasChildren &&
+          subFolders.map((subFolder) => (
+            <FolderTree
+              key={subFolder.id}
+              folder={subFolder}
+              currentFolderId={currentFolderId}
+              allFolders={allFolders}
+              onFolderClick={onFolderClick}
+              level={level + 1}
+            />
+          ))}
+      </>
+    );
+  },
+);
+
+FolderTree.propTypes = {
+  folder: PropTypes.shape({
+    id: PropTypes.oneOfType([PropTypes.string, PropTypes.number]).isRequired,
+    name: PropTypes.string.isRequired,
+    parentFolderId: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+  }).isRequired,
+  currentFolderId: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+  allFolders: PropTypes.arrayOf(
+    PropTypes.shape({
+      id: PropTypes.oneOfType([PropTypes.string, PropTypes.number]).isRequired,
+      name: PropTypes.string.isRequired,
+      parentFolderId: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+    }),
+  ).isRequired,
+  onFolderClick: PropTypes.func.isRequired,
+  level: PropTypes.number,
+};
+
+FolderTree.defaultProps = {
+  currentFolderId: null,
+  level: 0,
+};
 
 const SidebarNavigation = React.memo(
   ({
@@ -41,47 +119,34 @@ const SidebarNavigation = React.memo(
             }
           }}
         >
+          <Icon
+            name={allFilesExpanded ? 'caret down' : 'caret right'}
+            className={styles.collapseIcon}
+            onClick={(e) => {
+              e.stopPropagation();
+              onToggleExpand();
+            }}
+          />
           <Icon name="cloud upload" />
           <span>All Files</span>
         </div>
-        <Icon
-          name={allFilesExpanded ? 'caret down' : 'caret right'}
-          className={styles.collapseIcon}
-          onClick={(e) => {
-            e.stopPropagation();
-            onToggleExpand();
-          }}
-        />
       </div>
 
       {allFilesExpanded &&
         currentSection === 'all-files' &&
         files
-          .filter((f) => f.type === 'folder' && !f.parentId)
+          .filter((f) => f.type === 'folder' && !f.parentFolderId)
           .map((folder) => (
-            <div
+            <FolderTree
               key={folder.id}
-              role="button"
-              tabIndex={0}
-              className={`${styles.sidebarItem} ${styles.indent} ${
-                currentFolderId === folder.id ? styles.active : ''
-              }`}
-              onClick={() => onFolderClick(folder)}
-              onKeyDown={(e) => {
-                if (e.key === 'Enter' || e.key === ' ') {
-                  e.preventDefault();
-                  onFolderClick(folder);
-                }
-              }}
-            >
-              <div className={styles.sidebarItemContent}>
-                <Icon name="folder outline" />
-                <span>{folder.name}</span>
-              </div>
-            </div>
+              folder={folder}
+              currentFolderId={currentFolderId}
+              allFolders={files.filter((f) => f.type === 'folder')}
+              onFolderClick={onFolderClick}
+            />
           ))}
 
-      <div
+      {/* <div
         role="button"
         tabIndex={0}
         className={`${styles.sidebarItem} ${currentSection === 'shared' ? styles.active : ''}`}
@@ -148,18 +213,18 @@ const SidebarNavigation = React.memo(
           <Icon name="trash alternate outline" />
           <span>Trash</span>
         </div>
-      </div>
+      </div> */}
     </div>
   ),
 );
 
 SidebarNavigation.propTypes = {
   currentSection: PropTypes.string.isRequired,
-  currentFolderId: PropTypes.number,
+  currentFolderId: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
   allFilesExpanded: PropTypes.bool.isRequired,
   files: PropTypes.arrayOf(
     PropTypes.shape({
-      id: PropTypes.number.isRequired,
+      id: PropTypes.oneOfType([PropTypes.string, PropTypes.number]).isRequired,
       name: PropTypes.string.isRequired,
       type: PropTypes.string.isRequired,
     }),

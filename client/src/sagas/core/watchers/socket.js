@@ -298,6 +298,50 @@ const createSocketEventsChannel = () =>
       emit(entryActions.handleNotificationServiceDelete(item));
     };
 
+    const handleSpaceCreate = ({ item }) => {
+      emit(entryActions.handleSpaceCreate(item));
+    };
+
+    const handleSpaceUpdate = ({ item }) => {
+      emit(entryActions.handleSpaceUpdate(item));
+    };
+
+    const handleSpaceDelete = ({ item }) => {
+      emit(entryActions.handleSpaceDelete(item));
+    };
+
+    const handleFolderCreate = ({ item }) => {
+      emit(entryActions.handleFolderCreate(item));
+    };
+
+    const handleFolderUpdate = ({ item }) => {
+      emit(entryActions.handleFolderUpdate(item));
+    };
+
+    const handleFolderDelete = ({ item }) => {
+      emit(entryActions.handleFolderDelete(item));
+    };
+
+    const handleFileCreate = ({ item }) => {
+      emit(entryActions.handleFileCreate(item));
+    };
+
+    const handleFileUpdate = ({ item }) => {
+      emit(entryActions.handleFileUpdate(item));
+    };
+
+    const handleFileDelete = ({ item }) => {
+      emit(entryActions.handleFileDelete(item));
+    };
+
+    const handlePermissionCreate = ({ item }) => {
+      emit(entryActions.handlePermissionCreate(item));
+    };
+
+    const handlePermissionDelete = ({ item }) => {
+      emit(entryActions.handlePermissionDelete(item));
+    };
+
     socket.on('disconnect', handleDisconnect);
     socket.on('reconnect', handleReconnect);
 
@@ -395,6 +439,21 @@ const createSocketEventsChannel = () =>
     socket.on('notificationServiceUpdate', handleNotificationServiceUpdate);
     socket.on('notificationServiceDelete', handleNotificationServiceDelete);
 
+    socket.on('spaceCreate', handleSpaceCreate);
+    socket.on('spaceUpdate', handleSpaceUpdate);
+    socket.on('spaceDelete', handleSpaceDelete);
+
+    socket.on('folderCreate', handleFolderCreate);
+    socket.on('folderUpdate', handleFolderUpdate);
+    socket.on('folderDelete', handleFolderDelete);
+
+    socket.on('fileCreate', handleFileCreate);
+    socket.on('fileUpdate', handleFileUpdate);
+    socket.on('fileDelete', handleFileDelete);
+
+    socket.on('permissionCreate', handlePermissionCreate);
+    socket.on('permissionDelete', handlePermissionDelete);
+
     return () => {
       socket.off('disconnect', handleDisconnect);
       socket.off('reconnect', handleReconnect);
@@ -488,6 +547,21 @@ const createSocketEventsChannel = () =>
       socket.off('notificationServiceCreate', handleNotificationServiceCreate);
       socket.off('notificationServiceUpdate', handleNotificationServiceUpdate);
       socket.off('notificationServiceDelete', handleNotificationServiceDelete);
+
+      socket.off('spaceCreate', handleSpaceCreate);
+      socket.off('spaceUpdate', handleSpaceUpdate);
+      socket.off('spaceDelete', handleSpaceDelete);
+
+      socket.off('folderCreate', handleFolderCreate);
+      socket.off('folderUpdate', handleFolderUpdate);
+      socket.off('folderDelete', handleFolderDelete);
+
+      socket.off('fileCreate', handleFileCreate);
+      socket.off('fileUpdate', handleFileUpdate);
+      socket.off('fileDelete', handleFileDelete);
+
+      socket.off('permissionCreate', handlePermissionCreate);
+      socket.off('permissionDelete', handlePermissionDelete);
     };
   });
 

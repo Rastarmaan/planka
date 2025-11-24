@@ -6,22 +6,32 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { Button, Icon } from 'semantic-ui-react';
+import { useSelector } from 'react-redux';
+import selectors from '../../../selectors';
 
 import styles from './FilePreviewModal.module.scss';
 
-const FilePreviewModal = React.memo(({ file, files, onClose, onShare, onDownload }) => {
-  const currentIndex = files.findIndex((f) => f.id === file.id);
-  const totalFiles = files.length;
+const FilePreviewModal = React.memo(({ file, files, onClose, onShare, onDownload, onNavigate }) => {
+  const accessToken = useSelector(selectors.selectAccessToken);
+  const [imageUrl, setImageUrl] = React.useState(null);
+  const [imageError, setImageError] = React.useState(false);
+  const [imageLoading, setImageLoading] = React.useState(false);
+
+  const imageFiles = files.filter(
+    (f) => f.type === 'file' && f.mimeType && f.mimeType.startsWith('image/'),
+  );
+  const currentIndex = imageFiles.findIndex((f) => f.id === file.id);
+  const totalFiles = imageFiles.length;
 
   const handlePrevious = () => {
     if (currentIndex > 0) {
-      // TODO: Navigate to previous file
+      onNavigate(imageFiles[currentIndex - 1]);
     }
   };
 
   const handleNext = () => {
     if (currentIndex < totalFiles - 1) {
-      // TODO: Navigate to next file
+      onNavigate(imageFiles[currentIndex + 1]);
     }
   };
 
@@ -36,6 +46,65 @@ const FilePreviewModal = React.memo(({ file, files, onClose, onShare, onDownload
   };
 
   React.useEffect(() => {
+    if (!file.mimeType || !file.mimeType.startsWith('image/') || !file.id || !accessToken) {
+      return undefined;
+    }
+
+    let isMounted = true;
+    let currentUrl = null;
+    const controller = new AbortController();
+
+    const fetchImage = async () => {
+      setImageLoading(true);
+      setImageError(false);
+
+      try {
+        const response = await fetch(`/api/files/${file.id}/download?inline=true`, {
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+          },
+          credentials: 'include',
+          signal: controller.signal,
+        });
+
+        if (!response.ok) {
+          throw new Error(`Failed to fetch image: ${response.status}`);
+        }
+
+        const blob = await response.blob();
+
+        if (blob.type.includes('text/html')) {
+          throw new Error('Server returned HTML error page');
+        }
+
+        const url = URL.createObjectURL(blob);
+        currentUrl = url;
+
+        if (isMounted) {
+          setImageUrl(url);
+          setImageError(false);
+          setImageLoading(false);
+        }
+      } catch (error) {
+        if (error.name !== 'AbortError' && isMounted) {
+          setImageError(true);
+          setImageLoading(false);
+        }
+      }
+    };
+
+    fetchImage();
+
+    return () => {
+      isMounted = false;
+      controller.abort();
+      if (currentUrl) {
+        URL.revokeObjectURL(currentUrl);
+      }
+    };
+  }, [file.id, file.mimeType, file.name, accessToken]);
+
+  React.useEffect(() => {
     document.addEventListener('keydown', handleKeyPress);
     return () => {
       document.removeEventListener('keydown', handleKeyPress);
@@ -47,7 +116,6 @@ const FilePreviewModal = React.memo(({ file, files, onClose, onShare, onDownload
     <div className={styles.overlay} onClick={onClose}>
       {/* eslint-disable-next-line jsx-a11y/click-events-have-key-events, jsx-a11y/no-static-element-interactions */}
       <div className={styles.modal} onClick={(e) => e.stopPropagation()}>
-        {/* Header */}
         <div className={styles.header}>
           <div className={styles.headerLeft}>
             <Button icon className={styles.headerButton} onClick={onShare}>
@@ -93,15 +161,39 @@ const FilePreviewModal = React.memo(({ file, files, onClose, onShare, onDownload
 
         {/* Content */}
         <div className={styles.content}>
-          {file.thumbnail ? (
+          {file.mimeType && file.mimeType.startsWith('image/') ? (
             <div className={styles.imagePreview}>
-              <Icon name="file image outline" size="massive" />
-              <p className={styles.previewNote}>Image preview (mock)</p>
+              {(() => {
+                if (imageLoading) {
+                  return <Icon name="spinner" loading size="massive" />;
+                }
+
+                if (imageUrl && !imageError) {
+                  return (
+                    <img
+                      src={imageUrl}
+                      alt={file.name}
+                      style={{ maxWidth: '100%', maxHeight: '100%', objectFit: 'contain' }}
+                    />
+                  );
+                }
+
+                if (imageError) {
+                  return (
+                    <div className={styles.errorMessage}>
+                      <Icon name="warning circle" size="massive" color="red" />
+                      <p>Failed to load image</p>
+                    </div>
+                  );
+                }
+
+                return null;
+              })()}
             </div>
           ) : (
             <div className={styles.filePreview}>
               <Icon name={file.icon} size="massive" color="yellow" />
-              <p className={styles.fileType}>{file.type}</p>
+              <p className={styles.fileType}>{file.name}</p>
             </div>
           )}
         </div>
@@ -112,21 +204,24 @@ const FilePreviewModal = React.memo(({ file, files, onClose, onShare, onDownload
 
 FilePreviewModal.propTypes = {
   file: PropTypes.shape({
-    id: PropTypes.number.isRequired,
+    id: PropTypes.oneOfType([PropTypes.string, PropTypes.number]).isRequired,
     name: PropTypes.string.isRequired,
     type: PropTypes.string.isRequired,
     icon: PropTypes.string.isRequired,
-    thumbnail: PropTypes.bool,
+    mimeType: PropTypes.string,
   }).isRequired,
   files: PropTypes.arrayOf(
     PropTypes.shape({
-      id: PropTypes.number.isRequired,
+      id: PropTypes.oneOfType([PropTypes.string, PropTypes.number]).isRequired,
       name: PropTypes.string.isRequired,
+      type: PropTypes.string,
+      mimeType: PropTypes.string,
     }),
   ).isRequired,
   onClose: PropTypes.func.isRequired,
   onShare: PropTypes.func,
   onDownload: PropTypes.func,
+  onNavigate: PropTypes.func.isRequired,
 };
 
 FilePreviewModal.defaultProps = {

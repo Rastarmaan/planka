@@ -56,11 +56,11 @@ const FileGrid = React.memo(
 FileGrid.propTypes = {
   files: PropTypes.arrayOf(
     PropTypes.shape({
-      id: PropTypes.number,
+      id: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
     }),
   ).isRequired,
-  selectedFile: PropTypes.number,
-  draggedFile: PropTypes.shape({ id: PropTypes.number }),
+  selectedFile: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
+  draggedFile: PropTypes.shape({ id: PropTypes.oneOfType([PropTypes.string, PropTypes.number]) }),
   dropTarget: PropTypes.number,
   onFileSelect: PropTypes.func.isRequired,
   onFolderDoubleClick: PropTypes.func.isRequired,

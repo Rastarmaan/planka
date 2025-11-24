@@ -67,8 +67,21 @@ module.exports = {
 
     const folders = await DocumentFolder.find(criteria).sort('name ASC');
 
+    // Also fetch root-level files if no parentFolderId specified
+    let files = [];
+    if (!inputs.parentFolderId) {
+      files = await DocumentFile.find({
+        space: inputs.spaceId,
+        folder: null,
+        isDeleted: false,
+      }).sort('name ASC');
+    }
+
     return {
       items: folders,
+      included: {
+        files,
+      },
     };
   },
 };

@@ -1,0 +1,21 @@
+:global(#app) {
+  .toggleSection {
+    margin-bottom: 20px;
+  }
+
+  .linkSection {
+    margin-top: 20px;
+    width: 100%;
+  }
+
+  .linkInputWrapper {
+    display: flex;
+    gap: 12px;
+    align-items: center;
+    width: 100%;
+
+    > div:first-child {
+      flex: 1;
+    }
+  }
+}

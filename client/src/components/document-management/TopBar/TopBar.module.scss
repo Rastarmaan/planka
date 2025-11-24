@@ -4,7 +4,6 @@
  */
 
 :global(#app) {
-  /* Top Bar */
   .topBar {
     display: flex;
     align-items: center;
@@ -14,7 +13,6 @@
     background: #22252a;
   }
 
-  /* Top Bar Actions */
   .topBarActions {
     display: flex;
     gap: 8px;
@@ -41,7 +39,6 @@
     }
   }
 
-  /* Sort Bar */
   .sortBar {
     display: flex;
     align-items: center;

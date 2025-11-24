@@ -11,13 +11,22 @@ import ViewToggle from './ViewToggle';
 import styles from './TopBar.module.scss';
 
 const TopBar = React.memo(
-  ({ sectionTitle, currentPath, view, onBreadcrumbClick, onFolderCreate, onViewChange }) => (
+  ({
+    sectionTitle,
+    currentPath,
+    view,
+    onBreadcrumbClick,
+    onFolderCreate,
+    onFileUpload,
+    onViewChange,
+  }) => (
     <div className={styles.topBar}>
       <Breadcrumb
         sectionTitle={sectionTitle}
         currentPath={currentPath}
         onBreadcrumbClick={onBreadcrumbClick}
         onFolderCreate={onFolderCreate}
+        onFileUpload={onFileUpload}
       />
 
       <div className={styles.topBarActions}>
@@ -31,13 +40,14 @@ TopBar.propTypes = {
   sectionTitle: PropTypes.string.isRequired,
   currentPath: PropTypes.arrayOf(
     PropTypes.shape({
-      id: PropTypes.number,
+      id: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
       name: PropTypes.string,
     }),
   ).isRequired,
   view: PropTypes.oneOf(['grid', 'list']).isRequired,
   onBreadcrumbClick: PropTypes.func.isRequired,
   onFolderCreate: PropTypes.func.isRequired,
+  onFileUpload: PropTypes.func.isRequired,
   onViewChange: PropTypes.func.isRequired,
 };
 

@@ -8,7 +8,6 @@ import PropTypes from 'prop-types';
 
 import UploadButton from './UploadButton';
 import SidebarNavigation from './SidebarNavigation';
-import StorageInfo from './StorageInfo';
 import WorkspaceSelector from './WorkspaceSelector';
 import styles from './Sidebar.module.scss';
 
@@ -23,6 +22,7 @@ const Sidebar = React.memo(
     showWorkspacePopup,
     workspacePopupRef,
     onFolderCreate,
+    onFileUpload,
     onSectionChange,
     onBreadcrumbClick,
     onFolderClick,
@@ -34,7 +34,11 @@ const Sidebar = React.memo(
     onCreateWorkspace,
   }) => (
     <div className={styles.sidebar}>
-      <UploadButton currentSection={currentSection} onFolderCreate={onFolderCreate} />
+      <UploadButton
+        currentSection={currentSection}
+        onFolderCreate={onFolderCreate}
+        onFileUpload={onFileUpload}
+      />
 
       <SidebarNavigation
         currentSection={currentSection}
@@ -46,8 +50,6 @@ const Sidebar = React.memo(
         onFolderClick={onFolderClick}
         onToggleExpand={onToggleExpand}
       />
-
-      <StorageInfo />
 
       <WorkspaceSelector
         workspaces={workspaces}
@@ -66,26 +68,27 @@ const Sidebar = React.memo(
 
 Sidebar.propTypes = {
   currentSection: PropTypes.string.isRequired,
-  currentFolderId: PropTypes.number,
+  currentFolderId: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
   allFilesExpanded: PropTypes.bool.isRequired,
   files: PropTypes.arrayOf(
     PropTypes.shape({
-      id: PropTypes.number,
+      id: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
       name: PropTypes.string,
       type: PropTypes.string,
     }),
   ).isRequired,
   workspaces: PropTypes.arrayOf(
     PropTypes.shape({
-      key: PropTypes.string,
+      key: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
       text: PropTypes.string,
-      value: PropTypes.string,
+      value: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
     }),
   ).isRequired,
-  selectedWorkspace: PropTypes.string.isRequired,
+  selectedWorkspace: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
   showWorkspacePopup: PropTypes.bool.isRequired,
   workspacePopupRef: PropTypes.shape({ current: PropTypes.instanceOf(Element) }).isRequired,
   onFolderCreate: PropTypes.func.isRequired,
+  onFileUpload: PropTypes.func.isRequired,
   onSectionChange: PropTypes.func.isRequired,
   onBreadcrumbClick: PropTypes.func.isRequired,
   onFolderClick: PropTypes.func.isRequired,
@@ -99,6 +102,7 @@ Sidebar.propTypes = {
 
 Sidebar.defaultProps = {
   currentFolderId: null,
+  selectedWorkspace: null,
 };
 
 export default Sidebar;

@@ -32,6 +32,11 @@ import taskLists from './task-lists';
 import tasks from './tasks';
 import users from './users';
 import webhooks from './webhooks';
+import * as spaces from './spaces';
+import * as folders from './folders';
+import * as files from './files';
+import * as permissions from './permissions';
+import * as shareLinks from './share-links';
 
 export default {
   ...router,
@@ -41,6 +46,11 @@ export default {
   ...webhooks,
   ...users,
   ...projects,
+  ...spaces,
+  ...folders,
+  ...files,
+  ...permissions,
+  ...shareLinks,
   ...projectCategories,
   ...projectManagers,
   ...backgroundImages,
