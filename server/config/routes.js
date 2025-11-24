@@ -162,6 +162,7 @@ module.exports.routes = {
   'POST /api/boards/:boardId/releases': 'board-releases/create',
   'PUT /api/boards/:boardId/releases/:id': 'board-releases/update',
   'PATCH /api/boards/:boardId/releases/:id/status': 'board-releases/update-status',
+  'GET /api/boards/:boardId/releases/:id/snapshot': 'board-releases/get-snapshot',
   'DELETE /api/boards/:boardId/releases/:id': 'board-releases/delete',
 
   'POST /api/releases/:releaseId/cards': 'releases/add-card',

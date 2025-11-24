@@ -18,6 +18,7 @@ const CardSelectionStep = React.memo(
   ({ selectedCardIds, onCardSelect, onCardDeselect, onBack, onComplete }) => {
     const { t } = useTranslation();
     const allCards = useSelector((state) => selectors.selectCardsForCurrentBoard(state));
+    const cardIdsInReleases = useSelector(selectors.selectCardIdsInReleases);
 
     const [searchTerm, setSearchTerm] = useState('');
     const [filterType, setFilterType] = useState('all');
@@ -50,6 +51,10 @@ const CardSelectionStep = React.memo(
       if (!allCards || allCards.length === 0) return [];
 
       const filtered = allCards.filter((card) => {
+        if (cardIdsInReleases.includes(card.id)) {
+          return false;
+        }
+
         if (searchTerm && !card.name.toLowerCase().includes(searchTerm.toLowerCase())) {
           return false;
         }
@@ -88,7 +93,7 @@ const CardSelectionStep = React.memo(
       };
 
       return flattenTree(roots);
-    }, [allCards, searchTerm, filterType]);
+    }, [allCards, searchTerm, filterType, cardIdsInReleases]);
 
     const selectionSummary = useMemo(() => {
       if (!selectedCardIds || selectedCardIds.length === 0) return null;

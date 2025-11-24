@@ -13,6 +13,7 @@ import selectors from '../../../selectors';
 import { BoardContexts } from '../../../constants/Enums';
 import { BoardContextIcons } from '../../../constants/Icons';
 import Filters from './Filters';
+import ReleaseViewBanner from './ReleaseViewBanner';
 import RightSide from './RightSide';
 import BoardMemberships from '../../board-memberships/BoardMemberships';
 
@@ -57,6 +58,9 @@ const BoardActions = React.memo(() => {
         )}
         <div className={styles.action}>
           <Filters />
+        </div>
+        <div className={styles.action}>
+          <ReleaseViewBanner />
         </div>
         <div className={classNames(styles.action, styles.actionRightSide)}>
           <RightSide />

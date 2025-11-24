@@ -30,6 +30,7 @@ import positioning from './positioning';
 import projectCategories from './project-categories';
 import projectManagers from './project-managers';
 import projects from './projects';
+import releaseViewing from './release-viewing';
 import router from './router';
 import taskLists from './task-lists';
 import tasks from './tasks';
@@ -67,6 +68,7 @@ export default {
   ...boardLinks,
   ...boardMemberships,
   ...boardReleases,
+  ...releaseViewing,
   ...cardDependencies,
   ...labels,
   ...globalLabels,

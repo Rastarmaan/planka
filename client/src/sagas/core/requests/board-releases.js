@@ -89,6 +89,16 @@ export function* releaseCardRemoveRequest(releaseId, cardId, headers) {
   }
 }
 
+export function* releaseSnapshotFetchRequest(boardId, releaseId, headers) {
+  try {
+    const { item } = yield call(api.getReleaseSnapshot, boardId, releaseId, headers);
+
+    yield put(actions.releaseSnapshotFetch.success(item));
+  } catch (error) {
+    yield put(actions.releaseSnapshotFetch.failure(error));
+  }
+}
+
 export default {
   boardReleasesFetchRequest,
   boardReleaseCreateRequest,
@@ -97,4 +107,5 @@ export default {
   boardReleaseDeleteRequest,
   releaseCardAddRequest,
   releaseCardRemoveRequest,
+  releaseSnapshotFetchRequest,
 };

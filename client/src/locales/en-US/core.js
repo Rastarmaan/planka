@@ -485,6 +485,7 @@ export default {
       viewMode: 'View Mode',
       viewer: 'Viewer',
       viewers: 'Viewers',
+      viewingRelease: 'Viewing Release {{version}} - {{name}}',
       visualTaskManagementWithLists: 'Visual task management with lists.',
       timelineViewForProjectScheduling: 'Timeline view for project scheduling.',
       noCardsWithDates: 'No cards with dates',
@@ -547,6 +548,7 @@ export default {
       projectsAndMembers: 'Projects & Members',
       dates: 'Dates',
       results: 'Results',
+      cardInReleasedReleaseReadOnly: 'This card is in a released release and cannot be edited',
     },
 
     documentManagement: {
@@ -770,6 +772,7 @@ export default {
       removeFromRelease: 'Remove from release',
       addRelease: 'Add Release',
       createRelease: 'Create Release',
+      exitReleaseView: 'Exit Release View',
       editRelease: 'Edit Release',
       deleteRelease: 'Delete Release',
       markAsReleased: 'Mark as Released',

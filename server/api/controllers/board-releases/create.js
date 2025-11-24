@@ -174,10 +174,7 @@ module.exports = {
     });
 
     if (existingRelease) {
-      throw {
-        name: 'conflict',
-        message: 'Release with this version already exists',
-      };
+      throw new Error('Release with this version already exists');
     }
 
     // Validate that all card IDs exist and belong to the board
@@ -185,18 +182,12 @@ module.exports = {
       const cards = await Card.find({ id: cardIds });
 
       if (cards.length !== cardIds.length) {
-        throw {
-          name: 'badRequest',
-          message: 'Some card IDs are invalid',
-        };
+        throw new Error('Some card IDs are invalid');
       }
 
       const invalidCards = cards.filter((card) => card.boardId !== inputs.boardId);
       if (invalidCards.length > 0) {
-        throw {
-          name: 'badRequest',
-          message: 'Some cards do not belong to this board',
-        };
+        throw new Error('Some cards do not belong to this board');
       }
     }
 
@@ -211,10 +202,7 @@ module.exports = {
     if (inputs.startDate) {
       const startDate = new Date(inputs.startDate);
       if (Number.isNaN(startDate.getTime())) {
-        throw {
-          name: 'badRequest',
-          message: 'Invalid start date',
-        };
+        throw new Error('Invalid start date');
       }
       values.startDate = startDate;
     }
@@ -222,10 +210,7 @@ module.exports = {
     if (inputs.endDate) {
       const endDate = new Date(inputs.endDate);
       if (Number.isNaN(endDate.getTime())) {
-        throw {
-          name: 'badRequest',
-          message: 'Invalid end date',
-        };
+        throw new Error('Invalid end date');
       }
       values.endDate = endDate;
     }

@@ -8,9 +8,11 @@ import { combineReducers } from 'redux';
 import authenticateForm from './authenticate-form';
 import userCreateForm from './user-create-form';
 import projectCreateForm from './project-create-form';
+import releaseViewing from './release-viewing';
 
 export default combineReducers({
   authenticateForm,
   userCreateForm,
   projectCreateForm,
+  releaseViewing,
 });

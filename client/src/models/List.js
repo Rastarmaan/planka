@@ -389,6 +389,18 @@ export default class extends BaseModel {
       });
     }
 
+    const releasedReleaseIds = this.board.releases
+      .toRefArray()
+      .filter((release) => release.status === 'released')
+      .map((release) => release.id);
+
+    if (releasedReleaseIds.length > 0) {
+      cardModels = cardModels.filter((cardModel) => {
+        const cardReleases = cardModel.releases.toRefArray();
+        return !cardReleases.some((release) => releasedReleaseIds.includes(release.id));
+      });
+    }
+
     return cardModels;
   }
 
