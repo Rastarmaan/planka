@@ -434,6 +434,61 @@ const DocumentManagement = React.memo(() => {
     }
   };
 
+  const handleContextMenuPreview = (file) => {
+    if (file && file.type === 'file' && file.mimeType && file.mimeType.startsWith('image/')) {
+      setPreviewFile(file);
+    }
+  };
+
+  const handleContextMenuShare = (file) => {
+    if (file) {
+      setFileToShare(file);
+      setShareModalOpen(true);
+    }
+  };
+
+  const handleContextMenuDownload = async (file) => {
+    if (file && file.type === 'file') {
+      try {
+        const response = await fetch(`/api/files/${file.id}/download`, {
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+          },
+          credentials: 'include',
+        });
+
+        if (!response.ok) {
+          throw new Error('Download failed');
+        }
+
+        const blob = await response.blob();
+        const url = window.URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = file.name || `file-${file.id}`;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        window.URL.revokeObjectURL(url);
+      } catch (error) {
+        console.error('Download error:', error);
+      }
+    }
+  };
+
+  const handleContextMenuDelete = (file) => {
+    if (file) {
+      if (file.type === 'folder') {
+        dispatch(actions.deleteFolder(file.id));
+      } else {
+        dispatch(actions.deleteFile(file.id));
+      }
+      if (selectedFile === file.id) {
+        setSelectedFile(null);
+      }
+    }
+  };
+
   const handleCreateFolder = (folderName) => {
     if (selectedWorkspace) {
       const localId = createLocalId();
@@ -688,6 +743,10 @@ const DocumentManagement = React.memo(() => {
             onDragLeave={handleDragLeave}
             onDrop={handleDrop}
             onExternalDrop={handleExternalFileDrop}
+            onPreview={handleContextMenuPreview}
+            onShare={handleContextMenuShare}
+            onDownload={handleContextMenuDownload}
+            onDelete={handleContextMenuDelete}
           />
         ) : (
           <FileList
@@ -703,6 +762,10 @@ const DocumentManagement = React.memo(() => {
             onDragLeave={handleDragLeave}
             onDrop={handleDrop}
             onExternalDrop={handleExternalFileDrop}
+            onPreview={handleContextMenuPreview}
+            onShare={handleContextMenuShare}
+            onDownload={handleContextMenuDownload}
+            onDelete={handleContextMenuDelete}
           />
         )}
       </div>

@@ -5,10 +5,11 @@
 
 import React from 'react';
 import PropTypes from 'prop-types';
-import { Dropdown, Icon } from 'semantic-ui-react';
+import { Icon } from 'semantic-ui-react';
 import { useSelector } from 'react-redux';
 import selectors from '../../../selectors';
 
+import FileContextMenu from './FileContextMenu';
 import styles from './FileListRow.module.scss';
 
 const FileListRow = React.memo(
@@ -24,6 +25,12 @@ const FileListRow = React.memo(
     onDragOver,
     onDragLeave,
     onDrop,
+    onPreview,
+    onShare,
+    onDownload,
+    onDelete,
+    contextMenuState,
+    onContextMenuChange,
   }) => {
     const accessToken = useSelector(selectors.selectAccessToken);
     const [imageUrl, setImageUrl] = React.useState(null);
@@ -103,81 +110,101 @@ const FileListRow = React.memo(
       };
     }, [isImage, file.id, file.name, accessToken]);
 
+    const handleContextMenu = (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      if (onContextMenuChange) {
+        onContextMenuChange({
+          fileId: file.id,
+          position: { x: e.clientX, y: e.clientY },
+          file,
+        });
+      }
+    };
+
+    const handleCloseContextMenu = () => {
+      if (onContextMenuChange) {
+        onContextMenuChange(null);
+      }
+    };
+
+    const isContextMenuOpen = contextMenuState?.fileId === file.id;
+
     return (
-      <div
-        role="button"
-        tabIndex={0}
-        className={`${styles.listRow} ${isSelected ? styles.selected : ''} ${
-          isDragging ? styles.dragging : ''
-        } ${isDropTarget ? styles.dropTarget : ''}`}
-        onClick={onSelect}
-        onDoubleClick={onDoubleClick}
-        onKeyDown={(e) => {
-          if (e.key === 'Enter') {
-            onDoubleClick();
-          } else if (e.key === ' ') {
-            e.preventDefault();
-            onSelect();
-          }
-        }}
-        draggable
-        onDragStart={onDragStart}
-        onDragEnd={onDragEnd}
-        onDragOver={onDragOver}
-        onDragLeave={onDragLeave}
-        onDrop={onDrop}
-      >
-        <div className={styles.listCell} style={{ flex: 3 }}>
-          {(() => {
-            if (isImage && imageUrl && !imageError) {
+      <>
+        <div
+          role="button"
+          tabIndex={0}
+          className={`${styles.listRow} ${isSelected ? styles.selected : ''} ${
+            isDragging ? styles.dragging : ''
+          } ${isDropTarget ? styles.dropTarget : ''}`}
+          onClick={onSelect}
+          onDoubleClick={onDoubleClick}
+          onContextMenu={handleContextMenu}
+          onKeyDown={(e) => {
+            if (e.key === 'Enter') {
+              onDoubleClick();
+            } else if (e.key === ' ') {
+              e.preventDefault();
+              onSelect();
+            }
+          }}
+          draggable
+          onDragStart={onDragStart}
+          onDragEnd={onDragEnd}
+          onDragOver={onDragOver}
+          onDragLeave={onDragLeave}
+          onDrop={onDrop}
+        >
+          <div className={styles.listCell} style={{ flex: 3 }}>
+            {(() => {
+              if (isImage && imageUrl && !imageError) {
+                return (
+                  <img
+                    src={imageUrl}
+                    alt={file.name}
+                    style={{
+                      width: '32px',
+                      height: '32px',
+                      objectFit: 'cover',
+                      borderRadius: '4px',
+                      marginRight: '8px',
+                    }}
+                  />
+                );
+              }
+
+              if (isImage && imageLoading) {
+                return <Icon name="spinner" loading size="large" style={{ marginRight: '8px' }} />;
+              }
+
               return (
-                <img
-                  src={imageUrl}
-                  alt={file.name}
-                  style={{
-                    width: '32px',
-                    height: '32px',
-                    objectFit: 'cover',
-                    borderRadius: '4px',
-                    marginRight: '8px',
-                  }}
+                <Icon
+                  name={file.icon}
+                  size="large"
+                  color={file.type === 'folder' ? 'yellow' : undefined}
                 />
               );
-            }
-
-            if (isImage && imageLoading) {
-              return <Icon name="spinner" loading size="large" style={{ marginRight: '8px' }} />;
-            }
-
-            return (
-              <Icon
-                name={file.icon}
-                size="large"
-                color={file.type === 'folder' ? 'yellow' : undefined}
-              />
-            );
-          })()}
-          <span className={styles.listFileName}>{file.name}</span>
+            })()}
+            <span className={styles.listFileName}>{file.name}</span>
+          </div>
+          <div className={styles.listCell} style={{ flex: 1 }}>
+            {file.formattedSize}
+          </div>
+          <div className={styles.listActions} />
         </div>
-        <div className={styles.listCell} style={{ flex: 1 }}>
-          {file.formattedSize}
-        </div>
-        <div className={styles.listActions}>
-          <Dropdown
-            icon="ellipsis vertical"
-            direction="left"
-            className={styles.fileMenu}
-            onClick={(e) => e.stopPropagation()}
-          >
-            <Dropdown.Menu>
-              <Dropdown.Item icon="download" text="Download" />
-              <Dropdown.Item icon="share alternate" text="Share" />
-              <Dropdown.Item icon="pencil" text="Rename" />
-              <Dropdown.Item icon="trash" text="Delete" />
-            </Dropdown.Menu>
-          </Dropdown>
-        </div>
-      </div>
+        {isContextMenuOpen && contextMenuState && (
+          <FileContextMenu
+            file={contextMenuState.file}
+            position={contextMenuState.position}
+            onClose={handleCloseContextMenu}
+            onPreview={onPreview}
+            onShare={onShare}
+            onDownload={onDownload}
+            onDelete={onDelete}
+          />
+        )}
+      </>
     );
   },
 );
@@ -201,6 +228,31 @@ FileListRow.propTypes = {
   onDragOver: PropTypes.func.isRequired,
   onDragLeave: PropTypes.func.isRequired,
   onDrop: PropTypes.func.isRequired,
+  onPreview: PropTypes.func,
+  onShare: PropTypes.func,
+  onDownload: PropTypes.func,
+  onDelete: PropTypes.func,
+  contextMenuState: PropTypes.shape({
+    fileId: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+    position: PropTypes.shape({
+      x: PropTypes.number,
+      y: PropTypes.number,
+    }),
+    file: PropTypes.shape({
+      id: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+      type: PropTypes.string,
+    }),
+  }),
+  onContextMenuChange: PropTypes.func,
+};
+
+FileListRow.defaultProps = {
+  onPreview: null,
+  onShare: null,
+  onDownload: null,
+  onDelete: null,
+  contextMenuState: null,
+  onContextMenuChange: null,
 };
 
 export default FileListRow;

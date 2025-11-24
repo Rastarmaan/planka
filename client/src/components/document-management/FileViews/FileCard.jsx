@@ -9,6 +9,7 @@ import { Icon } from 'semantic-ui-react';
 import { useSelector } from 'react-redux';
 import selectors from '../../../selectors';
 
+import FileContextMenu from './FileContextMenu';
 import styles from './FileCard.module.scss';
 
 const FileCard = React.memo(
@@ -24,6 +25,12 @@ const FileCard = React.memo(
     onDragOver,
     onDragLeave,
     onDrop,
+    onPreview,
+    onShare,
+    onDownload,
+    onDelete,
+    contextMenuState,
+    onContextMenuChange,
   }) => {
     const accessToken = useSelector(selectors.selectAccessToken);
     const [imageUrl, setImageUrl] = React.useState(null);
@@ -104,65 +111,99 @@ const FileCard = React.memo(
       };
     }, [isImage, file.id, file.name, accessToken]);
 
+    const handleContextMenu = (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      if (onContextMenuChange) {
+        onContextMenuChange({
+          fileId: file.id,
+          position: { x: e.clientX, y: e.clientY },
+          file,
+        });
+      }
+    };
+
+    const handleCloseContextMenu = () => {
+      if (onContextMenuChange) {
+        onContextMenuChange(null);
+      }
+    };
+
+    const isContextMenuOpen = contextMenuState?.fileId === file.id;
+
     return (
-      <div
-        role="button"
-        tabIndex={0}
-        className={`${styles.fileCard} ${isSelected ? styles.selected : ''} ${
-          isDragging ? styles.dragging : ''
-        } ${isDropTarget ? styles.dropTarget : ''}`}
-        onClick={onSelect}
-        onDoubleClick={onDoubleClick}
-        onKeyDown={(e) => {
-          if (e.key === 'Enter') {
-            onDoubleClick();
-          } else if (e.key === ' ') {
-            e.preventDefault();
-            onSelect();
-          }
-        }}
-        draggable
-        onDragStart={onDragStart}
-        onDragEnd={onDragEnd}
-        onDragOver={onDragOver}
-        onDragLeave={onDragLeave}
-        onDrop={onDrop}
-      >
-        <div className={styles.fileIcon}>
-          {(() => {
-            if (isImage && !imageError && imageUrl) {
+      <>
+        <div
+          role="button"
+          tabIndex={0}
+          className={`${styles.fileCard} ${isSelected ? styles.selected : ''} ${
+            isDragging ? styles.dragging : ''
+          } ${isDropTarget ? styles.dropTarget : ''}`}
+          onClick={onSelect}
+          onDoubleClick={onDoubleClick}
+          onContextMenu={handleContextMenu}
+          onKeyDown={(e) => {
+            if (e.key === 'Enter') {
+              onDoubleClick();
+            } else if (e.key === ' ') {
+              e.preventDefault();
+              onSelect();
+            }
+          }}
+          draggable
+          onDragStart={onDragStart}
+          onDragEnd={onDragEnd}
+          onDragOver={onDragOver}
+          onDragLeave={onDragLeave}
+          onDrop={onDrop}
+        >
+          <div className={styles.fileIcon}>
+            {(() => {
+              if (isImage && !imageError && imageUrl) {
+                return (
+                  <div className={styles.fileThumbnail}>
+                    <img
+                      src={imageUrl}
+                      alt={file.name}
+                      draggable={false}
+                      style={{
+                        width: '100%',
+                        height: '100%',
+                        objectFit: 'contain',
+                        borderRadius: '8px',
+                      }}
+                    />
+                  </div>
+                );
+              }
+
+              if (isImage && imageLoading) {
+                return <Icon name="spinner" loading size="huge" />;
+              }
+
               return (
-                <div className={styles.fileThumbnail}>
-                  <img
-                    src={imageUrl}
-                    alt={file.name}
-                    draggable={false}
-                    style={{
-                      width: '100%',
-                      height: '100%',
-                      objectFit: 'contain',
-                      borderRadius: '8px',
-                    }}
-                  />
-                </div>
+                <Icon
+                  name={file.icon}
+                  size="huge"
+                  color={file.type === 'folder' ? 'yellow' : undefined}
+                />
               );
-            }
-
-            if (isImage && imageLoading) {
-              return <Icon name="spinner" loading size="huge" />;
-            }
-
-            return (
-              <Icon
-                name={file.icon}
-                size="huge"
-                color={file.type === 'folder' ? 'yellow' : undefined}
-              />
-            );
-          })()}
+            })()}
+          </div>
+          <div className={styles.fileName}>{file.name}</div>
         </div>
-        <div className={styles.fileName}>{file.name}</div>
-      </div>
+        {isContextMenuOpen && contextMenuState && (
+          <FileContextMenu
+            file={contextMenuState.file}
+            position={contextMenuState.position}
+            onClose={handleCloseContextMenu}
+            onPreview={onPreview}
+            onShare={onShare}
+            onDownload={onDownload}
+            onDelete={onDelete}
+          />
+        )}
+      </>
     );
   },
 );
@@ -186,6 +227,31 @@ FileCard.propTypes = {
   onDragOver: PropTypes.func.isRequired,
   onDragLeave: PropTypes.func.isRequired,
   onDrop: PropTypes.func.isRequired,
+  onPreview: PropTypes.func,
+  onShare: PropTypes.func,
+  onDownload: PropTypes.func,
+  onDelete: PropTypes.func,
+  contextMenuState: PropTypes.shape({
+    fileId: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+    position: PropTypes.shape({
+      x: PropTypes.number,
+      y: PropTypes.number,
+    }),
+    file: PropTypes.shape({
+      id: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+      type: PropTypes.string,
+    }),
+  }),
+  onContextMenuChange: PropTypes.func,
+};
+
+FileCard.defaultProps = {
+  onPreview: null,
+  onShare: null,
+  onDownload: null,
+  onDelete: null,
+  contextMenuState: null,
+  onContextMenuChange: null,
 };
 
 export default FileCard;

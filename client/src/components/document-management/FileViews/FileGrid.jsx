@@ -24,7 +24,13 @@ const FileGrid = React.memo(
     onDragLeave,
     onDrop,
     onExternalDrop,
+    onPreview,
+    onShare,
+    onDownload,
+    onDelete,
   }) => {
+    const [activeContextMenu, setActiveContextMenu] = React.useState(null);
+
     const handleDragOver = (e) => {
       e.preventDefault();
       e.stopPropagation();
@@ -62,6 +68,12 @@ const FileGrid = React.memo(
               onDragOver={(e) => onDragOver(e, file)}
               onDragLeave={onDragLeave}
               onDrop={(e) => onDrop(e, file)}
+              onPreview={onPreview}
+              onShare={onShare}
+              onDownload={onDownload}
+              onDelete={onDelete}
+              contextMenuState={activeContextMenu}
+              onContextMenuChange={setActiveContextMenu}
             />
           ))
         )}
@@ -87,12 +99,20 @@ FileGrid.propTypes = {
   onDragLeave: PropTypes.func.isRequired,
   onDrop: PropTypes.func.isRequired,
   onExternalDrop: PropTypes.func.isRequired,
+  onPreview: PropTypes.func,
+  onShare: PropTypes.func,
+  onDownload: PropTypes.func,
+  onDelete: PropTypes.func,
 };
 
 FileGrid.defaultProps = {
   selectedFile: null,
   draggedFile: null,
   dropTarget: null,
+  onPreview: null,
+  onShare: null,
+  onDownload: null,
+  onDelete: null,
 };
 
 export default FileGrid;
