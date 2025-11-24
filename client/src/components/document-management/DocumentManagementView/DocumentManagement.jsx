@@ -469,6 +469,26 @@ const DocumentManagement = React.memo(() => {
     }
   };
 
+  const handleExternalFileDrop = (droppedFiles) => {
+    if (droppedFiles.length > 0 && selectedWorkspace) {
+      const localId = createLocalId();
+      const formData = new FormData();
+      Array.from(droppedFiles).forEach((file) => {
+        formData.append('files', file);
+      });
+
+      dispatch(
+        actions.uploadFile({
+          id: localId,
+          name: 'Uploading...',
+          spaceId: selectedWorkspace,
+          folderId: currentFolderId,
+          formData,
+        }),
+      );
+    }
+  };
+
   const handleCreateWorkspace = (workspaceName) => {
     const localId = createLocalId();
     pendingWorkspaceRef.current = localId;
@@ -667,6 +687,7 @@ const DocumentManagement = React.memo(() => {
             onDragOver={handleDragOver}
             onDragLeave={handleDragLeave}
             onDrop={handleDrop}
+            onExternalDrop={handleExternalFileDrop}
           />
         ) : (
           <FileList
@@ -681,6 +702,7 @@ const DocumentManagement = React.memo(() => {
             onDragOver={handleDragOver}
             onDragLeave={handleDragLeave}
             onDrop={handleDrop}
+            onExternalDrop={handleExternalFileDrop}
           />
         )}
       </div>

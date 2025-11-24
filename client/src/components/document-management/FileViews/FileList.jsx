@@ -22,35 +22,52 @@ const FileList = React.memo(
     onDragOver,
     onDragLeave,
     onDrop,
-  }) => (
-    <div className={styles.filesList}>
-      <div className={styles.listHeader}>
-        <div className={styles.listHeaderCell} style={{ flex: 3 }}>
-          Name
+    onExternalDrop,
+  }) => {
+    const handleDragOver = (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+    };
+
+    const handleDrop = (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+
+      if (e.dataTransfer.files && e.dataTransfer.files.length > 0) {
+        onExternalDrop(e.dataTransfer.files);
+      }
+    };
+
+    return (
+      <div className={styles.filesList} onDragOver={handleDragOver} onDrop={handleDrop}>
+        <div className={styles.listHeader}>
+          <div className={styles.listHeaderCell} style={{ flex: 3 }}>
+            Name
+          </div>
+          <div className={styles.listHeaderCell} style={{ flex: 1 }}>
+            Size
+          </div>
+          <div className={styles.listHeaderActions} />
         </div>
-        <div className={styles.listHeaderCell} style={{ flex: 1 }}>
-          Size
-        </div>
-        <div className={styles.listHeaderActions} />
+        {files.map((file) => (
+          <FileListRow
+            key={file.id}
+            file={file}
+            isSelected={selectedFile === file.id}
+            isDragging={draggedFile?.id === file.id}
+            isDropTarget={dropTarget === file.id}
+            onSelect={() => onFileSelect(file.id)}
+            onDoubleClick={() => onFolderDoubleClick(file)}
+            onDragStart={(e) => onDragStart(e, file)}
+            onDragEnd={onDragEnd}
+            onDragOver={(e) => onDragOver(e, file)}
+            onDragLeave={onDragLeave}
+            onDrop={(e) => onDrop(e, file)}
+          />
+        ))}
       </div>
-      {files.map((file) => (
-        <FileListRow
-          key={file.id}
-          file={file}
-          isSelected={selectedFile === file.id}
-          isDragging={draggedFile?.id === file.id}
-          isDropTarget={dropTarget === file.id}
-          onSelect={() => onFileSelect(file.id)}
-          onDoubleClick={() => onFolderDoubleClick(file)}
-          onDragStart={(e) => onDragStart(e, file)}
-          onDragEnd={onDragEnd}
-          onDragOver={(e) => onDragOver(e, file)}
-          onDragLeave={onDragLeave}
-          onDrop={(e) => onDrop(e, file)}
-        />
-      ))}
-    </div>
-  ),
+    );
+  },
 );
 
 FileList.propTypes = {
@@ -69,6 +86,7 @@ FileList.propTypes = {
   onDragOver: PropTypes.func.isRequired,
   onDragLeave: PropTypes.func.isRequired,
   onDrop: PropTypes.func.isRequired,
+  onExternalDrop: PropTypes.func.isRequired,
 };
 
 FileList.defaultProps = {

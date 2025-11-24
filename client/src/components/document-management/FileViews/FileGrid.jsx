@@ -23,34 +23,51 @@ const FileGrid = React.memo(
     onDragOver,
     onDragLeave,
     onDrop,
-  }) => (
-    <div className={styles.filesGrid}>
-      {files.length === 0 ? (
-        <div className={styles.emptyState}>
-          <Icon name="file outline" size="massive" className={styles.emptyIcon} />
-          <h3>Drop files or folders here</h3>
-          <p>Or use the &quot;Upload&quot; button</p>
-        </div>
-      ) : (
-        files.map((file) => (
-          <FileCard
-            key={file.id}
-            file={file}
-            isSelected={selectedFile === file.id}
-            isDragging={draggedFile?.id === file.id}
-            isDropTarget={dropTarget === file.id}
-            onSelect={() => onFileSelect(file.id)}
-            onDoubleClick={() => onFolderDoubleClick(file)}
-            onDragStart={(e) => onDragStart(e, file)}
-            onDragEnd={onDragEnd}
-            onDragOver={(e) => onDragOver(e, file)}
-            onDragLeave={onDragLeave}
-            onDrop={(e) => onDrop(e, file)}
-          />
-        ))
-      )}
-    </div>
-  ),
+    onExternalDrop,
+  }) => {
+    const handleDragOver = (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+    };
+
+    const handleDrop = (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+
+      if (e.dataTransfer.files && e.dataTransfer.files.length > 0) {
+        onExternalDrop(e.dataTransfer.files);
+      }
+    };
+
+    return (
+      <div className={styles.filesGrid} onDragOver={handleDragOver} onDrop={handleDrop}>
+        {files.length === 0 ? (
+          <div className={styles.emptyState}>
+            <Icon name="file outline" size="massive" className={styles.emptyIcon} />
+            <h3>Drop files or folders here</h3>
+            <p>Or use the &quot;Upload&quot; button</p>
+          </div>
+        ) : (
+          files.map((file) => (
+            <FileCard
+              key={file.id}
+              file={file}
+              isSelected={selectedFile === file.id}
+              isDragging={draggedFile?.id === file.id}
+              isDropTarget={dropTarget === file.id}
+              onSelect={() => onFileSelect(file.id)}
+              onDoubleClick={() => onFolderDoubleClick(file)}
+              onDragStart={(e) => onDragStart(e, file)}
+              onDragEnd={onDragEnd}
+              onDragOver={(e) => onDragOver(e, file)}
+              onDragLeave={onDragLeave}
+              onDrop={(e) => onDrop(e, file)}
+            />
+          ))
+        )}
+      </div>
+    );
+  },
 );
 
 FileGrid.propTypes = {
@@ -69,6 +86,7 @@ FileGrid.propTypes = {
   onDragOver: PropTypes.func.isRequired,
   onDragLeave: PropTypes.func.isRequired,
   onDrop: PropTypes.func.isRequired,
+  onExternalDrop: PropTypes.func.isRequired,
 };
 
 FileGrid.defaultProps = {
