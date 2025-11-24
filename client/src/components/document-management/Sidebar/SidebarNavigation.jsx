@@ -5,6 +5,7 @@
 
 import React, { useState } from 'react';
 import PropTypes from 'prop-types';
+import { useTranslation } from 'react-i18next';
 import { Icon } from 'semantic-ui-react';
 
 import Paths from '../../../constants/Paths';
@@ -98,55 +99,58 @@ const SidebarNavigation = React.memo(
     onBreadcrumbClick,
     onFolderClick,
     onToggleExpand,
-  }) => (
-    <div className={styles.sidebarNav}>
-      <div
-        className={`${styles.sidebarItem} ${currentSection === 'all-files' && !currentFolderId ? styles.active : ''}`}
-      >
+  }) => {
+    const [t] = useTranslation();
+
+    return (
+      <div className={styles.sidebarNav}>
         <div
-          role="button"
-          tabIndex={0}
-          className={styles.sidebarItemContent}
-          onClick={() => {
-            onBreadcrumbClick(-1);
-            onSectionChange(Paths.DOCUMENT_ALL_FILES);
-          }}
-          onKeyDown={(e) => {
-            if (e.key === 'Enter' || e.key === ' ') {
-              e.preventDefault();
+          className={`${styles.sidebarItem} ${currentSection === 'all-files' && !currentFolderId ? styles.active : ''}`}
+        >
+          <div
+            role="button"
+            tabIndex={0}
+            className={styles.sidebarItemContent}
+            onClick={() => {
               onBreadcrumbClick(-1);
               onSectionChange(Paths.DOCUMENT_ALL_FILES);
-            }
-          }}
-        >
-          <Icon
-            name={allFilesExpanded ? 'caret down' : 'caret right'}
-            className={styles.collapseIcon}
-            onClick={(e) => {
-              e.stopPropagation();
-              onToggleExpand();
             }}
-          />
-          <Icon name="cloud upload" />
-          <span>All Files</span>
-        </div>
-      </div>
-
-      {allFilesExpanded &&
-        currentSection === 'all-files' &&
-        files
-          .filter((f) => f.type === 'folder' && !f.parentFolderId)
-          .map((folder) => (
-            <FolderTree
-              key={folder.id}
-              folder={folder}
-              currentFolderId={currentFolderId}
-              allFolders={files.filter((f) => f.type === 'folder')}
-              onFolderClick={onFolderClick}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter' || e.key === ' ') {
+                e.preventDefault();
+                onBreadcrumbClick(-1);
+                onSectionChange(Paths.DOCUMENT_ALL_FILES);
+              }
+            }}
+          >
+            <Icon
+              name={allFilesExpanded ? 'caret down' : 'caret right'}
+              className={styles.collapseIcon}
+              onClick={(e) => {
+                e.stopPropagation();
+                onToggleExpand();
+              }}
             />
-          ))}
+            <Icon name="cloud upload" />
+            <span>{t('documentManagement.allFiles')}</span>
+          </div>
+        </div>
 
-      {/* <div
+        {allFilesExpanded &&
+          currentSection === 'all-files' &&
+          files
+            .filter((f) => f.type === 'folder' && !f.parentFolderId)
+            .map((folder) => (
+              <FolderTree
+                key={folder.id}
+                folder={folder}
+                currentFolderId={currentFolderId}
+                allFolders={files.filter((f) => f.type === 'folder')}
+                onFolderClick={onFolderClick}
+              />
+            ))}
+
+        {/* <div
         role="button"
         tabIndex={0}
         className={`${styles.sidebarItem} ${currentSection === 'shared' ? styles.active : ''}`}
@@ -160,7 +164,7 @@ const SidebarNavigation = React.memo(
       >
         <div className={styles.sidebarItemContent}>
           <Icon name="users" />
-          <span>Shared with me</span>
+          <span>{t('documentManagement.shared')}</span>
         </div>
       </div>
       <div
@@ -177,7 +181,7 @@ const SidebarNavigation = React.memo(
       >
         <div className={styles.sidebarItemContent}>
           <Icon name="clock outline" />
-          <span>Recent</span>
+          <span>{t('documentManagement.recent')}</span>
         </div>
       </div>
       <div
@@ -194,7 +198,7 @@ const SidebarNavigation = React.memo(
       >
         <div className={styles.sidebarItemContent}>
           <Icon name="star outline" />
-          <span>Starred</span>
+          <span>{t('documentManagement.starred')}</span>
         </div>
       </div>
       <div
@@ -211,11 +215,12 @@ const SidebarNavigation = React.memo(
       >
         <div className={styles.sidebarItemContent}>
           <Icon name="trash alternate outline" />
-          <span>Trash</span>
+          <span>{t('documentManagement.trash')}</span>
         </div>
       </div> */}
-    </div>
-  ),
+      </div>
+    );
+  },
 );
 
 SidebarNavigation.propTypes = {

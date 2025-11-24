@@ -5,12 +5,14 @@
 
 import React, { useRef } from 'react';
 import PropTypes from 'prop-types';
+import { useTranslation } from 'react-i18next';
 import { Dropdown, Icon } from 'semantic-ui-react';
 
 import styles from './Breadcrumb.module.scss';
 
 const Breadcrumb = React.memo(
   ({ sectionTitle, currentPath, onBreadcrumbClick, onFolderCreate, onFileUpload }) => {
+    const [t] = useTranslation();
     const fileInputRef = useRef(null);
 
     const handleUploadClick = () => {
@@ -64,8 +66,16 @@ const Breadcrumb = React.memo(
           ))}
           <Dropdown icon="angle down" className={styles.breadcrumbDropdown} direction="right">
             <Dropdown.Menu>
-              <Dropdown.Item text="New folder" icon="folder" onClick={onFolderCreate} />
-              <Dropdown.Item text="Upload files" icon="upload" onClick={handleUploadClick} />
+              <Dropdown.Item
+                text={t('documentManagement.newFolder')}
+                icon="folder"
+                onClick={onFolderCreate}
+              />
+              <Dropdown.Item
+                text={t('documentManagement.uploadFiles')}
+                icon="upload"
+                onClick={handleUploadClick}
+              />
             </Dropdown.Menu>
           </Dropdown>
         </div>

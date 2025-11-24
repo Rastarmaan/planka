@@ -5,6 +5,7 @@
 
 import React from 'react';
 import PropTypes from 'prop-types';
+import { useTranslation } from 'react-i18next';
 import { Icon } from 'semantic-ui-react';
 
 import FileCard from './FileCard';
@@ -29,6 +30,7 @@ const FileGrid = React.memo(
     onDownload,
     onDelete,
   }) => {
+    const [t] = useTranslation();
     const [activeContextMenu, setActiveContextMenu] = React.useState(null);
 
     const handleDragOver = (e) => {
@@ -50,8 +52,8 @@ const FileGrid = React.memo(
         {files.length === 0 ? (
           <div className={styles.emptyState}>
             <Icon name="file outline" size="massive" className={styles.emptyIcon} />
-            <h3>Drop files or folders here</h3>
-            <p>Or use the &quot;Upload&quot; button</p>
+            <h3>{t('documentManagement.dropFilesHere')}</h3>
+            <p>{t('documentManagement.orUseUploadButton')}</p>
           </div>
         ) : (
           files.map((file) => (

@@ -5,6 +5,7 @@
 
 import React from 'react';
 import PropTypes from 'prop-types';
+import { useTranslation } from 'react-i18next';
 import { Button, Dropdown, Icon } from 'semantic-ui-react';
 
 import styles from './WorkspaceSelector.module.scss';
@@ -21,6 +22,7 @@ const WorkspaceSelector = React.memo(
     onDeleteWorkspace,
     onCreateWorkspace,
   }) => {
+    const [t] = useTranslation();
     const currentWorkspace = workspaces.find((w) => w.value === selectedWorkspace);
 
     return (
@@ -107,7 +109,7 @@ const WorkspaceSelector = React.memo(
 
             <Button className={styles.createWorkspaceButton} onClick={onCreateWorkspace}>
               <Icon name="plus" />
-              Create new workspace
+              {t('documentManagement.createNewWorkspace')}
             </Button>
           </div>
         )}

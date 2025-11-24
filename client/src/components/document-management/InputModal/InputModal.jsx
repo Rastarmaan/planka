@@ -5,10 +5,12 @@
 
 import React, { useState, useRef, useEffect } from 'react';
 import PropTypes from 'prop-types';
+import { useTranslation } from 'react-i18next';
 import { Button, Form, Modal } from 'semantic-ui-react';
 import { Input } from '../../../lib/custom-ui';
 
 const InputModal = React.memo(({ title, label, defaultValue, submitLabel, onSubmit, onClose }) => {
+  const [t] = useTranslation();
   const [value, setValue] = useState(defaultValue || '');
   const inputRef = useRef(null);
 
@@ -55,7 +57,7 @@ const InputModal = React.memo(({ title, label, defaultValue, submitLabel, onSubm
         </Form>
       </Modal.Content>
       <Modal.Actions>
-        <Button content="Cancel" onClick={onClose} />
+        <Button content={t('action.cancel')} onClick={onClose} />
         <Button
           positive
           icon="checkmark"

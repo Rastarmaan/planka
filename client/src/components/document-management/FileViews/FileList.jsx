@@ -5,6 +5,7 @@
 
 import React from 'react';
 import PropTypes from 'prop-types';
+import { useTranslation } from 'react-i18next';
 
 import FileListRow from './FileListRow';
 import styles from './FileList.module.scss';
@@ -28,6 +29,7 @@ const FileList = React.memo(
     onDownload,
     onDelete,
   }) => {
+    const [t] = useTranslation();
     const [activeContextMenu, setActiveContextMenu] = React.useState(null);
 
     const handleDragOver = (e) => {
@@ -48,10 +50,10 @@ const FileList = React.memo(
       <div className={styles.filesList} onDragOver={handleDragOver} onDrop={handleDrop}>
         <div className={styles.listHeader}>
           <div className={styles.listHeaderCell} style={{ flex: 3 }}>
-            Name
+            {t('common.name')}
           </div>
           <div className={styles.listHeaderCell} style={{ flex: 1 }}>
-            Size
+            {t('common.size')}
           </div>
           <div className={styles.listHeaderActions} />
         </div>

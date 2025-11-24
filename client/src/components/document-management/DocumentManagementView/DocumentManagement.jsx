@@ -6,6 +6,7 @@
 import React, { useState, useRef, useEffect, useMemo, useCallback } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
+import { useTranslation } from 'react-i18next';
 import { Confirm } from 'semantic-ui-react';
 
 import actions from '../../../actions';
@@ -28,6 +29,7 @@ import InputModal from '../InputModal/InputModal';
 import styles from './DocumentManagement.module.scss';
 
 const DocumentManagement = React.memo(() => {
+  const [t] = useTranslation();
   const navigate = useNavigate();
   const location = useLocation();
   const dispatch = useDispatch();
@@ -208,17 +210,17 @@ const DocumentManagement = React.memo(() => {
   const getSectionTitle = () => {
     switch (currentSection) {
       case 'all-files':
-        return 'All Files';
+        return t('documentManagement.allFiles');
       case 'shared':
-        return 'Shared with me';
+        return t('documentManagement.shared');
       case 'recent':
-        return 'Recent';
+        return t('documentManagement.recent');
       case 'starred':
-        return 'Starred';
+        return t('documentManagement.starred');
       case 'trash':
-        return 'Trash';
+        return t('documentManagement.trash');
       default:
-        return 'All Files';
+        return t('documentManagement.allFiles');
     }
   };
 
@@ -820,7 +822,7 @@ const DocumentManagement = React.memo(() => {
         header="Delete workspace"
         content={`Are you sure you want to delete "${deleteConfirmWorkspace?.text}"? This action cannot be undone.`}
         confirmButton="Delete"
-        cancelButton="Cancel"
+        cancelButton={t('action.cancel')}
         onConfirm={() => {
           if (deleteConfirmWorkspace) {
             handleDeleteWorkspace(deleteConfirmWorkspace.value);

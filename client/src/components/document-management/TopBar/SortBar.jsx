@@ -5,6 +5,7 @@
 
 import React from 'react';
 import PropTypes from 'prop-types';
+import { useTranslation } from 'react-i18next';
 import { Button, Dropdown, Icon } from 'semantic-ui-react';
 
 import styles from './TopBar.module.scss';
@@ -20,15 +21,17 @@ const SortBar = React.memo(
     onDelete,
     onDownload,
   }) => {
+    const [t] = useTranslation();
+
     const getSortText = () => {
       switch (sortBy) {
         case 'name':
-          return 'Name';
+          return t('common.name');
         case 'size':
-          return 'Size';
+          return t('common.size');
         case 'modified':
         default:
-          return 'Last modified';
+          return t('common.date');
       }
     };
 
@@ -48,9 +51,9 @@ const SortBar = React.memo(
             value={sortBy}
             onChange={(e, { value }) => onSortChange(value)}
             options={[
-              { key: 'modified', text: 'Last modified', value: 'modified' },
-              { key: 'name', text: 'Name', value: 'name' },
-              { key: 'size', text: 'Size', value: 'size' },
+              { key: 'modified', text: t('common.date'), value: 'modified' },
+              { key: 'name', text: t('common.name'), value: 'name' },
+              { key: 'size', text: t('common.size'), value: 'size' },
             ]}
           />
         </div>
@@ -72,8 +75,16 @@ const SortBar = React.memo(
               className={styles.actionButton}
             >
               <Dropdown.Menu>
-                <Dropdown.Item icon="share alternate" text="Share" onClick={onShare} />
-                <Dropdown.Item icon="download" text="Download" onClick={onDownload} />
+                <Dropdown.Item
+                  icon="share alternate"
+                  text={t('documentManagement.share')}
+                  onClick={onShare}
+                />
+                <Dropdown.Item
+                  icon="download"
+                  text={t('documentManagement.download')}
+                  onClick={onDownload}
+                />
               </Dropdown.Menu>
             </Dropdown>
           </div>

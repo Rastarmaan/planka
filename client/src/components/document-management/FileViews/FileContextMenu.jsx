@@ -5,12 +5,14 @@
 
 import React, { useEffect, useCallback, useRef } from 'react';
 import PropTypes from 'prop-types';
+import { useTranslation } from 'react-i18next';
 import { Icon } from 'semantic-ui-react';
 
 import styles from './FileContextMenu.module.scss';
 
 const FileContextMenu = React.memo(
   ({ file, position, onClose, onPreview, onShare, onDownload, onDelete }) => {
+    const [t] = useTranslation();
     const menuRef = useRef(null);
     const isImageFile = file.type === 'file' && file.mimeType && file.mimeType.startsWith('image/');
 
@@ -84,7 +86,7 @@ const FileContextMenu = React.memo(
             onKeyDown={(e) => e.key === 'Enter' && handleAction('preview', onPreview)}
           >
             <Icon name="eye" />
-            <span>Preview</span>
+            <span>{t('documentManagement.preview')}</span>
           </div>
         )}
         {file.type === 'file' && (
@@ -96,7 +98,7 @@ const FileContextMenu = React.memo(
             onKeyDown={(e) => e.key === 'Enter' && handleAction('download', onDownload)}
           >
             <Icon name="download" />
-            <span>Download</span>
+            <span>{t('documentManagement.download')}</span>
           </div>
         )}
         <div
@@ -107,7 +109,7 @@ const FileContextMenu = React.memo(
           onKeyDown={(e) => e.key === 'Enter' && handleAction('share', onShare)}
         >
           <Icon name="share alternate" />
-          <span>Share</span>
+          <span>{t('documentManagement.share')}</span>
         </div>
         <div className={styles.menuDivider} />
         <div
@@ -118,7 +120,7 @@ const FileContextMenu = React.memo(
           onKeyDown={(e) => e.key === 'Enter' && handleAction('delete', onDelete)}
         >
           <Icon name="trash alternate outline" />
-          <span>Delete</span>
+          <span>{t('documentManagement.delete')}</span>
         </div>
       </div>
     );

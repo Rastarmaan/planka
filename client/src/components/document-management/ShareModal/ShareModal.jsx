@@ -6,6 +6,7 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import PropTypes from 'prop-types';
 import { useSelector } from 'react-redux';
+import { useTranslation } from 'react-i18next';
 import { Button, Checkbox, Icon, Modal, Divider, Label, List, Dropdown } from 'semantic-ui-react';
 import toast from 'react-hot-toast';
 import { Input } from '../../../lib/custom-ui';
@@ -17,6 +18,7 @@ import permissionsApi from '../../../api/permissions';
 import styles from './ShareModal.module.scss';
 
 const ShareModal = React.memo(({ resource, resourceType, isOpen, onClose, onCreateShareLink }) => {
+  const [t] = useTranslation();
   const currentUser = useSelector(selectors.selectCurrentUser);
   const allActiveUsers = useSelector(selectors.selectActiveUsers);
   const accessToken = useSelector(selectors.selectAccessToken);
@@ -126,9 +128,14 @@ const ShareModal = React.memo(({ resource, resourceType, isOpen, onClose, onCrea
   }, [currentUser]);
 
   const permissionOptions = [
-    { key: 'view', text: 'Can view', value: 'view', icon: 'eye' },
-    { key: 'download', text: 'Can download', value: 'download', icon: 'download' },
-    { key: 'edit', text: 'Can edit', value: 'edit', icon: 'edit' },
+    { key: 'view', text: t('documentManagement.canView'), value: 'view', icon: 'eye' },
+    {
+      key: 'download',
+      text: t('documentManagement.canDownload'),
+      value: 'download',
+      icon: 'download',
+    },
+    { key: 'edit', text: t('documentManagement.canEdit'), value: 'edit', icon: 'edit' },
   ];
 
   useEffect(() => {
@@ -179,7 +186,7 @@ const ShareModal = React.memo(({ resource, resourceType, isOpen, onClose, onCrea
         const generatedLink = `${window.location.origin}/public/${token}`;
         setShareLink(generatedLink);
 
-        toast.success('Share link created successfully');
+        toast.success(t('documentManagement.shareLinkCreated'));
       }
 
       setShowLinkSettings(false);
@@ -263,11 +270,11 @@ const ShareModal = React.memo(({ resource, resourceType, isOpen, onClose, onCrea
 
       toast.success(
         existingUsers.length === 1
-          ? 'User invited successfully'
-          : `${existingUsers.length} users invited successfully`,
+          ? t('documentManagement.userInvitedSuccessfully')
+          : `${existingUsers.length} ${t('documentManagement.usersInvitedSuccessfully')}`,
       );
     } catch (error) {
-      toast.error('Failed to invite users. Please try again.');
+      toast.error(t('documentManagement.failedToInviteUsers'));
     }
   };
 
@@ -276,14 +283,14 @@ const ShareModal = React.memo(({ resource, resourceType, isOpen, onClose, onCrea
       <Modal open={isOpen} closeIcon size="small" onClose={onClose} className={styles.modal}>
         <Modal.Header className={styles.header}>
           <Icon name="share alternate" />
-          Share &apos;{resource?.name}&apos;
+          {t('documentManagement.shareFile')} &apos;{resource?.name}&apos;
         </Modal.Header>
         <Modal.Content className={styles.content}>
           <div className={styles.section}>
-            <h4 className={styles.sectionTitle}>Invite people</h4>
+            <h4 className={styles.sectionTitle}>{t('documentManagement.invitePeople')}</h4>
             <div className={styles.inviteContainer}>
               <Dropdown
-                placeholder="Type name to search users..."
+                placeholder={t('documentManagement.typeNameToSearchUsers')}
                 fluid
                 multiple
                 search
@@ -291,7 +298,7 @@ const ShareModal = React.memo(({ resource, resourceType, isOpen, onClose, onCrea
                 options={availableUsers}
                 value={selectedUsers}
                 onChange={(e, { value }) => setSelectedUsers(value)}
-                noResultsMessage="No users found."
+                noResultsMessage={t('documentManagement.noUsersFound')}
                 className={styles.userDropdown}
               />
               <Dropdown
@@ -306,7 +313,7 @@ const ShareModal = React.memo(({ resource, resourceType, isOpen, onClose, onCrea
               <Button
                 positive
                 size="small"
-                content="Invite"
+                content={t('documentManagement.invite')}
                 onClick={handleInviteUsers}
                 style={{ marginTop: '8px' }}
               />
@@ -316,7 +323,7 @@ const ShareModal = React.memo(({ resource, resourceType, isOpen, onClose, onCrea
           <Divider />
 
           <div className={styles.section}>
-            <h4 className={styles.sectionTitle}>Who has access</h4>
+            <h4 className={styles.sectionTitle}>{t('documentManagement.whoHasAccess')}</h4>
             <List divided className={styles.userList}>
               {usersWithAccess.map((user) => (
                 <List.Item key={user.id} className={styles.userItem}>
@@ -339,7 +346,7 @@ const ShareModal = React.memo(({ resource, resourceType, isOpen, onClose, onCrea
 
           <div className={styles.section}>
             <div className={styles.shareLinkHeader}>
-              <h4 className={styles.sectionTitle}>Share link</h4>
+              <h4 className={styles.sectionTitle}>{t('documentManagement.shareLink')}</h4>
             </div>
 
             <div className={styles.linkToggle}>
@@ -350,7 +357,9 @@ const ShareModal = React.memo(({ resource, resourceType, isOpen, onClose, onCrea
                 disabled={isCreating}
               />
               <span className={styles.toggleLabel}>
-                {linkEnabled ? 'Shareable link is created' : 'Create shareable link'}
+                {linkEnabled
+                  ? t('documentManagement.shareableLinkCreated')
+                  : t('documentManagement.createShareableLink')}
               </span>
             </div>
 
@@ -362,7 +371,7 @@ const ShareModal = React.memo(({ resource, resourceType, isOpen, onClose, onCrea
                   onClick={handleCopyLink}
                   positive
                   icon={copied ? 'check' : undefined}
-                  content={copied ? 'Copied!' : 'Copy'}
+                  content={copied ? t('documentManagement.copied') : t('documentManagement.copy')}
                 />
               </div>
             )}
@@ -370,7 +379,7 @@ const ShareModal = React.memo(({ resource, resourceType, isOpen, onClose, onCrea
             {isCreating && (
               <div className={styles.creating}>
                 <Icon loading name="spinner" />
-                Creating link...
+                {t('documentManagement.creatingLink')}
               </div>
             )}
           </div>

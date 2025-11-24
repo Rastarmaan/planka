@@ -5,6 +5,7 @@
 
 import React, { useState } from 'react';
 import PropTypes from 'prop-types';
+import { useTranslation } from 'react-i18next';
 import { Button, Checkbox, Modal, Form } from 'semantic-ui-react';
 import DatePicker from 'react-datepicker';
 import { Input } from '../../../lib/custom-ui';
@@ -12,6 +13,7 @@ import { Input } from '../../../lib/custom-ui';
 import styles from './LinkSettingsModal.module.scss';
 
 const LinkSettingsModal = React.memo(({ isOpen, onClose, onSave, currentSettings }) => {
+  const [t] = useTranslation();
   const [expirationEnabled, setExpirationEnabled] = useState(!!currentSettings?.expiresAt);
   const [expiresAt, setExpiresAt] = useState(
     currentSettings?.expiresAt ? new Date(currentSettings.expiresAt) : null,
@@ -42,7 +44,7 @@ const LinkSettingsModal = React.memo(({ isOpen, onClose, onSave, currentSettings
 
   return (
     <Modal open={isOpen} closeIcon size="tiny" onClose={onClose} className={styles.modal}>
-      <Modal.Header>Shareable Link Settings</Modal.Header>
+      <Modal.Header>{t('documentManagement.shareableLinkSettings')}</Modal.Header>
       <Modal.Content>
         <Form>
           <div className={styles.settingSection}>
@@ -52,22 +54,24 @@ const LinkSettingsModal = React.memo(({ isOpen, onClose, onSave, currentSettings
                 checked={expirationEnabled}
                 onChange={(e, { checked }) => setExpirationEnabled(checked)}
               />
-              <span className={styles.settingLabel}>Link expiration</span>
+              <span className={styles.settingLabel}>{t('documentManagement.linkExpiration')}</span>
             </div>
             {expirationEnabled && (
               <div className={styles.settingContent}>
-                <span className={styles.settingDescription}>Link is valid until</span>
+                <span className={styles.settingDescription}>
+                  {t('documentManagement.linkValidUntil')}
+                </span>
 
                 <div style={{ display: 'flex', gap: '12px', marginBottom: 12 }}>
                   <Input
-                    placeholder="Select date"
+                    placeholder={t('documentManagement.selectDate')}
                     value={dateStr}
                     readOnly
                     onClick={() => {}}
                     style={{ width: '50%' }}
                   />
                   <Input
-                    placeholder="Select time"
+                    placeholder={t('documentManagement.selectTime')}
                     value={timeStr}
                     onChange={(e) => setTimeStr(e.target.value)}
                     style={{ width: '50%' }}
@@ -101,22 +105,22 @@ const LinkSettingsModal = React.memo(({ isOpen, onClose, onSave, currentSettings
                 checked={passwordEnabled}
                 onChange={(e, { checked }) => setPasswordEnabled(checked)}
               />
-              <span className={styles.settingLabel}>Password protect</span>
+              <span className={styles.settingLabel}>{t('documentManagement.passwordProtect')}</span>
             </div>
             {passwordEnabled && (
               <div className={styles.settingContent}>
                 <span className={styles.settingDescription}>
-                  Users will need to enter password in order to view this link
+                  {t('documentManagement.passwordProtectDescription')}
                 </span>
                 <Input
                   type="password"
-                  placeholder="Enter new password..."
+                  placeholder={t('documentManagement.enterNewPassword')}
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   fluid
                 />
                 <span className={styles.helperText}>
-                  Password will not be requested when viewing the link as file owner.
+                  {t('documentManagement.passwordNotRequestedOwner')}
                 </span>
               </div>
             )}
@@ -131,17 +135,17 @@ const LinkSettingsModal = React.memo(({ isOpen, onClose, onSave, currentSettings
                 checked={allowDownload}
                 onChange={(e, { checked }) => setAllowDownload(checked)}
               />
-              <span className={styles.settingLabel}>Allow download</span>
+              <span className={styles.settingLabel}>{t('documentManagement.allowDownload')}</span>
             </div>
             <span className={styles.settingDescription}>
-              Users with link can download this item
+              {t('documentManagement.allowDownloadDescription')}
             </span>
           </div>
         </Form>
       </Modal.Content>
       <Modal.Actions className={styles.actions}>
-        <Button content="Cancel" onClick={onClose} />
-        <Button content="Save" positive onClick={handleSave} />
+        <Button content={t('action.cancel')} onClick={onClose} />
+        <Button content={t('action.save')} positive onClick={handleSave} />
       </Modal.Actions>
     </Modal>
   );
