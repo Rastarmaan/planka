@@ -21,6 +21,9 @@ export const addCardToRelease = (releaseId, cardId, headers) =>
 export const removeCardFromRelease = (releaseId, cardId, headers) =>
   http.delete(`/releases/${releaseId}/cards/${cardId}`, undefined, headers);
 
+export const getReleaseSnapshot = (boardId, releaseId, headers) =>
+  http.get(`/boards/${boardId}/releases/${releaseId}/snapshot`, undefined, headers);
+
 export default {
   getBoardReleases,
   createBoardRelease,
@@ -29,4 +32,5 @@ export default {
   deleteBoardRelease,
   addCardToRelease,
   removeCardFromRelease,
+  getReleaseSnapshot,
 };

@@ -128,6 +128,15 @@ const BoardReleasesModal = React.memo(() => {
     setSelectedRelease(null);
   }, []);
 
+  const handleViewSnapshot = useCallback(
+    (releaseId) => {
+      handleClose();
+
+      dispatch(actions.releaseSnapshotViewSet(releaseId));
+    },
+    [dispatch, handleClose],
+  );
+
   useEffect(() => {
     if (boardId) {
       dispatch(actions.boardReleasesFetch(boardId));
@@ -234,6 +243,7 @@ const BoardReleasesModal = React.memo(() => {
                     onUpdateStatus={handleUpdateReleaseStatus}
                     onDelete={handleDeleteRelease}
                     onClick={handleReleaseClick}
+                    onViewSnapshot={handleViewSnapshot}
                   />
                 ))}
               </>

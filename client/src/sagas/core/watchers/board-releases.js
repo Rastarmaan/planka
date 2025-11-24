@@ -31,4 +31,8 @@ export default function* boardReleasesWatchers() {
   yield takeEvery(ActionTypes.RELEASE_CARD_REMOVE, ({ payload: { releaseId, cardId } }) =>
     services.releaseCardRemove(releaseId, cardId),
   );
+
+  yield takeEvery(ActionTypes.RELEASE_SNAPSHOT_FETCH, ({ payload: { boardId, releaseId } }) =>
+    services.releaseSnapshotFetch(boardId, releaseId),
+  );
 }

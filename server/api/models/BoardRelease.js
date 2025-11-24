@@ -149,6 +149,10 @@ module.exports = {
       required: true,
       columnName: 'board_id',
     },
+    boardVersionId: {
+      model: 'BoardVersion',
+      columnName: 'board_version_id',
+    },
     cards: {
       collection: 'Card',
       via: 'releaseId',

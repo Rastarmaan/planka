@@ -125,16 +125,27 @@ module.exports = {
     }
 
     if (release.status === BoardRelease.Statuses.RELEASED) {
-      throw {
-        name: 'forbidden',
-        message: 'Cannot change status of released releases',
-      };
+      throw new Error('Cannot change status of released releases');
     }
 
     const values = { status: inputs.status };
 
     if (inputs.status === BoardRelease.Statuses.RELEASED) {
       values.releasedAt = new Date();
+
+      try {
+        const boardVersion = await sails.helpers.boardVersions.createReleaseSnapshot(
+          inputs.boardId,
+          inputs.id,
+          currentUser.id,
+          release.name,
+          release.version,
+        );
+
+        values.boardVersionId = boardVersion.id;
+      } catch (error) {
+        sails.log.error('Failed to create release snapshot:', error);
+      }
     }
 
     const updatedRelease = await BoardRelease.updateOne({

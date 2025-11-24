@@ -1,0 +1,89 @@
+.banner {
+  display: flex;
+  align-items: center;
+  padding: 2px 12px;
+  background: rgba(0, 0, 0, 0.24);
+  color: #fff;
+  border-radius: 3px;
+  gap: 6px;
+  font-size: 12px;
+  line-height: 20px;
+  animation: slideIn 0.3s ease-out;
+
+  &:hover {
+    background: rgba(0, 0, 0, 0.32);
+  }
+}
+
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateY(-5px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.icon {
+  margin: 0 !important;
+  font-size: 13px !important;
+  line-height: 20px !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  width: auto !important;
+  height: auto !important;
+}
+
+.text {
+  flex: 1;
+  font-weight: 400;
+  white-space: nowrap;
+  line-height: 20px;
+  display: inline-flex;
+  align-items: center;
+}
+
+.exitButton {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 2px 8px;
+  margin-left: 4px;
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 3px;
+  color: #fff;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  font-size: 12px;
+  font-weight: 400;
+  white-space: nowrap;
+  line-height: 20px;
+
+  &:hover {
+    background: rgba(255, 255, 255, 0.2);
+    border-color: rgba(255, 255, 255, 0.25);
+  }
+
+  &:active {
+    transform: translateY(0);
+  }
+}
+
+.buttonIcon {
+  margin: 0 !important;
+  font-size: 12px !important;
+  line-height: 1 !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  width: auto !important;
+  height: auto !important;
+}
+
+.buttonText {
+  line-height: 20px;
+  display: inline-flex;
+  align-items: center;
+}

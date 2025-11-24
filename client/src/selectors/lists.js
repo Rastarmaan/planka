@@ -8,6 +8,7 @@ import { createSelector } from 'redux-orm';
 import orm from '../orm';
 import { selectPath } from './router';
 import { selectCurrentUserId } from './users';
+import { selectViewingReleaseId } from './release-viewing';
 import { isLocalId } from '../utils/local-id';
 import { BoardContexts, ListTypes } from '../constants/Enums';
 
@@ -51,12 +52,24 @@ export const selectCardIdsByListId = makeSelectCardIdsByListId();
 export const makeSelectFilteredCardIdsByListId = () =>
   createSelector(
     orm,
+    (state) => state,
     (_, id) => id,
-    ({ List }, id) => {
+    ({ List }, state, id) => {
       const listModel = List.withId(id);
 
       if (!listModel) {
         return listModel;
+      }
+
+      const viewingReleaseId = selectViewingReleaseId(state);
+
+      if (viewingReleaseId) {
+        const allCards = listModel.getCardsModelArray();
+        const releaseCards = allCards.filter((cardModel) => {
+          const cardReleases = cardModel.releases.toRefArray();
+          return cardReleases.some((release) => release.id === viewingReleaseId);
+        });
+        return releaseCards.map((cardModel) => cardModel.id);
       }
 
       return listModel.getFilteredCardsModelArray().map((cardModel) => cardModel.id);

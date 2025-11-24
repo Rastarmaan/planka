@@ -164,6 +164,40 @@ releaseCardRemove.failure = (releaseId, cardId, error) => ({
   },
 });
 
+export const releaseSnapshotViewSet = (releaseId) => ({
+  type: ActionTypes.RELEASE_SNAPSHOT_VIEW_SET,
+  payload: {
+    releaseId,
+  },
+});
+
+export const releaseSnapshotViewClear = () => ({
+  type: ActionTypes.RELEASE_SNAPSHOT_VIEW_CLEAR,
+  payload: {},
+});
+
+export const releaseSnapshotFetch = (boardId, releaseId) => ({
+  type: ActionTypes.RELEASE_SNAPSHOT_FETCH,
+  payload: {
+    boardId,
+    releaseId,
+  },
+});
+
+releaseSnapshotFetch.success = (snapshot) => ({
+  type: ActionTypes.RELEASE_SNAPSHOT_FETCH__SUCCESS,
+  payload: {
+    snapshot,
+  },
+});
+
+releaseSnapshotFetch.failure = (error) => ({
+  type: ActionTypes.RELEASE_SNAPSHOT_FETCH__FAILURE,
+  payload: {
+    error,
+  },
+});
+
 export default {
   boardReleasesFetch,
   boardReleaseCreate,
@@ -172,4 +206,7 @@ export default {
   boardReleaseDelete,
   releaseCardAdd,
   releaseCardRemove,
+  releaseSnapshotViewSet,
+  releaseSnapshotViewClear,
+  releaseSnapshotFetch,
 };

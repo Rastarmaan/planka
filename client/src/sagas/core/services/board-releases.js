@@ -29,6 +29,10 @@ export function* releaseCardRemove(releaseId, cardId) {
   yield* request(requests.releaseCardRemoveRequest, releaseId, cardId);
 }
 
+export function* releaseSnapshotFetch(boardId, releaseId) {
+  yield* request(requests.releaseSnapshotFetchRequest, boardId, releaseId);
+}
+
 export default {
   boardReleasesFetch,
   boardReleaseCreate,
@@ -37,4 +41,5 @@ export default {
   boardReleaseDelete,
   releaseCardAdd,
   releaseCardRemove,
+  releaseSnapshotFetch,
 };

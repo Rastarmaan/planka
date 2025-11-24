@@ -5,13 +5,13 @@
 
 /**
  * @swagger
- * /boards/{boardId}/releases/{id}:
- *   delete:
- *     summary: Delete a release
- *     description: Deletes an existing release. Only non-released releases can be deleted.
+ * /boards/{boardId}/releases/{id}/snapshot:
+ *   get:
+ *     summary: Get release snapshot
+ *     description: Retrieves the board snapshot for a released release, showing the state of cards at the time of release.
  *     tags:
  *       - Board Releases
- *     operationId: deleteBoardRelease
+ *     operationId: getBoardReleaseSnapshot
  *     parameters:
  *       - in: path
  *         name: boardId
@@ -29,7 +29,7 @@
  *         example: "1357158568008091265"
  *     responses:
  *       200:
- *         description: Release deleted successfully
+ *         description: Release snapshot retrieved successfully
  *         content:
  *           application/json:
  *             schema:
@@ -38,7 +38,17 @@
  *                 - item
  *               properties:
  *                 item:
- *                   $ref: '#/components/schemas/BoardRelease'
+ *                   type: object
+ *                   properties:
+ *                     release:
+ *                       $ref: '#/components/schemas/BoardRelease'
+ *                     boardVersion:
+ *                       $ref: '#/components/schemas/BoardVersion'
+ *                     snapshot:
+ *                       type: object
+ *                       description: The snapshot data containing board state
+ *       400:
+ *         $ref: '#/components/responses/ValidationError'
  *       401:
  *         $ref: '#/components/responses/Unauthorized'
  *       403:
@@ -85,12 +95,10 @@ module.exports = {
       (managerUser) => managerUser.id === currentUser.id,
     );
 
-    const canEdit =
-      isProjectManager ||
-      currentUser.role === User.Roles.ADMIN ||
-      (boardMembership && boardMembership.role === BoardMembership.Roles.EDITOR);
+    const canView =
+      isProjectManager || currentUser.role === User.Roles.ADMIN || boardMembership !== undefined;
 
-    if (!canEdit) {
+    if (!canView) {
       throw 'forbidden';
     }
 
@@ -103,22 +111,40 @@ module.exports = {
       throw 'notFound';
     }
 
-    if (release.status === BoardRelease.Statuses.RELEASED) {
-      throw new Error('Cannot delete released releases');
+    if (!release.boardVersionId) {
+      throw new Error('No snapshot available for this release');
     }
 
-    const releaseCardsCount = await ReleaseCard.count({ releaseId: release.id });
-    if (releaseCardsCount > 0) {
-      throw new Error('Cannot delete release that has cards assigned to it');
-    }
-
-    await BoardRelease.destroyOne({
-      id: inputs.id,
-      boardId: inputs.boardId,
+    const boardVersion = await BoardVersion.findOne({
+      id: release.boardVersionId,
     });
 
+    if (!boardVersion) {
+      throw new Error('Snapshot not found');
+    }
+
+    let snapshotData;
+    try {
+      snapshotData =
+        typeof boardVersion.snapshotData === 'string'
+          ? JSON.parse(boardVersion.snapshotData)
+          : boardVersion.snapshotData;
+    } catch (error) {
+      throw new Error('Failed to parse snapshot data');
+    }
+
     return exits.success({
-      item: release,
+      item: {
+        release,
+        boardVersion: {
+          id: boardVersion.id,
+          name: boardVersion.name,
+          description: boardVersion.description,
+          metadata: boardVersion.metadata,
+          createdAt: boardVersion.createdAt,
+        },
+        snapshot: snapshotData,
+      },
     });
   },
 };

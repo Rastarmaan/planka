@@ -73,7 +73,7 @@ const CreateReleaseForm = React.memo(({ onCreate, onCancel, isSubmitting }) => {
     (e) => {
       e.preventDefault();
 
-      if (!version.trim() || !name.trim()) {
+      if (!version.trim() || !name.trim() || !startDate || !endDate) {
         return;
       }
 
@@ -88,6 +88,10 @@ const CreateReleaseForm = React.memo(({ onCreate, onCancel, isSubmitting }) => {
     },
     [version, name, target, status, startDate, endDate, onCreate],
   );
+
+  const isFormValid = useMemo(() => {
+    return version.trim() && name.trim() && startDate && endDate;
+  }, [version, name, startDate, endDate]);
 
   return (
     <Form onSubmit={handleSubmit} className={styles.form}>
@@ -120,7 +124,7 @@ const CreateReleaseForm = React.memo(({ onCreate, onCancel, isSubmitting }) => {
         onChange={(e, { value }) => setStatus(value)}
       />
       <Form.Group widths="equal">
-        <Form.Field>
+        <Form.Field required>
           {/* eslint-disable-next-line jsx-a11y/label-has-associated-control */}
           <label>{t('common.startDate')}</label>
           {isJalali ? (
@@ -158,7 +162,7 @@ const CreateReleaseForm = React.memo(({ onCreate, onCancel, isSubmitting }) => {
             />
           )}
         </Form.Field>
-        <Form.Field>
+        <Form.Field required>
           {/* eslint-disable-next-line jsx-a11y/label-has-associated-control */}
           <label>{t('common.endDate')}</label>
           {isJalali ? (
@@ -199,7 +203,12 @@ const CreateReleaseForm = React.memo(({ onCreate, onCancel, isSubmitting }) => {
         </Form.Field>
       </Form.Group>
       <Form.Group>
-        <Button type="submit" primary loading={isSubmitting} disabled={isSubmitting}>
+        <Button
+          type="submit"
+          primary
+          loading={isSubmitting}
+          disabled={isSubmitting || !isFormValid}
+        >
           {t('action.create')}
         </Button>
         <Button type="button" onClick={onCancel} disabled={isSubmitting}>
