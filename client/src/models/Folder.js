@@ -76,11 +76,33 @@ export default class Folder extends Model {
       case ActionTypes.FOLDER_DELETE_HANDLE: {
         const deleteId = action.payload.id || action.payload.folder?.id;
         if (deleteId) {
-          FolderModel.withId(deleteId).delete();
+          const deleteFolderRecursively = (folderId, session) => {
+            const folder = session.Folder.withId(folderId);
+            if (!folder) return;
+
+            folder.files.toModelArray().forEach((file) => {
+              file.delete();
+            });
+
+            const subFolders = session.Folder.filter(
+              (f) => f.parentFolderId === folderId,
+            ).toModelArray();
+            subFolders.forEach((subFolder) => {
+              deleteFolderRecursively(subFolder.id, session);
+            });
+
+            folder.delete();
+          };
+
+          deleteFolderRecursively(deleteId, FolderModel.session);
         }
         break;
       }
       default:
     }
   }
+
+  static options = {
+    onDelete: 'CASCADE',
+  };
 }
