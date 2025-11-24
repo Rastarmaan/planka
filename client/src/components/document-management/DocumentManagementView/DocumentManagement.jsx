@@ -44,7 +44,8 @@ const DocumentManagement = React.memo(() => {
   const [selectedFile, setSelectedFile] = useState(null);
   const [previewFile, setPreviewFile] = useState(null);
   const [shareModalOpen, setShareModalOpen] = useState(false);
-  const [fileToShare, setFileToShare] = useState(null);
+  const [resourceToShare, setResourceToShare] = useState(null);
+  const [resourceTypeToShare, setResourceTypeToShare] = useState('file');
   const [modalConfig, setModalConfig] = useState(null);
   const [showWorkspacePopup, setShowWorkspacePopup] = useState(false);
   const [deleteConfirmWorkspace, setDeleteConfirmWorkspace] = useState(null);
@@ -360,7 +361,7 @@ const DocumentManagement = React.memo(() => {
     setPreviewFile(file);
   };
 
-  const handleShare = (file) => {
+  const handleShare = (file, resourceType = 'file') => {
     if (previewFile) {
       setPreviewFile(null);
     }
@@ -368,7 +369,8 @@ const DocumentManagement = React.memo(() => {
     const targetFile = file || previewFile || files.find((f) => f.id === selectedFile);
 
     if (targetFile) {
-      setFileToShare(targetFile);
+      setResourceToShare(targetFile);
+      setResourceTypeToShare(resourceType);
       setShareModalOpen(true);
     }
   };
@@ -442,7 +444,9 @@ const DocumentManagement = React.memo(() => {
 
   const handleContextMenuShare = (file) => {
     if (file) {
-      setFileToShare(file);
+      setResourceToShare(file);
+      const resourceType = file.type === 'folder' ? 'folder' : 'file';
+      setResourceTypeToShare(resourceType);
       setShareModalOpen(true);
     }
   };
@@ -582,7 +586,6 @@ const DocumentManagement = React.memo(() => {
   const handleDragOver = (e, folder) => {
     e.preventDefault();
     if (draggedFile && folder.type === 'folder' && draggedFile.id !== folder.id) {
-      // Prevent dropping a folder into itself
       setDropTarget(folder.id);
     }
   };
@@ -724,7 +727,12 @@ const DocumentManagement = React.memo(() => {
           selectedFileData={files.find((f) => f.id === selectedFile)}
           onSortChange={setSortBy}
           onPreview={handlePreview}
-          onShare={handleShare}
+          onShare={() => {
+            const selectedFileData = files.find((f) => f.id === selectedFile);
+            if (selectedFileData) {
+              handleShare(selectedFileData);
+            }
+          }}
           onDelete={handleDeleteSelected}
           onDownload={handleDownloadSelected}
         />
@@ -781,13 +789,14 @@ const DocumentManagement = React.memo(() => {
         />
       )}
 
-      {shareModalOpen && fileToShare && (
+      {shareModalOpen && resourceToShare && (
         <ShareModal
-          file={fileToShare}
+          resource={resourceToShare}
+          resourceType={resourceTypeToShare}
           isOpen={shareModalOpen}
           onClose={() => {
             setShareModalOpen(false);
-            setFileToShare(null);
+            setResourceToShare(null);
           }}
           onCreateShareLink={async (linkData) => {
             try {
@@ -795,15 +804,9 @@ const DocumentManagement = React.memo(() => {
                 Authorization: `Bearer ${accessToken}`,
               });
 
-              dispatch(
-                actions.createShareLink.success({
-                  resourceType: 'file',
-                  resourceId: fileToShare.id,
-                  ...result,
-                }),
-              );
+              dispatch(actions.createShareLink.success(result.item));
 
-              return result;
+              return result.item;
             } catch (error) {
               dispatch(actions.createShareLink.failure(error));
               throw error;

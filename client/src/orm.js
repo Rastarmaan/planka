@@ -37,6 +37,7 @@ import {
   Folder,
   File,
   Permission,
+  ShareLink,
 } from './models';
 
 const orm = new ORM({
@@ -50,6 +51,7 @@ orm.register(
   Folder,
   File,
   Permission,
+  ShareLink,
   Project,
   ProjectCategory,
   ProjectCategoryAssignment,

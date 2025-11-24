@@ -41,6 +41,7 @@ import folders from './folders';
 import files from './files';
 import permissions from './permissions';
 import shareLinks from './share-links';
+import publicApi from './public';
 
 export { http, socket };
 
@@ -56,6 +57,7 @@ export default {
   ...files,
   ...permissions,
   ...shareLinks,
+  ...publicApi,
   ...projectCategories,
   ...projectManagers,
   ...projectVersions,

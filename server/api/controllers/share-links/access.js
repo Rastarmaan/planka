@@ -35,33 +35,33 @@ module.exports = {
     }
 
     if (shareLink.expiresAt && new Date(shareLink.expiresAt) < new Date()) {
-      throw {
-        message: 'Share link has expired',
+      return this.res.status(400).json({
         code: 'E_EXPIRED',
-      };
+        message: 'Share link has expired',
+      });
     }
 
     if (shareLink.maxAccessCount && shareLink.accessCount >= shareLink.maxAccessCount) {
-      throw {
-        message: 'Share link access limit reached',
+      return this.res.status(400).json({
         code: 'E_ACCESS_LIMIT',
-      };
+        message: 'Share link access limit reached',
+      });
     }
 
     if (shareLink.isPasswordProtected) {
       if (!inputs.password) {
-        throw {
-          message: 'Password required',
+        return this.res.status(400).json({
           code: 'E_PASSWORD_REQUIRED',
-        };
+          message: 'Password required',
+        });
       }
 
       const isPasswordValid = await bcrypt.compare(inputs.password, shareLink.passwordHash);
       if (!isPasswordValid) {
-        throw {
-          message: 'Invalid password',
+        return this.res.status(400).json({
           code: 'E_INVALID_PASSWORD',
-        };
+          message: 'Invalid password',
+        });
       }
     }
 
@@ -130,6 +130,7 @@ module.exports = {
       shareLink: {
         isDownloadable: shareLink.isDownloadable,
         resourceType: shareLink.resourceType,
+        expiresAt: shareLink.expiresAt,
       },
       included,
     };

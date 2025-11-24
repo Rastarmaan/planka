@@ -34,6 +34,7 @@ import Space from './Space';
 import Folder from './Folder';
 import File from './File';
 import Permission from './Permission';
+import ShareLink from './ShareLink';
 
 export {
   Activity,
@@ -67,4 +68,5 @@ export {
   Folder,
   File,
   Permission,
+  ShareLink,
 };

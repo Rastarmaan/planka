@@ -16,6 +16,7 @@ const DOCUMENT_SHARED = '/document-management/shared';
 const DOCUMENT_RECENT = '/document-management/recent';
 const DOCUMENT_STARRED = '/document-management/starred';
 const DOCUMENT_TRASH = '/document-management/trash';
+const PUBLIC_SHARE = '/public/:token';
 
 export default {
   ROOT,
@@ -31,4 +32,5 @@ export default {
   DOCUMENT_RECENT,
   DOCUMENT_STARRED,
   DOCUMENT_TRASH,
+  PUBLIC_SHARE,
 };

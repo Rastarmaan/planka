@@ -35,48 +35,48 @@ module.exports = {
     }
 
     if (!shareLink.isDownloadable) {
-      throw {
-        message: 'Download not allowed for this link',
+      return this.res.status(400).json({
         code: 'E_DOWNLOAD_DISABLED',
-      };
+        message: 'Download not allowed for this link',
+      });
     }
 
     if (shareLink.expiresAt && new Date(shareLink.expiresAt) < new Date()) {
-      throw {
-        message: 'Share link has expired',
+      return this.res.status(400).json({
         code: 'E_EXPIRED',
-      };
+        message: 'Share link has expired',
+      });
     }
 
     if (shareLink.maxAccessCount && shareLink.accessCount >= shareLink.maxAccessCount) {
-      throw {
-        message: 'Share link access limit reached',
+      return this.res.status(400).json({
         code: 'E_ACCESS_LIMIT',
-      };
+        message: 'Share link access limit reached',
+      });
     }
 
     if (shareLink.isPasswordProtected) {
       if (!inputs.password) {
-        throw {
-          message: 'Password required',
+        return this.res.status(400).json({
           code: 'E_PASSWORD_REQUIRED',
-        };
+          message: 'Password required',
+        });
       }
 
       const isPasswordValid = await bcrypt.compare(inputs.password, shareLink.passwordHash);
       if (!isPasswordValid) {
-        throw {
-          message: 'Invalid password',
+        return this.res.status(400).json({
           code: 'E_INVALID_PASSWORD',
-        };
+          message: 'Invalid password',
+        });
       }
     }
 
     if (shareLink.resourceType !== ShareLink.ResourceTypes.FILE) {
-      throw {
-        message: 'Only file downloads are supported',
+      return this.res.status(400).json({
         code: 'E_NOT_FILE',
-      };
+        message: 'Only file downloads are supported',
+      });
     }
 
     const file = await DocumentFile.findOne({ id: shareLink.resourceId, isDeleted: false });
