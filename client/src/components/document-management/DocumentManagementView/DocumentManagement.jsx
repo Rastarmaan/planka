@@ -17,6 +17,7 @@ import selectors, {
   makeSelectFilesBySpaceId,
 } from '../../../selectors';
 import { createLocalId } from '../../../utils/local-id';
+import { UserRoles } from '../../../constants/Enums';
 import Paths from '../../../constants/Paths';
 import Sidebar from '../Sidebar';
 import TopBar from '../TopBar';
@@ -39,6 +40,15 @@ const DocumentManagement = React.memo(() => {
   const selectSpaces = useMemo(makeSelectSpaces, []);
   const spaces = useSelector(selectSpaces);
   const accessToken = useSelector(selectors.selectAccessToken);
+  const currentUser = useSelector(selectors.selectCurrentUser);
+
+  const isAdmin = currentUser && currentUser.role === UserRoles.ADMIN;
+
+  useEffect(() => {
+    if (currentUser && !isAdmin) {
+      navigate(Paths.ROOT);
+    }
+  }, [currentUser, isAdmin, navigate]);
 
   const [selectedWorkspace, setSelectedWorkspace] = useState(null);
   const [view, setView] = useState('grid');
@@ -674,6 +684,11 @@ const DocumentManagement = React.memo(() => {
 
   const currentFiles = getFilteredFiles();
   const sectionTitle = getSectionTitle();
+
+  // Don't render anything if user is not admin
+  if (!isAdmin) {
+    return null;
+  }
 
   return (
     <div className={styles.wrapper}>
