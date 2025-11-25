@@ -24,19 +24,22 @@ const LinkSettingsModal = React.memo(({ isOpen, onClose, onSave, currentSettings
   );
   const [passwordEnabled, setPasswordEnabled] = useState(!!currentSettings?.password);
   const [password, setPassword] = useState('');
-  const [allowDownload, setAllowDownload] = useState(currentSettings?.isDownloadable !== false);
 
   const handleSave = () => {
     const settings = {
-      isDownloadable: allowDownload,
+      isDownloadable: true,
     };
 
     if (expirationEnabled && expiresAt) {
       settings.expiresAt = expiresAt.toISOString();
+    } else {
+      settings.expiresAt = null;
     }
 
     if (passwordEnabled && password.trim()) {
       settings.password = password.trim();
+    } else if (!passwordEnabled) {
+      settings.password = null;
     }
 
     onSave(settings);
@@ -124,22 +127,6 @@ const LinkSettingsModal = React.memo(({ isOpen, onClose, onSave, currentSettings
                 </span>
               </div>
             )}
-          </div>
-
-          <div className={styles.divider} />
-
-          <div className={styles.settingSection}>
-            <div className={styles.settingHeader}>
-              <Checkbox
-                toggle
-                checked={allowDownload}
-                onChange={(e, { checked }) => setAllowDownload(checked)}
-              />
-              <span className={styles.settingLabel}>{t('documentManagement.allowDownload')}</span>
-            </div>
-            <span className={styles.settingDescription}>
-              {t('documentManagement.allowDownloadDescription')}
-            </span>
           </div>
         </Form>
       </Modal.Content>

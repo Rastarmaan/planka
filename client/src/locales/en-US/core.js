@@ -614,6 +614,10 @@ export default {
       noUsersWithAccess: 'No other users have access to this document',
       editor: 'Editor',
       viewer: 'Viewer',
+      linkSettings: 'Link Settings',
+      shareLinkUpdated: 'Share link updated successfully',
+      shareLinkDeleted: 'Share link deleted successfully',
+      failedToDeleteShareLink: 'Failed to delete share link. Please try again.',
     },
 
     action: {

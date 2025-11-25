@@ -29,9 +29,8 @@ module.exports = {
       throw 'notFound';
     }
 
-    await ShareLink.update({ id: shareLink.id }).set({
-      isActive: false,
-    });
+    // Delete the share link completely instead of soft delete
+    await ShareLink.destroyOne({ id: shareLink.id });
 
     return {
       item: shareLink,

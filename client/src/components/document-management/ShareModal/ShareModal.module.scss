@@ -160,11 +160,17 @@
     align-items: center;
     gap: 12px;
     margin-bottom: 16px;
+    flex-wrap: wrap;
   }
 
   .toggleLabel {
     font-size: 14px;
     color: #111827;
+  }
+
+  .linkSettingsButton {
+    margin-left: auto !important;
+    font-size: 12px !important;
   }
 
   .linkContainer {

@@ -14,10 +14,13 @@ const getShareLinks = (resourceType, resourceId, headers) =>
     headers,
   );
 
+const updateShareLink = (id, data, headers) => socket.patch(`/share-links/${id}`, data, headers);
+
 const deleteShareLink = (id, headers) => socket.delete(`/share-links/${id}`, undefined, headers);
 
 export default {
   createShareLink,
   getShareLinks,
+  updateShareLink,
   deleteShareLink,
 };

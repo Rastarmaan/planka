@@ -14,6 +14,7 @@ import LinkSettingsModal from '../LinkSettingsModal/LinkSettingsModal';
 import selectors from '../../../selectors';
 import usersApi from '../../../api/users';
 import permissionsApi from '../../../api/permissions';
+import shareLinksApi from '../../../api/share-links';
 
 import styles from './ShareModal.module.scss';
 
@@ -36,6 +37,8 @@ const ShareModal = React.memo(({ resource, resourceType, isOpen, onClose, onCrea
   const [sharedUsers, setSharedUsers] = useState([]);
   const [loadingSharedUsers, setLoadingSharedUsers] = useState(false);
   const [removingUserId, setRemovingUserId] = useState(null);
+  const [existingShareLink, setExistingShareLink] = useState(null);
+  const [loadingShareLink, setLoadingShareLink] = useState(false);
 
   useEffect(() => {
     let mounted = true;
@@ -114,6 +117,40 @@ const ShareModal = React.memo(({ resource, resourceType, isOpen, onClose, onCrea
     }
   }, [isOpen, resource, fetchSharedUsers]);
 
+  const fetchExistingShareLink = useCallback(async () => {
+    if (!resource?.id || !resourceType) return;
+
+    setLoadingShareLink(true);
+    try {
+      const res = await shareLinksApi.getShareLinks(resourceType, resource.id.toString(), {
+        Authorization: `Bearer ${accessToken}`,
+      });
+
+      const items = (res && res.items) || [];
+      if (items.length > 0) {
+        const link = items[0];
+        setExistingShareLink(link);
+        setLinkEnabled(true);
+        setShareLink(`${window.location.origin}/public/${link.token}`);
+        setLinkSettings({
+          isDownloadable: link.isDownloadable,
+          expiresAt: link.expiresAt,
+          password: link.password ? '********' : null,
+        });
+      }
+    } catch {
+      // Error fetching share link - ignore
+    } finally {
+      setLoadingShareLink(false);
+    }
+  }, [resource, resourceType, accessToken]);
+
+  useEffect(() => {
+    if (isOpen && resource?.id) {
+      fetchExistingShareLink();
+    }
+  }, [isOpen, resource, fetchExistingShareLink]);
+
   const handleRemoveAccess = useCallback(
     async (permission) => {
       setRemovingUserId(permission.id);
@@ -187,19 +224,39 @@ const ShareModal = React.memo(({ resource, resourceType, isOpen, onClose, onCrea
       setCopied(false);
       setLinkSettings({});
       setSharedUsers([]);
+      setExistingShareLink(null);
     }
   }, [isOpen]);
 
-  const handleToggleLink = (enabled) => {
-    setLinkEnabled(enabled);
-
+  const handleToggleLink = async (enabled) => {
     if (enabled) {
-      setShowLinkSettings(true);
+      if (!existingShareLink) {
+        setShowLinkSettings(true);
+      }
+      setLinkEnabled(true);
       return;
     }
 
-    setShareLink('');
-    setLinkSettings({});
+    if (existingShareLink && existingShareLink.id) {
+      try {
+        await shareLinksApi.deleteShareLink(existingShareLink.id.toString(), {
+          Authorization: `Bearer ${accessToken}`,
+        });
+        setLinkEnabled(false);
+        setShareLink('');
+        setLinkSettings({});
+        setExistingShareLink(null);
+        toast.success(t('documentManagement.shareLinkDeleted'));
+      } catch (err) {
+        console.error('Failed to delete share link:', err);
+        toast.error(t('documentManagement.failedToDeleteShareLink'));
+      }
+    } else {
+      setLinkEnabled(false);
+      setShareLink('');
+      setLinkSettings({});
+      setExistingShareLink(null);
+    }
   };
 
   const handleCopyLink = () => {
@@ -214,25 +271,45 @@ const ShareModal = React.memo(({ resource, resourceType, isOpen, onClose, onCrea
     setLinkSettings(settings);
     setIsCreating(true);
     try {
-      const linkData = {
-        resourceType: resourceType || 'file',
-        resourceId: resource?.id,
-        ...settings,
-      };
+      if (existingShareLink) {
+        const updateData = { ...settings };
+        if (updateData.password === '********') {
+          delete updateData.password;
+        }
 
-      const result = await onCreateShareLink(linkData);
+        const result = await shareLinksApi.updateShareLink(existingShareLink.id, updateData, {
+          Authorization: `Bearer ${accessToken}`,
+        });
 
-      if (result && (result.token || (result.item && result.item.token))) {
-        const token = result.token || result.item.token;
-        const generatedLink = `${window.location.origin}/public/${token}`;
-        setShareLink(generatedLink);
+        if (result && result.item) {
+          setExistingShareLink(result.item);
+          toast.success(t('documentManagement.shareLinkUpdated'));
+        }
+      } else {
+        const linkData = {
+          resourceType: resourceType || 'file',
+          resourceId: resource?.id,
+          ...settings,
+        };
 
-        toast.success(t('documentManagement.shareLinkCreated'));
+        const result = await onCreateShareLink(linkData);
+
+        if (result && (result.token || (result.item && result.item.token))) {
+          const linkItem = result.item || result;
+          const { token } = linkItem;
+          const generatedLink = `${window.location.origin}/public/${token}`;
+          setShareLink(generatedLink);
+          setExistingShareLink(linkItem);
+
+          toast.success(t('documentManagement.shareLinkCreated'));
+        }
       }
 
       setShowLinkSettings(false);
     } catch (err) {
-      setLinkEnabled(false);
+      if (!existingShareLink) {
+        setLinkEnabled(false);
+      }
     } finally {
       setIsCreating(false);
     }
@@ -426,14 +503,31 @@ const ShareModal = React.memo(({ resource, resourceType, isOpen, onClose, onCrea
                 toggle
                 checked={linkEnabled}
                 onChange={(e, { checked }) => handleToggleLink(checked)}
-                disabled={isCreating}
+                disabled={isCreating || loadingShareLink}
               />
               <span className={styles.toggleLabel}>
                 {linkEnabled
                   ? t('documentManagement.shareableLinkCreated')
                   : t('documentManagement.createShareableLink')}
               </span>
+              {linkEnabled && existingShareLink && (
+                <Button
+                  basic
+                  size="tiny"
+                  icon="setting"
+                  content={t('documentManagement.linkSettings')}
+                  onClick={() => setShowLinkSettings(true)}
+                  className={styles.linkSettingsButton}
+                />
+              )}
             </div>
+
+            {loadingShareLink && (
+              <div className={styles.creating}>
+                <Icon loading name="spinner" />
+                {t('common.loading')}
+              </div>
+            )}
 
             {linkEnabled && shareLink && (
               <div className={styles.linkContainer}>

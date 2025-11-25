@@ -116,6 +116,7 @@ module.exports.routes = {
 
   'POST /api/share-links': 'share-links/create',
   'GET /api/share-links': 'share-links/index',
+  'PATCH /api/share-links/:id': 'share-links/update',
   'DELETE /api/share-links/:id': 'share-links/delete',
   'GET /api/public/:token': 'share-links/access',
   'POST /api/public/:token': 'share-links/access',
