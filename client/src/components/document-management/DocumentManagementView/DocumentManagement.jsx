@@ -846,6 +846,7 @@ const DocumentManagement = React.memo(() => {
           onDrop={handleDrop}
           canUpload={isAdmin}
           canManageWorkspaces={isAdmin}
+          isAdmin={isAdmin}
         />
 
         {modalConfig && (

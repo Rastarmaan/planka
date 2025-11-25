@@ -387,7 +387,7 @@ export default {
       confirmRestoreVersion:
         'Are you sure you want to restore this version? This will replace the current board state.',
       searchVersions: 'Search versions...',
-      showingResults: 'Showing {{count}} of {{total}} versions',
+      showingResults: 'Showing {{start}}-{{end}} of {{total}} activities',
       noMatchingVersions: 'No matching versions found',
       tryDifferentSearch: 'Try a different search term or clear the filter.',
       searchCards: 'Search cards...',
@@ -618,8 +618,15 @@ export default {
       shareLinkUpdated: 'Share link updated successfully',
       shareLinkDeleted: 'Share link deleted successfully',
       failedToDeleteShareLink: 'Failed to delete share link. Please try again.',
+      activityLog: 'Activity Log',
     },
-
+    documentActivity: {
+      title: 'Activity Log',
+      subtitle: 'Track all document activities and changes',
+      noActivity: 'No activity yet',
+      noActivityDescription:
+        'Document activities will appear here once you start working with files.',
+    },
     action: {
       activateUser: 'Activate user',
       activateUser_title: 'Activate User',

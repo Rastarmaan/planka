@@ -137,6 +137,7 @@ const SidebarNavigation = React.memo(
     onDragOver,
     onDragLeave,
     onDrop,
+    isAdmin,
   }) => {
     const [t] = useTranslation();
 
@@ -274,23 +275,25 @@ const SidebarNavigation = React.memo(
         </div>
       </div> */}
 
-        <div
-          role="button"
-          tabIndex={0}
-          className={`${styles.sidebarItem} ${currentSection === 'activity' ? styles.active : ''}`}
-          onClick={() => onSectionChange(Paths.DOCUMENT_ACTIVITY)}
-          onKeyDown={(e) => {
-            if (e.key === 'Enter' || e.key === ' ') {
-              e.preventDefault();
-              onSectionChange(Paths.DOCUMENT_ACTIVITY);
-            }
-          }}
-        >
-          <div className={styles.sidebarItemContent}>
-            <Icon name="history" />
-            <span>{t('documentManagement.activityLog', 'Activity Log')}</span>
+        {isAdmin && (
+          <div
+            role="button"
+            tabIndex={0}
+            className={`${styles.sidebarItem} ${currentSection === 'activity' ? styles.active : ''}`}
+            onClick={() => onSectionChange(Paths.DOCUMENT_ACTIVITY)}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter' || e.key === ' ') {
+                e.preventDefault();
+                onSectionChange(Paths.DOCUMENT_ACTIVITY);
+              }
+            }}
+          >
+            <div className={styles.sidebarItemContent}>
+              <Icon name="history" />
+              <span>{t('documentManagement.activityLog', 'Activity Log')}</span>
+            </div>
           </div>
-        </div>
+        )}
       </div>
     );
   },
@@ -319,6 +322,7 @@ SidebarNavigation.propTypes = {
   onDragOver: PropTypes.func,
   onDragLeave: PropTypes.func,
   onDrop: PropTypes.func,
+  isAdmin: PropTypes.bool,
 };
 
 SidebarNavigation.defaultProps = {
@@ -328,6 +332,7 @@ SidebarNavigation.defaultProps = {
   onDragOver: null,
   onDragLeave: null,
   onDrop: null,
+  isAdmin: false,
 };
 
 export default SidebarNavigation;

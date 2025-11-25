@@ -114,6 +114,8 @@ module.exports.routes = {
   'PATCH /api/files/:id': 'document-files/update',
   'DELETE /api/files/:id': 'document-files/delete',
 
+  'GET /api/document-activities': 'document-activities/index',
+
   'POST /api/share-links': 'share-links/create',
   'GET /api/share-links': 'share-links/index',
   'PATCH /api/share-links/:id': 'share-links/update',

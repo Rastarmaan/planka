@@ -39,6 +39,7 @@ const Sidebar = React.memo(
     onDrop,
     canUpload,
     canManageWorkspaces,
+    isAdmin,
   }) => (
     <div className={styles.sidebar}>
       {canUpload && (
@@ -63,6 +64,7 @@ const Sidebar = React.memo(
         onDragOver={onDragOver}
         onDragLeave={onDragLeave}
         onDrop={onDrop}
+        isAdmin={isAdmin}
       />
 
       {canManageWorkspaces && (
@@ -124,6 +126,7 @@ Sidebar.propTypes = {
   onDrop: PropTypes.func,
   canUpload: PropTypes.bool,
   canManageWorkspaces: PropTypes.bool,
+  isAdmin: PropTypes.bool,
 };
 
 Sidebar.defaultProps = {
@@ -136,6 +139,7 @@ Sidebar.defaultProps = {
   onDrop: null,
   canUpload: true,
   canManageWorkspaces: true,
+  isAdmin: false,
 };
 
 export default Sidebar;
