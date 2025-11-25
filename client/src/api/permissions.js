@@ -9,10 +9,13 @@ const createPermission = (data, headers) => socket.post('/permissions', data, he
 
 const getPermissions = (params, headers) => socket.get('/permissions', params, headers);
 
+const getMyPermissions = (headers) => socket.get('/permissions/my', undefined, headers);
+
 const deletePermission = (id, headers) => socket.delete(`/permissions/${id}`, undefined, headers);
 
 export default {
   createPermission,
   getPermissions,
+  getMyPermissions,
   deletePermission,
 };

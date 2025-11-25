@@ -20,6 +20,8 @@ const SortBar = React.memo(
     onShare,
     onDelete,
     onDownload,
+    canShare,
+    canDelete,
   }) => {
     const [t] = useTranslation();
 
@@ -65,9 +67,11 @@ const SortBar = React.memo(
               </Button>
             )}
 
-            <Button icon onClick={onDelete} className={styles.actionButton}>
-              <Icon name="trash alternate outline" />
-            </Button>
+            {canDelete && (
+              <Button icon onClick={onDelete} className={styles.actionButton}>
+                <Icon name="trash alternate outline" />
+              </Button>
+            )}
             <Dropdown
               icon="ellipsis vertical"
               direction="left"
@@ -75,11 +79,13 @@ const SortBar = React.memo(
               className={styles.actionButton}
             >
               <Dropdown.Menu>
-                <Dropdown.Item
-                  icon="share alternate"
-                  text={t('documentManagement.share')}
-                  onClick={onShare}
-                />
+                {canShare && (
+                  <Dropdown.Item
+                    icon="share alternate"
+                    text={t('documentManagement.share')}
+                    onClick={onShare}
+                  />
+                )}
                 <Dropdown.Item
                   icon="download"
                   text={t('documentManagement.download')}
@@ -106,11 +112,15 @@ SortBar.propTypes = {
   onShare: PropTypes.func.isRequired,
   onDelete: PropTypes.func.isRequired,
   onDownload: PropTypes.func.isRequired,
+  canShare: PropTypes.bool,
+  canDelete: PropTypes.bool,
 };
 
 SortBar.defaultProps = {
   selectedFile: null,
   selectedFileData: null,
+  canShare: false,
+  canDelete: false,
 };
 
 export default SortBar;

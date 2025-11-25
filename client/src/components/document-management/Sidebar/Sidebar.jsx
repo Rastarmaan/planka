@@ -37,13 +37,17 @@ const Sidebar = React.memo(
     onDragOver,
     onDragLeave,
     onDrop,
+    canUpload,
+    canManageWorkspaces,
   }) => (
     <div className={styles.sidebar}>
-      <UploadButton
-        currentSection={currentSection}
-        onFolderCreate={onFolderCreate}
-        onFileUpload={onFileUpload}
-      />
+      {canUpload && (
+        <UploadButton
+          currentSection={currentSection}
+          onFolderCreate={onFolderCreate}
+          onFileUpload={onFileUpload}
+        />
+      )}
 
       <SidebarNavigation
         currentSection={currentSection}
@@ -61,17 +65,19 @@ const Sidebar = React.memo(
         onDrop={onDrop}
       />
 
-      <WorkspaceSelector
-        workspaces={workspaces}
-        selectedWorkspace={selectedWorkspace}
-        showWorkspacePopup={showWorkspacePopup}
-        workspacePopupRef={workspacePopupRef}
-        onTogglePopup={onToggleWorkspacePopup}
-        onSelectWorkspace={onSelectWorkspace}
-        onRenameWorkspace={onRenameWorkspace}
-        onDeleteWorkspace={onDeleteWorkspace}
-        onCreateWorkspace={onCreateWorkspace}
-      />
+      {canManageWorkspaces && (
+        <WorkspaceSelector
+          workspaces={workspaces}
+          selectedWorkspace={selectedWorkspace}
+          showWorkspacePopup={showWorkspacePopup}
+          workspacePopupRef={workspacePopupRef}
+          onTogglePopup={onToggleWorkspacePopup}
+          onSelectWorkspace={onSelectWorkspace}
+          onRenameWorkspace={onRenameWorkspace}
+          onDeleteWorkspace={onDeleteWorkspace}
+          onCreateWorkspace={onCreateWorkspace}
+        />
+      )}
     </div>
   ),
 );
@@ -116,6 +122,8 @@ Sidebar.propTypes = {
   onDragOver: PropTypes.func,
   onDragLeave: PropTypes.func,
   onDrop: PropTypes.func,
+  canUpload: PropTypes.bool,
+  canManageWorkspaces: PropTypes.bool,
 };
 
 Sidebar.defaultProps = {
@@ -126,6 +134,8 @@ Sidebar.defaultProps = {
   onDragOver: null,
   onDragLeave: null,
   onDrop: null,
+  canUpload: true,
+  canManageWorkspaces: true,
 };
 
 export default Sidebar;

@@ -123,6 +123,7 @@ module.exports.routes = {
 
   'POST /api/permissions': 'permissions/create',
   'GET /api/permissions': 'permissions/index',
+  'GET /api/permissions/my': 'permissions/my-permissions',
   'DELETE /api/permissions/:id': 'permissions/delete',
 
   'GET /api/project-categories': 'project-categories/index',

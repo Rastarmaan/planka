@@ -29,6 +29,8 @@ const FileGrid = React.memo(
     onShare,
     onDownload,
     onDelete,
+    canShare,
+    canDelete,
   }) => {
     const [t] = useTranslation();
     const [activeContextMenu, setActiveContextMenu] = React.useState(null);
@@ -76,6 +78,8 @@ const FileGrid = React.memo(
               onDelete={onDelete}
               contextMenuState={activeContextMenu}
               onContextMenuChange={setActiveContextMenu}
+              canShare={canShare}
+              canDelete={canDelete}
             />
           ))
         )}
@@ -105,6 +109,8 @@ FileGrid.propTypes = {
   onShare: PropTypes.func,
   onDownload: PropTypes.func,
   onDelete: PropTypes.func,
+  canShare: PropTypes.bool,
+  canDelete: PropTypes.bool,
 };
 
 FileGrid.defaultProps = {
@@ -115,6 +121,8 @@ FileGrid.defaultProps = {
   onShare: null,
   onDownload: null,
   onDelete: null,
+  canShare: false,
+  canDelete: false,
 };
 
 export default FileGrid;

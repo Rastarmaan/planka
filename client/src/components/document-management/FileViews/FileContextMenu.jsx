@@ -11,7 +11,7 @@ import { Icon } from 'semantic-ui-react';
 import styles from './FileContextMenu.module.scss';
 
 const FileContextMenu = React.memo(
-  ({ file, position, onClose, onPreview, onShare, onDownload, onDelete }) => {
+  ({ file, position, onClose, onPreview, onShare, onDownload, onDelete, canShare, canDelete }) => {
     const [t] = useTranslation();
     const menuRef = useRef(null);
     const isImageFile = file.type === 'file' && file.mimeType && file.mimeType.startsWith('image/');
@@ -101,27 +101,33 @@ const FileContextMenu = React.memo(
             <span>{t('documentManagement.download')}</span>
           </div>
         )}
-        <div
-          role="button"
-          tabIndex={0}
-          className={styles.menuItem}
-          onClick={() => handleAction('share', onShare)}
-          onKeyDown={(e) => e.key === 'Enter' && handleAction('share', onShare)}
-        >
-          <Icon name="share alternate" />
-          <span>{t('documentManagement.share')}</span>
-        </div>
-        <div className={styles.menuDivider} />
-        <div
-          role="button"
-          tabIndex={0}
-          className={styles.menuItem}
-          onClick={() => handleAction('delete', onDelete)}
-          onKeyDown={(e) => e.key === 'Enter' && handleAction('delete', onDelete)}
-        >
-          <Icon name="trash alternate outline" />
-          <span>{t('documentManagement.delete')}</span>
-        </div>
+        {canShare && (
+          <div
+            role="button"
+            tabIndex={0}
+            className={styles.menuItem}
+            onClick={() => handleAction('share', onShare)}
+            onKeyDown={(e) => e.key === 'Enter' && handleAction('share', onShare)}
+          >
+            <Icon name="share alternate" />
+            <span>{t('documentManagement.share')}</span>
+          </div>
+        )}
+        {canDelete && (
+          <>
+            <div className={styles.menuDivider} />
+            <div
+              role="button"
+              tabIndex={0}
+              className={styles.menuItem}
+              onClick={() => handleAction('delete', onDelete)}
+              onKeyDown={(e) => e.key === 'Enter' && handleAction('delete', onDelete)}
+            >
+              <Icon name="trash alternate outline" />
+              <span>{t('documentManagement.delete')}</span>
+            </div>
+          </>
+        )}
       </div>
     );
   },
@@ -142,6 +148,8 @@ FileContextMenu.propTypes = {
   onShare: PropTypes.func,
   onDownload: PropTypes.func,
   onDelete: PropTypes.func,
+  canShare: PropTypes.bool,
+  canDelete: PropTypes.bool,
 };
 
 FileContextMenu.defaultProps = {
@@ -149,6 +157,8 @@ FileContextMenu.defaultProps = {
   onShare: null,
   onDownload: null,
   onDelete: null,
+  canShare: false,
+  canDelete: false,
 };
 
 export default FileContextMenu;

@@ -11,6 +11,7 @@ import { Confirm, Button, Icon } from 'semantic-ui-react';
 
 import actions from '../../../actions';
 import api from '../../../api';
+import permissionsApi from '../../../api/permissions';
 import selectors, {
   makeSelectSpaces,
   makeSelectFoldersBySpaceId,
@@ -44,11 +45,56 @@ const DocumentManagement = React.memo(() => {
 
   const isAdmin = currentUser && currentUser.role === UserRoles.ADMIN;
 
+  const [userPermissions, setUserPermissions] = useState([]);
+  const [permissionsLoading, setPermissionsLoading] = useState(true);
+  const [hasDocumentAccess, setHasDocumentAccess] = useState(false);
+
   useEffect(() => {
-    if (currentUser && !isAdmin) {
+    let mounted = true;
+
+    const fetchUserPermissions = async () => {
+      if (isAdmin) {
+        setPermissionsLoading(false);
+        setHasDocumentAccess(true);
+        return;
+      }
+
+      try {
+        const res = await permissionsApi.getMyPermissions({
+          Authorization: `Bearer ${accessToken}`,
+        });
+
+        if (!mounted) return;
+
+        const items = (res && res.items) || [];
+        setUserPermissions(items);
+        setHasDocumentAccess(items.length > 0);
+      } catch {
+        if (mounted) {
+          setUserPermissions([]);
+          setHasDocumentAccess(false);
+        }
+      } finally {
+        if (mounted) {
+          setPermissionsLoading(false);
+        }
+      }
+    };
+
+    if (currentUser) {
+      fetchUserPermissions();
+    }
+
+    return () => {
+      mounted = false;
+    };
+  }, [currentUser, isAdmin, accessToken]);
+
+  useEffect(() => {
+    if (!permissionsLoading && currentUser && !isAdmin && !hasDocumentAccess) {
       navigate(Paths.ROOT);
     }
-  }, [currentUser, isAdmin, navigate]);
+  }, [currentUser, isAdmin, hasDocumentAccess, permissionsLoading, navigate]);
 
   const [selectedWorkspace, setSelectedWorkspace] = useState(null);
   const [view, setView] = useState('grid');
@@ -140,7 +186,7 @@ const DocumentManagement = React.memo(() => {
   }, []);
 
   const files = useMemo(() => {
-    return [
+    const allFiles = [
       ...folders.map((f) => ({ ...f, type: 'folder', icon: 'folder', formattedSize: '-' })),
       ...filesList.map((f) => ({
         ...f,
@@ -149,6 +195,8 @@ const DocumentManagement = React.memo(() => {
         formattedSize: formatFileSize(f.size),
       })),
     ];
+
+    return allFiles;
   }, [folders, filesList, getFileIcon, formatFileSize]);
 
   useEffect(() => {
@@ -157,11 +205,44 @@ const DocumentManagement = React.memo(() => {
 
   const prevSpaceIdsRef = useRef([]);
 
-  useEffect(() => {
-    if (spaces.length > 0 && !selectedWorkspace) {
-      setSelectedWorkspace(spaces[0].id);
+  const currentSection = location.pathname.split('/').pop() || 'all-files';
+
+  const filteredSpaces = useMemo(() => {
+    if (isAdmin) {
+      return spaces;
     }
-  }, [spaces, selectedWorkspace]);
+
+    if (userPermissions.length === 0) {
+      return [];
+    }
+
+    const allowedSpaceIds = new Set();
+    userPermissions.forEach((perm) => {
+      if (perm.space && perm.space.id) {
+        allowedSpaceIds.add(String(perm.space.id));
+      }
+    });
+
+    return spaces.filter((space) => allowedSpaceIds.has(String(space.id)));
+  }, [spaces, isAdmin, userPermissions]);
+
+  const workspaces = useMemo(
+    () =>
+      filteredSpaces.map((space) => ({
+        key: space.id,
+        text: space.name,
+        value: space.id,
+        description: space.description,
+        selected: space.id === selectedWorkspace,
+      })),
+    [filteredSpaces, selectedWorkspace],
+  );
+
+  useEffect(() => {
+    if (filteredSpaces.length > 0 && !selectedWorkspace) {
+      setSelectedWorkspace(filteredSpaces[0].id);
+    }
+  }, [filteredSpaces, selectedWorkspace]);
 
   useEffect(() => {
     const currentIds = spaces.map((s) => s.id);
@@ -195,28 +276,14 @@ const DocumentManagement = React.memo(() => {
   }, [dispatch, currentFolderId]);
 
   useEffect(() => {
-    if (spaces.length > 0) {
-      if (selectedWorkspace && !spaces.find((s) => s.id === selectedWorkspace)) {
-        setSelectedWorkspace(spaces[0].id);
+    if (filteredSpaces.length > 0) {
+      if (selectedWorkspace && !filteredSpaces.find((s) => s.id === selectedWorkspace)) {
+        setSelectedWorkspace(filteredSpaces[0].id);
         setCurrentFolderId(null);
         setCurrentPath([]);
       }
     }
-  }, [spaces, selectedWorkspace]);
-
-  const currentSection = location.pathname.split('/').pop() || 'all-files';
-
-  const workspaces = useMemo(
-    () =>
-      spaces.map((space) => ({
-        key: space.id,
-        text: space.name,
-        value: space.id,
-        description: space.description,
-        selected: space.id === selectedWorkspace,
-      })),
-    [spaces, selectedWorkspace],
-  );
+  }, [filteredSpaces, selectedWorkspace]);
 
   const getSectionTitle = () => {
     switch (currentSection) {
@@ -685,8 +752,11 @@ const DocumentManagement = React.memo(() => {
   const currentFiles = getFilteredFiles();
   const sectionTitle = getSectionTitle();
 
-  // Don't render anything if user is not admin
-  if (!isAdmin) {
+  if (permissionsLoading) {
+    return null;
+  }
+
+  if (!isAdmin && !hasDocumentAccess) {
     return null;
   }
 
@@ -745,6 +815,8 @@ const DocumentManagement = React.memo(() => {
           onDragOver={handleDragOver}
           onDragLeave={handleDragLeave}
           onDrop={handleDrop}
+          canUpload={isAdmin}
+          canManageWorkspaces={isAdmin}
         />
 
         {modalConfig && (
@@ -770,6 +842,7 @@ const DocumentManagement = React.memo(() => {
             onFolderCreate={openFolderModal}
             onFileUpload={handleFileUpload}
             onViewChange={setView}
+            canUpload={isAdmin}
           />
 
           <SortBar
@@ -786,6 +859,8 @@ const DocumentManagement = React.memo(() => {
             }}
             onDelete={handleDeleteSelected}
             onDownload={handleDownloadSelected}
+            canShare={isAdmin}
+            canDelete={isAdmin}
           />
 
           {view === 'grid' ? (
@@ -806,6 +881,8 @@ const DocumentManagement = React.memo(() => {
               onShare={handleContextMenuShare}
               onDownload={handleContextMenuDownload}
               onDelete={handleContextMenuDelete}
+              canShare={isAdmin}
+              canDelete={isAdmin}
             />
           ) : (
             <FileList
@@ -825,6 +902,8 @@ const DocumentManagement = React.memo(() => {
               onShare={handleContextMenuShare}
               onDownload={handleContextMenuDownload}
               onDelete={handleContextMenuDelete}
+              canShare={isAdmin}
+              canDelete={isAdmin}
             />
           )}
         </div>
@@ -838,6 +917,7 @@ const DocumentManagement = React.memo(() => {
           onShare={() => handleShare(previewFile)}
           onDownload={handleDownload}
           onNavigate={handleNavigatePreview}
+          canShare={isAdmin}
         />
       )}
 

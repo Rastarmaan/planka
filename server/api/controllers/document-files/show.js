@@ -23,17 +23,36 @@ module.exports = {
   },
 
   async fn(inputs) {
+    const { currentUser } = this.req;
+    const isAdmin = currentUser.role === 'admin';
+
     const file = await DocumentFile.findOne({ id: inputs.id, isDeleted: false });
 
     if (!file) {
       throw 'notFound';
     }
 
-    const space = await Space.findOne({
-      id: file.space,
-      createdByUser: this.req.currentUser.id,
-    });
-    if (!space) {
+    let hasAccess = false;
+
+    if (isAdmin) {
+      const space = await Space.findOne({
+        id: file.space,
+        createdByUser: currentUser.id,
+      });
+      hasAccess = !!space;
+    } else {
+      const permissions = await DocumentPermission.find({
+        user: currentUser.id,
+        or: [
+          { resourceType: 'file', resourceId: file.id },
+          { resourceType: 'folder', resourceId: file.folder || '0' },
+          { resourceType: 'space', resourceId: file.space },
+        ],
+      }).limit(1);
+      hasAccess = permissions.length > 0;
+    }
+
+    if (!hasAccess) {
       throw 'forbidden';
     }
 

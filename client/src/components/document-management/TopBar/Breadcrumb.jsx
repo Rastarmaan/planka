@@ -11,7 +11,7 @@ import { Dropdown, Icon } from 'semantic-ui-react';
 import styles from './Breadcrumb.module.scss';
 
 const Breadcrumb = React.memo(
-  ({ sectionTitle, currentPath, onBreadcrumbClick, onFolderCreate, onFileUpload }) => {
+  ({ sectionTitle, currentPath, onBreadcrumbClick, onFolderCreate, onFileUpload, canUpload }) => {
     const [t] = useTranslation();
     const fileInputRef = useRef(null);
 
@@ -23,13 +23,15 @@ const Breadcrumb = React.memo(
 
     return (
       <>
-        <input
-          type="file"
-          ref={fileInputRef}
-          style={{ display: 'none' }}
-          multiple
-          onChange={onFileUpload}
-        />
+        {canUpload && (
+          <input
+            type="file"
+            ref={fileInputRef}
+            style={{ display: 'none' }}
+            multiple
+            onChange={onFileUpload}
+          />
+        )}
         <div className={styles.breadcrumb}>
           <span
             role="button"
@@ -64,20 +66,22 @@ const Breadcrumb = React.memo(
               </span>
             </React.Fragment>
           ))}
-          <Dropdown icon="angle down" className={styles.breadcrumbDropdown} direction="right">
-            <Dropdown.Menu>
-              <Dropdown.Item
-                text={t('documentManagement.newFolder')}
-                icon="folder"
-                onClick={onFolderCreate}
-              />
-              <Dropdown.Item
-                text={t('documentManagement.uploadFiles')}
-                icon="upload"
-                onClick={handleUploadClick}
-              />
-            </Dropdown.Menu>
-          </Dropdown>
+          {canUpload && (
+            <Dropdown icon="angle down" className={styles.breadcrumbDropdown} direction="right">
+              <Dropdown.Menu>
+                <Dropdown.Item
+                  text={t('documentManagement.newFolder')}
+                  icon="folder"
+                  onClick={onFolderCreate}
+                />
+                <Dropdown.Item
+                  text={t('documentManagement.uploadFiles')}
+                  icon="upload"
+                  onClick={handleUploadClick}
+                />
+              </Dropdown.Menu>
+            </Dropdown>
+          )}
         </div>
       </>
     );
@@ -95,6 +99,11 @@ Breadcrumb.propTypes = {
   onBreadcrumbClick: PropTypes.func.isRequired,
   onFolderCreate: PropTypes.func.isRequired,
   onFileUpload: PropTypes.func.isRequired,
+  canUpload: PropTypes.bool,
+};
+
+Breadcrumb.defaultProps = {
+  canUpload: true,
 };
 
 export default Breadcrumb;

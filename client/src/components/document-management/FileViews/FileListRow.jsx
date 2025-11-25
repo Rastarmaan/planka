@@ -31,6 +31,8 @@ const FileListRow = React.memo(
     onDelete,
     contextMenuState,
     onContextMenuChange,
+    canShare,
+    canDelete,
   }) => {
     const accessToken = useSelector(selectors.selectAccessToken);
     const [imageUrl, setImageUrl] = React.useState(null);
@@ -202,6 +204,8 @@ const FileListRow = React.memo(
             onShare={onShare}
             onDownload={onDownload}
             onDelete={onDelete}
+            canShare={canShare}
+            canDelete={canDelete}
           />
         )}
       </>
@@ -244,6 +248,8 @@ FileListRow.propTypes = {
     }),
   }),
   onContextMenuChange: PropTypes.func,
+  canShare: PropTypes.bool,
+  canDelete: PropTypes.bool,
 };
 
 FileListRow.defaultProps = {
@@ -253,6 +259,8 @@ FileListRow.defaultProps = {
   onDelete: null,
   contextMenuState: null,
   onContextMenuChange: null,
+  canShare: false,
+  canDelete: false,
 };
 
 export default FileListRow;

@@ -494,6 +494,13 @@ export default {
       usersInvitedSuccessfully: 'کاربران با موفقیت دعوت شدند',
       failedToInviteUsers: 'دعوت کاربران ناموفق بود. لطفا دوباره تلاش کنید.',
       shareFile: 'اشتراک‌گذاری',
+      grantAccess: 'اعطای دسترسی به سند',
+      grantAccessDescription:
+        'کاربران را اضافه کنید تا به این سند دسترسی داشته باشند. کاربران انتخاب شده قادر به مشاهده، ویرایش و دانلود این فایل خواهند بود.',
+      searchUsersToGrantAccess: 'جستجوی کاربران برای اعطای دسترسی...',
+      addUser: 'افزودن کاربر',
+      userAccessGranted: 'دسترسی کاربر با موفقیت اعطا شد',
+      usersAccessGranted: 'کاربران با موفقیت دسترسی پیدا کردند',
       invitePeople: 'دعوت افراد',
       typeNameToSearchUsers: 'نام را تایپ کنید تا کاربران جستجو شوند...',
       noUsersFound: 'کاربری پیدا نشد.',

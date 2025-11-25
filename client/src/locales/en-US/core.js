@@ -246,6 +246,7 @@ export default {
       invalidCurrentPassword: 'Invalid current password',
       kanban: 'Kanban',
       labels: 'Labels',
+      loading: 'Loading...',
       dependencies: 'Dependencies',
       dependencies_title: 'Dependencies',
       blockedBy: 'Blocked by',
@@ -342,6 +343,7 @@ export default {
       confirmUnlinkBoard:
         'Are you sure you want to unlink this board? Sync mappings will be removed.',
       unknown: 'Unknown',
+      unknownUser: 'Unknown User',
       pressPasteShortcutToAddAttachmentFromClipboard:
         'Tip: press Ctrl-V (Cmd-V on Mac) to add an attachment from the clipboard.',
       private: 'Private',
@@ -573,6 +575,13 @@ export default {
       usersInvitedSuccessfully: 'users invited successfully',
       failedToInviteUsers: 'Failed to invite users. Please try again.',
       shareFile: 'Share',
+      grantAccess: 'Grant Document Access',
+      grantAccessDescription:
+        'Add users to give them access to this document. Selected users will be able to view, edit, and download this file.',
+      searchUsersToGrantAccess: 'Search users to grant access...',
+      addUser: 'Add User',
+      userAccessGranted: 'User access granted successfully',
+      usersAccessGranted: 'users access granted successfully',
       invitePeople: 'Invite people',
       typeNameToSearchUsers: 'Type name to search users...',
       noUsersFound: 'No users found.',
@@ -599,6 +608,12 @@ export default {
       canView: 'Can view',
       canDownload: 'Can download',
       canEdit: 'Can edit',
+      accessRevoked: 'Access revoked successfully',
+      failedToRevokeAccess: 'Failed to revoke access. Please try again.',
+      removeAccess: 'Remove access',
+      noUsersWithAccess: 'No other users have access to this document',
+      editor: 'Editor',
+      viewer: 'Viewer',
     },
 
     action: {

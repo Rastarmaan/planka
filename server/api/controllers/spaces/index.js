@@ -39,35 +39,90 @@ module.exports = {
   },
 
   async fn(inputs) {
-    const criteria = {
-      createdByUser: this.req.currentUser.id,
-    };
+    const { currentUser } = this.req;
+    const isAdmin = currentUser.role === 'admin';
 
-    if (!inputs.includeDeleted) {
-      criteria.isDeleted = false;
-    }
+    let spaces = [];
 
-    let spaces = await Space.find(criteria).sort('createdAt ASC');
+    if (isAdmin) {
+      const criteria = {
+        createdByUser: currentUser.id,
+      };
 
-    if (spaces.length === 0) {
-      try {
-        const existingSpaces = await Space.find(criteria);
-        if (existingSpaces.length === 0) {
-          const defaultSpace = await sails.helpers.spaces.createOne.with({
-            name: 'Documents',
-            description: 'Default document space',
-            user: this.req.currentUser,
-            request: this.req,
-          });
-
-          spaces = [defaultSpace];
-        } else {
-          spaces = existingSpaces.sort((a, b) => new Date(a.createdAt) - new Date(b.createdAt));
-        }
-      } catch (error) {
-        sails.log.error('Error creating default space:', error);
-        spaces = await Space.find(criteria).sort('createdAt ASC');
+      if (!inputs.includeDeleted) {
+        criteria.isDeleted = false;
       }
+
+      spaces = await Space.find(criteria).sort('createdAt ASC');
+
+      if (spaces.length === 0) {
+        try {
+          const existingSpaces = await Space.find(criteria);
+          if (existingSpaces.length === 0) {
+            const defaultSpace = await sails.helpers.spaces.createOne.with({
+              name: 'Documents',
+              description: 'Default document space',
+              user: currentUser,
+              request: this.req,
+            });
+
+            spaces = [defaultSpace];
+          } else {
+            spaces = existingSpaces.sort((a, b) => new Date(a.createdAt) - new Date(b.createdAt));
+          }
+        } catch (error) {
+          sails.log.error('Error creating default space:', error);
+          spaces = await Space.find(criteria).sort('createdAt ASC');
+        }
+      }
+    } else {
+      const permissions = await DocumentPermission.find({
+        user: currentUser.id,
+      });
+
+      if (permissions.length === 0) {
+        return { items: [] };
+      }
+
+      const spaceIds = new Set();
+
+      await Promise.all(
+        permissions.map(async (perm) => {
+          if (perm.resourceType === 'space') {
+            spaceIds.add(perm.resourceId);
+          } else if (perm.resourceType === 'folder') {
+            const folder = await DocumentFolder.findOne({
+              id: perm.resourceId,
+              isDeleted: false,
+            });
+            if (folder && folder.space) {
+              spaceIds.add(String(folder.space));
+            }
+          } else if (perm.resourceType === 'file') {
+            const file = await DocumentFile.findOne({
+              id: perm.resourceId,
+              isDeleted: false,
+            });
+            if (file && file.space) {
+              spaceIds.add(String(file.space));
+            }
+          }
+        }),
+      );
+
+      if (spaceIds.size === 0) {
+        return { items: [] };
+      }
+
+      const spaceCriteria = {
+        id: Array.from(spaceIds),
+      };
+
+      if (!inputs.includeDeleted) {
+        spaceCriteria.isDeleted = false;
+      }
+
+      spaces = await Space.find(spaceCriteria).sort('createdAt ASC');
     }
 
     return {

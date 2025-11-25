@@ -4,7 +4,7 @@
  */
 
 import classNames from 'classnames';
-import React, { useCallback } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import { useSelector } from 'react-redux';
@@ -13,6 +13,7 @@ import { Icon } from 'semantic-ui-react';
 import { UserRoles } from '../../../constants/Enums';
 import Paths from '../../../constants/Paths';
 import selectors from '../../../selectors';
+import permissionsApi from '../../../api/permissions';
 
 import styles from './DocumentManagementButton.module.scss';
 
@@ -21,13 +22,47 @@ const DocumentManagementButton = React.memo(() => {
   const navigate = useNavigate();
 
   const currentUser = useSelector(selectors.selectCurrentUser);
+  const accessToken = useSelector(selectors.selectAccessToken);
   const isAdmin = currentUser && currentUser.role === UserRoles.ADMIN;
+
+  const [hasDocumentAccess, setHasDocumentAccess] = useState(false);
+
+  useEffect(() => {
+    let mounted = true;
+
+    const checkDocumentAccess = async () => {
+      if (isAdmin) return;
+
+      try {
+        const res = await permissionsApi.getMyPermissions({
+          Authorization: `Bearer ${accessToken}`,
+        });
+
+        if (!mounted) return;
+
+        const items = (res && res.items) || [];
+        setHasDocumentAccess(items.length > 0);
+      } catch {
+        if (mounted) {
+          setHasDocumentAccess(false);
+        }
+      }
+    };
+
+    if (currentUser && !isAdmin) {
+      checkDocumentAccess();
+    }
+
+    return () => {
+      mounted = false;
+    };
+  }, [currentUser, isAdmin, accessToken]);
 
   const handleClick = useCallback(() => {
     navigate(Paths.DOCUMENT_MANAGEMENT);
   }, [navigate]);
 
-  if (!isAdmin) {
+  if (!isAdmin && !hasDocumentAccess) {
     return null;
   }
 

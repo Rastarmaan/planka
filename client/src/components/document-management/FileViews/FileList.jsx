@@ -28,6 +28,8 @@ const FileList = React.memo(
     onShare,
     onDownload,
     onDelete,
+    canShare,
+    canDelete,
   }) => {
     const [t] = useTranslation();
     const [activeContextMenu, setActiveContextMenu] = React.useState(null);
@@ -77,6 +79,8 @@ const FileList = React.memo(
             onDelete={onDelete}
             contextMenuState={activeContextMenu}
             onContextMenuChange={setActiveContextMenu}
+            canShare={canShare}
+            canDelete={canDelete}
           />
         ))}
       </div>
@@ -105,6 +109,8 @@ FileList.propTypes = {
   onShare: PropTypes.func,
   onDownload: PropTypes.func,
   onDelete: PropTypes.func,
+  canShare: PropTypes.bool,
+  canDelete: PropTypes.bool,
 };
 
 FileList.defaultProps = {
@@ -115,6 +121,8 @@ FileList.defaultProps = {
   onShare: null,
   onDownload: null,
   onDelete: null,
+  canShare: false,
+  canDelete: false,
 };
 
 export default FileList;

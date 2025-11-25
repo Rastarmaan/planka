@@ -103,6 +103,45 @@
     font-size: 12px;
   }
 
+  .userActions {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .removeButton {
+    padding: 6px !important;
+    margin: 0 !important;
+
+    &:hover {
+      background: rgba(239, 68, 68, 0.1) !important;
+    }
+  }
+
+  .loadingContainer {
+    padding: 24px 0;
+    text-align: center;
+  }
+
+  .avatarPlaceholder {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: #6366f1;
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 600;
+    font-size: 16px;
+  }
+
+  .sectionDescription {
+    font-size: 13px;
+    color: #6b7280;
+    margin-bottom: 12px;
+  }
+
   // Share Link Section
   .shareLinkHeader {
     display: flex;
@@ -150,6 +189,21 @@
     display: flex;
     align-items: center;
     gap: 8px;
+  }
+
+  .loadingUsers {
+    padding: 16px 0;
+    color: #6b7280;
+    font-size: 14px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .noUsersItem {
+    padding: 12px 0 !important;
+    color: #6b7280;
+    font-style: italic;
   }
 
   // Divider

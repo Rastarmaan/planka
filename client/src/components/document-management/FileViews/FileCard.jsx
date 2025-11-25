@@ -31,6 +31,8 @@ const FileCard = React.memo(
     onDelete,
     contextMenuState,
     onContextMenuChange,
+    canShare,
+    canDelete,
   }) => {
     const accessToken = useSelector(selectors.selectAccessToken);
     const [imageUrl, setImageUrl] = React.useState(null);
@@ -201,6 +203,8 @@ const FileCard = React.memo(
             onShare={onShare}
             onDownload={onDownload}
             onDelete={onDelete}
+            canShare={canShare}
+            canDelete={canDelete}
           />
         )}
       </>
@@ -243,6 +247,8 @@ FileCard.propTypes = {
     }),
   }),
   onContextMenuChange: PropTypes.func,
+  canShare: PropTypes.bool,
+  canDelete: PropTypes.bool,
 };
 
 FileCard.defaultProps = {
@@ -252,6 +258,8 @@ FileCard.defaultProps = {
   onDelete: null,
   contextMenuState: null,
   onContextMenuChange: null,
+  canShare: false,
+  canDelete: false,
 };
 
 export default FileCard;

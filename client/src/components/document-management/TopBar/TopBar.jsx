@@ -19,6 +19,7 @@ const TopBar = React.memo(
     onFolderCreate,
     onFileUpload,
     onViewChange,
+    canUpload,
   }) => (
     <div className={styles.topBar}>
       <Breadcrumb
@@ -27,6 +28,7 @@ const TopBar = React.memo(
         onBreadcrumbClick={onBreadcrumbClick}
         onFolderCreate={onFolderCreate}
         onFileUpload={onFileUpload}
+        canUpload={canUpload}
       />
 
       <div className={styles.topBarActions}>
@@ -49,6 +51,11 @@ TopBar.propTypes = {
   onFolderCreate: PropTypes.func.isRequired,
   onFileUpload: PropTypes.func.isRequired,
   onViewChange: PropTypes.func.isRequired,
+  canUpload: PropTypes.bool,
+};
+
+TopBar.defaultProps = {
+  canUpload: true,
 };
 
 export default TopBar;

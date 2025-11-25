@@ -3,7 +3,7 @@
  * Licensed under the Fair Use License: https://github.com/plankanban/planka/blob/master/LICENSE.md
  */
 
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import PropTypes from 'prop-types';
 import { useSelector } from 'react-redux';
 import { useTranslation } from 'react-i18next';
@@ -24,7 +24,6 @@ const ShareModal = React.memo(({ resource, resourceType, isOpen, onClose, onCrea
   const accessToken = useSelector(selectors.selectAccessToken);
 
   const [selectedUsers, setSelectedUsers] = useState([]);
-  const [userPermission, setUserPermission] = useState('view');
 
   const [linkEnabled, setLinkEnabled] = useState(false);
   const [shareLink, setShareLink] = useState('');
@@ -33,6 +32,10 @@ const ShareModal = React.memo(({ resource, resourceType, isOpen, onClose, onCrea
   const [linkSettings, setLinkSettings] = useState({});
   const [showLinkSettings, setShowLinkSettings] = useState(false);
   const [usersOptionsFromApi, setUsersOptionsFromApi] = useState(null);
+
+  const [sharedUsers, setSharedUsers] = useState([]);
+  const [loadingSharedUsers, setLoadingSharedUsers] = useState(false);
+  const [removingUserId, setRemovingUserId] = useState(null);
 
   useEffect(() => {
     let mounted = true;
@@ -81,6 +84,55 @@ const ShareModal = React.memo(({ resource, resourceType, isOpen, onClose, onCrea
     };
   }, [currentUser]);
 
+  const fetchSharedUsers = useCallback(async () => {
+    if (!resource?.id || !resourceType) return;
+
+    setLoadingSharedUsers(true);
+    try {
+      const res = await permissionsApi.getPermissions(
+        {
+          resourceType,
+          resourceId: resource.id.toString(),
+        },
+        {
+          Authorization: `Bearer ${accessToken}`,
+        },
+      );
+
+      const items = (res && res.items) || [];
+      setSharedUsers(items);
+    } catch {
+      // Error fetching permissions - ignore
+    } finally {
+      setLoadingSharedUsers(false);
+    }
+  }, [resource, resourceType, accessToken]);
+
+  useEffect(() => {
+    if (isOpen && resource?.id) {
+      fetchSharedUsers();
+    }
+  }, [isOpen, resource, fetchSharedUsers]);
+
+  const handleRemoveAccess = useCallback(
+    async (permission) => {
+      setRemovingUserId(permission.id);
+      try {
+        await permissionsApi.deletePermission(permission.id, {
+          Authorization: `Bearer ${accessToken}`,
+        });
+
+        setSharedUsers((prev) => prev.filter((p) => p.id !== permission.id));
+        toast.success(t('documentManagement.accessRevoked'));
+      } catch (err) {
+        toast.error(t('documentManagement.failedToRevokeAccess'));
+      } finally {
+        setRemovingUserId(null);
+      }
+    },
+    [accessToken, t],
+  );
+
   const availableUsers = useMemo(() => {
     const source =
       usersOptionsFromApi ||
@@ -127,25 +179,14 @@ const ShareModal = React.memo(({ resource, resourceType, isOpen, onClose, onCrea
     ];
   }, [currentUser]);
 
-  const permissionOptions = [
-    { key: 'view', text: t('documentManagement.canView'), value: 'view', icon: 'eye' },
-    {
-      key: 'download',
-      text: t('documentManagement.canDownload'),
-      value: 'download',
-      icon: 'download',
-    },
-    { key: 'edit', text: t('documentManagement.canEdit'), value: 'edit', icon: 'edit' },
-  ];
-
   useEffect(() => {
     if (!isOpen) {
       setSelectedUsers([]);
-      setUserPermission('view');
       setLinkEnabled(false);
       setShareLink('');
       setCopied(false);
       setLinkSettings({});
+      setSharedUsers([]);
     }
   }, [isOpen]);
 
@@ -208,44 +249,13 @@ const ShareModal = React.memo(({ resource, resourceType, isOpen, onClose, onCrea
     if (selectedUsers.length === 0) return;
 
     try {
-      const getPermissionFlags = (permission) => {
-        switch (permission) {
-          case 'view':
-            return {
-              canView: true,
-              canDownload: false,
-              canEdit: false,
-              canDelete: false,
-              canShare: false,
-            };
-          case 'download':
-            return {
-              canView: true,
-              canDownload: true,
-              canEdit: false,
-              canDelete: false,
-              canShare: false,
-            };
-          case 'edit':
-            return {
-              canView: true,
-              canDownload: true,
-              canEdit: true,
-              canDelete: false,
-              canShare: false,
-            };
-          default:
-            return {
-              canView: true,
-              canDownload: false,
-              canEdit: false,
-              canDelete: false,
-              canShare: false,
-            };
-        }
+      const permissionFlags = {
+        canView: true,
+        canDownload: true,
+        canEdit: true,
+        canDelete: false,
+        canShare: false,
       };
-
-      const permissionFlags = getPermissionFlags(userPermission);
 
       const existingUsers = selectedUsers.filter((userValue) => /^\d+$/.test(userValue.toString()));
 
@@ -264,14 +274,16 @@ const ShareModal = React.memo(({ resource, resourceType, isOpen, onClose, onCrea
         });
 
         await Promise.all(promises);
+
+        await fetchSharedUsers();
       }
 
       setSelectedUsers([]);
 
       toast.success(
         existingUsers.length === 1
-          ? t('documentManagement.userInvitedSuccessfully')
-          : `${existingUsers.length} ${t('documentManagement.usersInvitedSuccessfully')}`,
+          ? t('documentManagement.userAccessGranted')
+          : `${existingUsers.length} ${t('documentManagement.usersAccessGranted')}`,
       );
     } catch (error) {
       toast.error(t('documentManagement.failedToInviteUsers'));
@@ -287,10 +299,13 @@ const ShareModal = React.memo(({ resource, resourceType, isOpen, onClose, onCrea
         </Modal.Header>
         <Modal.Content className={styles.content}>
           <div className={styles.section}>
-            <h4 className={styles.sectionTitle}>{t('documentManagement.invitePeople')}</h4>
+            <h4 className={styles.sectionTitle}>{t('documentManagement.grantAccess')}</h4>
+            <p className={styles.sectionDescription}>
+              {t('documentManagement.grantAccessDescription')}
+            </p>
             <div className={styles.inviteContainer}>
               <Dropdown
-                placeholder={t('documentManagement.typeNameToSearchUsers')}
+                placeholder={t('documentManagement.searchUsersToGrantAccess')}
                 fluid
                 multiple
                 search
@@ -301,19 +316,12 @@ const ShareModal = React.memo(({ resource, resourceType, isOpen, onClose, onCrea
                 noResultsMessage={t('documentManagement.noUsersFound')}
                 className={styles.userDropdown}
               />
-              <Dropdown
-                className={styles.permissionDropdown}
-                selection
-                options={permissionOptions}
-                value={userPermission}
-                onChange={(e, { value }) => setUserPermission(value)}
-              />
             </div>
             {selectedUsers.length > 0 && (
               <Button
                 positive
                 size="small"
-                content={t('documentManagement.invite')}
+                content={t('documentManagement.addUser')}
                 onClick={handleInviteUsers}
                 style={{ marginTop: '8px' }}
               />
@@ -324,22 +332,86 @@ const ShareModal = React.memo(({ resource, resourceType, isOpen, onClose, onCrea
 
           <div className={styles.section}>
             <h4 className={styles.sectionTitle}>{t('documentManagement.whoHasAccess')}</h4>
-            <List divided className={styles.userList}>
-              {usersWithAccess.map((user) => (
-                <List.Item key={user.id} className={styles.userItem}>
-                  {user.avatar && (
-                    <img src={user.avatar} alt={user.name} className={styles.avatar} />
-                  )}
-                  <List.Content className={styles.userInfo}>
-                    <List.Header>{user.name}</List.Header>
-                    <List.Description>{user.email}</List.Description>
-                  </List.Content>
-                  <Label basic className={styles.roleLabel}>
-                    {user.role}
-                  </Label>
-                </List.Item>
-              ))}
-            </List>
+            {loadingSharedUsers ? (
+              <div className={styles.loadingUsers}>
+                <Icon loading name="spinner" />
+                {t('common.loading')}
+              </div>
+            ) : (
+              <List divided className={styles.userList}>
+                {/* Owner */}
+                {usersWithAccess.map((user) => (
+                  <List.Item key={user.id} className={styles.userItem}>
+                    {user.avatar ? (
+                      <img src={user.avatar} alt={user.name} className={styles.avatar} />
+                    ) : (
+                      <div className={styles.avatarPlaceholder}>
+                        {(user.name || '?').charAt(0).toUpperCase()}
+                      </div>
+                    )}
+                    <List.Content className={styles.userInfo}>
+                      <List.Header>{user.name}</List.Header>
+                      <List.Description>{user.email}</List.Description>
+                    </List.Content>
+                    <Label basic className={styles.roleLabel}>
+                      {user.role}
+                    </Label>
+                  </List.Item>
+                ))}
+                {/* Shared users */}
+                {sharedUsers.map((permission) => {
+                  const user = permission.user || {};
+                  const userName = user.name || user.username || t('common.unknownUser');
+                  const userEmail = user.email || '';
+                  const userAvatar = (() => {
+                    if (!user.avatarUrl) return null;
+                    if (user.avatarUrl.indexOf('http') === 0) return user.avatarUrl;
+                    return `${window.location.origin}${user.avatarUrl}`;
+                  })();
+
+                  return (
+                    <List.Item key={permission.id} className={styles.userItem}>
+                      {userAvatar ? (
+                        <img src={userAvatar} alt={userName} className={styles.avatar} />
+                      ) : (
+                        <div className={styles.avatarPlaceholder}>
+                          {userName.charAt(0).toUpperCase()}
+                        </div>
+                      )}
+                      <List.Content className={styles.userInfo}>
+                        <List.Header>{userName}</List.Header>
+                        <List.Description>{userEmail}</List.Description>
+                      </List.Content>
+                      <Label basic className={styles.roleLabel}>
+                        {permission.canEdit
+                          ? t('documentManagement.editor')
+                          : t('documentManagement.viewer')}
+                      </Label>
+                      <Button
+                        icon="trash"
+                        size="mini"
+                        negative
+                        basic
+                        loading={removingUserId === permission.id}
+                        disabled={removingUserId !== null}
+                        onClick={() => handleRemoveAccess(permission)}
+                        className={styles.removeButton}
+                        title={t('documentManagement.removeAccess')}
+                      />
+                    </List.Item>
+                  );
+                })}
+                {sharedUsers.length === 0 && usersWithAccess.length <= 1 && (
+                  <List.Item className={styles.noUsersItem}>
+                    <List.Content>
+                      <List.Description>
+                        {t('documentManagement.noUsersWithAccess')}
+                      </List.Description>
+                    </List.Content>
+                  </List.Item>
+                )}
+              </List>
+            )}
           </div>
 
           <Divider />

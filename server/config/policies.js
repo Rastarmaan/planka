@@ -41,21 +41,21 @@ module.exports.policies = {
   'project-categories/update': ['is-authenticated', 'is-external', 'is-admin'],
   'project-categories/delete': ['is-authenticated', 'is-external', 'is-admin'],
 
-  'spaces/index': ['is-authenticated', 'is-external', 'is-admin'],
+  'spaces/index': ['is-authenticated', 'is-external'],
   'spaces/create': ['is-authenticated', 'is-external', 'is-admin'],
-  'spaces/show': ['is-authenticated', 'is-external', 'is-admin'],
+  'spaces/show': ['is-authenticated', 'is-external'],
   'spaces/update': ['is-authenticated', 'is-external', 'is-admin'],
   'spaces/delete': ['is-authenticated', 'is-external', 'is-admin'],
 
-  'folders/index': ['is-authenticated', 'is-external', 'is-admin'],
+  'folders/index': ['is-authenticated', 'is-external'],
   'folders/create': ['is-authenticated', 'is-external', 'is-admin'],
-  'folders/show': ['is-authenticated', 'is-external', 'is-admin'],
+  'folders/show': ['is-authenticated', 'is-external'],
   'folders/update': ['is-authenticated', 'is-external', 'is-admin'],
   'folders/delete': ['is-authenticated', 'is-external', 'is-admin'],
 
   'document-files/upload': ['is-authenticated', 'is-external', 'is-admin'],
-  'document-files/show': ['is-authenticated', 'is-external', 'is-admin'],
-  'document-files/download': ['is-authenticated', 'is-external', 'is-admin'],
+  'document-files/show': ['is-authenticated', 'is-external'],
+  'document-files/download': ['is-authenticated', 'is-external'],
   'document-files/update': ['is-authenticated', 'is-external', 'is-admin'],
   'document-files/delete': ['is-authenticated', 'is-external', 'is-admin'],
 
@@ -66,8 +66,9 @@ module.exports.policies = {
   'share-links/download': true,
 
   'permissions/create': ['is-authenticated', 'is-external', 'is-admin'],
-  'permissions/index': ['is-authenticated', 'is-external', 'is-admin'],
+  'permissions/index': ['is-authenticated', 'is-external'],
   'permissions/delete': ['is-authenticated', 'is-external', 'is-admin'],
+  'permissions/my-permissions': ['is-authenticated', 'is-external'],
 
   'config/show': true,
   'terms/show': true,
