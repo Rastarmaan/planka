@@ -29,6 +29,7 @@ const FileGrid = React.memo(
     onShare,
     onDownload,
     onDelete,
+    onRename,
     canShare,
     canDelete,
   }) => {
@@ -76,6 +77,7 @@ const FileGrid = React.memo(
               onShare={onShare}
               onDownload={onDownload}
               onDelete={onDelete}
+              onRename={onRename}
               contextMenuState={activeContextMenu}
               onContextMenuChange={setActiveContextMenu}
               canShare={canShare}
@@ -109,6 +111,7 @@ FileGrid.propTypes = {
   onShare: PropTypes.func,
   onDownload: PropTypes.func,
   onDelete: PropTypes.func,
+  onRename: PropTypes.func,
   canShare: PropTypes.bool,
   canDelete: PropTypes.bool,
 };
@@ -121,6 +124,7 @@ FileGrid.defaultProps = {
   onShare: null,
   onDownload: null,
   onDelete: null,
+  onRename: null,
   canShare: false,
   canDelete: false,
 };

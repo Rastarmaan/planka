@@ -20,6 +20,7 @@ const SortBar = React.memo(
     onShare,
     onDelete,
     onDownload,
+    onRename,
     canShare,
     canDelete,
   }) => {
@@ -41,6 +42,8 @@ const SortBar = React.memo(
       selectedFileData?.type === 'file' &&
       selectedFileData?.mimeType &&
       selectedFileData.mimeType.startsWith('image/');
+
+    const isFolder = selectedFileData?.type === 'folder';
 
     return (
       <div className={styles.sortBar}>
@@ -79,6 +82,13 @@ const SortBar = React.memo(
               className={styles.actionButton}
             >
               <Dropdown.Menu>
+                {isFolder && (
+                  <Dropdown.Item
+                    icon="pencil"
+                    text={t('action.rename', 'Rename')}
+                    onClick={onRename}
+                  />
+                )}
                 {canShare && (
                   <Dropdown.Item
                     icon="share alternate"
@@ -112,6 +122,7 @@ SortBar.propTypes = {
   onShare: PropTypes.func.isRequired,
   onDelete: PropTypes.func.isRequired,
   onDownload: PropTypes.func.isRequired,
+  onRename: PropTypes.func,
   canShare: PropTypes.bool,
   canDelete: PropTypes.bool,
 };
@@ -119,6 +130,7 @@ SortBar.propTypes = {
 SortBar.defaultProps = {
   selectedFile: null,
   selectedFileData: null,
+  onRename: null,
   canShare: false,
   canDelete: false,
 };

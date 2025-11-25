@@ -11,7 +11,18 @@ import { Icon } from 'semantic-ui-react';
 import styles from './FileContextMenu.module.scss';
 
 const FileContextMenu = React.memo(
-  ({ file, position, onClose, onPreview, onShare, onDownload, onDelete, canShare, canDelete }) => {
+  ({
+    file,
+    position,
+    onClose,
+    onPreview,
+    onShare,
+    onDownload,
+    onDelete,
+    onRename,
+    canShare,
+    canDelete,
+  }) => {
     const [t] = useTranslation();
     const menuRef = useRef(null);
     const isImageFile = file.type === 'file' && file.mimeType && file.mimeType.startsWith('image/');
@@ -101,6 +112,18 @@ const FileContextMenu = React.memo(
             <span>{t('documentManagement.download')}</span>
           </div>
         )}
+        {file.type === 'folder' && (
+          <div
+            role="button"
+            tabIndex={0}
+            className={styles.menuItem}
+            onClick={() => handleAction('rename', onRename)}
+            onKeyDown={(e) => e.key === 'Enter' && handleAction('rename', onRename)}
+          >
+            <Icon name="pencil" />
+            <span>{t('action.rename', 'Rename')}</span>
+          </div>
+        )}
         {canShare && (
           <div
             role="button"
@@ -148,6 +171,7 @@ FileContextMenu.propTypes = {
   onShare: PropTypes.func,
   onDownload: PropTypes.func,
   onDelete: PropTypes.func,
+  onRename: PropTypes.func,
   canShare: PropTypes.bool,
   canDelete: PropTypes.bool,
 };
@@ -157,6 +181,7 @@ FileContextMenu.defaultProps = {
   onShare: null,
   onDownload: null,
   onDelete: null,
+  onRename: null,
   canShare: false,
   canDelete: false,
 };

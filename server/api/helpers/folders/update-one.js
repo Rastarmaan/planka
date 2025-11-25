@@ -3,6 +3,19 @@
  * Licensed under the Fair Use License: https://github.com/plankanban/planka/blob/master/LICENSE.md
  */
 
+const updateChildPaths = async (parentId, oldParentPath, newParentPath) => {
+  const childFolders = await DocumentFolder.find({ parentFolder: parentId, isDeleted: false });
+
+  /* eslint-disable no-await-in-loop, no-restricted-syntax */
+  for (const child of childFolders) {
+    const newChildPath = child.path.replace(oldParentPath, newParentPath);
+    await DocumentFolder.updateOne({ id: child.id }).set({ path: newChildPath });
+
+    await updateChildPaths(child.id, child.path, newChildPath);
+  }
+  /* eslint-enable no-await-in-loop, no-restricted-syntax */
+};
+
 module.exports = {
   inputs: {
     record: {
@@ -58,7 +71,7 @@ module.exports = {
     }
 
     if (updateData.path && updateData.path !== record.path) {
-      await this.updateChildPaths(record.id, record.path, updateData.path);
+      await updateChildPaths(record.id, record.path, updateData.path);
     }
 
     sails.sockets.broadcast(`space:${record.space}`, 'folderUpdate', {
@@ -78,18 +91,5 @@ module.exports = {
     });
 
     return updatedFolder;
-  },
-
-  async updateChildPaths(parentId, oldParentPath, newParentPath) {
-    const childFolders = await DocumentFolder.find({ parentFolder: parentId, isDeleted: false });
-
-    /* eslint-disable no-await-in-loop, no-restricted-syntax */
-    for (const child of childFolders) {
-      const newChildPath = child.path.replace(oldParentPath, newParentPath);
-      await DocumentFolder.updateOne({ id: child.id }).set({ path: newChildPath });
-
-      await this.updateChildPaths(child.id, child.path, newChildPath);
-    }
-    /* eslint-enable no-await-in-loop, no-restricted-syntax */
   },
 };

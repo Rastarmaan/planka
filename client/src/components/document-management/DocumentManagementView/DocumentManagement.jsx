@@ -576,6 +576,29 @@ const DocumentManagement = React.memo(() => {
     }
   };
 
+  const handleRenameFolder = (folderId, newName) => {
+    if (folderId && newName) {
+      dispatch(actions.updateFolder(folderId, { name: newName }));
+    }
+  };
+
+  const openFolderRenameModal = (folder) => {
+    setModalConfig({
+      type: 'folder-rename',
+      title: t('action.rename', 'Rename'),
+      label: t('common.name', 'Name'),
+      defaultValue: folder.name,
+      submitLabel: t('action.rename', 'Rename'),
+      onSubmit: (newName) => handleRenameFolder(folder.id, newName),
+    });
+  };
+
+  const handleContextMenuRename = (file) => {
+    if (file && file.type === 'folder') {
+      openFolderRenameModal(file);
+    }
+  };
+
   const handleCreateFolder = (folderName) => {
     if (selectedWorkspace) {
       const localId = createLocalId();
@@ -857,6 +880,12 @@ const DocumentManagement = React.memo(() => {
                 handleShare(selectedFileData);
               }
             }}
+            onRename={() => {
+              const selectedFileData = files.find((f) => f.id === selectedFile);
+              if (selectedFileData) {
+                handleContextMenuRename(selectedFileData);
+              }
+            }}
             onDelete={handleDeleteSelected}
             onDownload={handleDownloadSelected}
             canShare={isAdmin}
@@ -881,6 +910,7 @@ const DocumentManagement = React.memo(() => {
               onShare={handleContextMenuShare}
               onDownload={handleContextMenuDownload}
               onDelete={handleContextMenuDelete}
+              onRename={handleContextMenuRename}
               canShare={isAdmin}
               canDelete={isAdmin}
             />
@@ -902,6 +932,7 @@ const DocumentManagement = React.memo(() => {
               onShare={handleContextMenuShare}
               onDownload={handleContextMenuDownload}
               onDelete={handleContextMenuDelete}
+              onRename={handleContextMenuRename}
               canShare={isAdmin}
               canDelete={isAdmin}
             />

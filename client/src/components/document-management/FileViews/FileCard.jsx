@@ -29,6 +29,7 @@ const FileCard = React.memo(
     onShare,
     onDownload,
     onDelete,
+    onRename,
     contextMenuState,
     onContextMenuChange,
     canShare,
@@ -203,6 +204,7 @@ const FileCard = React.memo(
             onShare={onShare}
             onDownload={onDownload}
             onDelete={onDelete}
+            onRename={onRename}
             canShare={canShare}
             canDelete={canDelete}
           />
@@ -235,6 +237,7 @@ FileCard.propTypes = {
   onShare: PropTypes.func,
   onDownload: PropTypes.func,
   onDelete: PropTypes.func,
+  onRename: PropTypes.func,
   contextMenuState: PropTypes.shape({
     fileId: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
     position: PropTypes.shape({
@@ -256,6 +259,7 @@ FileCard.defaultProps = {
   onShare: null,
   onDownload: null,
   onDelete: null,
+  onRename: null,
   contextMenuState: null,
   onContextMenuChange: null,
   canShare: false,
