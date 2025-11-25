@@ -793,7 +793,7 @@ const DocumentManagement = React.memo(() => {
           onClick={handleBackToProjects}
         >
           <Icon name="arrow left" />
-          {t('action.backToProjects', 'Back to Projects')}
+          {/* {t('action.backToProjects', 'Back to Projects')} */}
         </Button>
         <h2 className={styles.documentTitle}>Document Management</h2>
       </div>

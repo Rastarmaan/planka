@@ -16,21 +16,19 @@
   .documentHeader {
     display: flex;
     align-items: center;
-    padding: 12px 24px;
     background: #16191d;
     border-bottom: 1px solid rgba(255, 255, 255, 0.08);
-    gap: 16px;
     flex-shrink: 0;
+    gap: .5rem;
+    height: 3.5rem;
   }
 
   .backToProjectsButton {
     color: rgba(255, 255, 255, 0.7) !important;
-    border: 1px solid rgba(255, 255, 255, 0.15) !important;
     background: transparent !important;
-    font-size: 13px !important;
-    padding: 6px 12px !important;
-    border-radius: 4px !important;
     transition: all 0.2s ease !important;
+    width: 4rem;
+    height: 3.5rem;
 
     &:hover {
       background: rgba(255, 255, 255, 0.05) !important;
@@ -39,15 +37,14 @@
     }
 
     :global(.icon) {
-      margin-right: 4px !important;
-      font-size: 11px !important;
+      margin-left: .5rem !important;
     }
   }
 
   .documentTitle {
     margin: 0 !important;
     color: rgba(255, 255, 255, 0.9);
-    font-size: 18px;
+    font-size: 1.2rem;
     font-weight: 500;
   }
 
