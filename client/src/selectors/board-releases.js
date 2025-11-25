@@ -101,16 +101,54 @@ export const makeSelectReleasesForCard = () =>
 
 export const selectReleasesForCard = makeSelectReleasesForCard();
 
-export const selectReleaseCardCounts = createSelector(orm, ({ ReleaseCard }) => {
+export const selectReleaseCardCounts = createSelector(orm, ({ ReleaseCard, Card }) => {
   const releaseCards = ReleaseCard.all().toRefArray();
 
   const counts = releaseCards.reduce((acc, rc) => {
-    acc[rc.releaseId] = (acc[rc.releaseId] || 0) + 1;
+    const card = Card.withId(rc.cardId);
+
+    if (!card) {
+      return acc;
+    }
+
+    const parentInSameRelease =
+      card.parentCardId &&
+      releaseCards.some((r) => r.releaseId === rc.releaseId && r.cardId === card.parentCardId);
+
+    if (!parentInSameRelease) {
+      acc[rc.releaseId] = (acc[rc.releaseId] || 0) + 1;
+    }
+
     return acc;
   }, {});
 
   return counts;
 });
+
+export const selectCardIdsInReleases = createSelector(orm, ({ ReleaseCard }) => {
+  const releaseCards = ReleaseCard.all().toRefArray();
+  return releaseCards.map((rc) => rc.cardId);
+});
+
+export const selectReleasedReleaseIds = createSelector(
+  orm,
+  (state) => selectPath(state).boardId,
+  ({ Board }, boardId) => {
+    if (!boardId) {
+      return [];
+    }
+
+    const board = Board.withId(boardId);
+    if (!board) {
+      return [];
+    }
+
+    return board.releases
+      .toRefArray()
+      .filter((release) => release.status === 'released')
+      .map((release) => release.id);
+  },
+);
 
 export default {
   makeSelectBoardReleasesByBoardId,
@@ -123,4 +161,6 @@ export default {
   makeSelectReleasesForCard,
   selectReleasesForCard,
   selectReleaseCardCounts,
+  selectCardIdsInReleases,
+  selectReleasedReleaseIds,
 };

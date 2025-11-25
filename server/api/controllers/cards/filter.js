@@ -233,14 +233,14 @@ module.exports = async function filterCards(req, res) {
     cardQuery.weight['<='] = weightTo;
   }
 
-  let cards = await Card.find(cardQuery).sort('createdAt DESC').limit(100);
+  let filteredCardIds = null;
 
   if (userIds && userIds.length > 0) {
     const cardIdsWithUsers = await CardMembership.find({
       userId: { in: userIds },
     }).then((memberships) => memberships.map((m) => m.cardId));
 
-    cards = cards.filter((card) => cardIdsWithUsers.includes(card.id));
+    filteredCardIds = cardIdsWithUsers;
   }
 
   if (labelIds && labelIds.length > 0) {
@@ -248,8 +248,32 @@ module.exports = async function filterCards(req, res) {
       labelId: { in: labelIds },
     }).then((cardLabels) => cardLabels.map((cl) => cl.cardId));
 
-    cards = cards.filter((card) => cardIdsWithLabels.includes(card.id));
+    if (filteredCardIds) {
+      filteredCardIds = filteredCardIds.filter((id) => cardIdsWithLabels.includes(id));
+    } else {
+      filteredCardIds = cardIdsWithLabels;
+    }
   }
+
+  if (filteredCardIds) {
+    if (filteredCardIds.length === 0) {
+      return res.ok({
+        items: [],
+        included: {
+          projects: [],
+          boards: [],
+          lists: [],
+          users: [],
+          labels: [],
+          cardMemberships: [],
+          cardLabels: [],
+        },
+      });
+    }
+    cardQuery.id = { in: filteredCardIds };
+  }
+
+  const cards = await Card.find(cardQuery).sort('createdAt DESC').limit(100);
 
   const cardIds = cards.map((c) => c.id);
 

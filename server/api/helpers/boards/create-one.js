@@ -85,7 +85,15 @@ module.exports = {
     );
 
     if (inputs.import && inputs.import.type === Board.ImportTypes.TRELLO) {
-      await sails.helpers.boards.importFromTrello(board, lists, inputs.import.board);
+      const trelloApiKey = process.env.TRELLO_API_KEY || inputs.import.trelloApiKey;
+      const trelloApiToken = process.env.TRELLO_API_TOKEN || inputs.import.trelloApiToken;
+      await sails.helpers.boards.importFromTrello(
+        board,
+        lists,
+        inputs.import.board,
+        trelloApiKey,
+        trelloApiToken,
+      );
     }
 
     scoper.board = board;

@@ -5,11 +5,12 @@
 
 import classNames from 'classnames';
 import React, { useCallback, useEffect, useMemo } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useDispatch, useSelector } from 'react-redux';
 import { Icon } from 'semantic-ui-react';
 import { push } from '../../../lib/redux-router';
 
-import { BoardMembershipRoles, CardTypes } from '../../../constants/Enums';
+import { BoardMembershipRoles, CardTypes, UserRoles } from '../../../constants/Enums';
 import Paths from '../../../constants/Paths';
 import entryActions from '../../../entry-actions';
 import { useClosableModal } from '../../../hooks';
@@ -28,20 +29,42 @@ const DIRECTION_BY_KEY = {
 };
 
 const CardModal = React.memo(() => {
+  const [t] = useTranslation();
   const selectListById = useMemo(() => selectors.makeSelectListById(), []);
+  const makeSelectReleasesForCard = useMemo(() => selectors.makeSelectReleasesForCard(), []);
 
   const card = useSelector(selectors.selectCurrentCard);
   const prevCardId = useSelector(selectors.selectPrevCardId);
+  const cardReleases = useSelector((state) => makeSelectReleasesForCard(state, card.id));
+
+  const isInReleasedRelease = useMemo(() => {
+    return cardReleases && cardReleases.some((release) => release.status === 'released');
+  }, [cardReleases]);
 
   const canEdit = useSelector((state) => {
+    if (isInReleasedRelease) {
+      return false;
+    }
+
     const list = selectListById(state, card.listId);
 
     if (isListArchiveOrTrash(list)) {
       return false;
     }
 
+    const currentUser = selectors.selectCurrentUser(state);
+    const currentProject = selectors.selectCurrentProject(state);
     const boardMembership = selectors.selectCurrentUserMembershipForCurrentBoard(state);
-    return !!boardMembership && boardMembership.role === BoardMembershipRoles.EDITOR;
+
+    const isAdmin = currentUser?.role === UserRoles.ADMIN;
+    const isProjectManager =
+      currentProject && currentUser && selectors.selectIsCurrentUserManagerForCurrentProject(state);
+
+    return (
+      isAdmin ||
+      isProjectManager ||
+      (!!boardMembership && boardMembership.role === BoardMembershipRoles.EDITOR)
+    );
   });
 
   const dispatch = useDispatch();
@@ -105,6 +128,12 @@ const CardModal = React.memo(() => {
       className={classNames(styles.wrapper, card.type === CardTypes.STORY && styles.wrapperStory)}
       onClose={handleClose}
     >
+      {isInReleasedRelease && (
+        <div className={styles.releasedBanner}>
+          <Icon name="lock" />
+          <span>{t('common.cardInReleasedReleaseReadOnly')}</span>
+        </div>
+      )}
       {prevCardId && (
         <button type="button" className={styles.prevButton} onClick={handlePrevClick}>
           <Icon fitted name="arrow left" size="large" className={styles.prevButtonIcon} />

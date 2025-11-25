@@ -278,12 +278,20 @@ module.exports = {
       currentUser.id,
     );
 
-    if (!boardMembership) {
+    const isAdmin = currentUser.role === User.Roles.ADMIN;
+    const isProjectManager = await sails.helpers.users.isProjectManager(currentUser.id, project.id);
+
+    if (!boardMembership && !isAdmin && !isProjectManager) {
       throw Errors.CARD_NOT_FOUND; // Forbidden
     }
 
     const availableInputKeys = ['id', 'isSubscribed'];
-    if (boardMembership.role === BoardMembership.Roles.EDITOR) {
+    const hasEditorRights =
+      isAdmin ||
+      isProjectManager ||
+      (boardMembership && boardMembership.role === BoardMembership.Roles.EDITOR);
+
+    if (hasEditorRights) {
       availableInputKeys.push(
         'boardId',
         'listId',
@@ -314,16 +322,22 @@ module.exports = {
         .getPathToProjectById(inputs.boardId)
         .intercept('pathNotFound', () => Errors.BOARD_NOT_FOUND));
 
+      const nextIsProjectManager = await sails.helpers.users.isProjectManager(
+        currentUser.id,
+        nextProject.id,
+      );
+
       boardMembership = await BoardMembership.qm.getOneByBoardIdAndUserId(
         nextBoard.id,
         currentUser.id,
       );
 
-      if (!boardMembership) {
-        throw Errors.BOARD_NOT_FOUND; // Forbidden
-      }
+      const nextHasEditorRights =
+        isAdmin ||
+        nextIsProjectManager ||
+        (boardMembership && boardMembership.role === BoardMembership.Roles.EDITOR);
 
-      if (boardMembership.role !== BoardMembership.Roles.EDITOR) {
+      if (!nextHasEditorRights) {
         throw Errors.NOT_ENOUGH_RIGHTS;
       }
     }

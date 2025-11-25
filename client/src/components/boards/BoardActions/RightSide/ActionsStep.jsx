@@ -10,7 +10,7 @@ import { shallowEqual, useDispatch, useSelector } from 'react-redux';
 import { Icon, Menu } from 'semantic-ui-react';
 import { Popup } from '../../../../lib/custom-ui';
 
-import { BoardContexts, BoardMembershipRoles } from '../../../../constants/Enums';
+import { BoardContexts, BoardMembershipRoles, UserRoles } from '../../../../constants/Enums';
 import { BoardContextIcons } from '../../../../constants/Icons';
 import entryActions from '../../../../entry-actions';
 import { useSteps } from '../../../../hooks';
@@ -29,6 +29,8 @@ const ActionsStep = React.memo(({ onClose }) => {
   const board = useSelector(selectors.selectCurrentBoard);
 
   const { withSubscribe, withCustomFieldGroups, withTrashEmptier } = useSelector((state) => {
+    const currentUser = selectors.selectCurrentUser(state);
+    const isAdmin = currentUser?.role === UserRoles.ADMIN;
     const isManager = selectors.selectIsCurrentUserManagerForCurrentProject(state);
     const boardMembership = selectors.selectCurrentUserMembershipForCurrentBoard(state);
 
@@ -38,6 +40,11 @@ const ActionsStep = React.memo(({ onClose }) => {
     if (boardMembership) {
       isMember = true;
       isEditor = boardMembership.role === BoardMembershipRoles.EDITOR;
+    }
+
+    if (isAdmin) {
+      isMember = true;
+      isEditor = true;
     }
 
     return {

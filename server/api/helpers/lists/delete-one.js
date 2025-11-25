@@ -71,6 +71,14 @@ module.exports = {
         }),
         user: inputs.actorUser,
       });
+
+      try {
+        // eslint-disable-next-line global-require
+        const boardSync = require('../../../utils/board-sync');
+        await boardSync.deleteListFromLinkedBoards(list.id, inputs.board.id, inputs.request);
+      } catch (syncError) {
+        sails.log.error('Error syncing list deletion to linked boards:', syncError);
+      }
     }
 
     return { list, cards };

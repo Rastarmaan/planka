@@ -16,6 +16,7 @@ import { usePopup } from '../../../lib/popup';
 import entryActions from '../../../entry-actions';
 import { useNestedRef } from '../../../hooks';
 import selectors from '../../../selectors';
+import { UserRoles } from '../../../constants/Enums';
 import BoardMembershipsStep from '../../board-memberships/BoardMembershipsStep';
 import LabelChip from '../../labels/LabelChip';
 import LabelsStep from '../../labels/LabelsStep';
@@ -32,9 +33,17 @@ const Filters = React.memo(() => {
 
   const dispatch = useDispatch();
 
-  const withCurrentUserSelector = useSelector(
-    (state) => !!selectors.selectCurrentUserMembershipForCurrentBoard(state),
-  );
+  const withCurrentUserSelector = useSelector((state) => {
+    const currentUser = selectors.selectCurrentUser(state);
+    const currentProject = selectors.selectCurrentProject(state);
+    const boardMembership = selectors.selectCurrentUserMembershipForCurrentBoard(state);
+
+    const isAdmin = currentUser?.role === UserRoles.ADMIN;
+    const isProjectManager =
+      currentProject && currentUser && selectors.selectIsCurrentUserManagerForCurrentProject(state);
+
+    return isAdmin || isProjectManager || !!boardMembership;
+  });
 
   const [t] = useTranslation();
   const [search, setSearch] = useState(board.search);

@@ -34,6 +34,7 @@ const AddStep = React.memo(({ onClose, onOpenImportModal }) => {
 
   const [step, openStep, handleBack] = useSteps();
   const [focusNameFieldState, focusNameField] = useToggle();
+  const [isSubmitting, setIsSubmitting] = React.useState(false);
 
   const [nameFieldRef, handleNameFieldRef] = useNestedRef('inputRef');
 
@@ -48,9 +49,26 @@ const AddStep = React.memo(({ onClose, onOpenImportModal }) => {
       return;
     }
 
+    setIsSubmitting(true);
     dispatch(entryActions.createBoardInCurrentProject(cleanData));
-    onClose();
+
+    if (!cleanData.import) {
+      onClose();
+    }
   }, [onClose, dispatch, data, nameFieldRef]);
+
+  useEffect(() => {
+    if (isSubmitting && data.import) {
+      const successTimeout = setTimeout(() => {
+        onClose();
+      }, 3000);
+
+      return () => {
+        clearTimeout(successTimeout);
+      };
+    }
+    return undefined;
+  }, [isSubmitting, data.import, onClose]);
 
   const handleImportSelect = useCallback(
     (nextImport) => {
@@ -98,6 +116,27 @@ const AddStep = React.memo(({ onClose, onOpenImportModal }) => {
     );
   }
 
+  if (isSubmitting && data.import) {
+    return (
+      <>
+        <Popup.Header>
+          {t('common.createBoard', {
+            context: 'title',
+          })}
+        </Popup.Header>
+        <Popup.Content>
+          <div className={styles.loadingContainer}>
+            <Icon name="spinner" loading size="huge" className={styles.loadingIcon} />
+            <div className={styles.loadingText}>
+              {t('common.importingBoard')}
+              <div className={styles.loadingSubtext}>{data.import.file.name}</div>
+            </div>
+          </div>
+        </Popup.Content>
+      </>
+    );
+  }
+
   return (
     <>
       <Popup.Header>
@@ -116,13 +155,21 @@ const AddStep = React.memo(({ onClose, onOpenImportModal }) => {
             maxLength={128}
             className={styles.field}
             onChange={handleFieldChange}
+            disabled={isSubmitting}
           />
           <div className={styles.controls}>
-            <Button positive content={t('action.createBoard')} className={styles.button} />
+            <Button
+              positive
+              content={t('action.createBoard')}
+              className={styles.button}
+              disabled={isSubmitting}
+              loading={isSubmitting && !data.import}
+            />
             <Button
               type="button"
               className={classNames(styles.button, styles.importButton)}
               onClick={handleImportClick}
+              disabled={isSubmitting}
             >
               <Icon
                 name={data.import ? data.import.type : 'arrow down'}

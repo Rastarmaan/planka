@@ -1,0 +1,88 @@
+diff --git a/node_modules/gantt-task-react/dist/index.modern.js b/node_modules/gantt-task-react/dist/index.modern.js
+index b372269..70bcc83 100644
+--- a/node_modules/gantt-task-react/dist/index.modern.js
++++ b/node_modules/gantt-task-react/dist/index.modern.js
+@@ -310,7 +310,24 @@ var toLocaleDateStringFactory = function toLocaleDateStringFactory(locale) {
+     var lds = localeDateStringCache[key];
+
+     if (!lds) {
+-      lds = date.toLocaleDateString(locale, dateTimeOptions);
++      if (locale === 'fa' || locale === 'fa-IR') {
++        var d = date.toLocaleDateString(locale, {
++          weekday: 'long'
++        });
++        var day = date.toLocaleDateString(locale, {
++          day: 'numeric'
++        });
++        var month = date.toLocaleDateString(locale, {
++          month: 'long'
++        });
++        var year = date.toLocaleDateString(locale, {
++          year: 'numeric'
++        });
++        lds = d + ' ' + day + ' ' + month + ' ' + year;
++      } else {
++        lds = date.toLocaleDateString(locale, dateTimeOptions);
++      }
++
+       localeDateStringCache[key] = lds;
+     }
+
+@@ -721,7 +738,9 @@ var Calendar = function Calendar(_ref) {
+
+     for (var i = 0; i < dateSetup.dates.length; i++) {
+       var date = dateSetup.dates[i];
+-      var bottomValue = date.getFullYear();
++      var bottomValue = date.toLocaleDateString(locale, {
++        year: 'numeric'
++      });
+       bottomValues.push(React.createElement("text", {
+         key: date.getFullYear(),
+         y: headerHeight * 0.8,
+@@ -729,8 +748,14 @@ var Calendar = function Calendar(_ref) {
+         className: styles$5.calendarBottomText
+       }, bottomValue));
+
+-      if (i === 0 || date.getFullYear() !== dateSetup.dates[i - 1].getFullYear()) {
+-        var topValue = date.getFullYear().toString();
++      if (i === 0 || date.toLocaleDateString(locale, {
++        year: 'numeric'
++      }) !== dateSetup.dates[i - 1].toLocaleDateString(locale, {
++        year: 'numeric'
++      })) {
++        var topValue = date.toLocaleDateString(locale, {
++          year: 'numeric'
++        });
+         var xText = void 0;
+
+         if (rtl) {
+@@ -769,8 +794,14 @@ var Calendar = function Calendar(_ref) {
+         className: styles$5.calendarBottomText
+       }, bottomValue));
+
+-      if (i === 0 || date.getFullYear() !== dateSetup.dates[i - 1].getFullYear()) {
+-        var topValue = date.getFullYear().toString();
++      if (i === 0 || date.toLocaleDateString(locale, {
++        year: 'numeric'
++      }) !== dateSetup.dates[i - 1].toLocaleDateString(locale, {
++        year: 'numeric'
++      })) {
++        var topValue = date.toLocaleDateString(locale, {
++          year: 'numeric'
++        });
+         var xText = void 0;
+
+         if (rtl) {
+@@ -805,8 +836,10 @@ var Calendar = function Calendar(_ref) {
+       var date = dates[i];
+       var topValue = "";
+
+-      if (i === 0 || date.getMonth() !== dates[i - 1].getMonth()) {
+-        topValue = getLocaleMonth(date, locale) + ", " + date.getFullYear();
++      if (i === 0 || getLocaleMonth(date, locale) !== getLocaleMonth(dates[i - 1], locale)) {
++        topValue = getLocaleMonth(date, locale) + ", " + date.toLocaleDateString(locale, {
++          year: 'numeric'
++        });
+       }
+
+       var bottomValue = "W" + getWeekNumberISO8601(date);

@@ -174,11 +174,24 @@ module.exports = {
       .getProjectPath(parentCard.id)
       .intercept('pathNotFound', () => Errors.CARD_NOT_FOUND);
 
-    let { board } = path;
-    ({ board } = await sails.helpers.boards.getBoard(board.id));
+    const { board, project } = path;
 
-    if (!sails.helpers.users.getBoardPermission(currentUser, board.users)) {
-      throw Errors.NOT_ENOUGH_RIGHTS;
+    if (currentUser.role !== User.Roles.ADMIN && project.ownerProjectManagerId) {
+      const isProjectManager = await sails.helpers.users.isProjectManager(
+        currentUser.id,
+        project.id,
+      );
+
+      if (!isProjectManager) {
+        const boardMembership = await BoardMembership.qm.getOneByBoardIdAndUserId(
+          board.id,
+          currentUser.id,
+        );
+
+        if (!boardMembership) {
+          throw Errors.NOT_ENOUGH_RIGHTS;
+        }
+      }
     }
 
     const childCards = await Card.find({

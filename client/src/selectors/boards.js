@@ -535,6 +535,43 @@ export const selectProjectCardsForCurrentBoard = createSelector(
   },
 );
 
+export const selectAllAvailableBoards = createSelector(
+  orm,
+  (state) => selectCurrentUserId(state),
+  ({ Board, User }, currentUserId) => {
+    const currentUserModel = User.withId(currentUserId);
+
+    if (!currentUserModel) {
+      return [];
+    }
+
+    const boards = [];
+
+    Board.all()
+      .toModelArray()
+      .forEach((boardModel) => {
+        if (boardModel.isAvailableForUser(currentUserModel)) {
+          const projectModel = boardModel.project;
+          const isFetched = boardModel.lists.count() > 0;
+
+          boards.push({
+            id: boardModel.id,
+            name: boardModel.ref.name,
+            projectId: projectModel ? projectModel.id : null,
+            projectName: projectModel ? projectModel.ref.name : 'Unknown Project',
+            isFetched,
+          });
+        }
+      });
+
+    return boards.sort((a, b) => {
+      const projectCompare = (a.projectName || '').localeCompare(b.projectName || '');
+      if (projectCompare !== 0) return projectCompare;
+      return (a.name || '').localeCompare(b.name || '');
+    });
+  },
+);
+
 export default {
   makeSelectBoardById,
   selectBoardById,
@@ -565,4 +602,5 @@ export default {
   selectStoryCardsForCurrentBoard,
   selectEpicCardsForCurrentBoard,
   selectProjectCardsForCurrentBoard,
+  selectAllAvailableBoards,
 };

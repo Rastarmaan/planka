@@ -19,6 +19,14 @@ module.exports = {
       type: 'json',
       required: true,
     },
+    trelloApiKey: {
+      type: 'string',
+      required: false,
+    },
+    trelloApiToken: {
+      type: 'string',
+      required: false,
+    },
   },
 
   async fn(inputs) {
@@ -128,6 +136,113 @@ module.exports = {
           text: `${trelloAction.data.text}\n\n---\n*Note: imported comment, originally posted by\n${trelloAction.memberCreator.fullName} (${trelloAction.memberCreator.username}) on ${trelloAction.date}*`,
         }),
       ),
+    );
+
+    const trelloCards = inputs.trelloBoard.cards || [];
+    const attachmentIdMap = {};
+
+    await Promise.all(
+      trelloCards.map(async (trelloCard) => {
+        const cardId = cardIdByTrelloCardId[trelloCard.id];
+        if (!cardId || !trelloCard.attachments || trelloCard.attachments.length === 0) {
+          return Promise.resolve();
+        }
+
+        return Promise.all(
+          trelloCard.attachments.map(async (trelloAttachment) => {
+            if (!trelloAttachment.url) {
+              return Promise.resolve();
+            }
+
+            try {
+              let attachmentData;
+
+              if (trelloAttachment.isUpload) {
+                try {
+                  let downloadUrl = trelloAttachment.url;
+                  if (inputs.trelloApiKey && inputs.trelloApiToken && trelloAttachment.id) {
+                    downloadUrl = `https://api.trello.com/1/cards/${trelloCard.id}/attachments/${trelloAttachment.id}/download`;
+                  }
+
+                  const downloadedFile = await sails.helpers.utils.downloadFile(
+                    downloadUrl,
+                    trelloAttachment.name,
+                    inputs.trelloApiKey,
+                    inputs.trelloApiToken,
+                  );
+
+                  if (downloadedFile) {
+                    attachmentData =
+                      await sails.helpers.attachments.processUploadedFile(downloadedFile);
+
+                    const attachment = await Attachment.qm.createOne({
+                      cardId,
+                      type: Attachment.Types.FILE,
+                      name: trelloAttachment.name || 'Imported File',
+                      data: attachmentData,
+                    });
+
+                    attachmentIdMap[trelloAttachment.id] = attachment.id;
+
+                    return attachment;
+                  }
+                } catch (downloadError) {
+                  if (downloadError.message && downloadError.message.includes('AUTH_ERROR')) {
+                    return Promise.resolve();
+                  }
+                }
+              }
+
+              let hostname = 'unknown';
+              try {
+                const urlObj = new URL(trelloAttachment.url);
+                hostname = urlObj.hostname;
+              } catch (urlError) {
+                sails.log.warn(
+                  `Invalid URL for attachment "${trelloAttachment.name}": ${trelloAttachment.url}`,
+                );
+              }
+
+              const attachment = await Attachment.qm.createOne({
+                cardId,
+                type: Attachment.Types.LINK,
+                name: trelloAttachment.name || 'Imported Link',
+                data: {
+                  url: trelloAttachment.url,
+                  hostname,
+                },
+              });
+
+              attachmentIdMap[trelloAttachment.id] = attachment.id;
+
+              return attachment;
+            } catch (error) {
+              sails.log.warn(
+                `Error importing attachment "${trelloAttachment.name}" for card ${cardId}:`,
+                error.message,
+              );
+              return Promise.resolve();
+            }
+          }),
+        );
+      }),
+    );
+
+    await Promise.all(
+      trelloCards.map(async (trelloCard) => {
+        if (trelloCard.cover && trelloCard.cover.idAttachment) {
+          const cardId = cardIdByTrelloCardId[trelloCard.id];
+          const coverAttachmentId = attachmentIdMap[trelloCard.cover.idAttachment];
+
+          if (cardId && coverAttachmentId) {
+            await Card.updateOne({ id: cardId }).set({
+              coverAttachmentId,
+            });
+          }
+        }
+
+        return Promise.resolve();
+      }),
     );
   },
 };

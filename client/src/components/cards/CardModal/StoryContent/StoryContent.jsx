@@ -12,7 +12,7 @@ import { Button, Dropdown, Grid, Icon } from 'semantic-ui-react';
 import { useDidUpdate } from '../../../../lib/hooks';
 import { push } from '../../../../lib/redux-router';
 
-import { BoardMembershipRoles, CardTypes, ListTypes } from '../../../../constants/Enums';
+import { BoardMembershipRoles, CardTypes, ListTypes, UserRoles } from '../../../../constants/Enums';
 import { CardTypeIcons } from '../../../../constants/Icons';
 import Paths from '../../../../constants/Paths';
 import { ClosableContext } from '../../../../contexts';
@@ -113,7 +113,13 @@ const StoryContent = React.memo(() => {
     canAddAttachment,
     canAddCustomFieldGroup,
   } = useSelector((state) => {
+    const currentUser = selectors.selectCurrentUser(state);
+    const currentProject = selectors.selectCurrentProject(state);
     const boardMembership = selectors.selectCurrentUserMembershipForCurrentBoard(state);
+
+    const isAdmin = currentUser?.role === UserRoles.ADMIN;
+    const isProjectManager =
+      currentProject && currentUser && selectors.selectIsCurrentUserManagerForCurrentProject(state);
 
     let isMember = false;
     let isEditor = false;
@@ -121,6 +127,11 @@ const StoryContent = React.memo(() => {
     if (boardMembership) {
       isMember = true;
       isEditor = boardMembership.role === BoardMembershipRoles.EDITOR;
+    }
+
+    if (isAdmin || isProjectManager) {
+      isEditor = true;
+      isMember = true;
     }
 
     if (isInArchiveList || isInTrashList) {
