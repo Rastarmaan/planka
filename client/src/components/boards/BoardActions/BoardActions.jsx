@@ -20,7 +20,9 @@ import BoardMemberships from '../../board-memberships/BoardMemberships';
 import styles from './BoardActions.module.scss';
 
 const BoardActions = React.memo(() => {
-  const boardContext = useSelector((state) => selectors.selectCurrentBoard(state).context);
+  const board = useSelector(selectors.selectCurrentBoard);
+  const boardContext = board.context;
+  const isListsLocked = board?.isListsLocked || false;
 
   const withContextTitle = boardContext !== BoardContexts.BOARD;
 
@@ -54,6 +56,13 @@ const BoardActions = React.memo(() => {
         {withMemberships && (
           <div className={styles.action}>
             <BoardMemberships />
+          </div>
+        )}
+        {isListsLocked && (
+          <div className={styles.action}>
+            <div className={styles.lockIndicator} title={t('common.listsLocked')}>
+              <Icon name="lock" />
+            </div>
           </div>
         )}
         <div className={styles.action}>

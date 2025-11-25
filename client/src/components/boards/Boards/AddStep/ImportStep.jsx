@@ -11,7 +11,7 @@ import { FilePicker, Popup } from '../../../../lib/custom-ui';
 
 import styles from './ImportStep.module.scss';
 
-const ImportStep = React.memo(({ onSelect, onBack, onImportFromPlanka }) => {
+const ImportStep = React.memo(({ onSelect, onBack, onImportFromPlanka, onSelectFromTemplate }) => {
   const [t] = useTranslation();
 
   const handleFileSelect = useCallback(
@@ -30,6 +30,10 @@ const ImportStep = React.memo(({ onSelect, onBack, onImportFromPlanka }) => {
     onImportFromPlanka();
   }, [onImportFromPlanka]);
 
+  const handleTemplateSelect = useCallback(() => {
+    onSelectFromTemplate();
+  }, [onSelectFromTemplate]);
+
   return (
     <>
       <Popup.Header onBack={onBack}>
@@ -38,6 +42,13 @@ const ImportStep = React.memo(({ onSelect, onBack, onImportFromPlanka }) => {
         })}
       </Popup.Header>
       <Popup.Content>
+        <Button
+          fluid
+          content={t('common.fromTemplate')}
+          icon="clone"
+          className={styles.button}
+          onClick={handleTemplateSelect}
+        />
         <Button
           fluid
           content={t('common.fromPlankaBoard')}
@@ -57,6 +68,7 @@ ImportStep.propTypes = {
   onSelect: PropTypes.func.isRequired,
   onBack: PropTypes.func.isRequired,
   onImportFromPlanka: PropTypes.func.isRequired,
+  onSelectFromTemplate: PropTypes.func.isRequired,
 };
 
 export default ImportStep;

@@ -29,6 +29,11 @@ const KanbanContent = React.memo(() => {
   const listIds = useSelector(selectors.selectFiniteListIdsForCurrentBoard);
 
   const canAddList = useSelector((state) => {
+    const currentBoard = selectors.selectCurrentBoard(state);
+    if (currentBoard?.isListsLocked) {
+      return false;
+    }
+
     const isEditModeEnabled = selectors.selectIsEditModeEnabled(state); // TODO: move out?
 
     if (!isEditModeEnabled) {

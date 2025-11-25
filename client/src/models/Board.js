@@ -30,6 +30,9 @@ export default class extends BaseModel {
     defaultView: attr(),
     defaultCardType: attr(),
     limitCardTypesToDefaultOne: attr(),
+    cardTypes: attr({
+      getDefault: () => [],
+    }),
     alwaysDisplayCardCreator: attr(),
     expandTaskListsByDefault: attr(),
     calendarType: attr({

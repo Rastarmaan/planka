@@ -6,11 +6,14 @@
 import classNames from 'classnames';
 import React, { useCallback, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { Modal, Tab } from 'semantic-ui-react';
 
+import { UserRoles } from '../../../constants/Enums';
 import entryActions from '../../../entry-actions';
+import selectors from '../../../selectors';
 import { useClosableModal } from '../../../hooks';
+import BoardTemplatesPane from './BoardTemplatesPane';
 import GlobalLabelsPane from './GlobalLabelsPane';
 import UsersPane from './UsersPane';
 import WebhooksPane from './WebhooksPane';
@@ -20,6 +23,8 @@ import styles from './AdministrationModal.module.scss';
 const AdministrationModal = React.memo(() => {
   const dispatch = useDispatch();
   const [t] = useTranslation();
+  const currentUser = useSelector(selectors.selectCurrentUser);
+  const isAdmin = currentUser?.role === UserRoles.ADMIN;
   const [activeTabIndex, setActiveTabIndex] = useState(0);
 
   const handleClose = useCallback(() => {
@@ -39,6 +44,16 @@ const AdministrationModal = React.memo(() => {
       }),
       render: () => <UsersPane />,
     },
+    ...(isAdmin
+      ? [
+          {
+            menuItem: t('common.boardTemplates', {
+              context: 'title',
+            }),
+            render: () => <BoardTemplatesPane />,
+          },
+        ]
+      : []),
     {
       menuItem: t('common.webhooks', {
         context: 'title',

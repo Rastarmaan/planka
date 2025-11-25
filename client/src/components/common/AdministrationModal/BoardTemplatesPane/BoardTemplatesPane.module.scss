@@ -1,0 +1,34 @@
+.wrapper {
+  padding: 2rem;
+}
+
+.header {
+  margin-bottom: 1.5rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+
+  :global(.ui.labeled.icon.button) {
+    font-family: 'Lato', 'Helvetica Neue', Arial, Helvetica, sans-serif !important;
+    font-weight: 700 !important;
+    
+    > :global(.icon) {
+      font-family: 'Icons' !important;
+    }
+  }
+}
+
+.actionIcon {
+  margin: 0 0.5rem !important;
+  cursor: pointer;
+  transition: all 0.2s ease;
+
+  &:hover {
+    transform: scale(1.15);
+    opacity: 0.8;
+  }
+
+  &:active {
+    transform: scale(0.95);
+  }
+}

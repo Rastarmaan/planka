@@ -79,6 +79,9 @@ module.exports = {
     listNotFound: {
       responseType: 'notFound',
     },
+    listsLocked: {
+      responseType: 'forbidden',
+    },
   },
 
   async fn(inputs) {
@@ -106,6 +109,12 @@ module.exports = {
 
     if (boardMembership.role !== BoardMembership.Roles.EDITOR) {
       throw Errors.NOT_ENOUGH_RIGHTS;
+    }
+
+    if (board.isListsLocked) {
+      throw {
+        listsLocked: 'Lists are locked for this board',
+      };
     }
 
     const result = await sails.helpers.lists.deleteOne.with({

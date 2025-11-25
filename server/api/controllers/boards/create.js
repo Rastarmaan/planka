@@ -135,6 +135,9 @@ module.exports = {
       maxLength: 128,
       required: true,
     },
+    templateId: {
+      ...idInput,
+    },
     importType: {
       type: 'string',
       isIn: Object.values(Board.ImportTypes),
@@ -205,12 +208,18 @@ module.exports = {
 
     const values = _.pick(inputs, ['position', 'name']);
 
+    let template;
+    if (inputs.templateId) {
+      template = await BoardTemplate.findOne({ id: inputs.templateId });
+    }
+
     const { board, boardMembership } = await sails.helpers.boards.createOne.with({
       values: {
         ...values,
         project,
       },
       import: boardImport,
+      template,
       actorUser: currentUser,
       requestId: inputs.requestId,
       request: this.req,

@@ -162,6 +162,11 @@ module.exports = {
       defaultsTo: CalendarTypes.GREGORIAN,
       columnName: 'calendar_type',
     },
+    isListsLocked: {
+      type: 'boolean',
+      defaultsTo: false,
+      columnName: 'is_lists_locked',
+    },
 
     //  ╔═╗╔╦╗╔╗ ╔═╗╔╦╗╔═╗
     //  ║╣ ║║║╠╩╗║╣  ║║╚═╗
@@ -175,6 +180,10 @@ module.exports = {
       model: 'Project',
       required: true,
       columnName: 'project_id',
+    },
+    templateId: {
+      model: 'BoardTemplate',
+      columnName: 'template_id',
     },
     memberUsers: {
       collection: 'User',

@@ -1,0 +1,156 @@
+/*!
+ * Copyright (c) 2024 PLANKA Software GmbH
+ * Licensed under the Fair Use License: https://github.com/plankanban/planka/blob/master/LICENSE.md
+ */
+
+.helpText {
+  margin-top: 0.5rem;
+  font-size: 0.875rem;
+  color: rgba(0, 0, 0, 0.6);
+  font-style: italic;
+  line-height: 1.4;
+}
+
+.listsStep,
+.cardTypesStep {
+  padding: 1.5rem 0;
+  min-height: 300px;
+}
+
+.addListForm {
+  margin-bottom: 1.5rem;
+  padding: 1rem;
+  background: rgba(0, 0, 0, 0.02);
+  border-radius: 0.28571429rem;
+}
+
+.emptyState {
+  text-align: center;
+  padding: 4rem 2rem;
+  color: rgba(0, 0, 0, 0.4);
+  background: rgba(0, 0, 0, 0.02);
+  border-radius: 0.28571429rem;
+  border: 2px dashed rgba(0, 0, 0, 0.1);
+
+  i.icon {
+    margin-bottom: 1rem;
+    opacity: 0.5;
+  }
+
+  p {
+    margin: 0.5rem 0;
+    font-size: 1rem;
+    font-weight: 500;
+  }
+
+  .hint {
+    font-size: 0.875rem;
+    color: rgba(0, 0, 0, 0.5);
+    font-style: italic;
+  }
+}
+
+.listItems {
+  max-height: 350px;
+  overflow-y: auto;
+  margin-top: 1rem !important;
+  padding: 0.5rem;
+  background: white;
+  border: 1px solid rgba(34, 36, 38, 0.15);
+  border-radius: 0.28571429rem;
+
+  &::-webkit-scrollbar {
+    width: 8px;
+  }
+
+  &::-webkit-scrollbar-track {
+    background: rgba(0, 0, 0, 0.05);
+    border-radius: 4px;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background: rgba(0, 0, 0, 0.2);
+    border-radius: 4px;
+
+    &:hover {
+      background: rgba(0, 0, 0, 0.3);
+    }
+  }
+}
+
+.listItem {
+  padding: 1rem !important;
+  transition: background-color 0.2s;
+  display: flex !important;
+  align-items: center !important;
+  border-radius: 0.28571429rem;
+
+  &:hover {
+    background-color: rgba(0, 0, 0, 0.03);
+  }
+}
+
+.listIcon {
+  margin-right: 1rem !important;
+  color: rgba(0, 0, 0, 0.4) !important;
+  font-size: 1.2em !important;
+}
+
+.listHeader {
+  font-weight: 600 !important;
+  font-size: 1rem !important;
+  color: rgba(0, 0, 0, 0.87) !important;
+  margin-bottom: 0.25rem !important;
+}
+
+.listDescription {
+  font-size: 0.875rem !important;
+  color: rgba(0, 0, 0, 0.5) !important;
+}
+
+.selectedTypes {
+  margin-top: 2rem;
+  padding: 1.25rem;
+  background: rgba(33, 133, 208, 0.08);
+  border-radius: 0.5rem;
+  border: 2px solid rgba(33, 133, 208, 0.2);
+}
+
+.selectedLabel {
+  margin: 0 0 1rem 0;
+  font-weight: 600;
+  font-size: 0.95rem;
+  color: rgba(0, 0, 0, 0.87);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.typesList {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+}
+
+.typeTag {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.65rem 1rem;
+  background: white;
+  border-radius: 0.5rem;
+  border: 2px solid rgba(34, 36, 38, 0.15);
+  font-size: 0.9rem;
+  font-weight: 500;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+  transition: all 0.2s;
+
+  &:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.12);
+  }
+
+  i.icon {
+    margin: 0;
+    font-size: 1.1em;
+  }
+}

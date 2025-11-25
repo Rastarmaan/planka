@@ -135,6 +135,17 @@ module.exports.routes = {
   'PATCH /api/project-categories/:id': 'project-categories/update',
   'DELETE /api/project-categories/:id': 'project-categories/delete',
 
+  'GET /api/board-templates': 'board-templates/show-all',
+  'POST /api/board-templates': 'board-templates/create',
+  'GET /api/board-templates/:id': 'board-templates/show',
+  'PATCH /api/board-templates/:id': 'board-templates/update',
+  'DELETE /api/board-templates/:id': 'board-templates/delete',
+  'POST /api/board-templates/:id/lists': 'board-templates/create-list',
+  'PATCH /api/board-templates/:id/lists/:listId': 'board-templates/update-list',
+  'DELETE /api/board-templates/:id/lists/:listId': 'board-templates/delete-list',
+  'POST /api/board-templates/:id/card-types': 'board-templates/create-card-type',
+  'DELETE /api/board-templates/:id/card-types/:typeId': 'board-templates/delete-card-type',
+
   'POST /api/projects/:projectId/project-managers': 'project-managers/create',
   'DELETE /api/project-managers/:id': 'project-managers/delete',
 
