@@ -61,7 +61,11 @@ module.exports = {
       parentFolderId = inputs.folderId;
     }
 
-    const space = await Space.findOne({ id: spaceId, isDeleted: false });
+    const space = await Space.findOne({
+      id: spaceId,
+      isDeleted: false,
+      createdByUser: this.req.currentUser.id,
+    });
 
     if (!space) {
       throw 'notFound';

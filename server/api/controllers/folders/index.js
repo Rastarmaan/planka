@@ -45,7 +45,11 @@ module.exports = {
   },
 
   async fn(inputs) {
-    const space = await Space.findOne({ id: inputs.spaceId, isDeleted: false });
+    const space = await Space.findOne({
+      id: inputs.spaceId,
+      isDeleted: false,
+      createdByUser: this.req.currentUser.id,
+    });
 
     if (!space) {
       throw 'notFound';

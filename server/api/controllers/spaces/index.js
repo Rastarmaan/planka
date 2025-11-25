@@ -39,7 +39,9 @@ module.exports = {
   },
 
   async fn(inputs) {
-    const criteria = {};
+    const criteria = {
+      createdByUser: this.req.currentUser.id,
+    };
 
     if (!inputs.includeDeleted) {
       criteria.isDeleted = false;

@@ -29,6 +29,14 @@ module.exports = {
       throw 'notFound';
     }
 
+    const space = await Space.findOne({
+      id: folder.space,
+      createdByUser: this.req.currentUser.id,
+    });
+    if (!space) {
+      throw 'forbidden';
+    }
+
     if (this.req.isSocket) {
       sails.sockets.join(this.req, `space:${folder.space}`);
     }

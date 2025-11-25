@@ -34,6 +34,14 @@ module.exports = {
       throw 'notFound';
     }
 
+    const space = await Space.findOne({
+      id: file.space,
+      createdByUser: this.req.currentUser.id,
+    });
+    if (!space) {
+      throw 'forbidden';
+    }
+
     let { storagePath } = file;
     let fileName = file.name;
 

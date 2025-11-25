@@ -29,6 +29,14 @@ module.exports = {
       throw 'notFound';
     }
 
+    const space = await Space.findOne({
+      id: file.space,
+      createdByUser: this.req.currentUser.id,
+    });
+    if (!space) {
+      throw 'forbidden';
+    }
+
     await sails.helpers.documentFiles.deleteOne.with({
       record: file,
       user: this.req.currentUser,

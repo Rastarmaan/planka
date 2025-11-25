@@ -38,6 +38,14 @@ module.exports = {
       throw 'notFound';
     }
 
+    const space = await Space.findOne({
+      id: file.space,
+      createdByUser: this.req.currentUser.id,
+    });
+    if (!space) {
+      throw 'forbidden';
+    }
+
     if (inputs.folderId !== undefined && inputs.folderId) {
       const folder = await DocumentFolder.findOne({
         id: inputs.folderId,
