@@ -32,6 +32,11 @@ const Sidebar = React.memo(
     onRenameWorkspace,
     onDeleteWorkspace,
     onCreateWorkspace,
+    draggedFile,
+    dropTarget,
+    onDragOver,
+    onDragLeave,
+    onDrop,
   }) => (
     <div className={styles.sidebar}>
       <UploadButton
@@ -49,6 +54,11 @@ const Sidebar = React.memo(
         onBreadcrumbClick={onBreadcrumbClick}
         onFolderClick={onFolderClick}
         onToggleExpand={onToggleExpand}
+        draggedFile={draggedFile}
+        dropTarget={dropTarget}
+        onDragOver={onDragOver}
+        onDragLeave={onDragLeave}
+        onDrop={onDrop}
       />
 
       <WorkspaceSelector
@@ -98,11 +108,24 @@ Sidebar.propTypes = {
   onRenameWorkspace: PropTypes.func.isRequired,
   onDeleteWorkspace: PropTypes.func.isRequired,
   onCreateWorkspace: PropTypes.func.isRequired,
+  draggedFile: PropTypes.shape({
+    id: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+    type: PropTypes.string,
+  }),
+  dropTarget: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+  onDragOver: PropTypes.func,
+  onDragLeave: PropTypes.func,
+  onDrop: PropTypes.func,
 };
 
 Sidebar.defaultProps = {
   currentFolderId: null,
   selectedWorkspace: null,
+  draggedFile: null,
+  dropTarget: null,
+  onDragOver: null,
+  onDragLeave: null,
+  onDrop: null,
 };
 
 export default Sidebar;

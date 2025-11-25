@@ -12,10 +12,22 @@ import Paths from '../../../constants/Paths';
 import styles from './SidebarNavigation.module.scss';
 
 const FolderTree = React.memo(
-  ({ folder, currentFolderId, allFolders, onFolderClick, level = 0 }) => {
+  ({
+    folder,
+    currentFolderId,
+    allFolders,
+    onFolderClick,
+    level = 0,
+    draggedFile,
+    dropTarget,
+    onDragOver,
+    onDragLeave,
+    onDrop,
+  }) => {
     const [isExpanded, setIsExpanded] = useState(false);
     const subFolders = allFolders.filter((f) => f.parentFolderId === folder.id);
     const hasChildren = subFolders.length > 0;
+    const isDropTarget = dropTarget === folder.id;
 
     return (
       <>
@@ -24,7 +36,7 @@ const FolderTree = React.memo(
           tabIndex={0}
           className={`${styles.sidebarItem} ${styles.indent} ${
             currentFolderId === folder.id ? styles.active : ''
-          }`}
+          } ${isDropTarget ? styles.dropTarget : ''}`}
           style={{ paddingLeft: `${(level + 1) * 20}px` }}
           onClick={() => onFolderClick(folder)}
           onKeyDown={(e) => {
@@ -33,6 +45,9 @@ const FolderTree = React.memo(
               onFolderClick(folder);
             }
           }}
+          onDragOver={(e) => onDragOver && onDragOver(e, folder)}
+          onDragLeave={onDragLeave}
+          onDrop={(e) => onDrop && onDrop(e, folder)}
         >
           <div className={styles.sidebarItemContent}>
             {hasChildren && (
@@ -59,6 +74,11 @@ const FolderTree = React.memo(
               allFolders={allFolders}
               onFolderClick={onFolderClick}
               level={level + 1}
+              draggedFile={draggedFile}
+              dropTarget={dropTarget}
+              onDragOver={onDragOver}
+              onDragLeave={onDragLeave}
+              onDrop={onDrop}
             />
           ))}
       </>
@@ -82,11 +102,24 @@ FolderTree.propTypes = {
   ).isRequired,
   onFolderClick: PropTypes.func.isRequired,
   level: PropTypes.number,
+  draggedFile: PropTypes.shape({
+    id: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+    type: PropTypes.string,
+  }),
+  dropTarget: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+  onDragOver: PropTypes.func,
+  onDragLeave: PropTypes.func,
+  onDrop: PropTypes.func,
 };
 
 FolderTree.defaultProps = {
   currentFolderId: null,
   level: 0,
+  draggedFile: null,
+  dropTarget: null,
+  onDragOver: null,
+  onDragLeave: null,
+  onDrop: null,
 };
 
 const SidebarNavigation = React.memo(
@@ -99,13 +132,18 @@ const SidebarNavigation = React.memo(
     onBreadcrumbClick,
     onFolderClick,
     onToggleExpand,
+    draggedFile,
+    dropTarget,
+    onDragOver,
+    onDragLeave,
+    onDrop,
   }) => {
     const [t] = useTranslation();
 
     return (
       <div className={styles.sidebarNav}>
         <div
-          className={`${styles.sidebarItem} ${currentSection === 'all-files' && !currentFolderId ? styles.active : ''}`}
+          className={`${styles.sidebarItem} ${currentSection === 'all-files' && !currentFolderId ? styles.active : ''} ${dropTarget === 'root' ? styles.dropTarget : ''}`}
         >
           <div
             role="button"
@@ -120,6 +158,18 @@ const SidebarNavigation = React.memo(
                 e.preventDefault();
                 onBreadcrumbClick(-1);
                 onSectionChange(Paths.DOCUMENT_ALL_FILES);
+              }
+            }}
+            onDragOver={(e) => {
+              if (onDragOver && draggedFile) {
+                e.preventDefault();
+                onDragOver(e, { id: 'root', type: 'folder', name: 'root' });
+              }
+            }}
+            onDragLeave={onDragLeave}
+            onDrop={(e) => {
+              if (onDrop && draggedFile) {
+                onDrop(e, { id: 'root', type: 'folder', name: 'root' });
               }
             }}
           >
@@ -147,6 +197,11 @@ const SidebarNavigation = React.memo(
                 currentFolderId={currentFolderId}
                 allFolders={files.filter((f) => f.type === 'folder')}
                 onFolderClick={onFolderClick}
+                draggedFile={draggedFile}
+                dropTarget={dropTarget}
+                onDragOver={onDragOver}
+                onDragLeave={onDragLeave}
+                onDrop={onDrop}
               />
             ))}
 
@@ -238,10 +293,23 @@ SidebarNavigation.propTypes = {
   onBreadcrumbClick: PropTypes.func.isRequired,
   onFolderClick: PropTypes.func.isRequired,
   onToggleExpand: PropTypes.func.isRequired,
+  draggedFile: PropTypes.shape({
+    id: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+    type: PropTypes.string,
+  }),
+  dropTarget: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+  onDragOver: PropTypes.func,
+  onDragLeave: PropTypes.func,
+  onDrop: PropTypes.func,
 };
 
 SidebarNavigation.defaultProps = {
   currentFolderId: null,
+  draggedFile: null,
+  dropTarget: null,
+  onDragOver: null,
+  onDragLeave: null,
+  onDrop: null,
 };
 
 export default SidebarNavigation;

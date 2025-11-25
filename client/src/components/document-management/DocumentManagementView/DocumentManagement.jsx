@@ -593,7 +593,7 @@ const DocumentManagement = React.memo(() => {
   const handleDragOver = (e, folder) => {
     e.preventDefault();
     if (draggedFile && folder.type === 'folder' && draggedFile.id !== folder.id) {
-      setDropTarget(folder.id);
+      setDropTarget(folder.id === 'root' ? 'root' : folder.id);
     }
   };
 
@@ -613,13 +613,13 @@ const DocumentManagement = React.memo(() => {
       if (draggedFile.type === 'file') {
         dispatch(
           actions.updateFile(draggedFile.id, {
-            folderId: folder.id,
+            folderId: folder.id === 'root' ? null : folder.id,
           }),
         );
       } else if (draggedFile.type === 'folder') {
         dispatch(
           actions.updateFolder(draggedFile.id, {
-            parentFolderId: folder.id,
+            parentFolderId: folder.id === 'root' ? null : folder.id,
           }),
         );
       }
@@ -725,6 +725,11 @@ const DocumentManagement = React.memo(() => {
             openWorkspaceCreateModal();
             setShowWorkspacePopup(false);
           }}
+          draggedFile={draggedFile}
+          dropTarget={dropTarget}
+          onDragOver={handleDragOver}
+          onDragLeave={handleDragLeave}
+          onDrop={handleDrop}
         />
 
         {modalConfig && (

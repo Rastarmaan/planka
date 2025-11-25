@@ -38,6 +38,17 @@
     &.indent {
       padding-left: 40px;
     }
+
+    &.dropTarget {
+      background: rgba(74, 144, 226, 0.2);
+      border: 2px dashed rgba(74, 144, 226, 0.6);
+      color: rgba(74, 144, 226, 0.9);
+
+      &:hover {
+        background: rgba(74, 144, 226, 0.3);
+        color: rgba(74, 144, 226, 1);
+      }
+    }
   }
 
   .sidebarItemContent {
