@@ -7,7 +7,7 @@ import React, { useState, useRef, useEffect, useMemo, useCallback } from 'react'
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { useTranslation } from 'react-i18next';
-import { Confirm } from 'semantic-ui-react';
+import { Confirm, Button, Icon } from 'semantic-ui-react';
 
 import actions from '../../../actions';
 import api from '../../../api';
@@ -668,127 +668,146 @@ const DocumentManagement = React.memo(() => {
     setDeleteConfirmWorkspace(workspace);
   };
 
+  const handleBackToProjects = () => {
+    navigate(Paths.ROOT);
+  };
+
   const currentFiles = getFilteredFiles();
   const sectionTitle = getSectionTitle();
 
   return (
     <div className={styles.wrapper}>
-      <Sidebar
-        currentSection={currentSection}
-        currentFolderId={currentFolderId}
-        allFilesExpanded={allFilesExpanded}
-        files={files}
-        workspaces={workspaces}
-        selectedWorkspace={selectedWorkspace}
-        showWorkspacePopup={showWorkspacePopup}
-        workspacePopupRef={workspacePopupRef}
-        onFolderCreate={openFolderModal}
-        onFileUpload={handleFileUpload}
-        onSectionChange={handleSectionChange}
-        onBreadcrumbClick={handleBreadcrumbClick}
-        onFolderClick={handleFolderDoubleClick}
-        onToggleExpand={() => setAllFilesExpanded(!allFilesExpanded)}
-        onToggleWorkspacePopup={() => setShowWorkspacePopup(!showWorkspacePopup)}
-        onSelectWorkspace={(value) => {
-          setSelectedWorkspace(value);
-          setShowWorkspacePopup(false);
-        }}
-        onRenameWorkspace={(e, workspace) => {
-          e.stopPropagation();
-          openWorkspaceRenameModal(workspace);
-          setShowWorkspacePopup(false);
-        }}
-        onDeleteWorkspace={(e, workspace) => {
-          e.stopPropagation();
-          openWorkspaceDeleteModal(workspace);
-          setShowWorkspacePopup(false);
-        }}
-        onCreateWorkspace={() => {
-          openWorkspaceCreateModal();
-          setShowWorkspacePopup(false);
-        }}
-      />
+      <div className={styles.documentHeader}>
+        <Button
+          basic
+          size="small"
+          className={styles.backToProjectsButton}
+          onClick={handleBackToProjects}
+        >
+          <Icon name="arrow left" />
+          {t('action.backToProjects', 'Back to Projects')}
+        </Button>
+        <h2 className={styles.documentTitle}>Document Management</h2>
+      </div>
 
-      {modalConfig && (
-        <InputModal
-          title={modalConfig.title}
-          label={modalConfig.label}
-          defaultValue={modalConfig.defaultValue}
-          submitLabel={modalConfig.submitLabel}
-          hasDescription={modalConfig.hasDescription}
-          descriptionLabel={modalConfig.descriptionLabel}
-          descriptionDefaultValue={modalConfig.descriptionDefaultValue}
-          onSubmit={modalConfig.onSubmit}
-          onClose={() => setModalConfig(null)}
-        />
-      )}
-
-      <div className={styles.mainContent}>
-        <TopBar
-          sectionTitle={sectionTitle}
-          currentPath={currentPath}
-          view={view}
-          onBreadcrumbClick={handleBreadcrumbClick}
+      <div className={styles.contentWrapper}>
+        <Sidebar
+          currentSection={currentSection}
+          currentFolderId={currentFolderId}
+          allFilesExpanded={allFilesExpanded}
+          files={files}
+          workspaces={workspaces}
+          selectedWorkspace={selectedWorkspace}
+          showWorkspacePopup={showWorkspacePopup}
+          workspacePopupRef={workspacePopupRef}
           onFolderCreate={openFolderModal}
           onFileUpload={handleFileUpload}
-          onViewChange={setView}
-        />
-
-        <SortBar
-          sortBy={sortBy}
-          selectedFile={selectedFile}
-          selectedFileData={files.find((f) => f.id === selectedFile)}
-          onSortChange={setSortBy}
-          onPreview={handlePreview}
-          onShare={() => {
-            const selectedFileData = files.find((f) => f.id === selectedFile);
-            if (selectedFileData) {
-              handleShare(selectedFileData);
-            }
+          onSectionChange={handleSectionChange}
+          onBreadcrumbClick={handleBreadcrumbClick}
+          onFolderClick={handleFolderDoubleClick}
+          onToggleExpand={() => setAllFilesExpanded(!allFilesExpanded)}
+          onToggleWorkspacePopup={() => setShowWorkspacePopup(!showWorkspacePopup)}
+          onSelectWorkspace={(value) => {
+            setSelectedWorkspace(value);
+            setShowWorkspacePopup(false);
           }}
-          onDelete={handleDeleteSelected}
-          onDownload={handleDownloadSelected}
+          onRenameWorkspace={(e, workspace) => {
+            e.stopPropagation();
+            openWorkspaceRenameModal(workspace);
+            setShowWorkspacePopup(false);
+          }}
+          onDeleteWorkspace={(e, workspace) => {
+            e.stopPropagation();
+            openWorkspaceDeleteModal(workspace);
+            setShowWorkspacePopup(false);
+          }}
+          onCreateWorkspace={() => {
+            openWorkspaceCreateModal();
+            setShowWorkspacePopup(false);
+          }}
         />
 
-        {view === 'grid' ? (
-          <FileGrid
-            files={currentFiles}
-            selectedFile={selectedFile}
-            draggedFile={draggedFile}
-            dropTarget={dropTarget}
-            onFileSelect={handleFileSelect}
-            onFolderDoubleClick={handleFolderDoubleClick}
-            onDragStart={handleDragStart}
-            onDragEnd={handleDragEnd}
-            onDragOver={handleDragOver}
-            onDragLeave={handleDragLeave}
-            onDrop={handleDrop}
-            onExternalDrop={handleExternalFileDrop}
-            onPreview={handleContextMenuPreview}
-            onShare={handleContextMenuShare}
-            onDownload={handleContextMenuDownload}
-            onDelete={handleContextMenuDelete}
-          />
-        ) : (
-          <FileList
-            files={currentFiles}
-            selectedFile={selectedFile}
-            draggedFile={draggedFile}
-            dropTarget={dropTarget}
-            onFileSelect={handleFileSelect}
-            onFolderDoubleClick={handleFolderDoubleClick}
-            onDragStart={handleDragStart}
-            onDragEnd={handleDragEnd}
-            onDragOver={handleDragOver}
-            onDragLeave={handleDragLeave}
-            onDrop={handleDrop}
-            onExternalDrop={handleExternalFileDrop}
-            onPreview={handleContextMenuPreview}
-            onShare={handleContextMenuShare}
-            onDownload={handleContextMenuDownload}
-            onDelete={handleContextMenuDelete}
+        {modalConfig && (
+          <InputModal
+            title={modalConfig.title}
+            label={modalConfig.label}
+            defaultValue={modalConfig.defaultValue}
+            submitLabel={modalConfig.submitLabel}
+            hasDescription={modalConfig.hasDescription}
+            descriptionLabel={modalConfig.descriptionLabel}
+            descriptionDefaultValue={modalConfig.descriptionDefaultValue}
+            onSubmit={modalConfig.onSubmit}
+            onClose={() => setModalConfig(null)}
           />
         )}
+
+        <div className={styles.mainContent}>
+          <TopBar
+            sectionTitle={sectionTitle}
+            currentPath={currentPath}
+            view={view}
+            onBreadcrumbClick={handleBreadcrumbClick}
+            onFolderCreate={openFolderModal}
+            onFileUpload={handleFileUpload}
+            onViewChange={setView}
+          />
+
+          <SortBar
+            sortBy={sortBy}
+            selectedFile={selectedFile}
+            selectedFileData={files.find((f) => f.id === selectedFile)}
+            onSortChange={setSortBy}
+            onPreview={handlePreview}
+            onShare={() => {
+              const selectedFileData = files.find((f) => f.id === selectedFile);
+              if (selectedFileData) {
+                handleShare(selectedFileData);
+              }
+            }}
+            onDelete={handleDeleteSelected}
+            onDownload={handleDownloadSelected}
+          />
+
+          {view === 'grid' ? (
+            <FileGrid
+              files={currentFiles}
+              selectedFile={selectedFile}
+              draggedFile={draggedFile}
+              dropTarget={dropTarget}
+              onFileSelect={handleFileSelect}
+              onFolderDoubleClick={handleFolderDoubleClick}
+              onDragStart={handleDragStart}
+              onDragEnd={handleDragEnd}
+              onDragOver={handleDragOver}
+              onDragLeave={handleDragLeave}
+              onDrop={handleDrop}
+              onExternalDrop={handleExternalFileDrop}
+              onPreview={handleContextMenuPreview}
+              onShare={handleContextMenuShare}
+              onDownload={handleContextMenuDownload}
+              onDelete={handleContextMenuDelete}
+            />
+          ) : (
+            <FileList
+              files={currentFiles}
+              selectedFile={selectedFile}
+              draggedFile={draggedFile}
+              dropTarget={dropTarget}
+              onFileSelect={handleFileSelect}
+              onFolderDoubleClick={handleFolderDoubleClick}
+              onDragStart={handleDragStart}
+              onDragEnd={handleDragEnd}
+              onDragOver={handleDragOver}
+              onDragLeave={handleDragLeave}
+              onDrop={handleDrop}
+              onExternalDrop={handleExternalFileDrop}
+              onPreview={handleContextMenuPreview}
+              onShare={handleContextMenuShare}
+              onDownload={handleContextMenuDownload}
+              onDelete={handleContextMenuDelete}
+            />
+          )}
+        </div>
       </div>
 
       {previewFile && (
