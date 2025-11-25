@@ -10,7 +10,7 @@ import { shallowEqual, useDispatch, useSelector } from 'react-redux';
 import { Icon, Menu } from 'semantic-ui-react';
 import { Popup } from '../../../lib/custom-ui';
 
-import { BoardMembershipRoles, CardTypes, ListTypes } from '../../../constants/Enums';
+import { BoardMembershipRoles, CardTypes, ListTypes, UserRoles } from '../../../constants/Enums';
 import entryActions from '../../../entry-actions';
 import { useSteps } from '../../../hooks';
 import selectors from '../../../selectors';
@@ -77,8 +77,18 @@ const ActionsStep = React.memo(({ cardId, onNameEdit, onClose }) => {
     canUseMembers,
     canUseLabels,
   } = useSelector((state) => {
+    const currentUser = selectors.selectCurrentUser(state);
+    const currentProject = selectors.selectCurrentProject(state);
     const boardMembership = selectors.selectCurrentUserMembershipForCurrentBoard(state);
-    const isEditor = !!boardMembership && boardMembership.role === BoardMembershipRoles.EDITOR;
+
+    const isAdmin = currentUser?.role === UserRoles.ADMIN;
+    const isProjectManager =
+      currentProject && currentUser && selectors.selectIsCurrentUserManagerForCurrentProject(state);
+
+    const isEditor =
+      isAdmin ||
+      isProjectManager ||
+      (!!boardMembership && boardMembership.role === BoardMembershipRoles.EDITOR);
 
     if (isListArchiveOrTrash(list)) {
       return {

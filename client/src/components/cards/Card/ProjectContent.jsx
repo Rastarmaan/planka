@@ -10,7 +10,7 @@ import { shallowEqual, useDispatch, useSelector } from 'react-redux';
 import { useTranslation } from 'react-i18next';
 import { Icon } from 'semantic-ui-react';
 
-import { BoardMembershipRoles, BoardViews, CardTypes } from '../../../constants/Enums';
+import { BoardMembershipRoles, BoardViews, CardTypes, UserRoles } from '../../../constants/Enums';
 import { CardTypeIcons } from '../../../constants/Icons';
 import entryActions from '../../../entry-actions';
 import selectors from '../../../selectors';
@@ -104,8 +104,19 @@ const ProjectContent = React.memo(({ cardId }) => {
       return false;
     }
 
+    const currentUser = selectors.selectCurrentUser(state);
+    const currentProject = selectors.selectCurrentProject(state);
     const boardMembership = selectors.selectCurrentUserMembershipForCurrentBoard(state);
-    return !!boardMembership && boardMembership.role === BoardMembershipRoles.EDITOR;
+
+    const isAdmin = currentUser?.role === UserRoles.ADMIN;
+    const isProjectManager =
+      currentProject && currentUser && selectors.selectIsCurrentUserManagerForCurrentProject(state);
+
+    return (
+      isAdmin ||
+      isProjectManager ||
+      (!!boardMembership && boardMembership.role === BoardMembershipRoles.EDITOR)
+    );
   });
 
   const dispatch = useDispatch();
