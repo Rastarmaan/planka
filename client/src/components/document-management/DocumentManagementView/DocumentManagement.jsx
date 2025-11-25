@@ -550,13 +550,14 @@ const DocumentManagement = React.memo(() => {
     }
   };
 
-  const handleCreateWorkspace = (workspaceName) => {
+  const handleCreateWorkspace = (workspaceName, workspaceDescription = '') => {
     const localId = createLocalId();
     pendingWorkspaceRef.current = localId;
     dispatch(
       actions.createSpace({
         id: localId,
         name: workspaceName,
+        description: workspaceDescription,
       }),
     );
   };
@@ -641,6 +642,9 @@ const DocumentManagement = React.memo(() => {
       label: 'Workspace name',
       defaultValue: '',
       submitLabel: 'Create',
+      hasDescription: true,
+      descriptionLabel: 'Description (optional)',
+      descriptionDefaultValue: '',
       onSubmit: handleCreateWorkspace,
     });
   };
@@ -707,6 +711,9 @@ const DocumentManagement = React.memo(() => {
           label={modalConfig.label}
           defaultValue={modalConfig.defaultValue}
           submitLabel={modalConfig.submitLabel}
+          hasDescription={modalConfig.hasDescription}
+          descriptionLabel={modalConfig.descriptionLabel}
+          descriptionDefaultValue={modalConfig.descriptionDefaultValue}
           onSubmit={modalConfig.onSubmit}
           onClose={() => setModalConfig(null)}
         />
