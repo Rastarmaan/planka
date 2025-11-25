@@ -47,7 +47,28 @@ module.exports = {
       criteria.isDeleted = false;
     }
 
-    const spaces = await Space.find(criteria).sort('createdAt ASC');
+    let spaces = await Space.find(criteria).sort('createdAt ASC');
+
+    if (spaces.length === 0) {
+      try {
+        const existingSpaces = await Space.find(criteria);
+        if (existingSpaces.length === 0) {
+          const defaultSpace = await sails.helpers.spaces.createOne.with({
+            name: 'Documents',
+            description: 'Default document space',
+            user: this.req.currentUser,
+            request: this.req,
+          });
+
+          spaces = [defaultSpace];
+        } else {
+          spaces = existingSpaces.sort((a, b) => new Date(a.createdAt) - new Date(b.createdAt));
+        }
+      } catch (error) {
+        sails.log.error('Error creating default space:', error);
+        spaces = await Space.find(criteria).sort('createdAt ASC');
+      }
+    }
 
     return {
       items: spaces,
