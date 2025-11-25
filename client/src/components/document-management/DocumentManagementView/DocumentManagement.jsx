@@ -51,6 +51,7 @@ const DocumentManagement = React.memo(() => {
   const [modalConfig, setModalConfig] = useState(null);
   const [showWorkspacePopup, setShowWorkspacePopup] = useState(false);
   const [deleteConfirmWorkspace, setDeleteConfirmWorkspace] = useState(null);
+  const [deleteConfirmItem, setDeleteConfirmItem] = useState(null);
   const [draggedFile, setDraggedFile] = useState(null);
   const [dropTarget, setDropTarget] = useState(null);
   const [currentPath, setCurrentPath] = useState([]);
@@ -338,13 +339,22 @@ const DocumentManagement = React.memo(() => {
     if (selectedFile) {
       const file = files.find((f) => f.id === selectedFile);
       if (file) {
-        if (file.type === 'folder') {
-          dispatch(actions.deleteFolder(file.id));
-        } else {
-          dispatch(actions.deleteFile(file.id));
-        }
+        setDeleteConfirmItem(file);
       }
-      setSelectedFile(null);
+    }
+  };
+
+  const handleConfirmDelete = () => {
+    if (deleteConfirmItem) {
+      if (deleteConfirmItem.type === 'folder') {
+        dispatch(actions.deleteFolder(deleteConfirmItem.id));
+      } else {
+        dispatch(actions.deleteFile(deleteConfirmItem.id));
+      }
+      if (selectedFile === deleteConfirmItem.id) {
+        setSelectedFile(null);
+      }
+      setDeleteConfirmItem(null);
     }
   };
 
@@ -432,6 +442,7 @@ const DocumentManagement = React.memo(() => {
           document.body.removeChild(link);
           window.URL.revokeObjectURL(url);
         } catch (error) {
+          // eslint-disable-next-line no-console
           console.error('Download error:', error);
         }
       }
@@ -484,14 +495,7 @@ const DocumentManagement = React.memo(() => {
 
   const handleContextMenuDelete = (file) => {
     if (file) {
-      if (file.type === 'folder') {
-        dispatch(actions.deleteFolder(file.id));
-      } else {
-        dispatch(actions.deleteFile(file.id));
-      }
-      if (selectedFile === file.id) {
-        setSelectedFile(null);
-      }
+      setDeleteConfirmItem(file);
     }
   };
 
@@ -837,6 +841,16 @@ const DocumentManagement = React.memo(() => {
           }
         }}
         onCancel={() => setDeleteConfirmWorkspace(null)}
+      />
+
+      <Confirm
+        open={!!deleteConfirmItem}
+        header={`Delete ${deleteConfirmItem?.type}`}
+        content={`Are you sure you want to delete "${deleteConfirmItem?.name}"? This action cannot be undone.`}
+        confirmButton="Delete"
+        cancelButton={t('action.cancel')}
+        onConfirm={handleConfirmDelete}
+        onCancel={() => setDeleteConfirmItem(null)}
       />
     </div>
   );
