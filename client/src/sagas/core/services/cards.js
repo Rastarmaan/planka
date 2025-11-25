@@ -117,6 +117,7 @@ export function* createCard(listId, data, index, autoOpen) {
   const localId = yield call(createLocalId);
   const list = yield select(selectors.selectListById, listId);
 
+  const currentUser = yield select(selectors.selectCurrentUser);
   const currentUserMembership = yield select(
     selectors.selectCurrentUserMembershipByBoardId,
     list.boardId,
@@ -137,7 +138,7 @@ export function* createCard(listId, data, index, autoOpen) {
         listId,
         id: localId,
         boardId: list.boardId,
-        creatorUserId: currentUserMembership.userId,
+        creatorUserId: currentUserMembership?.userId || currentUser.id,
         isClosed: LIST_TYPE_STATE_BY_TYPE[list.type] === ListTypeStates.CLOSED,
       },
       autoOpen,
@@ -446,6 +447,7 @@ export function* duplicateCard(id, data) {
   const { boardId, listId } = yield select(selectors.selectCardById, id);
   const index = yield select(selectors.selectCardIndexById, id);
 
+  const currentUser = yield select(selectors.selectCurrentUser);
   const currentUserMembership = yield select(
     selectors.selectCurrentUserMembershipByBoardId,
     boardId,
@@ -459,7 +461,7 @@ export function* duplicateCard(id, data) {
   yield put(
     actions.duplicateCard(id, localId, {
       ...nextData,
-      creatorUserId: currentUserMembership.userId,
+      creatorUserId: currentUserMembership?.userId || currentUser.id,
     }),
   );
 

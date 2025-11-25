@@ -17,7 +17,7 @@ import { usePopupInClosableContext } from '../../../hooks';
 import { isListArchiveOrTrash } from '../../../utils/record-helpers';
 import { getTextDirectionStyles } from '../../../utils/text-direction';
 import { StaticUserIds } from '../../../constants/StaticUsers';
-import { BoardMembershipRoles } from '../../../constants/Enums';
+import { BoardMembershipRoles, UserRoles } from '../../../constants/Enums';
 import { ClosableContext } from '../../../contexts';
 import Edit from './Edit';
 import TimeAgo from '../../common/TimeAgo';
@@ -50,8 +50,13 @@ const Item = React.memo(({ id }) => {
       };
     }
 
+    const currentUser = selectors.selectCurrentUser(state);
+    const currentProject = selectors.selectCurrentProject(state);
     const isManager = selectors.selectIsCurrentUserManagerForCurrentProject(state);
     const boardMembership = selectors.selectCurrentUserMembershipForCurrentBoard(state);
+
+    const isAdmin = currentUser?.role === UserRoles.ADMIN;
+    const isProjectManager = currentProject && currentUser && isManager;
 
     let isMember = false;
     let isEditor = false;
@@ -61,14 +66,19 @@ const Item = React.memo(({ id }) => {
       isEditor = boardMembership.role === BoardMembershipRoles.EDITOR;
     }
 
+    if (isAdmin || isProjectManager) {
+      isEditor = true;
+      isMember = true;
+    }
+
     const canEditOrDeleteAsMember =
       isMember &&
-      comment.userId === boardMembership.userId &&
-      (isEditor || boardMembership.canComment);
+      comment.userId === boardMembership?.userId &&
+      (isEditor || boardMembership?.canComment);
 
     return {
-      canEdit: canEditOrDeleteAsMember,
-      canDelete: isManager || canEditOrDeleteAsMember,
+      canEdit: isAdmin || isProjectManager || canEditOrDeleteAsMember,
+      canDelete: isAdmin || isProjectManager || isManager || canEditOrDeleteAsMember,
     };
   }, shallowEqual);
 

@@ -10,7 +10,7 @@ import { Comment, Loader } from 'semantic-ui-react';
 import selectors from '../../../selectors';
 import entryActions from '../../../entry-actions';
 import { isListArchiveOrTrash } from '../../../utils/record-helpers';
-import { BoardMembershipRoles } from '../../../constants/Enums';
+import { BoardMembershipRoles, UserRoles } from '../../../constants/Enums';
 import Item from './Item';
 import Add from './Add';
 
@@ -30,7 +30,13 @@ const Comments = React.memo(() => {
       return false;
     }
 
+    const currentUser = selectors.selectCurrentUser(state);
+    const currentProject = selectors.selectCurrentProject(state);
     const boardMembership = selectors.selectCurrentUserMembershipForCurrentBoard(state);
+
+    const isAdmin = currentUser?.role === UserRoles.ADMIN;
+    const isProjectManager =
+      currentProject && currentUser && selectors.selectIsCurrentUserManagerForCurrentProject(state);
 
     let isMember = false;
     let isEditor = false;
@@ -40,7 +46,12 @@ const Comments = React.memo(() => {
       isEditor = boardMembership.role === BoardMembershipRoles.EDITOR;
     }
 
-    return isEditor || (isMember && boardMembership.canComment);
+    if (isAdmin || isProjectManager) {
+      isEditor = true;
+      isMember = true;
+    }
+
+    return isEditor || (isMember && boardMembership?.canComment);
   });
 
   const dispatch = useDispatch();

@@ -18,7 +18,7 @@ import { usePopup } from '../../../lib/popup';
 import selectors from '../../../selectors';
 import entryActions from '../../../entry-actions';
 import DroppableTypes from '../../../constants/DroppableTypes';
-import { BoardMembershipRoles, ListTypes } from '../../../constants/Enums';
+import { BoardMembershipRoles, ListTypes, UserRoles } from '../../../constants/Enums';
 import { ListTypeIcons } from '../../../constants/Icons';
 import EditName from './EditName';
 import ActionsStep from './ActionsStep';
@@ -54,8 +54,18 @@ const List = React.memo(({ id, index }) => {
   const { canEdit, canArchiveCards, canAddCard, canDropCard } = useSelector((state) => {
     const isEditModeEnabled = selectors.selectIsEditModeEnabled(state); // TODO: move out?
 
+    const currentUser = selectors.selectCurrentUser(state);
+    const currentProject = selectors.selectCurrentProject(state);
     const boardMembership = selectors.selectCurrentUserMembershipForCurrentBoard(state);
-    const isEditor = !!boardMembership && boardMembership.role === BoardMembershipRoles.EDITOR;
+
+    const isAdmin = currentUser?.role === UserRoles.ADMIN;
+    const isProjectManager =
+      currentProject && currentUser && selectors.selectIsCurrentUserManagerForCurrentProject(state);
+
+    const isEditor =
+      isAdmin ||
+      isProjectManager ||
+      (!!boardMembership && boardMembership.role === BoardMembershipRoles.EDITOR);
 
     return {
       canEdit: isEditModeEnabled && isEditor,
