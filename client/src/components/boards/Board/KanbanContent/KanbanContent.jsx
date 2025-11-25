@@ -14,7 +14,7 @@ import selectors from '../../../../selectors';
 import entryActions from '../../../../entry-actions';
 import parseDndId from '../../../../utils/parse-dnd-id';
 import DroppableTypes from '../../../../constants/DroppableTypes';
-import { BoardMembershipRoles } from '../../../../constants/Enums';
+import { BoardMembershipRoles, UserRoles } from '../../../../constants/Enums';
 import AddList from './AddList';
 import List from '../../../lists/List';
 import PlusMathIcon from '../../../../assets/images/plus-math-icon.svg?react';
@@ -35,8 +35,19 @@ const KanbanContent = React.memo(() => {
       return isEditModeEnabled;
     }
 
+    const currentUser = selectors.selectCurrentUser(state);
+    const currentProject = selectors.selectCurrentProject(state);
     const boardMembership = selectors.selectCurrentUserMembershipForCurrentBoard(state);
-    return !!boardMembership && boardMembership.role === BoardMembershipRoles.EDITOR;
+
+    const isAdmin = currentUser?.role === UserRoles.ADMIN;
+    const isProjectManager =
+      currentProject && currentUser && selectors.selectIsCurrentUserManagerForCurrentProject(state);
+
+    return (
+      isAdmin ||
+      isProjectManager ||
+      (!!boardMembership && boardMembership.role === BoardMembershipRoles.EDITOR)
+    );
   });
 
   const dispatch = useDispatch();

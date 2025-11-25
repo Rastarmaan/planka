@@ -12,7 +12,7 @@ import { useTranslation } from 'react-i18next';
 import { Button, Loader } from 'semantic-ui-react';
 
 import selectors from '../../../selectors';
-import { BoardMembershipRoles } from '../../../constants/Enums';
+import { BoardMembershipRoles, UserRoles } from '../../../constants/Enums';
 import Card from '../../cards/Card';
 import AddCard from '../../cards/AddCard';
 import PlusMathIcon from '../../../assets/images/plus-math-icon.svg?react';
@@ -22,8 +22,21 @@ import styles from './ListView.module.scss';
 const ListView = React.memo(
   ({ cardIds, isCardsFetching, isAllCardsFetched, onCardsFetch, onCardCreate }) => {
     const canAddCard = useSelector((state) => {
+      const currentUser = selectors.selectCurrentUser(state);
+      const currentProject = selectors.selectCurrentProject(state);
       const boardMembership = selectors.selectCurrentUserMembershipForCurrentBoard(state);
-      return !!boardMembership && boardMembership.role === BoardMembershipRoles.EDITOR;
+
+      const isAdmin = currentUser?.role === UserRoles.ADMIN;
+      const isProjectManager =
+        currentProject &&
+        currentUser &&
+        selectors.selectIsCurrentUserManagerForCurrentProject(state);
+
+      return (
+        isAdmin ||
+        isProjectManager ||
+        (!!boardMembership && boardMembership.role === BoardMembershipRoles.EDITOR)
+      );
     });
 
     const [t] = useTranslation();
