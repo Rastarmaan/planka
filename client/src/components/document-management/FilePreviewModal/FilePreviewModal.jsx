@@ -16,6 +16,7 @@ const FilePreviewModal = React.memo(({ file, files, onClose, onShare, onDownload
   const [imageUrl, setImageUrl] = React.useState(null);
   const [imageError, setImageError] = React.useState(false);
   const [imageLoading, setImageLoading] = React.useState(false);
+  const [isMobile, setIsMobile] = React.useState(window.innerWidth <= 768);
 
   const imageFiles = files.filter(
     (f) => f.type === 'file' && f.mimeType && f.mimeType.startsWith('image/'),
@@ -105,9 +106,16 @@ const FilePreviewModal = React.memo(({ file, files, onClose, onShare, onDownload
   }, [file.id, file.mimeType, file.name, accessToken]);
 
   React.useEffect(() => {
+    const handleResize = () => {
+      setIsMobile(window.innerWidth <= 768);
+    };
+
     document.addEventListener('keydown', handleKeyPress);
+    window.addEventListener('resize', handleResize);
+
     return () => {
       document.removeEventListener('keydown', handleKeyPress);
+      window.removeEventListener('resize', handleResize);
     };
   }, [currentIndex]); // eslint-disable-line react-hooks/exhaustive-deps
 
@@ -173,7 +181,13 @@ const FilePreviewModal = React.memo(({ file, files, onClose, onShare, onDownload
                     <img
                       src={imageUrl}
                       alt={file.name}
-                      style={{ maxWidth: '100%', maxHeight: '100%', objectFit: 'contain' }}
+                      style={{
+                        maxWidth: '100%',
+                        maxHeight: isMobile ? 'calc(100vh - 140px)' : 'calc(100vh - 80px)',
+                        width: 'auto',
+                        height: 'auto',
+                        objectFit: 'contain',
+                      }}
                     />
                   );
                 }

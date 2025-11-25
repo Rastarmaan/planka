@@ -134,4 +134,84 @@
     font-size: 16px;
     margin: 0;
   }
+
+  @media (max-width: 768px) {
+    .header {
+      padding: 12px 16px;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .headerLeft {
+      order: 3;
+      width: 100%;
+      justify-content: center;
+      margin-top: 8px;
+    }
+
+    .headerCenter {
+      order: 1;
+      flex: none;
+      width: auto;
+    }
+
+    .headerRight {
+      order: 2;
+      flex: none;
+    }
+
+    .fileName {
+      font-size: 14px;
+      max-width: 200px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .headerButton {
+      padding: 8px 12px;
+      font-size: 13px;
+
+      i.icon {
+        margin-right: 6px;
+      }
+    }
+
+    .iconButton {
+      padding: 6px 8px;
+    }
+
+    .pageInfo {
+      font-size: 13px;
+      padding: 0 6px;
+    }
+
+    .content {
+      padding: 20px 16px;
+    }
+  }
+
+  @media (max-width: 480px) {
+    .header {
+      padding: 8px 12px;
+    }
+
+    .headerLeft {
+      gap: 4px;
+    }
+
+    .headerButton {
+      padding: 6px 8px;
+      font-size: 12px;
+    }
+
+    .fileName {
+      font-size: 13px;
+      max-width: 150px;
+    }
+
+    .content {
+      padding: 16px 8px;
+    }
+  }
 }
