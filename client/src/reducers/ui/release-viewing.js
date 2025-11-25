@@ -11,7 +11,8 @@ const initialState = {
   isSnapshotLoading: false,
 };
 
-export default (action, state = initialState) => {
+// eslint-disable-next-line default-param-last
+export default (state = initialState, action) => {
   const { type, payload } = action;
   switch (type) {
     case ActionTypes.RELEASE_SNAPSHOT_VIEW_SET:

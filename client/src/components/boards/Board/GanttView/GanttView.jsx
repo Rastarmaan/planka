@@ -16,7 +16,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { createSelector } from 'redux-orm';
 import { Dropdown } from 'semantic-ui-react';
 
-import { BoardMembershipRoles } from '../../../../constants/Enums';
+import { BoardMembershipRoles, UserRoles } from '../../../../constants/Enums';
 import entryActions from '../../../../entry-actions';
 import orm from '../../../../orm';
 import selectors from '../../../../selectors';
@@ -323,8 +323,19 @@ const GanttView = React.memo(() => {
   });
 
   const canEditCard = useSelector((state) => {
+    const currentUser = selectors.selectCurrentUser(state);
+    const currentProject = selectors.selectCurrentProject(state);
     const boardMembership = selectors.selectCurrentUserMembershipForCurrentBoard(state);
-    return !!boardMembership && boardMembership.role === BoardMembershipRoles.EDITOR;
+
+    const isAdmin = currentUser?.role === UserRoles.ADMIN;
+    const isProjectManager =
+      currentProject && currentUser && selectors.selectIsCurrentUserManagerForCurrentProject(state);
+
+    return (
+      isAdmin ||
+      isProjectManager ||
+      (!!boardMembership && boardMembership.role === BoardMembershipRoles.EDITOR)
+    );
   });
 
   const isJalali = board?.calendarType === 'jalali';
