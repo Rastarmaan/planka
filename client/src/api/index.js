@@ -20,6 +20,7 @@ import config from './config';
 import customFieldGroups from './custom-field-groups';
 import customFieldValues from './custom-field-values';
 import customFields from './custom-fields';
+import documentActivities from './document-activities';
 import googleCalendar from './google-calendar';
 import http from './http';
 import labels from './labels';
@@ -58,6 +59,7 @@ export default {
   ...permissions,
   ...shareLinks,
   ...publicApi,
+  ...documentActivities,
   ...projectCategories,
   ...projectManagers,
   ...projectVersions,

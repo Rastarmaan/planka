@@ -38,6 +38,7 @@ import folders from './folders';
 import files from './files';
 import permissions from './permissions';
 import shareLinks from './share-links';
+import documentActivities from './document-activities';
 
 export default {
   ...router,
@@ -75,4 +76,5 @@ export default {
   ...notifications,
   ...notificationServices,
   ...googleCalendar,
+  ...documentActivities,
 };

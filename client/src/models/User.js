@@ -113,6 +113,14 @@ export default class extends BaseModel {
         }
 
         break;
+      case ActionTypes.DOCUMENT_ACTIVITIES_FETCH__SUCCESS:
+        payload.items.forEach((activity) => {
+          if (activity.user) {
+            User.upsert(activity.user);
+          }
+        });
+
+        break;
       case ActionTypes.SOCKET_RECONNECT_HANDLE:
         User.all().delete();
         User.upsert(payload.user);

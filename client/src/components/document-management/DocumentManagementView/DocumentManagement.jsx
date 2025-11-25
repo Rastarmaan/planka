@@ -28,6 +28,7 @@ import FileList from '../FileViews/FileList';
 import FilePreviewModal from '../FilePreviewModal/FilePreviewModal';
 import ShareModal from '../ShareModal/ShareModal';
 import InputModal from '../InputModal/InputModal';
+import ActivityLogView from '../ActivityLogView/ActivityLogView';
 import styles from './DocumentManagement.module.scss';
 
 const DocumentManagement = React.memo(() => {
@@ -297,12 +298,17 @@ const DocumentManagement = React.memo(() => {
         return t('documentManagement.starred');
       case 'trash':
         return t('documentManagement.trash');
+      case 'activity':
+        return t('documentManagement.activityLog', 'Activity Log');
       default:
         return t('documentManagement.allFiles');
     }
   };
 
   const getFilteredFiles = () => {
+    if (currentSection === 'activity') {
+      return [];
+    }
     const baseFiles = currentFolderId
       ? files.filter((f) => {
           if (f.type === 'folder') {
@@ -857,85 +863,91 @@ const DocumentManagement = React.memo(() => {
         )}
 
         <div className={styles.mainContent}>
-          <TopBar
-            sectionTitle={sectionTitle}
-            currentPath={currentPath}
-            view={view}
-            onBreadcrumbClick={handleBreadcrumbClick}
-            onFolderCreate={openFolderModal}
-            onFileUpload={handleFileUpload}
-            onViewChange={setView}
-            canUpload={isAdmin}
-          />
-
-          <SortBar
-            sortBy={sortBy}
-            selectedFile={selectedFile}
-            selectedFileData={files.find((f) => f.id === selectedFile)}
-            onSortChange={setSortBy}
-            onPreview={handlePreview}
-            onShare={() => {
-              const selectedFileData = files.find((f) => f.id === selectedFile);
-              if (selectedFileData) {
-                handleShare(selectedFileData);
-              }
-            }}
-            onRename={() => {
-              const selectedFileData = files.find((f) => f.id === selectedFile);
-              if (selectedFileData) {
-                handleContextMenuRename(selectedFileData);
-              }
-            }}
-            onDelete={handleDeleteSelected}
-            onDownload={handleDownloadSelected}
-            canShare={isAdmin}
-            canDelete={isAdmin}
-          />
-
-          {view === 'grid' ? (
-            <FileGrid
-              files={currentFiles}
-              selectedFile={selectedFile}
-              draggedFile={draggedFile}
-              dropTarget={dropTarget}
-              onFileSelect={handleFileSelect}
-              onFolderDoubleClick={handleFolderDoubleClick}
-              onDragStart={handleDragStart}
-              onDragEnd={handleDragEnd}
-              onDragOver={handleDragOver}
-              onDragLeave={handleDragLeave}
-              onDrop={handleDrop}
-              onExternalDrop={handleExternalFileDrop}
-              onPreview={handleContextMenuPreview}
-              onShare={handleContextMenuShare}
-              onDownload={handleContextMenuDownload}
-              onDelete={handleContextMenuDelete}
-              onRename={handleContextMenuRename}
-              canShare={isAdmin}
-              canDelete={isAdmin}
-            />
+          {currentSection === 'activity' ? (
+            <ActivityLogView />
           ) : (
-            <FileList
-              files={currentFiles}
-              selectedFile={selectedFile}
-              draggedFile={draggedFile}
-              dropTarget={dropTarget}
-              onFileSelect={handleFileSelect}
-              onFolderDoubleClick={handleFolderDoubleClick}
-              onDragStart={handleDragStart}
-              onDragEnd={handleDragEnd}
-              onDragOver={handleDragOver}
-              onDragLeave={handleDragLeave}
-              onDrop={handleDrop}
-              onExternalDrop={handleExternalFileDrop}
-              onPreview={handleContextMenuPreview}
-              onShare={handleContextMenuShare}
-              onDownload={handleContextMenuDownload}
-              onDelete={handleContextMenuDelete}
-              onRename={handleContextMenuRename}
-              canShare={isAdmin}
-              canDelete={isAdmin}
-            />
+            <>
+              <TopBar
+                sectionTitle={sectionTitle}
+                currentPath={currentPath}
+                view={view}
+                onBreadcrumbClick={handleBreadcrumbClick}
+                onFolderCreate={openFolderModal}
+                onFileUpload={handleFileUpload}
+                onViewChange={setView}
+                canUpload={isAdmin}
+              />
+
+              <SortBar
+                sortBy={sortBy}
+                selectedFile={selectedFile}
+                selectedFileData={files.find((f) => f.id === selectedFile)}
+                onSortChange={setSortBy}
+                onPreview={handlePreview}
+                onShare={() => {
+                  const selectedFileData = files.find((f) => f.id === selectedFile);
+                  if (selectedFileData) {
+                    handleShare(selectedFileData);
+                  }
+                }}
+                onRename={() => {
+                  const selectedFileData = files.find((f) => f.id === selectedFile);
+                  if (selectedFileData) {
+                    handleContextMenuRename(selectedFileData);
+                  }
+                }}
+                onDelete={handleDeleteSelected}
+                onDownload={handleDownloadSelected}
+                canShare={isAdmin}
+                canDelete={isAdmin}
+              />
+
+              {view === 'grid' ? (
+                <FileGrid
+                  files={currentFiles}
+                  selectedFile={selectedFile}
+                  draggedFile={draggedFile}
+                  dropTarget={dropTarget}
+                  onFileSelect={handleFileSelect}
+                  onFolderDoubleClick={handleFolderDoubleClick}
+                  onDragStart={handleDragStart}
+                  onDragEnd={handleDragEnd}
+                  onDragOver={handleDragOver}
+                  onDragLeave={handleDragLeave}
+                  onDrop={handleDrop}
+                  onExternalDrop={handleExternalFileDrop}
+                  onPreview={handleContextMenuPreview}
+                  onShare={handleContextMenuShare}
+                  onDownload={handleContextMenuDownload}
+                  onDelete={handleContextMenuDelete}
+                  onRename={handleContextMenuRename}
+                  canShare={isAdmin}
+                  canDelete={isAdmin}
+                />
+              ) : (
+                <FileList
+                  files={currentFiles}
+                  selectedFile={selectedFile}
+                  draggedFile={draggedFile}
+                  dropTarget={dropTarget}
+                  onFileSelect={handleFileSelect}
+                  onFolderDoubleClick={handleFolderDoubleClick}
+                  onDragStart={handleDragStart}
+                  onDragEnd={handleDragEnd}
+                  onDragOver={handleDragOver}
+                  onDragLeave={handleDragLeave}
+                  onDrop={handleDrop}
+                  onExternalDrop={handleExternalFileDrop}
+                  onPreview={handleContextMenuPreview}
+                  onShare={handleContextMenuShare}
+                  onDownload={handleContextMenuDownload}
+                  onDelete={handleContextMenuDelete}
+                  onRename={handleContextMenuRename}
+                  canShare={isAdmin}
+                  canDelete={isAdmin}
+                />
+              )}
+            </>
           )}
         </div>
       </div>

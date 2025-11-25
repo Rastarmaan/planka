@@ -37,6 +37,7 @@ import * as folders from './folders';
 import * as files from './files';
 import * as permissions from './permissions';
 import * as shareLinks from './share-links';
+import fetchDocumentActivities from './document-activities';
 
 export default {
   ...router,
@@ -73,4 +74,5 @@ export default {
   ...notifications,
   ...notificationServices,
   ...googleCalendar,
+  fetchDocumentActivities,
 };

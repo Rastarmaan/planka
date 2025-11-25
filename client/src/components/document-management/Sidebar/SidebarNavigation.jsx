@@ -273,6 +273,24 @@ const SidebarNavigation = React.memo(
           <span>{t('documentManagement.trash')}</span>
         </div>
       </div> */}
+
+        <div
+          role="button"
+          tabIndex={0}
+          className={`${styles.sidebarItem} ${currentSection === 'activity' ? styles.active : ''}`}
+          onClick={() => onSectionChange(Paths.DOCUMENT_ACTIVITY)}
+          onKeyDown={(e) => {
+            if (e.key === 'Enter' || e.key === ' ') {
+              e.preventDefault();
+              onSectionChange(Paths.DOCUMENT_ACTIVITY);
+            }
+          }}
+        >
+          <div className={styles.sidebarItemContent}>
+            <Icon name="history" />
+            <span>{t('documentManagement.activityLog', 'Activity Log')}</span>
+          </div>
+        </div>
       </div>
     );
   },
