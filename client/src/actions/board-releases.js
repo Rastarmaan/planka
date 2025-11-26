@@ -210,3 +210,21 @@ export default {
   releaseSnapshotViewClear,
   releaseSnapshotFetch,
 };
+
+export const addReleaseToBoardFilter = (id, boardId, currentListId) => ({
+  type: ActionTypes.RELEASE_TO_BOARD_FILTER_ADD,
+  payload: {
+    id,
+    boardId,
+    currentListId,
+  },
+});
+
+export const removeReleaseFromBoardFilter = (id, boardId, currentListId) => ({
+  type: ActionTypes.RELEASE_FROM_BOARD_FILTER_REMOVE,
+  payload: {
+    id,
+    boardId,
+    currentListId,
+  },
+});

@@ -68,6 +68,7 @@ export default class extends BaseModel {
     }),
     filterUsers: many('User', 'filterBoards'),
     filterLabels: many('Label', 'filterBoards'),
+    filterReleases: many('BoardRelease', 'filterBoards'),
   };
 
   static reducer({ type, payload }, Board) {
@@ -259,6 +260,14 @@ export default class extends BaseModel {
         Board.withId(payload.boardId).filterLabels.remove(payload.id);
 
         break;
+      case ActionTypes.RELEASE_TO_BOARD_FILTER_ADD:
+        Board.withId(payload.boardId).filterReleases.add(payload.id);
+
+        break;
+      case ActionTypes.RELEASE_FROM_BOARD_FILTER_REMOVE:
+        Board.withId(payload.boardId).filterReleases.remove(payload.id);
+
+        break;
       case ActionTypes.ACTIVITIES_IN_BOARD_FETCH:
         Board.withId(payload.boardId).update({
           isActivitiesFetching: true,
@@ -391,6 +400,15 @@ export default class extends BaseModel {
       cardModels = cardModels.filter((cardModel) => {
         const labels = cardModel.labels.toRefArray();
         return labels.some((label) => filterLabelIds.includes(label.id));
+      });
+    }
+
+    const filterReleaseIds = this.filterReleases.toRefArray().map((release) => release.id);
+
+    if (filterReleaseIds.length > 0) {
+      cardModels = cardModels.filter((cardModel) => {
+        const releases = cardModel.releases.toRefArray();
+        return releases.some((release) => filterReleaseIds.includes(release.id));
       });
     }
 

@@ -1,5 +1,9 @@
+import { call, put, select } from 'redux-saga/effects';
+
 import request from '../request';
 import requests from '../requests';
+import actions from '../../../actions';
+import selectors from '../../../selectors';
 
 export function* boardReleasesFetch(boardId) {
   yield* request(requests.boardReleasesFetchRequest, boardId);
@@ -33,6 +37,30 @@ export function* releaseSnapshotFetch(boardId, releaseId) {
   yield* request(requests.releaseSnapshotFetchRequest, boardId, releaseId);
 }
 
+export function* addReleaseToBoardFilter(id, boardId) {
+  const currentListId = yield select(selectors.selectCurrentListId);
+
+  yield put(actions.addReleaseToBoardFilter(id, boardId, currentListId));
+}
+
+export function* addReleaseToFilterInCurrentBoard(id) {
+  const { boardId } = yield select(selectors.selectPath);
+
+  yield call(addReleaseToBoardFilter, id, boardId);
+}
+
+export function* removeReleaseFromBoardFilter(id, boardId) {
+  const currentListId = yield select(selectors.selectCurrentListId);
+
+  yield put(actions.removeReleaseFromBoardFilter(id, boardId, currentListId));
+}
+
+export function* removeReleaseFromFilterInCurrentBoard(id) {
+  const { boardId } = yield select(selectors.selectPath);
+
+  yield call(removeReleaseFromBoardFilter, id, boardId);
+}
+
 export default {
   boardReleasesFetch,
   boardReleaseCreate,
@@ -42,4 +70,8 @@ export default {
   releaseCardAdd,
   releaseCardRemove,
   releaseSnapshotFetch,
+  addReleaseToBoardFilter,
+  addReleaseToFilterInCurrentBoard,
+  removeReleaseFromBoardFilter,
+  removeReleaseFromFilterInCurrentBoard,
 };

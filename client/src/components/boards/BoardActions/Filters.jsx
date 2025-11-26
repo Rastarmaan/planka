@@ -18,6 +18,7 @@ import { useNestedRef } from '../../../hooks';
 import selectors from '../../../selectors';
 import { UserRoles } from '../../../constants/Enums';
 import BoardMembershipsStep from '../../board-memberships/BoardMembershipsStep';
+import BoardReleasesFilterStep from '../../board-releases/BoardReleasesFilterStep';
 import LabelChip from '../../labels/LabelChip';
 import LabelsStep from '../../labels/LabelsStep';
 import UserAvatar from '../../users/UserAvatar';
@@ -29,6 +30,7 @@ const Filters = React.memo(() => {
   const board = useSelector(selectors.selectCurrentBoard);
   const userIds = useSelector(selectors.selectFilterUserIdsForCurrentBoard);
   const labelIds = useSelector(selectors.selectFilterLabelIdsForCurrentBoard);
+  const releaseIds = useSelector(selectors.selectFilterReleaseIdsForCurrentBoard);
   const currentUserId = useSelector(selectors.selectCurrentUserId);
 
   const dispatch = useDispatch();
@@ -120,6 +122,20 @@ const Filters = React.memo(() => {
     [dispatch],
   );
 
+  const handleReleaseSelect = useCallback(
+    (releaseId) => {
+      dispatch(entryActions.addReleaseToFilterInCurrentBoard(releaseId));
+    },
+    [dispatch],
+  );
+
+  const handleReleaseDeselect = useCallback(
+    (releaseId) => {
+      dispatch(entryActions.removeReleaseFromFilterInCurrentBoard(releaseId));
+    },
+    [dispatch],
+  );
+
   const handleSearchChange = useCallback(
     (_, { value }) => {
       setSearch(value);
@@ -155,6 +171,7 @@ const Filters = React.memo(() => {
 
   const BoardMembershipsPopup = usePopup(BoardMembershipsStep);
   const LabelsPopup = usePopup(LabelsStep);
+  const ReleasesPopup = usePopup(BoardReleasesFilterStep);
   const StoryPointsSummaryPopup = usePopup(StoryPointsSummaryStep);
 
   const isSearchActive = search || isSearchFocused;
@@ -203,6 +220,25 @@ const Filters = React.memo(() => {
             <LabelChip id={labelId} size="small" onClick={handleLabelClick} />
           </span>
         ))}
+      </span>
+
+      <span className={styles.filter}>
+        <ReleasesPopup
+          currentIds={releaseIds}
+          title="common.filterByReleases"
+          onSelect={handleReleaseSelect}
+          onDeselect={handleReleaseDeselect}
+        >
+          <button type="button" className={styles.filterButton}>
+            <span className={styles.filterTitle}>{`${t('common.releases')}:`}</span>
+            {releaseIds.length === 0 && (
+              <span className={styles.filterLabel}>{t('common.all')}</span>
+            )}
+            {releaseIds.length > 0 && (
+              <span className={styles.filterLabel}>{releaseIds.length}</span>
+            )}
+          </button>
+        </ReleasesPopup>
       </span>
 
       <span className={styles.filter}>
