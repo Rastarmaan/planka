@@ -39,6 +39,7 @@ module.exports = {
       resourceType: 'file',
       resourceId: record.id,
       resourceName: record.name,
+      spaceId: String(record.space),
       request: inputs.request,
     });
 

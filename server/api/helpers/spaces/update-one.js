@@ -43,6 +43,7 @@ module.exports = {
       resourceType: 'space',
       resourceId: updatedSpace.id,
       resourceName: updatedSpace.name,
+      spaceId: String(updatedSpace.id),
       metadata: {
         changes: values,
       },

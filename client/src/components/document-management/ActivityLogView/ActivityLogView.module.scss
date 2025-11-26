@@ -52,8 +52,61 @@
 
   .headerActions {
     display: flex;
-    gap: 8px;
+    gap: 12px;
     align-items: center;
+  }
+
+  .scopeDropdown {
+    min-width: 160px !important;
+    background: #2d3139 !important;
+    border: 1px solid rgba(255, 255, 255, 0.15) !important;
+    border-radius: 6px !important;
+    color: rgba(255, 255, 255, 0.9) !important;
+    font-size: 13px !important;
+
+    &:global(.ui.dropdown) {
+      padding: 8px 12px !important;
+
+      :global(.text) {
+        color: rgba(255, 255, 255, 0.9) !important;
+      }
+
+      :global(.dropdown.icon) {
+        color: rgba(255, 255, 255, 0.6) !important;
+      }
+
+      :global(.menu) {
+        background: #2d3139 !important;
+        border: 1px solid rgba(255, 255, 255, 0.15) !important;
+        border-radius: 6px !important;
+        margin-top: 4px !important;
+
+        :global(.item) {
+          color: rgba(255, 255, 255, 0.8) !important;
+          padding: 10px 14px !important;
+          border-top: none !important;
+
+          &:hover {
+            background: rgba(255, 255, 255, 0.08) !important;
+            color: rgba(255, 255, 255, 1) !important;
+          }
+
+          &:global(.active) {
+            background: rgba(0, 82, 204, 0.2) !important;
+            color: #4c9aff !important;
+          }
+
+          :global(.icon) {
+            color: inherit !important;
+            margin-right: 8px !important;
+          }
+        }
+      }
+    }
+
+    &:hover {
+      border-color: rgba(255, 255, 255, 0.25) !important;
+    }
   }
 
   .toggleButton {

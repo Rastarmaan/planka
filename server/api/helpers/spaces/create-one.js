@@ -44,6 +44,7 @@ module.exports = {
       resourceType: 'space',
       resourceId: space.id,
       resourceName: space.name,
+      spaceId: String(space.id),
       request: inputs.request,
     });
 

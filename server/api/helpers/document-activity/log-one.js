@@ -39,6 +39,10 @@ module.exports = {
       type: 'string',
       required: true,
     },
+    spaceId: {
+      type: 'string',
+      allowNull: true,
+    },
     metadata: {
       type: 'json',
     },
@@ -49,11 +53,12 @@ module.exports = {
 
   async fn(inputs) {
     const activityData = {
-      userId: inputs.user ? inputs.user.id : null,
+      user: inputs.user ? inputs.user.id : null,
       action: inputs.action,
       resourceType: inputs.resourceType,
       resourceId: inputs.resourceId,
       resourceName: inputs.resourceName,
+      space: inputs.spaceId || null,
       metadata: inputs.metadata,
     };
 

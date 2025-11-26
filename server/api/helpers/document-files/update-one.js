@@ -50,6 +50,7 @@ module.exports = {
       resourceType: 'file',
       resourceId: updatedFile.id,
       resourceName: updatedFile.name,
+      spaceId: String(record.space),
       metadata: {
         changes: values,
       },

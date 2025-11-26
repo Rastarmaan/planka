@@ -66,6 +66,15 @@ module.exports = {
       throw 'notFound';
     }
 
+    let spaceId;
+    if (inputs.resourceType === 'space') {
+      spaceId = inputs.resourceId;
+    } else if (inputs.resourceType === 'folder') {
+      spaceId = resource.space;
+    } else if (inputs.resourceType === 'file') {
+      spaceId = resource.space;
+    }
+
     const token = crypto.randomBytes(32).toString('hex');
 
     let passwordHash = null;
@@ -91,6 +100,7 @@ module.exports = {
       resourceType: inputs.resourceType,
       resourceId: inputs.resourceId,
       resourceName: resource.name,
+      spaceId: spaceId ? String(spaceId) : null,
       metadata: {
         shareLinkId: shareLink.id,
         token: shareLink.token,

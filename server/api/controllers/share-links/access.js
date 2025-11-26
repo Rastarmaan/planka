@@ -107,6 +107,15 @@ module.exports = {
       throw 'notFound';
     }
 
+    let spaceId;
+    if (shareLink.resourceType === 'space') {
+      spaceId = shareLink.resourceId;
+    } else if (shareLink.resourceType === 'folder') {
+      spaceId = resource.space;
+    } else if (shareLink.resourceType === 'file') {
+      spaceId = resource.space;
+    }
+
     await sails.sendNativeQuery(
       'UPDATE share_link SET access_count = $1, last_accessed_at = $2 WHERE id = $3',
       [shareLink.accessCount + 1, new Date().toISOString(), shareLink.id],
@@ -118,6 +127,7 @@ module.exports = {
       resourceType: shareLink.resourceType,
       resourceId: shareLink.resourceId,
       resourceName: resource.name,
+      spaceId: spaceId ? String(spaceId) : null,
       metadata: {
         shareLinkId: shareLink.id,
         public: true,

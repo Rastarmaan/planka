@@ -135,6 +135,7 @@ module.exports = {
       resourceType: inputs.resourceType,
       resourceId: inputs.resourceId,
       resourceName: resource.name,
+      spaceId: spaceId ? String(spaceId) : null,
       metadata: {
         permissionId: permission.id,
         targetUserId: inputs.userId,

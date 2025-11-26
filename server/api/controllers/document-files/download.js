@@ -89,6 +89,7 @@ module.exports = {
       resourceType: 'file',
       resourceId: file.id,
       resourceName: file.name,
+      spaceId: String(file.space),
       metadata: {
         versionId: inputs.versionId,
       },

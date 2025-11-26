@@ -77,6 +77,7 @@ module.exports = {
       resourceType: 'folder',
       resourceId: record.id,
       resourceName: record.name,
+      spaceId: String(record.space),
       request: inputs.request,
     });
 
