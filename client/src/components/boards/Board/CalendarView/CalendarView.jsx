@@ -159,6 +159,34 @@ const CalendarView = React.memo(() => {
     [isJalali],
   );
 
+  const formatTitleForJalali = useCallback(
+    (calendarDate) => {
+      if (!isJalali) return null;
+
+      const dateObj = new DateObject({
+        date: calendarDate,
+        calendar: persian,
+        locale: persianEn,
+      });
+
+      const { month, year } = dateObj;
+      const formattedTitle = `${month.name} ${year}`;
+
+      return formattedTitle;
+    },
+    [isJalali],
+  );
+
+  useEffect(() => {
+    const calendarApi = calendarRef.current?.getApi();
+    if (calendarApi) {
+      const customTitle = isJalali
+        ? formatTitleForJalali(calendarApi.getDate())
+        : calendarApi.view.title;
+      setCurrentTitle(customTitle);
+    }
+  }, [isJalali, formatTitleForJalali]);
+
   const events = useMemo(() => {
     return cardsData
       .map((card) => {
@@ -219,39 +247,58 @@ const CalendarView = React.memo(() => {
     const calendarApi = calendarRef.current?.getApi();
     if (calendarApi) {
       calendarApi.prev();
-      setCurrentTitle(calendarApi.view.title);
+      const customTitle = isJalali
+        ? formatTitleForJalali(calendarApi.getDate())
+        : calendarApi.view.title;
+      setCurrentTitle(customTitle);
     }
-  }, []);
+  }, [isJalali, formatTitleForJalali]);
 
   const handleNext = useCallback(() => {
     const calendarApi = calendarRef.current?.getApi();
     if (calendarApi) {
       calendarApi.next();
-      setCurrentTitle(calendarApi.view.title);
+      const customTitle = isJalali
+        ? formatTitleForJalali(calendarApi.getDate())
+        : calendarApi.view.title;
+      setCurrentTitle(customTitle);
     }
-  }, []);
+  }, [isJalali, formatTitleForJalali]);
 
   const handleToday = useCallback(() => {
     const calendarApi = calendarRef.current?.getApi();
     if (calendarApi) {
       calendarApi.today();
-      setCurrentTitle(calendarApi.view.title);
+      const customTitle = isJalali
+        ? formatTitleForJalali(calendarApi.getDate())
+        : calendarApi.view.title;
+      setCurrentTitle(customTitle);
     }
-  }, []);
+  }, [isJalali, formatTitleForJalali]);
 
-  const handleViewChange = useCallback((view) => {
-    const calendarApi = calendarRef.current?.getApi();
-    if (calendarApi) {
-      calendarApi.changeView(view);
-      setCurrentView(view);
-      setCurrentTitle(calendarApi.view.title);
-    }
-  }, []);
+  const handleViewChange = useCallback(
+    (view) => {
+      const calendarApi = calendarRef.current?.getApi();
+      if (calendarApi) {
+        calendarApi.changeView(view);
+        setCurrentView(view);
+        const customTitle = isJalali
+          ? formatTitleForJalali(calendarApi.getDate())
+          : calendarApi.view.title;
+        setCurrentTitle(customTitle);
+      }
+    },
+    [isJalali, formatTitleForJalali],
+  );
 
-  const handleDatesSet = useCallback((dateInfo) => {
-    setCurrentTitle(dateInfo.view.title);
-    setCurrentView(dateInfo.view.type);
-  }, []);
+  const handleDatesSet = useCallback(
+    (dateInfo) => {
+      const customTitle = isJalali ? formatTitleForJalali(dateInfo.start) : dateInfo.view.title;
+      setCurrentTitle(customTitle);
+      setCurrentView(dateInfo.view.type);
+    },
+    [isJalali, formatTitleForJalali],
+  );
 
   const renderEventContent = useCallback(
     (eventInfo) => {
