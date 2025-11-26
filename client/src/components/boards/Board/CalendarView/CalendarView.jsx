@@ -14,9 +14,11 @@ import persian from 'react-date-object/calendars/persian';
 import persianEn from 'react-date-object/locales/persian_en';
 import { useTranslation } from 'react-i18next';
 import { useDispatch, useSelector } from 'react-redux';
+import { useNavigate } from 'react-router-dom';
 import { createSelector } from 'redux-orm';
 import { Dropdown, Popup, Button } from 'semantic-ui-react';
 
+import Paths from '../../../../constants/Paths';
 import entryActions from '../../../../entry-actions';
 import orm from '../../../../orm';
 import selectors from '../../../../selectors';
@@ -108,6 +110,7 @@ const selectCardsForMultipleBoards = makeSelectCardsForMultipleBoards();
 
 const CalendarView = React.memo(() => {
   const dispatch = useDispatch();
+  const navigate = useNavigate();
   const [t] = useTranslation();
   const calendarRef = useRef(null);
   const [currentView, setCurrentView] = useState('dayGridMonth');
@@ -197,9 +200,9 @@ const CalendarView = React.memo(() => {
 
   const handleEventClick = useCallback(
     (info) => {
-      dispatch(entryActions.openCard(info.event.id));
+      navigate(Paths.CARDS.replace(':id', info.event.id));
     },
-    [dispatch],
+    [navigate],
   );
 
   const handleBoardSelectionChange = useCallback((e, { value }) => {
