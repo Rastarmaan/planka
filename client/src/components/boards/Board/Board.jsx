@@ -13,6 +13,7 @@ import BoardActivitiesModal from '../../activities/BoardActivitiesModal';
 import BoardReleasesModal from '../../board-releases/BoardReleasesModal';
 import BoardVersionsModal from '../../board-versions/BoardVersionsModal';
 import CardModal from '../../cards/CardModal';
+import CalendarContent from './CalendarContent';
 import EndlessContent from './EndlessContent';
 import FiniteContent from './FiniteContent';
 import GanttContent from './GanttContent';
@@ -28,6 +29,8 @@ const Board = React.memo(() => {
     Content = KanbanContent;
   } else if (board.view === BoardViews.GANTT) {
     Content = GanttContent;
+  } else if (board.view === BoardViews.CALENDAR) {
+    Content = CalendarContent;
   } else {
     switch (board.context) {
       case BoardContexts.BOARD:
