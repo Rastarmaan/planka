@@ -4,7 +4,7 @@
  */
 
 import PropTypes from 'prop-types';
-import React, { useCallback } from 'react';
+import React, { useCallback, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useSelector } from 'react-redux';
 import { Popup } from '../../lib/custom-ui';
@@ -17,21 +17,21 @@ const BoardReleasesFilterStep = React.memo(
   ({ currentIds, title, onSelect, onDeselect, onBack }) => {
     const [t] = useTranslation();
 
-    const releases = useSelector((state) =>
-      state.orm.boardRelease
-        .all()
-        .filter((r) => {
-          const currentBoard = selectors.selectCurrentBoard(state);
-          return currentBoard && r.boardId === currentBoard.id;
-        })
-        .toRefArray()
-        .sort((a, b) => {
-          // Sort by status (unreleased first) then by version
-          if (a.status === 'unreleased' && b.status !== 'unreleased') return -1;
-          if (a.status !== 'unreleased' && b.status === 'unreleased') return 1;
-          return (b.version || '').localeCompare(a.version || '');
-        }),
+    const currentBoard = useSelector(selectors.selectCurrentBoard);
+    const boardId = currentBoard?.id;
+
+    const allReleases = useSelector((state) =>
+      boardId ? selectors.selectBoardReleasesByBoardId(state, boardId) : [],
     );
+
+    const releases = useMemo(() => {
+      if (!allReleases) return [];
+      return [...allReleases].sort((a, b) => {
+        if (a.status === 'unreleased' && b.status !== 'unreleased') return -1;
+        if (a.status !== 'unreleased' && b.status === 'unreleased') return 1;
+        return (b.version || '').localeCompare(a.version || '');
+      });
+    }, [allReleases]);
 
     const handleReleaseClick = useCallback(
       (releaseId) => {

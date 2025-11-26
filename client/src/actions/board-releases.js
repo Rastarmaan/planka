@@ -198,19 +198,6 @@ releaseSnapshotFetch.failure = (error) => ({
   },
 });
 
-export default {
-  boardReleasesFetch,
-  boardReleaseCreate,
-  boardReleaseUpdate,
-  boardReleaseStatusUpdate,
-  boardReleaseDelete,
-  releaseCardAdd,
-  releaseCardRemove,
-  releaseSnapshotViewSet,
-  releaseSnapshotViewClear,
-  releaseSnapshotFetch,
-};
-
 export const addReleaseToBoardFilter = (id, boardId, currentListId) => ({
   type: ActionTypes.RELEASE_TO_BOARD_FILTER_ADD,
   payload: {
@@ -228,3 +215,18 @@ export const removeReleaseFromBoardFilter = (id, boardId, currentListId) => ({
     currentListId,
   },
 });
+
+export default {
+  boardReleasesFetch,
+  boardReleaseCreate,
+  boardReleaseUpdate,
+  boardReleaseStatusUpdate,
+  boardReleaseDelete,
+  releaseCardAdd,
+  releaseCardRemove,
+  releaseSnapshotViewSet,
+  releaseSnapshotViewClear,
+  releaseSnapshotFetch,
+  addReleaseToBoardFilter,
+  removeReleaseFromBoardFilter,
+};
