@@ -99,6 +99,7 @@ module.exports = {
       resourceType: 'file',
       resourceId: file.id,
       resourceName: file.name,
+      spaceId: file.space ? String(file.space) : null,
       metadata: {
         shareLinkId: shareLink.id,
         public: true,

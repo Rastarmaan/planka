@@ -91,6 +91,7 @@ module.exports = {
                   resourceType: 'file',
                   resourceId: documentFile.id,
                   resourceName: documentFile.name,
+                  spaceId: String(inputs.spaceId),
                   metadata: {
                     size: fileDescriptor.size,
                     mimeType: fileDescriptor.type,

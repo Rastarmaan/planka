@@ -54,6 +54,7 @@ module.exports = {
       resourceType: 'space',
       resourceId: deletedSpace.id,
       resourceName: deletedSpace.name,
+      spaceId: String(deletedSpace.id),
       request: inputs.request,
     });
 

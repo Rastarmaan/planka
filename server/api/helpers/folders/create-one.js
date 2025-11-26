@@ -58,6 +58,7 @@ module.exports = {
       resourceType: 'folder',
       resourceId: folder.id,
       resourceName: folder.name,
+      spaceId: String(inputs.spaceId),
       request: inputs.request,
     });
 

@@ -85,6 +85,10 @@ module.exports = {
       type: 'json',
       defaultsTo: [],
     },
+    spaceId: {
+      type: 'string',
+      allowNull: true,
+    },
   },
 
   exits: {
@@ -96,10 +100,15 @@ module.exports = {
   async fn(inputs) {
     const { currentUser } = this.req;
 
-    // Only allow admins to view document activities
     if (currentUser.role !== User.Roles.ADMIN) {
       throw 'forbidden';
     }
+
+    const ownedSpaces = await Space.find({
+      createdByUser: currentUser.id,
+      isDeleted: false,
+    });
+    const ownedSpaceIds = ownedSpaces.map((s) => String(s.id));
 
     // Build query criteria
     const criteria = {};
@@ -108,10 +117,27 @@ module.exports = {
       criteria.action = { '!': inputs.excludeActions };
     }
 
+    if (inputs.spaceId) {
+      if (!ownedSpaceIds.includes(String(inputs.spaceId))) {
+        throw 'forbidden';
+      }
+      criteria.space = inputs.spaceId;
+    } else {
+      if (ownedSpaceIds.length === 0) {
+        return {
+          items: [],
+          total: 0,
+          included: { users: [] },
+        };
+      }
+      criteria.space = ownedSpaceIds;
+    }
+
     // Get activities with pagination
     const [activities, totalCount] = await Promise.all([
       DocumentActivity.find(criteria)
         .populate('user')
+        .populate('space')
         .sort('createdAt DESC')
         .limit(inputs.limit)
         .skip(inputs.skip),
@@ -125,8 +151,26 @@ module.exports = {
     const uniqueUserIds = [...new Set(userIds)];
     const users = uniqueUserIds.length > 0 ? await User.find({ id: uniqueUserIds }) : [];
 
+    const userMap = {};
+    users.forEach((user) => {
+      userMap[user.id] = user;
+    });
+
+    const enrichedActivities = activities.map((activity) => {
+      const activityObj = { ...activity };
+      if (activity.user && activity.user.id && userMap[activity.user.id]) {
+        activityObj.user = {
+          id: userMap[activity.user.id].id,
+          name: userMap[activity.user.id].name,
+          username: userMap[activity.user.id].username,
+          avatarUrl: userMap[activity.user.id].avatarUrl,
+        };
+      }
+      return activityObj;
+    });
+
     return {
-      items: activities,
+      items: enrichedActivities,
       total: totalCount,
       included: {
         users: sails.helpers.users.presentMany(users, currentUser),

@@ -84,6 +84,7 @@ module.exports = {
       resourceType: 'folder',
       resourceId: updatedFolder.id,
       resourceName: updatedFolder.name,
+      spaceId: String(record.space),
       metadata: {
         changes: values,
       },

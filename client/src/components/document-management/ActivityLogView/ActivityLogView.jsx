@@ -4,7 +4,8 @@
  */
 
 import React, { useEffect, useState } from 'react';
-import { Pagination, Loader, Icon, Button } from 'semantic-ui-react';
+import PropTypes from 'prop-types';
+import { Pagination, Loader, Icon, Button, Dropdown } from 'semantic-ui-react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useTranslation } from 'react-i18next';
 import { format, formatDistance } from 'date-fns';
@@ -13,23 +14,30 @@ import actions from '../../../actions';
 import UserAvatar from '../../users/UserAvatar';
 import styles from './ActivityLogView.module.scss';
 
-const ActivityLogView = React.memo(() => {
+const ActivityLogView = React.memo(({ spaceId }) => {
   const [t] = useTranslation();
   const dispatch = useDispatch();
   const { items, total, isFetching } = useSelector((state) => state.documentActivities);
   const [page, setPage] = useState(1);
   const [dateFormat, setDateFormat] = useState('relative'); // 'relative' or 'absolute'
+  const [filterScope, setFilterScope] = useState('current'); // 'current' or 'all'
   const limit = 20;
 
   useEffect(() => {
+    const effectiveSpaceId = filterScope === 'all' ? undefined : spaceId;
     dispatch(
       actions.fetchDocumentActivities({
         limit,
         skip: (page - 1) * limit,
         excludeActions: ['download'],
+        spaceId: effectiveSpaceId,
       }),
     );
-  }, [dispatch, page]);
+  }, [dispatch, page, spaceId, filterScope]);
+
+  useEffect(() => {
+    setPage(1);
+  }, [filterScope, spaceId]);
 
   const handlePageChange = (e, { activePage }) => {
     setPage(activePage);
@@ -105,6 +113,21 @@ const ActivityLogView = React.memo(() => {
     }
   };
 
+  const scopeOptions = [
+    {
+      key: 'current',
+      text: t('documentActivity.currentSpace', 'Current Space'),
+      value: 'current',
+      icon: 'folder',
+    },
+    {
+      key: 'all',
+      text: t('documentActivity.allSpaces', 'All Spaces'),
+      value: 'all',
+      icon: 'globe',
+    },
+  ];
+
   return (
     <div className={styles.wrapper}>
       <div className={styles.header}>
@@ -118,6 +141,14 @@ const ActivityLogView = React.memo(() => {
           </div>
         </div>
         <div className={styles.headerActions}>
+          <Dropdown
+            selection
+            compact
+            options={scopeOptions}
+            value={filterScope}
+            onChange={(e, { value }) => setFilterScope(value)}
+            className={styles.scopeDropdown}
+          />
           <Button
             basic
             onClick={toggleDateFormat}
@@ -234,5 +265,13 @@ const ActivityLogView = React.memo(() => {
     </div>
   );
 });
+
+ActivityLogView.propTypes = {
+  spaceId: PropTypes.string,
+};
+
+ActivityLogView.defaultProps = {
+  spaceId: null,
+};
 
 export default ActivityLogView;

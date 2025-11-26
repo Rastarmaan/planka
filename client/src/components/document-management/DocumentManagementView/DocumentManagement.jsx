@@ -865,7 +865,7 @@ const DocumentManagement = React.memo(() => {
 
         <div className={styles.mainContent}>
           {currentSection === 'activity' ? (
-            <ActivityLogView />
+            <ActivityLogView spaceId={selectedWorkspace} />
           ) : (
             <>
               <TopBar

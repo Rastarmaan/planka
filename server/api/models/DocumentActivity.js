@@ -96,5 +96,9 @@ module.exports = {
       model: 'User',
       columnName: 'user_id',
     },
+    space: {
+      model: 'Space',
+      columnName: 'space_id',
+    },
   },
 };
