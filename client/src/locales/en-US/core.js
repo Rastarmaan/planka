@@ -223,6 +223,7 @@ export default {
       fromTrello: 'From Trello',
       fromPlankaBoard: 'From Planka Board',
       gantt: 'Gantt',
+      calendar: 'Calendar',
       general: 'General',
       globalLabels_title: 'Global Labels',
       documentManagement_title: 'Document Management',
@@ -237,6 +238,10 @@ export default {
         'Are you sure you want to disconnect your Google Calendar account? Synced cards will no longer be updated.',
       selectCalendar: 'Select Calendar',
       goToToday: 'Go to today',
+      today: 'Today',
+      month: 'Month',
+      week: 'Week',
+      day: 'Day',
       gradients: 'Gradients',
       grid: 'Grid',
       hideCompletedTasks: 'Hide completed tasks',
@@ -489,6 +494,9 @@ export default {
       viewingRelease: 'Viewing Release {{version}} - {{name}}',
       visualTaskManagementWithLists: 'Visual task management with lists.',
       timelineViewForProjectScheduling: 'Timeline view for project scheduling.',
+      calendarViewForDateBasedTasks: 'Calendar view for date-based task management.',
+      addStartOrDueDateToCardsToSeeCalendar:
+        'Add start or due dates to cards to see them in the calendar.',
       noCardsWithDates: 'No cards with dates',
       addStartOrDueDateToCardsToSeeGanttChart:
         'Add start or due dates to cards to see them in the Gantt chart.',

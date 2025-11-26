@@ -207,6 +207,7 @@ export default {
       fromComputer_title: 'از کامپیوتر',
       fromTrello: 'از Trello',
       gantt: 'گانت',
+      calendar: 'تقویم',
       general: 'عمومی',
       globalLabels_title: 'برچسب‌های سراسری',
       documentManagement_title: 'مدیریت مستندات',
@@ -221,6 +222,10 @@ export default {
         'آیا مطمئن هستید که می‌خواهید حساب Google Calendar خود را قطع کنید؟ کارت‌های همگام‌سازی‌شده دیگر به‌روزرسانی نخواهند شد.',
       selectCalendar: 'انتخاب تقویم',
       goToToday: 'برو به امروز',
+      today: 'امروز',
+      month: 'ماه',
+      week: 'هفته',
+      day: 'روز',
       gradients: null,
       grid: 'شبکه',
       hideCompletedTasks: null,
@@ -419,6 +424,9 @@ export default {
       viewingRelease: 'در حال مشاهده ریلیز {{version}} - {{name}}',
       visualTaskManagementWithLists: 'مدیریت بصری وظایف با لیست‌ها.',
       timelineViewForProjectScheduling: 'نمای زمانی برای برنامه‌ریزی پروژه.',
+      calendarViewForDateBasedTasks: 'نمای تقویمی برای مدیریت وظایف بر اساس تاریخ.',
+      addStartOrDueDateToCardsToSeeCalendar:
+        'تاریخ شروع یا پایان به کارت‌ها اضافه کنید تا آن‌ها را در تقویم ببینید.',
       noCardsWithDates: 'کارتی با تاریخ وجود ندارد',
       addStartOrDueDateToCardsToSeeGanttChart:
         'تاریخ شروع یا پایان به کارت‌ها اضافه کنید تا آن‌ها را در نمودار گانت ببینید.',
