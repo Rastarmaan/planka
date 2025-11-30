@@ -148,29 +148,109 @@ export function* handleLocationChange() {
       }
 
       break;
-    case Paths.CARDS:
+    case Paths.CARDS: {
       ({ cardId: currentCardId, boardId: currentBoardId } = yield select(selectors.selectPath));
 
       yield put(actions.handleLocationChange.fetchContent());
 
-      try {
-        ({
-          item: card,
-          included: {
-            users: users1,
-            cardMemberships: cardMemberships1,
-            cardLabels: cardLabels1,
-            cardDependencies: cardDependencies1,
-            taskLists: taskLists1,
-            tasks: tasks1,
-            attachments: attachments1,
-            customFieldGroups: customFieldGroups1,
-            customFields: customFields1,
-            customFieldValues: customFieldValues1,
-          },
-        } = yield call(request, api.getCard, pathsMatch.params.id));
-      } catch {
-        /* empty */
+      const existingCard = yield select(selectors.selectCardById, pathsMatch.params.id);
+
+      if (existingCard) {
+        card = existingCard;
+        yield put(
+          actions.handleLocationChange(
+            pathsMatch.pathname,
+            existingCard.boardId,
+            existingCard.id,
+            isEditModeEnabled,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            [existingCard],
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+          ),
+        );
+
+        yield fork(function* fetchFreshCardData() {
+          try {
+            ({
+              item: card,
+              included: {
+                users: users1,
+                cardMemberships: cardMemberships1,
+                cardLabels: cardLabels1,
+                cardDependencies: cardDependencies1,
+                taskLists: taskLists1,
+                tasks: tasks1,
+                attachments: attachments1,
+                customFieldGroups: customFieldGroups1,
+                customFields: customFields1,
+                customFieldValues: customFieldValues1,
+              },
+            } = yield call(request, api.getCard, pathsMatch.params.id));
+
+            const mergedCardDependencies = mergeRecords(cardDependencies1);
+            yield put(
+              actions.handleLocationChange(
+                pathsMatch.pathname,
+                existingCard.boardId,
+                card.id,
+                isEditModeEnabled,
+                null,
+                users1,
+                null,
+                null,
+                null,
+                null,
+                [card],
+                cardMemberships1,
+                cardLabels1,
+                mergedCardDependencies,
+                taskLists1,
+                tasks1,
+                attachments1,
+                customFieldGroups1,
+                customFields1,
+                customFieldValues1,
+                null,
+              ),
+            );
+          } catch {
+            /* empty */
+          }
+        });
+      } else {
+        try {
+          ({
+            item: card,
+            included: {
+              users: users1,
+              cardMemberships: cardMemberships1,
+              cardLabels: cardLabels1,
+              cardDependencies: cardDependencies1,
+              taskLists: taskLists1,
+              tasks: tasks1,
+              attachments: attachments1,
+              customFieldGroups: customFieldGroups1,
+              customFields: customFields1,
+              customFieldValues: customFieldValues1,
+            },
+          } = yield call(request, api.getCard, pathsMatch.params.id));
+        } catch {
+          /* empty */
+        }
       }
 
       if (card) {
@@ -291,6 +371,7 @@ export function* handleLocationChange() {
       }
 
       break;
+    }
     default:
   }
 
