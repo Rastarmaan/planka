@@ -216,6 +216,42 @@ export const removeReleaseFromBoardFilter = (id, boardId, currentListId) => ({
   },
 });
 
+export const handleBoardReleaseCreate = (boardRelease) => ({
+  type: ActionTypes.BOARD_RELEASE_CREATE_HANDLE,
+  payload: {
+    boardRelease,
+  },
+});
+
+export const handleBoardReleaseUpdate = (boardRelease, releaseCards) => ({
+  type: ActionTypes.BOARD_RELEASE_UPDATE_HANDLE,
+  payload: {
+    boardRelease,
+    releaseCards,
+  },
+});
+
+export const handleBoardReleaseDelete = (boardRelease) => ({
+  type: ActionTypes.BOARD_RELEASE_DELETE_HANDLE,
+  payload: {
+    boardRelease,
+  },
+});
+
+export const handleReleaseCardCreate = (releaseCard) => ({
+  type: ActionTypes.RELEASE_CARD_CREATE_HANDLE,
+  payload: {
+    releaseCard,
+  },
+});
+
+export const handleReleaseCardDelete = (releaseCard) => ({
+  type: ActionTypes.RELEASE_CARD_DELETE_HANDLE,
+  payload: {
+    releaseCard,
+  },
+});
+
 export default {
   boardReleasesFetch,
   boardReleaseCreate,
@@ -229,4 +265,9 @@ export default {
   releaseSnapshotFetch,
   addReleaseToBoardFilter,
   removeReleaseFromBoardFilter,
+  handleBoardReleaseCreate,
+  handleBoardReleaseUpdate,
+  handleBoardReleaseDelete,
+  handleReleaseCardCreate,
+  handleReleaseCardDelete,
 };

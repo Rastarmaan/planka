@@ -3,7 +3,7 @@
  * Licensed under the Fair Use License: https://github.com/plankanban/planka/blob/master/LICENSE.md
  */
 
-import { call, put, select, take } from 'redux-saga/effects';
+import { call, fork, put, select, take } from 'redux-saga/effects';
 import { push } from '../../../lib/redux-router';
 
 import actions from '../../../actions';
@@ -182,30 +182,32 @@ export function* handleLocationChange() {
           ({ id: currentBoardId } = currentBoard);
 
           if (currentBoard.isFetching === null) {
-            try {
-              ({
-                item: board,
-                included: {
-                  projects,
-                  boardMemberships,
-                  labels,
-                  lists,
-                  cards,
-                  users: users2,
-                  cardMemberships: cardMemberships2,
-                  cardLabels: cardLabels2,
-                  cardDependencies: cardDependencies2,
-                  taskLists: taskLists2,
-                  tasks: tasks2,
-                  attachments: attachments2,
-                  customFieldGroups: customFieldGroups2,
-                  customFields: customFields2,
-                  customFieldValues: customFieldValues2,
-                },
-              } = yield call(request, api.getBoard, card.boardId, true));
-            } catch {
-              /* empty */
-            }
+            yield fork(function* fetchBoardInBackground() {
+              try {
+                ({
+                  item: board,
+                  included: {
+                    projects,
+                    boardMemberships,
+                    labels,
+                    lists,
+                    cards,
+                    users: users2,
+                    cardMemberships: cardMemberships2,
+                    cardLabels: cardLabels2,
+                    cardDependencies: cardDependencies2,
+                    taskLists: taskLists2,
+                    tasks: tasks2,
+                    attachments: attachments2,
+                    customFieldGroups: customFieldGroups2,
+                    customFields: customFields2,
+                    customFieldValues: customFieldValues2,
+                  },
+                } = yield call(request, api.getBoard, card.boardId, true));
+              } catch {
+                /* empty */
+              }
+            });
           }
         }
       }

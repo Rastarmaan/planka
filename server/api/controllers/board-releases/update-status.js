@@ -153,6 +153,15 @@ module.exports = {
       boardId: inputs.boardId,
     }).set(values);
 
+    sails.sockets.broadcast(
+      `board:${inputs.boardId}`,
+      'boardReleaseUpdate',
+      {
+        item: updatedRelease,
+      },
+      this.req,
+    );
+
     return exits.success({
       item: updatedRelease,
     });
