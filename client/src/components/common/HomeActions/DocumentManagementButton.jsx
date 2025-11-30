@@ -31,7 +31,10 @@ const DocumentManagementButton = React.memo(() => {
     let mounted = true;
 
     const checkDocumentAccess = async () => {
-      if (isAdmin) return;
+      if (isAdmin) {
+        setHasDocumentAccess(true);
+        return;
+      }
 
       try {
         const res = await permissionsApi.getMyPermissions({
@@ -49,7 +52,7 @@ const DocumentManagementButton = React.memo(() => {
       }
     };
 
-    if (currentUser && !isAdmin) {
+    if (currentUser) {
       checkDocumentAccess();
     }
 
