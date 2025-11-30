@@ -176,11 +176,40 @@ export function* handleLocationChange() {
       if (card) {
         ({ id: currentCardId } = card);
 
+        // Performance optimization: Dispatch card data immediately for instant UI update
+        const mergedCardDependencies = mergeRecords(cardDependencies1);
+        yield put(
+          actions.handleLocationChange(
+            pathsMatch.pathname,
+            null, // boardId will be set by background fetch
+            currentCardId,
+            isEditModeEnabled,
+            null, // board will be loaded in background
+            users1,
+            null, // projects from board
+            null, // boardMemberships from board
+            null, // labels from board
+            null, // lists from board
+            [card], // card data available immediately
+            cardMemberships1,
+            cardLabels1,
+            mergedCardDependencies,
+            taskLists1,
+            tasks1,
+            attachments1,
+            customFieldGroups1,
+            customFields1,
+            customFieldValues1,
+            null, // notifications
+          ),
+        );
+
         currentBoard = yield select(selectors.selectBoardById, card.boardId);
 
         if (currentBoard) {
           ({ id: currentBoardId } = currentBoard);
 
+          // Fetch board and notifications in parallel (non-blocking)
           if (currentBoard.isFetching === null) {
             yield fork(function* fetchBoardInBackground() {
               try {
@@ -204,28 +233,60 @@ export function* handleLocationChange() {
                     customFieldValues: customFieldValues2,
                   },
                 } = yield call(request, api.getBoard, card.boardId, true));
+
+                // Update with board data when available
+                const mergedBoardCardDependencies = mergeRecords(
+                  cardDependencies1,
+                  cardDependencies2,
+                );
+                yield put(
+                  actions.handleLocationChange(
+                    pathsMatch.pathname,
+                    currentBoardId,
+                    currentCardId,
+                    isEditModeEnabled,
+                    board,
+                    mergeRecords(users1, users2),
+                    projects,
+                    boardMemberships,
+                    labels,
+                    lists,
+                    mergeRecords([card], cards),
+                    mergeRecords(cardMemberships1, cardMemberships2),
+                    mergeRecords(cardLabels1, cardLabels2),
+                    mergedBoardCardDependencies,
+                    mergeRecords(taskLists1, taskLists2),
+                    mergeRecords(tasks1, tasks2),
+                    mergeRecords(attachments1, attachments2),
+                    mergeRecords(customFieldGroups1, customFieldGroups2),
+                    mergeRecords(customFields1, customFields2),
+                    mergeRecords(customFieldValues1, customFieldValues2),
+                    null,
+                  ),
+                );
               } catch {
                 /* empty */
               }
             });
           }
         }
-      }
 
-      if (currentCardId) {
-        const notificationIds = yield select(
-          selectors.selectNotificationIdsByCardId,
-          currentCardId,
-        );
+        // Read notifications in parallel (non-blocking)
+        if (currentCardId) {
+          yield fork(function* readNotificationsInBackground() {
+            const notificationIds = yield select(
+              selectors.selectNotificationIdsByCardId,
+              currentCardId,
+            );
 
-        if (notificationIds.length > 0) {
-          try {
-            ({
-              included: { notifications: notificationsToDelete },
-            } = yield call(request, api.readCardNotifications, currentCardId));
-          } catch {
-            /* empty */
-          }
+            if (notificationIds.length > 0) {
+              try {
+                yield call(request, api.readCardNotifications, currentCardId);
+              } catch {
+                /* empty */
+              }
+            }
+          });
         }
       }
 
@@ -233,33 +294,36 @@ export function* handleLocationChange() {
     default:
   }
 
-  const mergedCardDependencies = mergeRecords(cardDependencies1, cardDependencies2);
+  // Skip final dispatch for CARDS path - already dispatched immediately for instant UI
+  if (pathsMatch.path !== Paths.CARDS) {
+    const mergedCardDependencies = mergeRecords(cardDependencies1, cardDependencies2);
 
-  yield put(
-    actions.handleLocationChange(
-      pathsMatch.pathname,
-      currentBoardId,
-      currentCardId,
-      isEditModeEnabled,
-      board,
-      mergeRecords(users1, users2),
-      projects,
-      boardMemberships,
-      labels,
-      lists,
-      mergeRecords(card && [card], cards),
-      mergeRecords(cardMemberships1, cardMemberships2),
-      mergeRecords(cardLabels1, cardLabels2),
-      mergedCardDependencies,
-      mergeRecords(taskLists1, taskLists2),
-      mergeRecords(tasks1, tasks2),
-      mergeRecords(attachments1, attachments2),
-      mergeRecords(customFieldGroups1, customFieldGroups2),
-      mergeRecords(customFields1, customFields2),
-      mergeRecords(customFieldValues1, customFieldValues2),
-      notificationsToDelete,
-    ),
-  );
+    yield put(
+      actions.handleLocationChange(
+        pathsMatch.pathname,
+        currentBoardId,
+        currentCardId,
+        isEditModeEnabled,
+        board,
+        mergeRecords(users1, users2),
+        projects,
+        boardMemberships,
+        labels,
+        lists,
+        mergeRecords(card && [card], cards),
+        mergeRecords(cardMemberships1, cardMemberships2),
+        mergeRecords(cardLabels1, cardLabels2),
+        mergedCardDependencies,
+        mergeRecords(taskLists1, taskLists2),
+        mergeRecords(tasks1, tasks2),
+        mergeRecords(attachments1, attachments2),
+        mergeRecords(customFieldGroups1, customFieldGroups2),
+        mergeRecords(customFields1, customFields2),
+        mergeRecords(customFieldValues1, customFieldValues2),
+        notificationsToDelete,
+      ),
+    );
+  }
 }
 
 export default {
