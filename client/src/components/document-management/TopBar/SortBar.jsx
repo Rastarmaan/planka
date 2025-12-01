@@ -45,6 +45,13 @@ const SortBar = React.memo(
       selectedFileData?.mimeType &&
       selectedFileData.mimeType.startsWith('image/');
 
+    const isVideoFile =
+      selectedFileData?.type === 'file' &&
+      selectedFileData?.mimeType &&
+      selectedFileData.mimeType.startsWith('video/');
+
+    const isPreviewable = isImageFile || isVideoFile;
+
     const isFolder = selectedFileData?.type === 'folder';
 
     const canGoBack = currentPath && currentPath.length > 0;
@@ -73,7 +80,7 @@ const SortBar = React.memo(
         </div>
         {selectedFile && (
           <div className={styles.sortActions}>
-            {isImageFile && (
+            {isPreviewable && (
               <Button icon className={styles.actionButton} onClick={onPreview}>
                 <Icon name="eye" />
               </Button>
