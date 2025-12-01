@@ -15,12 +15,14 @@ const SortBar = React.memo(
     sortBy,
     selectedFile,
     selectedFileData,
+    currentPath,
     onSortChange,
     onPreview,
     onShare,
     onDelete,
     onDownload,
     onRename,
+    onGoBack,
     canShare,
     canDelete,
   }) => {
@@ -45,9 +47,16 @@ const SortBar = React.memo(
 
     const isFolder = selectedFileData?.type === 'folder';
 
+    const canGoBack = currentPath && currentPath.length > 0;
+
     return (
       <div className={styles.sortBar}>
         <div className={styles.sortLeft}>
+          {canGoBack && (
+            <Button icon className={styles.backButton} onClick={onGoBack} title={t('common.back')}>
+              <Icon name="arrow left" />
+            </Button>
+          )}
           <Icon name="sort" />
           <Dropdown
             text={getSortText()}
@@ -117,12 +126,19 @@ SortBar.propTypes = {
     type: PropTypes.string,
     mimeType: PropTypes.string,
   }),
+  currentPath: PropTypes.arrayOf(
+    PropTypes.shape({
+      id: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+      name: PropTypes.string,
+    }),
+  ),
   onSortChange: PropTypes.func.isRequired,
   onPreview: PropTypes.func.isRequired,
   onShare: PropTypes.func.isRequired,
   onDelete: PropTypes.func.isRequired,
   onDownload: PropTypes.func.isRequired,
   onRename: PropTypes.func,
+  onGoBack: PropTypes.func,
   canShare: PropTypes.bool,
   canDelete: PropTypes.bool,
 };
@@ -130,7 +146,9 @@ SortBar.propTypes = {
 SortBar.defaultProps = {
   selectedFile: null,
   selectedFileData: null,
+  currentPath: [],
   onRename: null,
+  onGoBack: null,
   canShare: false,
   canDelete: false,
 };
