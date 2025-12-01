@@ -36,10 +36,16 @@ module.exports = {
   },
 
   async fn(inputs) {
+    const { currentUser } = this.req;
+    const isAdmin = currentUser.role === 'admin';
+
+    if (!isAdmin) {
+      throw 'forbidden';
+    }
+
     const space = await Space.findOne({
       id: inputs.id,
       isDeleted: false,
-      createdByUser: this.req.currentUser.id,
     });
 
     if (!space) {

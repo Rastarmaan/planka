@@ -116,6 +116,7 @@
   }
 
   .imagePreview,
+  .videoPreview,
   .filePreview {
     display: flex;
     flex-direction: column;
@@ -125,6 +126,13 @@
 
     i.icon {
       color: rgba(255, 255, 255, 0.4) ;
+    }
+  }
+
+  .videoPreview {
+    video {
+      border-radius: 8px;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
     }
   }
 

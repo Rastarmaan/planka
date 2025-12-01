@@ -26,6 +26,8 @@ const FileContextMenu = React.memo(
     const [t] = useTranslation();
     const menuRef = useRef(null);
     const isImageFile = file.type === 'file' && file.mimeType && file.mimeType.startsWith('image/');
+    const isVideoFile = file.type === 'file' && file.mimeType && file.mimeType.startsWith('video/');
+    const isPreviewable = isImageFile || isVideoFile;
 
     useEffect(() => {
       const handleClickOutside = (e) => {
@@ -88,7 +90,7 @@ const FileContextMenu = React.memo(
         className={styles.contextMenu}
         style={{ left: position.x, top: position.y }}
       >
-        {isImageFile && (
+        {isPreviewable && (
           <div
             role="button"
             tabIndex={0}

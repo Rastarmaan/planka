@@ -59,6 +59,25 @@
     }
   }
 
+  .backButton {
+    background: transparent;
+    color: rgba(255, 255, 255, 0.7);
+    padding: 6px 10px;
+    margin-right: 4px;
+    border-radius: 6px;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+
+    &:hover {
+      background: rgba(255, 255, 255, 0.1);
+      color: #fff;
+      border-color: rgba(255, 255, 255, 0.3);
+    }
+
+    i.icon {
+      margin: 0;
+    }
+  }
+
   .sortActions {
     display: flex;
     gap: 8px;

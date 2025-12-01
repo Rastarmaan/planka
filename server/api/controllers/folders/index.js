@@ -51,10 +51,10 @@ module.exports = {
     let space;
 
     if (isAdmin) {
+      // Admins can access all spaces
       space = await Space.findOne({
         id: inputs.spaceId,
         isDeleted: false,
-        createdByUser: currentUser.id,
       });
     } else {
       space = await Space.findOne({

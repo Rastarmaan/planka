@@ -14,26 +14,32 @@ import styles from './FilePreviewModal.module.scss';
 const FilePreviewModal = React.memo(
   ({ file, files, onClose, onShare, onDownload, onNavigate, canShare }) => {
     const accessToken = useSelector(selectors.selectAccessToken);
-    const [imageUrl, setImageUrl] = React.useState(null);
-    const [imageError, setImageError] = React.useState(false);
-    const [imageLoading, setImageLoading] = React.useState(false);
+    const [mediaUrl, setMediaUrl] = React.useState(null);
+    const [mediaError, setMediaError] = React.useState(false);
+    const [mediaLoading, setMediaLoading] = React.useState(false);
     const [isMobile, setIsMobile] = React.useState(window.innerWidth <= 768);
 
-    const imageFiles = files.filter(
-      (f) => f.type === 'file' && f.mimeType && f.mimeType.startsWith('image/'),
+    const isImage = file.mimeType && file.mimeType.startsWith('image/');
+    const isVideo = file.mimeType && file.mimeType.startsWith('video/');
+
+    const previewableFiles = files.filter(
+      (f) =>
+        f.type === 'file' &&
+        f.mimeType &&
+        (f.mimeType.startsWith('image/') || f.mimeType.startsWith('video/')),
     );
-    const currentIndex = imageFiles.findIndex((f) => f.id === file.id);
-    const totalFiles = imageFiles.length;
+    const currentIndex = previewableFiles.findIndex((f) => f.id === file.id);
+    const totalFiles = previewableFiles.length;
 
     const handlePrevious = () => {
       if (currentIndex > 0) {
-        onNavigate(imageFiles[currentIndex - 1]);
+        onNavigate(previewableFiles[currentIndex - 1]);
       }
     };
 
     const handleNext = () => {
       if (currentIndex < totalFiles - 1) {
-        onNavigate(imageFiles[currentIndex + 1]);
+        onNavigate(previewableFiles[currentIndex + 1]);
       }
     };
 
@@ -48,7 +54,7 @@ const FilePreviewModal = React.memo(
     };
 
     React.useEffect(() => {
-      if (!file.mimeType || !file.mimeType.startsWith('image/') || !file.id || !accessToken) {
+      if (!file.mimeType || (!isImage && !isVideo) || !file.id || !accessToken) {
         return undefined;
       }
 
@@ -56,9 +62,9 @@ const FilePreviewModal = React.memo(
       let currentUrl = null;
       const controller = new AbortController();
 
-      const fetchImage = async () => {
-        setImageLoading(true);
-        setImageError(false);
+      const fetchMedia = async () => {
+        setMediaLoading(true);
+        setMediaError(false);
 
         try {
           const response = await fetch(`/api/files/${file.id}/download?inline=true`, {
@@ -70,7 +76,7 @@ const FilePreviewModal = React.memo(
           });
 
           if (!response.ok) {
-            throw new Error(`Failed to fetch image: ${response.status}`);
+            throw new Error(`Failed to fetch media: ${response.status}`);
           }
 
           const blob = await response.blob();
@@ -83,19 +89,19 @@ const FilePreviewModal = React.memo(
           currentUrl = url;
 
           if (isMounted) {
-            setImageUrl(url);
-            setImageError(false);
-            setImageLoading(false);
+            setMediaUrl(url);
+            setMediaError(false);
+            setMediaLoading(false);
           }
         } catch (error) {
           if (error.name !== 'AbortError' && isMounted) {
-            setImageError(true);
-            setImageLoading(false);
+            setMediaError(true);
+            setMediaLoading(false);
           }
         }
       };
 
-      fetchImage();
+      fetchMedia();
 
       return () => {
         isMounted = false;
@@ -104,7 +110,7 @@ const FilePreviewModal = React.memo(
           URL.revokeObjectURL(currentUrl);
         }
       };
-    }, [file.id, file.mimeType, file.name, accessToken]);
+    }, [file.id, file.mimeType, file.name, accessToken, isImage, isVideo]);
 
     React.useEffect(() => {
       const handleResize = () => {
@@ -140,7 +146,10 @@ const FilePreviewModal = React.memo(
             </div>
 
             <div className={styles.headerCenter}>
-              <Icon name="file image outline" className={styles.fileIcon} />
+              <Icon
+                name={isVideo ? 'file video outline' : 'file image outline'}
+                className={styles.fileIcon}
+              />
               <span className={styles.fileName}>{file.name}</span>
             </div>
 
@@ -172,21 +181,22 @@ const FilePreviewModal = React.memo(
 
           {/* Content */}
           <div className={styles.content}>
-            {file.mimeType && file.mimeType.startsWith('image/') ? (
+            {isImage && (
               <div className={styles.imagePreview}>
                 {(() => {
-                  if (imageLoading) {
+                  if (mediaLoading) {
                     return <Icon name="spinner" loading size="massive" />;
                   }
 
-                  if (imageUrl && !imageError) {
+                  if (mediaUrl && !mediaError) {
+                    const maxHeight = isMobile ? 'calc(100vh - 140px)' : 'calc(100vh - 80px)';
                     return (
                       <img
-                        src={imageUrl}
+                        src={mediaUrl}
                         alt={file.name}
                         style={{
                           maxWidth: '100%',
-                          maxHeight: isMobile ? 'calc(100vh - 140px)' : 'calc(100vh - 80px)',
+                          maxHeight,
                           width: 'auto',
                           height: 'auto',
                           objectFit: 'contain',
@@ -195,7 +205,7 @@ const FilePreviewModal = React.memo(
                     );
                   }
 
-                  if (imageError) {
+                  if (mediaError) {
                     return (
                       <div className={styles.errorMessage}>
                         <Icon name="warning circle" size="massive" color="red" />
@@ -207,7 +217,47 @@ const FilePreviewModal = React.memo(
                   return null;
                 })()}
               </div>
-            ) : (
+            )}
+            {isVideo && (
+              <div className={styles.videoPreview}>
+                {(() => {
+                  if (mediaLoading) {
+                    return <Icon name="spinner" loading size="massive" />;
+                  }
+
+                  if (mediaUrl && !mediaError) {
+                    const maxHeight = isMobile ? 'calc(100vh - 140px)' : 'calc(100vh - 80px)';
+                    return (
+                      // eslint-disable-next-line jsx-a11y/media-has-caption
+                      <video
+                        src={mediaUrl}
+                        controls
+                        autoPlay
+                        style={{
+                          maxWidth: '100%',
+                          maxHeight,
+                          width: 'auto',
+                          height: 'auto',
+                          objectFit: 'contain',
+                        }}
+                      />
+                    );
+                  }
+
+                  if (mediaError) {
+                    return (
+                      <div className={styles.errorMessage}>
+                        <Icon name="warning circle" size="massive" color="red" />
+                        <p>Failed to load video</p>
+                      </div>
+                    );
+                  }
+
+                  return null;
+                })()}
+              </div>
+            )}
+            {!isImage && !isVideo && (
               <div className={styles.filePreview}>
                 <Icon name={file.icon} size="massive" color="yellow" />
                 <p className={styles.fileType}>{file.name}</p>
