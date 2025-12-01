@@ -81,6 +81,15 @@ module.exports = {
                   currentVersion: version.id,
                 });
 
+                const fileManager = sails.hooks['file-manager'].getInstance();
+                if (fileManager.move) {
+                  await fileManager.move(
+                    fileDescriptor.fd,
+                    storagePath,
+                    fileDescriptor.type || 'application/octet-stream',
+                  );
+                }
+
                 sails.sockets.broadcast(`space:${inputs.spaceId}`, 'fileCreate', {
                   item: documentFile,
                 });
