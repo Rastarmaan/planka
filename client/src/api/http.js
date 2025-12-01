@@ -11,20 +11,22 @@ const http = {};
 ['GET', 'POST', 'PUT', 'PATCH', 'DELETE'].forEach((method) => {
   http[method.toLowerCase()] = (url, data, headers) => {
     const formData =
-      data &&
-      Object.keys(data).reduce((result, key) => {
-        const value = data[key];
+      data instanceof FormData
+        ? data
+        : data &&
+          Object.keys(data).reduce((result, key) => {
+            const value = data[key];
 
-        if (Array.isArray(value)) {
-          value.forEach((item) => {
-            result.append(`${key}[]`, item);
-          });
-        } else {
-          result.append(key, value);
-        }
+            if (Array.isArray(value)) {
+              value.forEach((item) => {
+                result.append(`${key}[]`, item);
+              });
+            } else {
+              result.append(key, value);
+            }
 
-        return result;
-      }, new FormData());
+            return result;
+          }, new FormData());
 
     return fetch(`${Config.SERVER_BASE_URL}/api${url}`, {
       method,

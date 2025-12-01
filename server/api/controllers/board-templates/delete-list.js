@@ -1,0 +1,104 @@
+/*!
+ * Copyright (c) 2024 PLANKA Software GmbH
+ * Licensed under the Fair Use License: https://github.com/plankanban/planka/blob/master/LICENSE.md
+ */
+
+/**
+ * @swagger
+ * /board-templates/{id}/lists/{listId}:
+ *   delete:
+ *     summary: Delete template list
+ *     description: Deletes a list from a board template. Requires admin permissions.
+ *     tags:
+ *       - Board Templates
+ *     operationId: deleteTemplateList
+ *     parameters:
+ *       - name: id
+ *         in: path
+ *         required: true
+ *         description: ID of the board template
+ *         schema:
+ *           type: string
+ *           example: "1357158568008091264"
+ *       - name: listId
+ *         in: path
+ *         required: true
+ *         description: ID of the list
+ *         schema:
+ *           type: string
+ *           example: "1357158568008091265"
+ *     responses:
+ *       200:
+ *         description: List deleted successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               required:
+ *                 - item
+ *               properties:
+ *                 item:
+ *                   $ref: '#/components/schemas/BoardTemplateList'
+ *       401:
+ *         $ref: '#/components/responses/Unauthorized'
+ *       403:
+ *         $ref: '#/components/responses/Forbidden'
+ *       404:
+ *         $ref: '#/components/responses/NotFound'
+ */
+
+const { idInput } = require('../../../utils/inputs');
+
+const Errors = {
+  NOT_ENOUGH_RIGHTS: {
+    notEnoughRights: 'Not enough rights',
+  },
+  LIST_NOT_FOUND: {
+    listNotFound: 'List not found',
+  },
+};
+
+module.exports = {
+  inputs: {
+    id: {
+      ...idInput,
+      required: true,
+    },
+    listId: {
+      ...idInput,
+      required: true,
+    },
+  },
+
+  exits: {
+    notEnoughRights: {
+      responseType: 'forbidden',
+    },
+    listNotFound: {
+      responseType: 'notFound',
+    },
+  },
+
+  async fn(inputs) {
+    const { currentUser } = this.req;
+
+    if (currentUser.role !== User.Roles.ADMIN) {
+      throw Errors.NOT_ENOUGH_RIGHTS;
+    }
+
+    const list = await BoardTemplateList.findOne({
+      id: inputs.listId,
+      boardTemplateId: inputs.id,
+    });
+
+    if (!list) {
+      throw Errors.LIST_NOT_FOUND;
+    }
+
+    await BoardTemplateList.destroyOne({ id: inputs.listId });
+
+    return {
+      item: list,
+    };
+  },
+};

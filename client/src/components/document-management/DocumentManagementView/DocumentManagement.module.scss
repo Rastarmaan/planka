@@ -1,0 +1,86 @@
+/*!
+ * Copyright (c) 2024 PLANKA Software GmbH
+ * Licensed under the Fair Use License: https://github.com/plankanban/planka/blob/master/LICENSE.md
+ */
+
+:global(#app) {
+  .wrapper {
+    display: flex;
+    height: 100vh;
+    background: #1a1d21;
+    color: #fff;
+    overflow: hidden;
+    flex-direction: column;
+  }
+
+  .documentHeader {
+    display: flex;
+    align-items: center;
+    background: #16191d;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    flex-shrink: 0;
+    gap: .5rem;
+    height: 3.5rem;
+  }
+
+  .backToProjectsButton {
+    color: rgba(255, 255, 255, 0.7) !important;
+    background: transparent !important;
+    transition: all 0.2s ease !important;
+    width: 4rem;
+    height: 3.5rem;
+
+    &:hover {
+      background: rgba(255, 255, 255, 0.05) !important;
+      border-color: rgba(255, 255, 255, 0.25) !important;
+      color: rgba(255, 255, 255, 0.9) !important;
+    }
+
+    :global(.icon) {
+      margin-left: .5rem !important;
+    }
+  }
+
+  .documentTitle {
+    margin: 0 !important;
+    color: rgba(255, 255, 255, 0.9);
+    font-size: 1.2rem;
+    font-weight: 500;
+  }
+
+  .contentWrapper {
+    display: flex;
+    flex: 1;
+    overflow: hidden;
+  }
+
+  .mainContent {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    background: #1a1d21;
+    overflow: hidden;
+  }
+
+  :global {
+    .ui.dropdown .menu {
+      background: #22252a;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+
+      .item {
+        color: rgba(255, 255, 255, 0.9);
+        border-top: 1px solid rgba(255, 255, 255, 0.1);
+
+        &:hover {
+          background: rgba(255, 255, 255, 0.08);
+        }
+
+        &.selected {
+          background: rgba(255, 255, 255, 0.12);
+          font-weight: 600;
+        }
+      }
+    }
+  }
+}

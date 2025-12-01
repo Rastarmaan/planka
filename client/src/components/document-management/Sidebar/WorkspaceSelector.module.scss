@@ -1,0 +1,171 @@
+/*!
+ * Copyright (c) 2024 PLANKA Software GmbH
+ * Licensed under the Fair Use License: https://github.com/plankanban/planka/blob/master/LICENSE.md
+ */
+
+:global(#app) {
+  .workspaceSelector {
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    padding-top: 16px;
+    position: relative;
+  }
+
+  .selectedWorkspace {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 8px;
+    padding: 14px 16px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    cursor: pointer;
+    transition: all 0.2s ease;
+
+    &:hover {
+      background: rgba(255, 255, 255, 0.08);
+      border-color: rgba(255, 255, 255, 0.2);
+    }
+  }
+
+  .workspaceArrows {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+
+    i.icon {
+      margin: 0;
+      font-size: 12px;
+      opacity: 0.5;
+      line-height: 1;
+    }
+  }
+
+  .workspacePopup {
+    position: absolute;
+    bottom: calc(100% + 3px);
+    left: 30%;
+    transform: translateX(-20%);
+    width: 350px;
+    background: #2a2e34;
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    border-radius: 12px;
+    padding: 16px;
+    z-index: 1000;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+    max-height: 500px;
+    overflow-y: auto;
+  }
+
+  .workspacePopupItem {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 8px;
+    padding: 14px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+
+    &:hover {
+      background: rgba(255, 255, 255, 0.08);
+      border-color: rgba(255, 255, 255, 0.2);
+    }
+
+    &:first-child {
+      background: rgba(255, 255, 255, 0.08);
+      border-color: rgba(255, 255, 255, 0.15);
+      cursor: default;
+
+      &:hover {
+        background: rgba(255, 255, 255, 0.08);
+        border-color: rgba(255, 255, 255, 0.15);
+      }
+    }
+  }
+
+  .workspaceCheckIcon {
+    color: #2185d0;
+    margin: 0;
+    font-size: 18px;
+    flex-shrink: 0;
+  }
+
+  .workspacePopupSeparator {
+    height: 1px;
+    background: rgba(255, 255, 255, 0.1);
+    margin: 4px 0;
+  }
+
+  .workspaceInfo {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+
+  .workspaceName {
+    color: #fff;
+    font-size: 14px;
+    font-weight: 600;
+    line-height: 1.2;
+  }
+
+  .workspaceDescription {
+    color: rgba(255, 255, 255, 0.5);
+    font-size: 12px;
+    line-height: 1.2;
+  }
+
+  .manageButtonSmall {
+    background: transparent;
+    border: 1px solid rgba(33, 133, 208, 0.4);
+    color: #2185d0;
+    padding: 8px 16px;
+    border-radius: 20px;
+    font-size: 13px;
+    display: flex;
+    gap: 6px;
+    flex-shrink: 0;
+
+    &:hover {
+      background: rgba(33, 133, 208, 0.1);
+      border-color: rgba(33, 133, 208, 0.6);
+      color: #2185d0;
+    }
+
+    i.icon {
+      margin: 0;
+      font-size: 11px;
+    }
+  }
+
+  .manageDropdownInline {
+    display: inline-block;
+  }
+
+  .createWorkspaceButton {
+    background: rgba(33, 133, 208, 0.15);
+    border: 1px solid rgba(33, 133, 208, 0.3);
+    color: #2185d0;
+    padding: 12px 16px;
+    border-radius: 8px;
+    display: flex;
+    justify-content: center;
+    font-size: 14px;
+    font-weight: 500;
+
+    &:hover {
+      background: rgba(33, 133, 208, 0.25);
+      border-color: rgba(33, 133, 208, 0.5);
+      color: #2185d0;
+    }
+
+    i.icon {
+      margin: 0;
+    }
+  }
+}

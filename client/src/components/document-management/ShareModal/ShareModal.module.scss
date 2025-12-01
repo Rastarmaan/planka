@@ -1,0 +1,220 @@
+:global(#app) {
+  .modal {
+    :global(.ui.modal > .content) {
+      padding: 24px !important;
+    }
+  }
+
+  .header {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 18px;
+    font-weight: 600;
+  }
+
+  .section {
+    margin-bottom: 24px;
+
+    &:last-child {
+      margin-bottom: 0;
+    }
+  }
+
+  .sectionTitle {
+    font-size: 14px;
+    font-weight: 600;
+    margin-bottom: 12px;
+  }
+
+  // Invite People Section
+  .inviteContainer {
+    display: flex;
+    gap: 8px;
+    align-items: flex-start;
+  }
+
+  .userDropdown {
+    flex: 1;
+    :global(.menu) {
+      background: #fff !important;
+      color: #111827 !important;
+    }
+    :global(.menu .item) {
+      color: #111827 !important;
+    }
+  }
+
+  .permissionDropdown {
+    min-width: 140px;
+    /* match other form inputs */
+    background: #fff !important;
+    border: 1px solid #cbd5e1 !important;
+    border-radius: 8px;
+
+    :global(.selection) {
+      height: 38px;
+      display: flex;
+      align-items: center;
+      padding: 0 10px;
+    }
+  }
+
+  // Who Has Access Section
+  .userList {
+    :global(.item) {
+      padding: 12px 0 !important;
+      border-color: rgba(255, 255, 255, 0.1) !important;
+    }
+  }
+
+  .userItem {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .avatar {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    object-fit: cover;
+  }
+
+  .userInfo {
+    flex: 1;
+
+    :global(.header) {
+      font-size: 14px;
+      font-weight: 500;
+      margin-bottom: 4px;
+    }
+
+    :global(.description) {
+      color: #6b7280;
+      font-size: 13px;
+    }
+  }
+
+  .roleLabel {
+    background: #f3f4f6 !important;
+    color: #374151 !important;
+    border: none !important;
+    font-size: 12px;
+  }
+
+  .userActions {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .removeButton {
+    padding: 6px !important;
+    margin: 0 !important;
+
+    &:hover {
+      background: rgba(239, 68, 68, 0.1) !important;
+    }
+  }
+
+  .loadingContainer {
+    padding: 24px 0;
+    text-align: center;
+  }
+
+  .avatarPlaceholder {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: #6366f1;
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 600;
+    font-size: 16px;
+  }
+
+  .sectionDescription {
+    font-size: 13px;
+    color: #6b7280;
+    margin-bottom: 12px;
+  }
+
+  // Share Link Section
+  .shareLinkHeader {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 12px;
+  }
+
+  .linkSettingsBtn {
+    padding: 6px 12px !important;
+    font-size: 13px !important;
+  }
+
+  .linkToggle {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 16px;
+    flex-wrap: wrap;
+  }
+
+  .toggleLabel {
+    font-size: 14px;
+    color: #111827;
+  }
+
+  .linkSettingsButton {
+    margin-left: auto !important;
+    font-size: 12px !important;
+  }
+
+  .linkContainer {
+    display: flex;
+    gap: 8px;
+    margin-top: 12px;
+  }
+
+  .linkInput {
+    flex: 1;
+    font-size: 13px;
+  }
+
+  .copyButton {
+    min-width: 80px;
+  }
+
+  .creating {
+    margin-top: 12px;
+    color: #b0b0b0;
+    font-size: 13px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .loadingUsers {
+    padding: 16px 0;
+    color: #6b7280;
+    font-size: 14px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .noUsersItem {
+    padding: 12px 0 !important;
+    color: #6b7280;
+    font-style: italic;
+  }
+
+  // Divider
+  :global(.ui.divider) {
+    border-color: rgba(255, 255, 255, 0.1);
+    margin: 24px 0;
+  }
+}

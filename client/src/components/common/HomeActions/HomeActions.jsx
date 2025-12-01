@@ -9,6 +9,7 @@ import React from 'react';
 import Filters from './Filters';
 import GlobalLabels from './GlobalLabels';
 import CardsFilterButton from './CardsFilterButton';
+import DocumentManagementButton from './DocumentManagementButton';
 import ProjectCategories from './ProjectCategories';
 import RightSide from './RightSide';
 
@@ -20,6 +21,9 @@ const HomeActions = React.memo(() => (
       <div className={styles.actions}>
         <div className={classNames(styles.action, styles.actionFilters)}>
           <Filters />
+        </div>
+        <div className={styles.action}>
+          <DocumentManagementButton />
         </div>
         <div className={styles.action}>
           <GlobalLabels />

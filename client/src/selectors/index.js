@@ -36,6 +36,16 @@ import taskLists from './task-lists';
 import tasks from './tasks';
 import users from './users';
 import webhooks from './webhooks';
+import spaces from './spaces';
+import folders from './folders';
+import files from './files';
+import permissions from './permissions';
+
+// Re-export named exports from new modules
+export * from './spaces';
+export * from './folders';
+export * from './files';
+export * from './permissions';
 
 export default {
   ...router,
@@ -46,6 +56,10 @@ export default {
   ...webhooks,
   ...users,
   ...projects,
+  ...spaces,
+  ...folders,
+  ...files,
+  ...permissions,
   ...projectCategories,
   ...projectManagers,
   ...backgroundImages,

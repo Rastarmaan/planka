@@ -117,6 +117,15 @@ module.exports = {
       boardId: inputs.boardId,
     });
 
+    sails.sockets.broadcast(
+      `board:${inputs.boardId}`,
+      'boardReleaseDelete',
+      {
+        item: release,
+      },
+      this.req,
+    );
+
     return exits.success({
       item: release,
     });

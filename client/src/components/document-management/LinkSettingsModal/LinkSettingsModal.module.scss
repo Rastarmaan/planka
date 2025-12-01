@@ -1,0 +1,89 @@
+.modal {
+  :global(.ui.modal > .content) {
+    padding: 24px;
+  }
+}
+
+.settingSection {
+  margin-bottom: 20px;
+}
+
+.settingHeader {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 8px;
+}
+
+.settingLabel {
+  font-size: 15px;
+  font-weight: 500;
+}
+
+.settingDescription {
+  display: block;
+  font-size: 13px;
+  color: #b0b0b0;
+  margin-bottom: 12px;
+}
+
+.settingContent {
+  margin-left: 48px;
+  margin-top: 12px;
+}
+
+.datePicker {
+  width: 100%;
+
+  :global(.react-datepicker-wrapper) {
+    width: 100%;
+  }
+
+  :global(.react-datepicker__input-container) {
+    width: 100%;
+  }
+
+  :global(input) {
+    width: 100%;
+    padding: 9px 12px;
+    border: 1px solid rgba(34,36,38,.15);
+    border-radius: .28571429rem;
+    font-size: 14px;
+    background: #fff;
+    box-sizing: border-box;
+  }
+
+  :global(.react-datepicker-popper) {
+    z-index: 2050;
+  }
+
+  :global(.react-datepicker) {
+    background: #fff;
+    border: 1px solid rgba(34,36,38,.15);
+    box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+  }
+}
+
+.datePickerWrapper {
+  width: 100%;
+}
+
+.helperText {
+  display: block;
+  font-size: 12px;
+  color: #888;
+  margin-top: 8px;
+}
+
+.divider {
+  height: 1px;
+  background: rgba(255, 255, 255, 0.1);
+  margin: 20px 0;
+}
+
+.actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  background: rgba(0, 0, 0, 0.2);
+}

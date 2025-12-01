@@ -8,6 +8,7 @@ import { combineReducers } from 'redux';
 import auth from './auth';
 import common from './common';
 import core from './core';
+import documentActivities from './document-activities';
 import googleCalendar from './google-calendar';
 import orm from './orm';
 import router from './router';
@@ -23,4 +24,5 @@ export default combineReducers({
   core,
   ui,
   googleCalendar,
+  documentActivities,
 });

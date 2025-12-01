@@ -33,6 +33,12 @@ import taskLists from './task-lists';
 import tasks from './tasks';
 import users from './users';
 import webhooks from './webhooks';
+import spaces from './spaces';
+import folders from './folders';
+import files from './files';
+import permissions from './permissions';
+import shareLinks from './share-links';
+import documentActivities from './document-activities';
 
 export default {
   ...router,
@@ -43,6 +49,11 @@ export default {
   ...webhooks,
   ...users,
   ...projects,
+  ...spaces,
+  ...folders,
+  ...files,
+  ...permissions,
+  ...shareLinks,
   ...projectCategories,
   ...projectManagers,
   ...backgroundImages,
@@ -65,4 +76,5 @@ export default {
   ...notifications,
   ...notificationServices,
   ...googleCalendar,
+  ...documentActivities,
 };

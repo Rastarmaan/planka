@@ -43,6 +43,23 @@
     margin-right: 8px;
   }
 
+  .lockIndicator {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(255, 193, 7, 0.2);
+    border: 1px solid rgba(255, 193, 7, 0.5);
+    border-radius: 3px;
+    color: #f2c94c;
+    padding: 6px 12px;
+    font-size: 14px;
+    cursor: help;
+
+    i {
+      margin: 0 !important;
+    }
+  }
+
   .wrapper {
     overflow-x: auto;
     overflow-y: hidden;

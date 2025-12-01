@@ -46,6 +46,8 @@
  *                     - users
  *                     - cardMemberships
  *                     - cardLabels
+ *                     - cardDependencies
+ *                     - cards
  *                     - taskLists
  *                     - tasks
  *                     - attachments
@@ -68,6 +70,16 @@
  *                       description: Related card-label associations
  *                       items:
  *                         $ref: '#/components/schemas/CardLabel'
+ *                     cardDependencies:
+ *                       type: array
+ *                       description: Card dependency relationships
+ *                       items:
+ *                         $ref: '#/components/schemas/CardDependency'
+ *                     cards:
+ *                       type: array
+ *                       description: Dependency cards (cards that this card depends on or that depend on this card)
+ *                       items:
+ *                         $ref: '#/components/schemas/Card'
  *                     taskLists:
  *                       type: array
  *                       description: Related task lists
@@ -178,6 +190,15 @@ module.exports = {
 
     const cardDependencies = [...cardDependencies1, ...cardDependencies2];
 
+    // Fetch the actual dependency cards so they can be displayed in the UI
+    const dependencyCardIds = [
+      ...cardDependencies1.map((dep) => dep.dependsOnCardId),
+      ...cardDependencies2.map((dep) => dep.cardId),
+    ].filter((id) => id !== card.id); // Exclude self-references
+
+    const dependencyCards =
+      dependencyCardIds.length > 0 ? await Card.qm.getByIds(dependencyCardIds) : [];
+
     const taskLists = await TaskList.qm.getByCardId(card.id);
     const taskListIds = sails.helpers.utils.mapRecords(taskLists);
 
@@ -198,6 +219,7 @@ module.exports = {
         releaseCards,
         boardReleases,
         cardDependencies,
+        cards: dependencyCards, // Include dependency cards for display
         taskLists,
         tasks,
         customFieldGroups,

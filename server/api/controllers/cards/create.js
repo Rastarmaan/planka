@@ -224,6 +224,9 @@ module.exports = {
     parentCardMustBeStory: {
       responseType: 'unprocessableEntity',
     },
+    invalidCardType: {
+      responseType: 'unprocessableEntity',
+    },
   },
 
   async fn(inputs) {
@@ -248,6 +251,21 @@ module.exports = {
 
     if (!hasEditorRights) {
       throw Errors.NOT_ENOUGH_RIGHTS;
+    }
+
+    if (board.templateId && inputs.type) {
+      const allowedCardTypes = await BoardTemplateCardType.find({
+        boardTemplateId: board.templateId,
+      });
+
+      if (allowedCardTypes.length > 0) {
+        const isTypeAllowed = allowedCardTypes.some((ct) => ct.typeName === inputs.type);
+        if (!isTypeAllowed) {
+          throw {
+            invalidCardType: `Card type '${inputs.type}' is not allowed for this board`,
+          };
+        }
+      }
     }
 
     if (inputs.parentCardId) {

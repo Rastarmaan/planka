@@ -1,6 +1,7 @@
 import { takeEvery } from 'redux-saga/effects';
 
 import ActionTypes from '../../../constants/ActionTypes';
+import EntryActionTypes from '../../../constants/EntryActionTypes';
 import services from '../services';
 
 export default function* boardReleasesWatchers() {
@@ -34,5 +35,14 @@ export default function* boardReleasesWatchers() {
 
   yield takeEvery(ActionTypes.RELEASE_SNAPSHOT_FETCH, ({ payload: { boardId, releaseId } }) =>
     services.releaseSnapshotFetch(boardId, releaseId),
+  );
+
+  yield takeEvery(EntryActionTypes.RELEASE_TO_FILTER_IN_CURRENT_BOARD_ADD, ({ payload: { id } }) =>
+    services.addReleaseToFilterInCurrentBoard(id),
+  );
+
+  yield takeEvery(
+    EntryActionTypes.RELEASE_FROM_FILTER_IN_CURRENT_BOARD_REMOVE,
+    ({ payload: { id } }) => services.removeReleaseFromFilterInCurrentBoard(id),
   );
 }

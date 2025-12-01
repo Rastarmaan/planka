@@ -259,6 +259,15 @@ module.exports = {
       totalCount: cards.length,
     };
 
+    sails.sockets.broadcast(
+      `board:${inputs.boardId}`,
+      'boardReleaseCreate',
+      {
+        item: releaseWithDetails,
+      },
+      this.req,
+    );
+
     return exits.success({
       item: releaseWithDetails,
       releaseCards: createdReleaseCards,

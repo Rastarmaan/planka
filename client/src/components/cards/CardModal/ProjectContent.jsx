@@ -247,6 +247,7 @@ const ProjectContent = React.memo(() => {
 
   const [newSubTaskName, setNewSubTaskName] = useState('');
   const [isCreatingSubTask, setIsCreatingSubTask] = useState(false);
+  const [hasInitializedChildCards, setHasInitializedChildCards] = useState(false);
   const inlineInputRef = useRef(null);
 
   const subTaskInputDirectionStyles = useMemo(
@@ -507,11 +508,16 @@ const ProjectContent = React.memo(() => {
 
   useEffect(() => {
     if (card?.id && (card.type === CardTypes.EPIC || card.type === CardTypes.STORY)) {
-      if (childCards?.length > 0 || canUseLists) {
+      if (!hasInitializedChildCards) {
         dispatch(entryActions.fetchChildCards(card.id));
+        setHasInitializedChildCards(true);
       }
     }
-  }, [card?.id, card?.type, childCards?.length, canUseLists, dispatch]);
+  }, [card?.id, card?.type, hasInitializedChildCards, dispatch]);
+
+  useEffect(() => {
+    setHasInitializedChildCards(false);
+  }, [card?.id]);
 
   const CreationDetailsPopup = usePopupInClosableContext(CreationDetailsStep);
   const BoardMembershipsPopup = usePopupInClosableContext(BoardMembershipsStep);

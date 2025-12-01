@@ -1,0 +1,379 @@
+/*!
+ * Copyright (c) 2024 PLANKA Software GmbH
+ * Licensed under the Fair Use License: https://github.com/plankanban/planka/blob/master/LICENSE.md
+ */
+
+:global(#app) {
+  .wrapper {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    background: #1a1d21;
+    color: rgba(255, 255, 255, 0.9);
+    height: 100%;
+    overflow: hidden;
+  }
+
+  .header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 24px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    background: #22252a;
+    flex-shrink: 0;
+  }
+
+  .titleSection {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+  }
+
+  .headerIcon {
+    font-size: 24px !important;
+    color: #0052cc !important;
+  }
+
+  .title {
+    margin: 0 !important;
+    font-size: 20px;
+    font-weight: 600;
+    color: rgba(255, 255, 255, 0.9);
+    line-height: 1.2;
+  }
+
+  .subtitle {
+    margin: 4px 0 0 0 !important;
+    font-size: 14px;
+    color: rgba(255, 255, 255, 0.6);
+    line-height: 1.3;
+  }
+
+  .headerActions {
+    display: flex;
+    gap: 12px;
+    align-items: center;
+  }
+
+  .scopeDropdown {
+    min-width: 160px !important;
+    background: #2d3139 !important;
+    border: 1px solid rgba(255, 255, 255, 0.15) !important;
+    border-radius: 6px !important;
+    color: rgba(255, 255, 255, 0.9) !important;
+    font-size: 13px !important;
+
+    &:global(.ui.dropdown) {
+      padding: 8px 12px !important;
+
+      :global(.text) {
+        color: rgba(255, 255, 255, 0.9) !important;
+      }
+
+      :global(.dropdown.icon) {
+        color: rgba(255, 255, 255, 0.6) !important;
+      }
+
+      :global(.menu) {
+        background: #2d3139 !important;
+        border: 1px solid rgba(255, 255, 255, 0.15) !important;
+        border-radius: 6px !important;
+        margin-top: 4px !important;
+
+        :global(.item) {
+          color: rgba(255, 255, 255, 0.8) !important;
+          padding: 10px 14px !important;
+          border-top: none !important;
+
+          &:hover {
+            background: rgba(255, 255, 255, 0.08) !important;
+            color: rgba(255, 255, 255, 1) !important;
+          }
+
+          &:global(.active) {
+            background: rgba(0, 82, 204, 0.2) !important;
+            color: #4c9aff !important;
+          }
+
+          :global(.icon) {
+            color: inherit !important;
+            margin-right: 8px !important;
+          }
+        }
+      }
+    }
+
+    &:hover {
+      border-color: rgba(255, 255, 255, 0.25) !important;
+    }
+  }
+
+  .toggleButton {
+    background: transparent !important;
+    border: 1px solid rgba(255, 255, 255, 0.2) !important;
+    color: rgba(255, 255, 255, 0.7) !important;
+    padding: 8px 12px !important;
+    border-radius: 6px !important;
+    font-size: 13px !important;
+    transition: all 0.2s ease !important;
+
+    &:hover {
+      background: rgba(255, 255, 255, 0.08) !important;
+      border-color: rgba(255, 255, 255, 0.3) !important;
+      color: rgba(255, 255, 255, 0.9) !important;
+    }
+
+    :global(.icon) {
+      margin: 0 4px 0 0 !important;
+    }
+  }
+
+  .content {
+    flex: 1;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+
+    @supports (-moz-appearance: none) {
+      scrollbar-color: rgba(255, 255, 255, 0.2) rgba(255, 255, 255, 0.05);
+    }
+
+    &::-webkit-scrollbar {
+      width: 8px;
+    }
+
+    &::-webkit-scrollbar-track {
+      background: rgba(255, 255, 255, 0.05);
+    }
+
+    &::-webkit-scrollbar-thumb {
+      background: rgba(255, 255, 255, 0.2);
+      border-radius: 4px;
+
+      &:hover {
+        background: rgba(255, 255, 255, 0.3);
+      }
+    }
+  }
+
+  .loadingContainer {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 80px 40px;
+    color: rgba(255, 255, 255, 0.5);
+  }
+
+  .loader {
+    color: #0052cc !important;
+  }
+
+  .loadingText {
+    margin: 16px 0 0 0 !important;
+    font-size: 14px;
+    color: rgba(255, 255, 255, 0.6);
+  }
+
+  .emptyState {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 80px 40px;
+    color: rgba(255, 255, 255, 0.5);
+    text-align: center;
+  }
+
+  .emptyIcon {
+    font-size: 64px !important;
+    margin-bottom: 24px !important;
+    color: rgba(255, 255, 255, 0.3) !important;
+  }
+
+  .emptyTitle {
+    margin: 0 0 12px 0 !important;
+    font-size: 18px;
+    font-weight: 600;
+    color: rgba(255, 255, 255, 0.7);
+  }
+
+  .emptyDescription {
+    margin: 0 !important;
+    font-size: 14px;
+    color: rgba(255, 255, 255, 0.5);
+    max-width: 400px;
+    line-height: 1.5;
+  }
+
+  .tableContainer {
+    flex: 1;
+    padding: 0;
+  }
+
+  .activityList {
+    padding: 8px 0;
+  }
+
+  .activityItem {
+    display: flex;
+    align-items: flex-start;
+    gap: 16px;
+    padding: 16px 24px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    transition: background-color 0.2s ease;
+
+    &:hover {
+      background: rgba(255, 255, 255, 0.02);
+    }
+
+    &:last-child {
+      border-bottom: none;
+    }
+  }
+
+  .activityIcon {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.08);
+    font-size: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding-bottom: .3rem !important;
+    padding-left: .3rem !important;
+  }
+
+  .activityContent {
+    flex: 1;
+    min-width: 0;
+  }
+
+  .activityHeader {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 6px;
+    gap: 16px;
+  }
+
+  .userInfo {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    min-width: 0;
+    flex: 1;
+  }
+
+  .userAvatar {
+    flex-shrink: 0;
+  }
+
+  .userName {
+    font-weight: 600;
+    color: rgba(255, 255, 255, 0.9);
+    font-size: 14px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .unknownUser {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    color: rgba(255, 255, 255, 0.5);
+    font-style: italic;
+    font-size: 14px;
+  }
+
+  .activityTime {
+    font-size: 12px;
+    color: rgba(255, 255, 255, 0.5);
+    white-space: nowrap;
+    flex-shrink: 0;
+  }
+
+  .activityDetails {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+
+  .action {
+    font-size: 13px;
+    color: rgba(255, 255, 255, 0.8);
+    text-transform: capitalize;
+    font-weight: 500;
+  }
+
+  .resource {
+    font-size: 13px;
+    color: rgba(255, 255, 255, 0.6);
+
+    strong {
+      color: rgba(255, 255, 255, 0.9);
+      font-weight: 600;
+    }
+  }
+
+  .pagination {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+    padding: 24px;
+    border-top: 1px solid rgba(255, 255, 255, 0.05);
+    background: rgba(255, 255, 255, 0.02);
+  }
+
+  .paginationComponent {
+    :global(.ui.pagination.menu) {
+      border: none !important;
+      box-shadow: none !important;
+      background: transparent !important;
+      margin: 0 !important;
+
+      :global(.item) {
+        min-width: 32px !important;
+        height: 32px !important;
+        color: rgba(255, 255, 255, 0.7) !important;
+        border: 1px solid rgba(255, 255, 255, 0.1) !important;
+        background: rgba(255, 255, 255, 0.05) !important;
+        margin: 0 2px !important;
+        border-radius: 6px !important;
+        font-size: 13px !important;
+        padding: 0 !important;
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        transition: all 0.2s ease !important;
+
+        &:hover {
+          background: rgba(255, 255, 255, 0.1) !important;
+          border-color: rgba(255, 255, 255, 0.2) !important;
+          color: rgba(255, 255, 255, 0.9) !important;
+        }
+
+        &.active {
+          background: #0052cc !important;
+          border-color: #0052cc !important;
+          color: #ffffff !important;
+        }
+
+        &:focus {
+          outline: none !important;
+          box-shadow: 0 0 0 2px rgba(0, 82, 204, 0.3) !important;
+        }
+      }
+    }
+  }
+
+  .paginationInfo {
+    font-size: 12px;
+    color: rgba(255, 255, 255, 0.5);
+    text-align: center;
+  }
+}

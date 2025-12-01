@@ -36,6 +36,8 @@ const ActionsStep = React.memo(({ listId, onNameEdit, onCardAdd, onClose }) => {
   const selectListById = useMemo(() => selectors.makeSelectListById(), []);
 
   const list = useSelector((state) => selectListById(state, listId));
+  const board = useSelector(selectors.selectCurrentBoard);
+  const isListsLocked = board?.isListsLocked || false;
 
   const dispatch = useDispatch();
   const [t] = useTranslation();
@@ -135,7 +137,11 @@ const ActionsStep = React.memo(({ listId, onNameEdit, onCardAdd, onClose }) => {
       </Popup.Header>
       <Popup.Content>
         <Menu secondary vertical className={styles.menu}>
-          <Menu.Item className={styles.menuItem} onClick={handleEditNameClick}>
+          <Menu.Item
+            className={styles.menuItem}
+            disabled={isListsLocked}
+            onClick={handleEditNameClick}
+          >
             <Icon name="edit outline" className={styles.menuItemIcon} />
             {t('action.editTitle', {
               context: 'title',
@@ -165,7 +171,7 @@ const ActionsStep = React.memo(({ listId, onNameEdit, onCardAdd, onClose }) => {
               context: 'title',
             })}
           </Menu.Item>
-          <Menu.Item className={styles.menuItem} onClick={handleMoveClick}>
+          <Menu.Item className={styles.menuItem} disabled={isListsLocked} onClick={handleMoveClick}>
             <Icon name="share square outline" className={styles.menuItemIcon} />
             {t('action.moveList', {
               context: 'title',
@@ -179,7 +185,11 @@ const ActionsStep = React.memo(({ listId, onNameEdit, onCardAdd, onClose }) => {
               })}
             </Menu.Item>
           )}
-          <Menu.Item className={styles.menuItem} onClick={handleDeleteClick}>
+          <Menu.Item
+            className={styles.menuItem}
+            disabled={isListsLocked}
+            onClick={handleDeleteClick}
+          >
             <Icon name="trash alternate outline" className={styles.menuItemIcon} />
             {t('action.deleteList', {
               context: 'title',

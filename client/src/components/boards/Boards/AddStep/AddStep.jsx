@@ -15,12 +15,14 @@ import { useDidUpdate, useToggle } from '../../../../lib/hooks';
 import entryActions from '../../../../entry-actions';
 import { useForm, useNestedRef, useSteps } from '../../../../hooks';
 import ImportStep from './ImportStep';
+import TemplateSelectModal from './TemplateSelectModal';
 
 import styles from './AddStep.module.scss';
 
 const StepTypes = {
   IMPORT: 'IMPORT',
   IMPORT_FROM_PLANKA: 'IMPORT_FROM_PLANKA',
+  SELECT_TEMPLATE: 'SELECT_TEMPLATE',
 };
 
 const AddStep = React.memo(({ onClose, onOpenImportModal }) => {
@@ -30,6 +32,7 @@ const AddStep = React.memo(({ onClose, onOpenImportModal }) => {
   const [data, handleFieldChange, setData] = useForm({
     name: '',
     import: null,
+    templateId: null,
   });
 
   const [step, openStep, handleBack] = useSteps();
@@ -96,6 +99,23 @@ const AddStep = React.memo(({ onClose, onOpenImportModal }) => {
     }
   }, [onClose, onOpenImportModal]);
 
+  const handleTemplateSelectClick = useCallback(() => {
+    openStep(StepTypes.SELECT_TEMPLATE);
+  }, [openStep]);
+
+  const handleTemplateSelect = useCallback(
+    (template) => {
+      setData((prevData) => ({
+        ...prevData,
+        templateId: template.id,
+        name: prevData.name || template.name,
+      }));
+      handleBack();
+      focusNameField();
+    },
+    [setData, handleBack, focusNameField],
+  );
+
   useEffect(() => {
     nameFieldRef.current.focus({
       preventScroll: true,
@@ -112,8 +132,13 @@ const AddStep = React.memo(({ onClose, onOpenImportModal }) => {
         onSelect={handleImportSelect}
         onBack={handleImportBack}
         onImportFromPlanka={handleImportFromPlanka}
+        onSelectFromTemplate={handleTemplateSelectClick}
       />
     );
+  }
+
+  if (step && step.type === StepTypes.SELECT_TEMPLATE) {
+    return <TemplateSelectModal onSelect={handleTemplateSelect} onBack={handleImportBack} />;
   }
 
   if (isSubmitting && data.import) {

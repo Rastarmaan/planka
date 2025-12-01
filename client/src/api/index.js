@@ -9,6 +9,7 @@ import attachments from './attachments';
 import backgroundImages from './background-images';
 import baseCustomFieldGroups from './base-custom-field-groups';
 import boardMemberships from './board-memberships';
+import boardTemplates from './board-templates';
 import boardVersions from './board-versions';
 import boards from './boards';
 import cardDependencies from './card-dependencies';
@@ -20,6 +21,7 @@ import config from './config';
 import customFieldGroups from './custom-field-groups';
 import customFieldValues from './custom-field-values';
 import customFields from './custom-fields';
+import documentActivities from './document-activities';
 import googleCalendar from './google-calendar';
 import http from './http';
 import labels from './labels';
@@ -36,6 +38,12 @@ import tasks from './tasks';
 import terms from './terms';
 import users from './users';
 import webhooks from './webhooks';
+import spaces from './spaces';
+import folders from './folders';
+import files from './files';
+import permissions from './permissions';
+import shareLinks from './share-links';
+import publicApi from './public';
 
 export { http, socket };
 
@@ -46,6 +54,13 @@ export default {
   ...webhooks,
   ...users,
   ...projects,
+  ...spaces,
+  ...folders,
+  ...files,
+  ...permissions,
+  ...shareLinks,
+  ...publicApi,
+  ...documentActivities,
   ...projectCategories,
   ...projectManagers,
   ...projectVersions,
@@ -53,6 +68,7 @@ export default {
   ...baseCustomFieldGroups,
   ...boards,
   ...boardMemberships,
+  ...boardTemplates,
   ...boardVersions,
   ...labels,
   ...lists,

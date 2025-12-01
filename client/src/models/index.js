@@ -30,6 +30,11 @@ import Task from './Task';
 import TaskList from './TaskList';
 import User from './User';
 import Webhook from './Webhook';
+import Space from './Space';
+import Folder from './Folder';
+import File from './File';
+import Permission from './Permission';
+import ShareLink from './ShareLink';
 
 export {
   Activity,
@@ -59,4 +64,9 @@ export {
   TaskList,
   User,
   Webhook,
+  Space,
+  Folder,
+  File,
+  Permission,
+  ShareLink,
 };

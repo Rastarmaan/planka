@@ -17,6 +17,8 @@ import Login from './Login';
 import Core from './Core';
 import NotFound from './NotFound';
 import HomePage from './HomePage';
+import DocumentManagement from '../document-management';
+import PublicShare from '../PublicShare/PublicShare';
 
 import 'react-datepicker/dist/react-datepicker.css';
 import 'photoswipe/dist/photoswipe.css';
@@ -35,6 +37,14 @@ function Root({ store, history }) {
               <Route path={Paths.LOGIN} element={<Login />} />
               <Route path={Paths.OIDC_CALLBACK} element={<Login />} />
               <Route path={Paths.ROOT} element={<HomePage />} />
+              <Route path={Paths.PUBLIC_SHARE} element={<PublicShare />} />
+              <Route path={Paths.DOCUMENT_MANAGEMENT} element={<DocumentManagement />} />
+              <Route path={Paths.DOCUMENT_ALL_FILES} element={<DocumentManagement />} />
+              <Route path={Paths.DOCUMENT_SHARED} element={<DocumentManagement />} />
+              <Route path={Paths.DOCUMENT_RECENT} element={<DocumentManagement />} />
+              <Route path={Paths.DOCUMENT_STARRED} element={<DocumentManagement />} />
+              <Route path={Paths.DOCUMENT_TRASH} element={<DocumentManagement />} />
+              <Route path={Paths.DOCUMENT_ACTIVITY} element={<DocumentManagement />} />
               <Route path={Paths.PROJECTS} element={<Core />} />
               <Route path={Paths.PROJECT_RELEASES} element={<Core />} />
               <Route path={Paths.BOARDS} element={<Core />} />

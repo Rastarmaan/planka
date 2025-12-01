@@ -389,6 +389,15 @@ export default class extends BaseModel {
       });
     }
 
+    const filterReleaseIds = this.board.filterReleases.toRefArray().map((release) => release.id);
+
+    if (filterReleaseIds.length > 0) {
+      cardModels = cardModels.filter((cardModel) => {
+        const releases = cardModel.releases.toRefArray();
+        return releases.some((release) => filterReleaseIds.includes(release.id));
+      });
+    }
+
     const releasedReleaseIds = this.board.releases
       .toRefArray()
       .filter((release) => release.status === 'released')

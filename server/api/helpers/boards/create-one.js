@@ -12,6 +12,9 @@ module.exports = {
     import: {
       type: 'json',
     },
+    template: {
+      type: 'json',
+    },
     actorUser: {
       type: 'ref',
       required: true,
@@ -74,15 +77,49 @@ module.exports = {
       }
     }
 
-    const { board, boardMembership, lists } = await Board.qm.createOne(
-      {
-        ...values,
-        projectId: values.project.id,
-      },
-      {
-        user: inputs.actorUser,
-      },
-    );
+    const boardValues = {
+      ...values,
+      projectId: values.project.id,
+    };
+
+    if (inputs.template) {
+      boardValues.templateId = inputs.template.id;
+      boardValues.isListsLocked = inputs.template.isListsLocked;
+    }
+
+    const { board, boardMembership, lists } = await Board.qm.createOne(boardValues, {
+      user: inputs.actorUser,
+    });
+
+    if (inputs.template) {
+      const templateLists = await BoardTemplateList.find({
+        boardTemplateId: inputs.template.id,
+      }).sort('position ASC');
+
+      // eslint-disable-next-line no-restricted-syntax
+      for (const templateList of templateLists) {
+        // eslint-disable-next-line no-await-in-loop
+        await List.qm.createOne({
+          name: templateList.name,
+          position: templateList.position,
+          type: List.Types.ACTIVE,
+          boardId: board.id,
+        });
+      }
+
+      const templateCardTypes = await BoardTemplateCardType.find({
+        boardTemplateId: inputs.template.id,
+      });
+
+      // eslint-disable-next-line no-restricted-syntax
+      for (const templateCardType of templateCardTypes) {
+        // eslint-disable-next-line no-await-in-loop
+        await BoardCardType.create({
+          boardId: board.id,
+          type: templateCardType.typeName,
+        });
+      }
+    }
 
     if (inputs.import && inputs.import.type === Board.ImportTypes.TRELLO) {
       const trelloApiKey = process.env.TRELLO_API_KEY || inputs.import.trelloApiKey;

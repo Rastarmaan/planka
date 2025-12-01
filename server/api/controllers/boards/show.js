@@ -202,6 +202,9 @@ module.exports = {
 
     board.isSubscribed = await sails.helpers.users.isBoardSubscriber(currentUser.id, board.id);
 
+    const boardCardTypes = await BoardCardType.find({ boardId: board.id });
+    board.cardTypes = boardCardTypes.map((bct) => bct.type);
+
     const boardMemberships = await BoardMembership.qm.getByBoardId(board.id);
     const labels = await Label.qm.getByBoardIdIncludingGlobal(board.id);
     const lists = await List.qm.getByBoardId(board.id);

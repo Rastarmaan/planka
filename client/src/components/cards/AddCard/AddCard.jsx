@@ -28,15 +28,26 @@ const DEFAULT_DATA = {
 };
 
 const AddCard = React.memo(({ isOpened, className, onCreate, onClose }) => {
-  const { defaultCardType: defaultType, limitCardTypesToDefaultOne: limitTypesToDefaultOne } =
-    useSelector(selectors.selectCurrentBoard);
+  const board = useSelector(selectors.selectCurrentBoard);
+  const {
+    defaultCardType: defaultType,
+    limitCardTypesToDefaultOne: limitTypesToDefaultOne,
+    cardTypes,
+  } = board;
+
+  const initialCardType = useMemo(() => {
+    if (cardTypes && cardTypes.length > 0) {
+      return cardTypes[0];
+    }
+    return defaultType;
+  }, [cardTypes, defaultType]);
 
   const [t, i18n] = useTranslation();
-  const prevDefaultType = usePrevious(defaultType);
+  const prevDefaultType = usePrevious(initialCardType);
 
   const [data, handleFieldChange, setData] = useForm(() => ({
     ...DEFAULT_DATA,
-    type: defaultType,
+    type: initialCardType,
   }));
 
   const inputDirectionStyles = useMemo(
@@ -85,7 +96,7 @@ const AddCard = React.memo(({ isOpened, className, onCreate, onClose }) => {
 
       setData({
         ...DEFAULT_DATA,
-        type: defaultType,
+        type: initialCardType,
         weight: 1,
       });
 
@@ -95,7 +106,7 @@ const AddCard = React.memo(({ isOpened, className, onCreate, onClose }) => {
         focusNameField();
       }
     },
-    [onCreate, onClose, defaultType, data, setData, focusNameField, nameFieldRef],
+    [onCreate, onClose, initialCardType, data, setData, focusNameField, nameFieldRef],
   );
 
   const handleSubmit = useCallback(() => {
@@ -160,13 +171,13 @@ const AddCard = React.memo(({ isOpened, className, onCreate, onClose }) => {
   }, [isOpened, nameFieldRef]);
 
   useEffect(() => {
-    if (!isOpened && defaultType !== prevDefaultType) {
+    if (!isOpened && initialCardType !== prevDefaultType) {
       setData((prevData) => ({
         ...prevData,
-        type: defaultType,
+        type: initialCardType,
       }));
     }
-  }, [isOpened, defaultType, prevDefaultType, setData]);
+  }, [isOpened, initialCardType, prevDefaultType, setData]);
 
   useDidUpdate(() => {
     nameFieldRef.current.focus();

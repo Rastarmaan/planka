@@ -33,6 +33,11 @@ import {
   TaskList,
   User,
   Webhook,
+  Space,
+  Folder,
+  File,
+  Permission,
+  ShareLink,
 } from './models';
 
 const orm = new ORM({
@@ -42,6 +47,11 @@ const orm = new ORM({
 orm.register(
   Webhook,
   User,
+  Space,
+  Folder,
+  File,
+  Permission,
+  ShareLink,
   Project,
   ProjectCategory,
   ProjectCategoryAssignment,
