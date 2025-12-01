@@ -40,11 +40,7 @@ module.exports = {
     let hasAccess = false;
 
     if (isAdmin) {
-      const space = await Space.findOne({
-        id: file.space,
-        createdByUser: currentUser.id,
-      });
-      hasAccess = !!space;
+      hasAccess = true;
     } else {
       const permissions = await DocumentPermission.find({
         user: currentUser.id,
@@ -98,7 +94,19 @@ module.exports = {
 
     // Set response headers
     this.res.set('Content-Type', file.mimeType);
-    this.res.set('Content-Disposition', `attachment; filename="${fileName}"`);
+
+    const encodedFileName = encodeURIComponent(fileName).replace(/['()]/g, escape);
+    // Check if filename contains only ASCII printable characters
+    const isAscii = fileName.split('').every((char) => {
+      const code = char.charCodeAt(0);
+      return code >= 32 && code <= 126;
+    });
+
+    if (isAscii) {
+      this.res.set('Content-Disposition', `attachment; filename="${fileName}"`);
+    } else {
+      this.res.set('Content-Disposition', `attachment; filename*=UTF-8''${encodedFileName}`);
+    }
 
     return fileStream;
   },

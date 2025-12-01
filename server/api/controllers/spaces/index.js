@@ -45,9 +45,7 @@ module.exports = {
     let spaces = [];
 
     if (isAdmin) {
-      const criteria = {
-        createdByUser: currentUser.id,
-      };
+      const criteria = {};
 
       if (!inputs.includeDeleted) {
         criteria.isDeleted = false;

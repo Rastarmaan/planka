@@ -443,7 +443,12 @@ const DocumentManagement = React.memo(() => {
 
   const handlePreview = () => {
     const file = files.find((f) => f.id === selectedFile);
-    if (file && file.type === 'file' && file.mimeType && file.mimeType.startsWith('image/')) {
+    if (
+      file &&
+      file.type === 'file' &&
+      file.mimeType &&
+      (file.mimeType.startsWith('image/') || file.mimeType.startsWith('video/'))
+    ) {
       setPreviewFile(file);
     }
   };
@@ -533,7 +538,12 @@ const DocumentManagement = React.memo(() => {
   };
 
   const handleContextMenuPreview = (file) => {
-    if (file && file.type === 'file' && file.mimeType && file.mimeType.startsWith('image/')) {
+    if (
+      file &&
+      file.type === 'file' &&
+      file.mimeType &&
+      (file.mimeType.startsWith('image/') || file.mimeType.startsWith('video/'))
+    ) {
       setPreviewFile(file);
     }
   };
@@ -883,6 +893,7 @@ const DocumentManagement = React.memo(() => {
                 sortBy={sortBy}
                 selectedFile={selectedFile}
                 selectedFileData={files.find((f) => f.id === selectedFile)}
+                currentPath={currentPath}
                 onSortChange={setSortBy}
                 onPreview={handlePreview}
                 onShare={() => {
@@ -899,6 +910,7 @@ const DocumentManagement = React.memo(() => {
                 }}
                 onDelete={handleDeleteSelected}
                 onDownload={handleDownloadSelected}
+                onGoBack={() => handleBreadcrumbClick(currentPath.length - 2)}
                 canShare={isAdmin}
                 canDelete={isAdmin}
               />

@@ -43,11 +43,33 @@ module.exports = {
   },
 
   async fn(inputs) {
-    const space = await Space.findOne({
-      id: inputs.id,
-      isDeleted: false,
-      createdByUser: this.req.currentUser.id,
-    });
+    const { currentUser } = this.req;
+    const isAdmin = currentUser.role === 'admin';
+
+    let space;
+    if (isAdmin) {
+      space = await Space.findOne({
+        id: inputs.id,
+        isDeleted: false,
+      });
+    } else {
+      space = await Space.findOne({
+        id: inputs.id,
+        isDeleted: false,
+      });
+
+      if (space) {
+        const permissions = await DocumentPermission.find({
+          user: currentUser.id,
+          resourceType: 'space',
+          resourceId: inputs.id,
+        }).limit(1);
+
+        if (permissions.length === 0) {
+          space = null;
+        }
+      }
+    }
 
     if (!space) {
       throw 'notFound';

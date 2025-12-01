@@ -20,7 +20,11 @@ class LocalFileManager {
     const dirPath = buildPath(dir);
     const filePath = path.join(dirPath, base);
 
-    await fs.promises.mkdir(dirPath);
+    if (path.resolve(sourceFilePath) === path.resolve(filePath)) {
+      return filePath;
+    }
+
+    await fs.promises.mkdir(dirPath, { recursive: true });
     await fse.move(sourceFilePath, filePath);
 
     return filePath;

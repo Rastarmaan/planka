@@ -104,11 +104,10 @@ module.exports = {
       throw 'forbidden';
     }
 
-    const ownedSpaces = await Space.find({
-      createdByUser: currentUser.id,
+    const allSpaces = await Space.find({
       isDeleted: false,
     });
-    const ownedSpaceIds = ownedSpaces.map((s) => String(s.id));
+    const allSpaceIds = allSpaces.map((s) => String(s.id));
 
     // Build query criteria
     const criteria = {};
@@ -118,19 +117,16 @@ module.exports = {
     }
 
     if (inputs.spaceId) {
-      if (!ownedSpaceIds.includes(String(inputs.spaceId))) {
-        throw 'forbidden';
-      }
       criteria.space = inputs.spaceId;
     } else {
-      if (ownedSpaceIds.length === 0) {
+      if (allSpaceIds.length === 0) {
         return {
           items: [],
           total: 0,
           included: { users: [] },
         };
       }
-      criteria.space = ownedSpaceIds;
+      criteria.space = allSpaceIds;
     }
 
     // Get activities with pagination
