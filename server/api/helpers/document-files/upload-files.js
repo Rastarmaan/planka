@@ -32,6 +32,7 @@ module.exports = {
     await new Promise((resolve, reject) => {
       inputs.request.file('files').upload(
         {
+          maxBytes: null,
           saveAs(file, cb) {
             const extension = path.extname(file.filename);
             const filename = `${uuid()}${extension}`;

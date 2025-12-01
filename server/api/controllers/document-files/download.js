@@ -40,11 +40,7 @@ module.exports = {
     let hasAccess = false;
 
     if (isAdmin) {
-      const space = await Space.findOne({
-        id: file.space,
-        createdByUser: currentUser.id,
-      });
-      hasAccess = !!space;
+      hasAccess = true;
     } else {
       const permissions = await DocumentPermission.find({
         user: currentUser.id,

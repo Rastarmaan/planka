@@ -29,12 +29,20 @@ module.exports = {
       throw 'notFound';
     }
 
-    const space = await Space.findOne({
-      id: file.space,
-      createdByUser: this.req.currentUser.id,
-    });
-    if (!space) {
-      throw 'forbidden';
+    const { currentUser } = this.req;
+    const isAdmin = currentUser.role === 'admin';
+
+    if (!isAdmin) {
+      const permissions = await DocumentPermission.find({
+        user: currentUser.id,
+        resourceType: 'space',
+        resourceId: file.space,
+        canEdit: true,
+      }).limit(1);
+
+      if (permissions.length === 0) {
+        throw 'forbidden';
+      }
     }
 
     await sails.helpers.documentFiles.deleteOne.with({

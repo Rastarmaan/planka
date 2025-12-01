@@ -35,11 +35,8 @@ module.exports = {
     let hasAccess = false;
 
     if (isAdmin) {
-      const space = await Space.findOne({
-        id: folder.space,
-        createdByUser: currentUser.id,
-      });
-      hasAccess = !!space;
+      // Admins have access to all folders
+      hasAccess = true;
     } else {
       const permissions = await DocumentPermission.find({
         user: currentUser.id,

@@ -61,11 +61,35 @@ module.exports = {
       parentFolderId = inputs.folderId;
     }
 
-    const space = await Space.findOne({
-      id: spaceId,
-      isDeleted: false,
-      createdByUser: this.req.currentUser.id,
-    });
+    const { currentUser } = this.req;
+    const isAdmin = currentUser.role === 'admin';
+
+    let space;
+    if (isAdmin) {
+      // Admins can create folders in all spaces
+      space = await Space.findOne({
+        id: spaceId,
+        isDeleted: false,
+      });
+    } else {
+      space = await Space.findOne({
+        id: spaceId,
+        isDeleted: false,
+      });
+
+      if (space) {
+        const permissions = await DocumentPermission.find({
+          user: currentUser.id,
+          resourceType: 'space',
+          resourceId: spaceId,
+          canEdit: true,
+        }).limit(1);
+
+        if (permissions.length === 0) {
+          space = null;
+        }
+      }
+    }
 
     if (!space) {
       throw 'notFound';
