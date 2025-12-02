@@ -135,7 +135,7 @@ function PublicShare() {
 
       try {
         setImageLoading(true);
-        const blob = await publicApi.downloadPublicFile(token, password || null);
+        const blob = await publicApi.previewPublicFile(token, password || null);
         const url = window.URL.createObjectURL(blob);
         setImagePreview(url);
       } catch (err) {
