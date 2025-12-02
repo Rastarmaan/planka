@@ -34,6 +34,7 @@ const FileListRow = React.memo(
     onContextMenuChange,
     canShare,
     canDelete,
+    canRename,
   }) => {
     const accessToken = useSelector(selectors.selectAccessToken);
     const [imageUrl, setImageUrl] = React.useState(null);
@@ -116,6 +117,9 @@ const FileListRow = React.memo(
     const handleContextMenu = (e) => {
       e.preventDefault();
       e.stopPropagation();
+      if (file.type === 'folder' && !canRename && !canDelete && !canShare) {
+        return;
+      }
       if (onContextMenuChange) {
         onContextMenuChange({
           fileId: file.id,
@@ -208,6 +212,7 @@ const FileListRow = React.memo(
             onRename={onRename}
             canShare={canShare}
             canDelete={canDelete}
+            canRename={canRename}
           />
         )}
       </>
@@ -253,6 +258,7 @@ FileListRow.propTypes = {
   onContextMenuChange: PropTypes.func,
   canShare: PropTypes.bool,
   canDelete: PropTypes.bool,
+  canRename: PropTypes.bool,
 };
 
 FileListRow.defaultProps = {
@@ -265,6 +271,7 @@ FileListRow.defaultProps = {
   onContextMenuChange: null,
   canShare: false,
   canDelete: false,
+  canRename: false,
 };
 
 export default FileListRow;

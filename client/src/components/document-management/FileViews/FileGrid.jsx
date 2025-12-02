@@ -31,6 +31,7 @@ const FileGrid = React.memo(
     onDelete,
     onRename,
     canManageFile,
+    canRename,
     isAdmin,
   }) => {
     const [t] = useTranslation();
@@ -82,6 +83,7 @@ const FileGrid = React.memo(
               onContextMenuChange={setActiveContextMenu}
               canShare={isAdmin}
               canDelete={isAdmin || canManageFile(file)}
+              canRename={isAdmin || canRename(file)}
             />
           ))
         )}
@@ -113,6 +115,7 @@ FileGrid.propTypes = {
   onDelete: PropTypes.func,
   onRename: PropTypes.func,
   canManageFile: PropTypes.func,
+  canRename: PropTypes.func,
   isAdmin: PropTypes.bool,
 };
 
@@ -126,6 +129,7 @@ FileGrid.defaultProps = {
   onDelete: null,
   onRename: null,
   canManageFile: () => false,
+  canRename: () => false,
   isAdmin: false,
 };
 

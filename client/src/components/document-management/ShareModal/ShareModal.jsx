@@ -25,6 +25,7 @@ const ShareModal = React.memo(({ resource, resourceType, isOpen, onClose, onCrea
   const accessToken = useSelector(selectors.selectAccessToken);
 
   const [selectedUsers, setSelectedUsers] = useState([]);
+  const [selectedPermission, setSelectedPermission] = useState('view');
 
   const [linkEnabled, setLinkEnabled] = useState(false);
   const [shareLink, setShareLink] = useState('');
@@ -219,6 +220,7 @@ const ShareModal = React.memo(({ resource, resourceType, isOpen, onClose, onCrea
   useEffect(() => {
     if (!isOpen) {
       setSelectedUsers([]);
+      setSelectedPermission('view');
       setLinkEnabled(false);
       setShareLink('');
       setCopied(false);
@@ -322,15 +324,21 @@ const ShareModal = React.memo(({ resource, resourceType, isOpen, onClose, onCrea
     }
   };
 
+  const permissionOptions = [
+    { key: 'view', text: t('documentManagement.canView', 'Can view'), value: 'view' },
+    { key: 'edit', text: t('documentManagement.canEdit', 'Can edit'), value: 'edit' },
+  ];
+
   const handleInviteUsers = async () => {
     if (selectedUsers.length === 0) return;
 
     try {
+      const isEditPermission = selectedPermission === 'edit';
       const permissionFlags = {
         canView: true,
         canDownload: true,
-        canEdit: true,
-        canDelete: false,
+        canEdit: isEditPermission,
+        canDelete: isEditPermission,
         canShare: false,
       };
 
@@ -392,6 +400,13 @@ const ShareModal = React.memo(({ resource, resourceType, isOpen, onClose, onCrea
                 onChange={(e, { value }) => setSelectedUsers(value)}
                 noResultsMessage={t('documentManagement.noUsersFound')}
                 className={styles.userDropdown}
+              />
+              <Dropdown
+                selection
+                options={permissionOptions}
+                value={selectedPermission}
+                onChange={(e, { value }) => setSelectedPermission(value)}
+                className={styles.permissionDropdown}
               />
             </div>
             {selectedUsers.length > 0 && (

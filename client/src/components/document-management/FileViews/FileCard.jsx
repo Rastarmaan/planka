@@ -34,6 +34,7 @@ const FileCard = React.memo(
     onContextMenuChange,
     canShare,
     canDelete,
+    canRename,
   }) => {
     const accessToken = useSelector(selectors.selectAccessToken);
     const [imageUrl, setImageUrl] = React.useState(null);
@@ -117,6 +118,9 @@ const FileCard = React.memo(
     const handleContextMenu = (e) => {
       e.preventDefault();
       e.stopPropagation();
+      if (file.type === 'folder' && !canRename && !canDelete && !canShare) {
+        return;
+      }
       if (onContextMenuChange) {
         onContextMenuChange({
           fileId: file.id,
@@ -207,6 +211,7 @@ const FileCard = React.memo(
             onRename={onRename}
             canShare={canShare}
             canDelete={canDelete}
+            canRename={canRename}
           />
         )}
       </>
@@ -252,6 +257,7 @@ FileCard.propTypes = {
   onContextMenuChange: PropTypes.func,
   canShare: PropTypes.bool,
   canDelete: PropTypes.bool,
+  canRename: PropTypes.bool,
 };
 
 FileCard.defaultProps = {
@@ -264,6 +270,7 @@ FileCard.defaultProps = {
   onContextMenuChange: null,
   canShare: false,
   canDelete: false,
+  canRename: false,
 };
 
 export default FileCard;
