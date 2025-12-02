@@ -134,25 +134,27 @@ const WorkspaceSelector = React.memo(
 WorkspaceSelector.propTypes = {
   workspaces: PropTypes.arrayOf(
     PropTypes.shape({
-      key: PropTypes.string.isRequired,
-      text: PropTypes.string.isRequired,
-      value: PropTypes.string.isRequired,
+      key: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+      text: PropTypes.string,
+      value: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
       description: PropTypes.string,
     }),
   ).isRequired,
-  selectedWorkspace: PropTypes.string.isRequired,
+  selectedWorkspace: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
   showWorkspacePopup: PropTypes.bool.isRequired,
-  workspacePopupRef: PropTypes.shape({ current: PropTypes.instanceOf(Element) }).isRequired,
+  workspacePopupRef: PropTypes.shape({ current: PropTypes.instanceOf(Element) }),
   onTogglePopup: PropTypes.func.isRequired,
   onSelectWorkspace: PropTypes.func.isRequired,
   onRenameWorkspace: PropTypes.func.isRequired,
   onDeleteWorkspace: PropTypes.func.isRequired,
   onCreateWorkspace: PropTypes.func.isRequired,
   canManageWorkspaces: PropTypes.bool,
-  sharedSpaceIds: PropTypes.arrayOf(PropTypes.string),
+  sharedSpaceIds: PropTypes.arrayOf(PropTypes.oneOfType([PropTypes.string, PropTypes.number])),
 };
 
 WorkspaceSelector.defaultProps = {
+  selectedWorkspace: null,
+  workspacePopupRef: null,
   canManageWorkspaces: false,
   sharedSpaceIds: [],
 };

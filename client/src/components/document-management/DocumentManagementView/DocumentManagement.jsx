@@ -260,6 +260,93 @@ const DocumentManagement = React.memo(() => {
     return Array.from(indirectSpaceIds).filter((id) => !directSpaceIds.has(id));
   }, [isAdmin, userPermissions]);
 
+  const hasPermissionOnResource = useCallback(
+    (resourceId, resourceType) => {
+      if (isAdmin) return true;
+
+      return userPermissions.some(
+        (perm) =>
+          String(perm.resourceId) === String(resourceId) && perm.resourceType === resourceType,
+      );
+    },
+    [isAdmin, userPermissions],
+  );
+
+  const buildFolderPath = useCallback(
+    (folderId) => {
+      const path = [];
+      let folder = files.find((f) => f.id === folderId && f.type === 'folder');
+
+      while (folder) {
+        path.unshift({ id: folder.id, name: folder.name });
+        const parentId = folder.parentFolderId;
+        if (parentId) {
+          folder = files.find((f) => f.id === parentId && f.type === 'folder');
+        } else {
+          folder = null;
+        }
+      }
+
+      return path;
+    },
+    [files],
+  );
+
+  const canManageFile = useCallback(
+    (file) => {
+      if (isAdmin) return true;
+      if (!file) return false;
+
+      if (file.type === 'folder') {
+        if (hasPermissionOnResource(file.id, 'folder')) return true;
+      } else if (hasPermissionOnResource(file.id, 'file')) return true;
+
+      const parentFolderId = file.type === 'folder' ? file.parentFolderId : file.folderId;
+
+      if (parentFolderId) {
+        if (hasPermissionOnResource(parentFolderId, 'folder')) return true;
+
+        const parentPath = buildFolderPath(parentFolderId);
+        if (parentPath.some((folder) => hasPermissionOnResource(folder.id, 'folder'))) {
+          return true;
+        }
+      }
+
+      if (currentFolderId && hasPermissionOnResource(currentFolderId, 'folder')) {
+        return true;
+      }
+
+      return false;
+    },
+    [isAdmin, hasPermissionOnResource, currentFolderId, buildFolderPath],
+  );
+
+  const canUploadInCurrentFolder = useMemo(() => {
+    if (isAdmin) return true;
+    if (!currentFolderId) return false;
+
+    if (hasPermissionOnResource(currentFolderId, 'folder')) {
+      return true;
+    }
+
+    return currentPath.some((folder) => hasPermissionOnResource(folder.id, 'folder'));
+  }, [isAdmin, currentFolderId, hasPermissionOnResource, currentPath]);
+
+  const canDropInFolder = useCallback(
+    (folderId) => {
+      if (isAdmin) return true;
+      if (folderId === 'root') return false;
+
+      if (hasPermissionOnResource(folderId, 'folder')) {
+        return true;
+      }
+
+      const folderPath = buildFolderPath(folderId);
+      return folderPath.some((folder) => hasPermissionOnResource(folder.id, 'folder'));
+    },
+    [isAdmin, hasPermissionOnResource, buildFolderPath],
+  );
+
   useEffect(() => {
     if (filteredSpaces.length > 0 && !selectedWorkspace) {
       setSelectedWorkspace(filteredSpaces[0].id);
@@ -417,6 +504,10 @@ const DocumentManagement = React.memo(() => {
       if (folderIndex !== -1) {
         const newPath = currentPath.slice(0, folderIndex + 1);
         setCurrentPath(newPath);
+        setCurrentFolderId(folder.id);
+      } else if (currentPath.length === 0) {
+        const fullPath = buildFolderPath(folder.id);
+        setCurrentPath(fullPath);
         setCurrentFolderId(folder.id);
       } else {
         setCurrentFolderId(folder.id);
@@ -730,7 +821,10 @@ const DocumentManagement = React.memo(() => {
   const handleDragOver = (e, folder) => {
     e.preventDefault();
     if (draggedFile && folder.type === 'folder' && draggedFile.id !== folder.id) {
-      setDropTarget(folder.id === 'root' ? 'root' : folder.id);
+      const targetFolderId = folder.id === 'root' ? 'root' : folder.id;
+      if (canDropInFolder(targetFolderId)) {
+        setDropTarget(targetFolderId);
+      }
     }
   };
 
@@ -746,7 +840,14 @@ const DocumentManagement = React.memo(() => {
 
   const handleDrop = (e, folder) => {
     e.preventDefault();
-    if (draggedFile && folder.type === 'folder' && draggedFile.id !== folder.id) {
+    const targetFolderId = folder.id === 'root' ? 'root' : folder.id;
+
+    if (
+      draggedFile &&
+      folder.type === 'folder' &&
+      draggedFile.id !== folder.id &&
+      canDropInFolder(targetFolderId)
+    ) {
       if (draggedFile.type === 'file') {
         dispatch(
           actions.updateFile(draggedFile.id, {
@@ -875,7 +976,7 @@ const DocumentManagement = React.memo(() => {
           onDragOver={handleDragOver}
           onDragLeave={handleDragLeave}
           onDrop={handleDrop}
-          canUpload={isAdmin}
+          canUpload={isAdmin || canUploadInCurrentFolder}
           canManageWorkspaces={isAdmin}
           isAdmin={isAdmin}
           sharedSpaceIds={sharedSpaceIds}
@@ -908,7 +1009,7 @@ const DocumentManagement = React.memo(() => {
                 onFolderCreate={openFolderModal}
                 onFileUpload={handleFileUpload}
                 onViewChange={setView}
-                canUpload={isAdmin}
+                canUpload={isAdmin || canUploadInCurrentFolder}
               />
 
               <SortBar
@@ -934,7 +1035,7 @@ const DocumentManagement = React.memo(() => {
                 onDownload={handleDownloadSelected}
                 onGoBack={() => handleBreadcrumbClick(currentPath.length - 2)}
                 canShare={isAdmin}
-                canDelete={isAdmin}
+                canDelete={isAdmin || canManageFile(files.find((f) => f.id === selectedFile))}
               />
 
               {view === 'grid' ? (
@@ -956,8 +1057,8 @@ const DocumentManagement = React.memo(() => {
                   onDownload={handleContextMenuDownload}
                   onDelete={handleContextMenuDelete}
                   onRename={handleContextMenuRename}
-                  canShare={isAdmin}
-                  canDelete={isAdmin}
+                  canManageFile={canManageFile}
+                  isAdmin={isAdmin}
                 />
               ) : (
                 <FileList
@@ -978,8 +1079,8 @@ const DocumentManagement = React.memo(() => {
                   onDownload={handleContextMenuDownload}
                   onDelete={handleContextMenuDelete}
                   onRename={handleContextMenuRename}
-                  canShare={isAdmin}
-                  canDelete={isAdmin}
+                  canManageFile={canManageFile}
+                  isAdmin={isAdmin}
                 />
               )}
             </>
