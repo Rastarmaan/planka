@@ -21,9 +21,13 @@ const WorkspaceSelector = React.memo(
     onRenameWorkspace,
     onDeleteWorkspace,
     onCreateWorkspace,
+    canManageWorkspaces,
+    sharedSpaceIds,
   }) => {
     const [t] = useTranslation();
     const currentWorkspace = workspaces.find((w) => w.value === selectedWorkspace);
+
+    const isSharedSpace = (spaceId) => sharedSpaceIds && sharedSpaceIds.includes(String(spaceId));
 
     return (
       <div className={styles.workspaceSelector} ref={workspacePopupRef}>
@@ -61,56 +65,65 @@ const WorkspaceSelector = React.memo(
 
             {workspaces
               .filter((w) => w.value !== selectedWorkspace)
-              .map((workspace) => (
-                <div
-                  key={workspace.key}
-                  role="button"
-                  tabIndex={0}
-                  className={styles.workspacePopupItem}
-                  onClick={() => onSelectWorkspace(workspace.value)}
-                  onKeyDown={(e) => {
-                    if (e.key === 'Enter' || e.key === ' ') {
-                      e.preventDefault();
-                      onSelectWorkspace(workspace.value);
-                    }
-                  }}
-                >
-                  <div className={styles.workspaceInfo}>
-                    <div className={styles.workspaceName}>{workspace.text}</div>
-                    <div className={styles.workspaceDescription}>{workspace.description}</div>
-                  </div>
-                  <Dropdown
-                    trigger={
-                      <Button className={styles.manageButtonSmall}>
-                        Manage
-                        <Icon name="angle down" />
-                      </Button>
-                    }
-                    icon={null}
-                    direction="left"
-                    className={styles.manageDropdownInline}
-                    onClick={(e) => e.stopPropagation()}
+              .map((workspace) => {
+                const isWorkspaceShared = isSharedSpace(workspace.value);
+                return (
+                  <div
+                    key={workspace.key}
+                    role="button"
+                    tabIndex={0}
+                    className={styles.workspacePopupItem}
+                    onClick={() => onSelectWorkspace(workspace.value)}
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter' || e.key === ' ') {
+                        e.preventDefault();
+                        onSelectWorkspace(workspace.value);
+                      }
+                    }}
                   >
-                    <Dropdown.Menu>
-                      <Dropdown.Item onClick={(e) => onRenameWorkspace(e, workspace)}>
-                        <Icon name="pencil" />
-                        Rename
-                      </Dropdown.Item>
-                      <Dropdown.Item onClick={(e) => onDeleteWorkspace(e, workspace)}>
-                        <Icon name="trash alternate" />
-                        Delete
-                      </Dropdown.Item>
-                    </Dropdown.Menu>
-                  </Dropdown>
-                </div>
-              ))}
+                    <div className={styles.workspaceInfo}>
+                      <div className={styles.workspaceName}>{workspace.text}</div>
+                      <div className={styles.workspaceDescription}>{workspace.description}</div>
+                    </div>
+                    {canManageWorkspaces && !isWorkspaceShared && (
+                      <Dropdown
+                        trigger={
+                          <Button className={styles.manageButtonSmall}>
+                            Manage
+                            <Icon name="angle down" />
+                          </Button>
+                        }
+                        icon={null}
+                        direction="left"
+                        className={styles.manageDropdownInline}
+                        onClick={(e) => e.stopPropagation()}
+                      >
+                        <Dropdown.Menu>
+                          <Dropdown.Item onClick={(e) => onRenameWorkspace(e, workspace)}>
+                            <Icon name="pencil" />
+                            Rename
+                          </Dropdown.Item>
+                          <Dropdown.Item onClick={(e) => onDeleteWorkspace(e, workspace)}>
+                            <Icon name="trash alternate" />
+                            Delete
+                          </Dropdown.Item>
+                        </Dropdown.Menu>
+                      </Dropdown>
+                    )}
+                  </div>
+                );
+              })}
 
-            <div className={styles.workspacePopupSeparator} />
+            {canManageWorkspaces && (
+              <>
+                <div className={styles.workspacePopupSeparator} />
 
-            <Button className={styles.createWorkspaceButton} onClick={onCreateWorkspace}>
-              <Icon name="plus" />
-              {t('documentManagement.createNewWorkspace')}
-            </Button>
+                <Button className={styles.createWorkspaceButton} onClick={onCreateWorkspace}>
+                  <Icon name="plus" />
+                  {t('documentManagement.createNewWorkspace')}
+                </Button>
+              </>
+            )}
           </div>
         )}
       </div>
@@ -135,6 +148,13 @@ WorkspaceSelector.propTypes = {
   onRenameWorkspace: PropTypes.func.isRequired,
   onDeleteWorkspace: PropTypes.func.isRequired,
   onCreateWorkspace: PropTypes.func.isRequired,
+  canManageWorkspaces: PropTypes.bool,
+  sharedSpaceIds: PropTypes.arrayOf(PropTypes.string),
+};
+
+WorkspaceSelector.defaultProps = {
+  canManageWorkspaces: false,
+  sharedSpaceIds: [],
 };
 
 export default WorkspaceSelector;

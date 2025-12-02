@@ -40,6 +40,7 @@ const Sidebar = React.memo(
     canUpload,
     canManageWorkspaces,
     isAdmin,
+    sharedSpaceIds,
   }) => (
     <div className={styles.sidebar}>
       {canUpload && (
@@ -67,19 +68,20 @@ const Sidebar = React.memo(
         isAdmin={isAdmin}
       />
 
-      {canManageWorkspaces && (
-        <WorkspaceSelector
-          workspaces={workspaces}
-          selectedWorkspace={selectedWorkspace}
-          showWorkspacePopup={showWorkspacePopup}
-          workspacePopupRef={workspacePopupRef}
-          onTogglePopup={onToggleWorkspacePopup}
-          onSelectWorkspace={onSelectWorkspace}
-          onRenameWorkspace={onRenameWorkspace}
-          onDeleteWorkspace={onDeleteWorkspace}
-          onCreateWorkspace={onCreateWorkspace}
-        />
-      )}
+      <WorkspaceSelector
+        workspaces={workspaces}
+        selectedWorkspace={selectedWorkspace}
+        showWorkspacePopup={showWorkspacePopup}
+        workspacePopupRef={workspacePopupRef}
+        onTogglePopup={onToggleWorkspacePopup}
+        onSelectWorkspace={onSelectWorkspace}
+        onRenameWorkspace={onRenameWorkspace}
+        onDeleteWorkspace={onDeleteWorkspace}
+        onCreateWorkspace={onCreateWorkspace}
+        canManageWorkspaces={canManageWorkspaces}
+        isAdmin={isAdmin}
+        sharedSpaceIds={sharedSpaceIds}
+      />
     </div>
   ),
 );
@@ -127,6 +129,7 @@ Sidebar.propTypes = {
   canUpload: PropTypes.bool,
   canManageWorkspaces: PropTypes.bool,
   isAdmin: PropTypes.bool,
+  sharedSpaceIds: PropTypes.arrayOf(PropTypes.oneOfType([PropTypes.string, PropTypes.number])),
 };
 
 Sidebar.defaultProps = {
@@ -140,6 +143,7 @@ Sidebar.defaultProps = {
   canUpload: true,
   canManageWorkspaces: true,
   isAdmin: false,
+  sharedSpaceIds: [],
 };
 
 export default Sidebar;

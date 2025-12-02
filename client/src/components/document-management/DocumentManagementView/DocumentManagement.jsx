@@ -239,6 +239,27 @@ const DocumentManagement = React.memo(() => {
     [filteredSpaces, selectedWorkspace],
   );
 
+  const sharedSpaceIds = useMemo(() => {
+    if (isAdmin) {
+      return [];
+    }
+
+    const directSpaceIds = new Set();
+    const indirectSpaceIds = new Set();
+
+    userPermissions.forEach((perm) => {
+      if (perm.space && perm.space.id) {
+        if (perm.resourceType === 'space') {
+          directSpaceIds.add(String(perm.space.id));
+        } else {
+          indirectSpaceIds.add(String(perm.space.id));
+        }
+      }
+    });
+
+    return Array.from(indirectSpaceIds).filter((id) => !directSpaceIds.has(id));
+  }, [isAdmin, userPermissions]);
+
   useEffect(() => {
     if (filteredSpaces.length > 0 && !selectedWorkspace) {
       setSelectedWorkspace(filteredSpaces[0].id);
@@ -857,6 +878,7 @@ const DocumentManagement = React.memo(() => {
           canUpload={isAdmin}
           canManageWorkspaces={isAdmin}
           isAdmin={isAdmin}
+          sharedSpaceIds={sharedSpaceIds}
         />
 
         {modalConfig && (
