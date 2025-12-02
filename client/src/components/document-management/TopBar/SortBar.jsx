@@ -25,6 +25,7 @@ const SortBar = React.memo(
     onGoBack,
     canShare,
     canDelete,
+    canRename,
   }) => {
     const [t] = useTranslation();
 
@@ -91,34 +92,37 @@ const SortBar = React.memo(
                 <Icon name="trash alternate outline" />
               </Button>
             )}
-            <Dropdown
-              icon="ellipsis vertical"
-              direction="left"
-              button
-              className={styles.actionButton}
-            >
-              <Dropdown.Menu>
-                {isFolder && (
+            {/* Hide ellipsis menu for folders with view-only permission */}
+            {!(isFolder && !canRename && !canShare) && (
+              <Dropdown
+                icon="ellipsis vertical"
+                direction="left"
+                button
+                className={styles.actionButton}
+              >
+                <Dropdown.Menu>
+                  {isFolder && canRename && (
+                    <Dropdown.Item
+                      icon="pencil"
+                      text={t('action.rename', 'Rename')}
+                      onClick={onRename}
+                    />
+                  )}
+                  {canShare && (
+                    <Dropdown.Item
+                      icon="share alternate"
+                      text={t('documentManagement.share')}
+                      onClick={onShare}
+                    />
+                  )}
                   <Dropdown.Item
-                    icon="pencil"
-                    text={t('action.rename', 'Rename')}
-                    onClick={onRename}
+                    icon="download"
+                    text={t('documentManagement.download')}
+                    onClick={onDownload}
                   />
-                )}
-                {canShare && (
-                  <Dropdown.Item
-                    icon="share alternate"
-                    text={t('documentManagement.share')}
-                    onClick={onShare}
-                  />
-                )}
-                <Dropdown.Item
-                  icon="download"
-                  text={t('documentManagement.download')}
-                  onClick={onDownload}
-                />
-              </Dropdown.Menu>
-            </Dropdown>
+                </Dropdown.Menu>
+              </Dropdown>
+            )}
           </div>
         )}
       </div>
@@ -148,6 +152,7 @@ SortBar.propTypes = {
   onGoBack: PropTypes.func,
   canShare: PropTypes.bool,
   canDelete: PropTypes.bool,
+  canRename: PropTypes.bool,
 };
 
 SortBar.defaultProps = {
@@ -158,6 +163,7 @@ SortBar.defaultProps = {
   onGoBack: null,
   canShare: false,
   canDelete: false,
+  canRename: false,
 };
 
 export default SortBar;

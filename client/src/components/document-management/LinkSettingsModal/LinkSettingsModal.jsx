@@ -24,10 +24,11 @@ const LinkSettingsModal = React.memo(({ isOpen, onClose, onSave, currentSettings
   );
   const [passwordEnabled, setPasswordEnabled] = useState(!!currentSettings?.password);
   const [password, setPassword] = useState('');
+  const [isDownloadable, setIsDownloadable] = useState(currentSettings?.isDownloadable !== false);
 
   const handleSave = () => {
     const settings = {
-      isDownloadable: true,
+      isDownloadable,
     };
 
     if (expirationEnabled && expiresAt) {
@@ -95,6 +96,26 @@ const LinkSettingsModal = React.memo(({ isOpen, onClose, onSave, currentSettings
                   }}
                   minDate={new Date()}
                 />
+              </div>
+            )}
+          </div>
+
+          <div className={styles.divider} />
+
+          <div className={styles.settingSection}>
+            <div className={styles.settingHeader}>
+              <Checkbox
+                toggle
+                checked={isDownloadable}
+                onChange={(e, { checked }) => setIsDownloadable(checked)}
+              />
+              <span className={styles.settingLabel}>{t('documentManagement.allowDownload')}</span>
+            </div>
+            {isDownloadable && (
+              <div className={styles.settingContent}>
+                <span className={styles.settingDescription}>
+                  {t('documentManagement.allowDownloadDescription')}
+                </span>
               </div>
             )}
           </div>

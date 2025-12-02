@@ -38,7 +38,31 @@ const downloadPublicFile = async (token, password = null) => {
   return blob;
 };
 
+const previewPublicFile = async (token, password = null) => {
+  const url = new URL(`${Config.SERVER_BASE_URL}/api/public/${token}/preview`);
+  if (password) url.searchParams.append('password', password);
+
+  const res = await fetch(url.toString(), {
+    method: 'GET',
+    credentials: 'include',
+  });
+
+  if (!res.ok) {
+    const text = await res.text();
+    try {
+      const data = JSON.parse(text);
+      throw data;
+    } catch (e) {
+      throw text || `HTTP ${res.status}`;
+    }
+  }
+
+  const blob = await res.blob();
+  return blob;
+};
+
 export default {
   accessPublicLink,
   downloadPublicFile,
+  previewPublicFile,
 };

@@ -22,6 +22,7 @@ const FileContextMenu = React.memo(
     onRename,
     canShare,
     canDelete,
+    canRename,
   }) => {
     const [t] = useTranslation();
     const menuRef = useRef(null);
@@ -114,7 +115,7 @@ const FileContextMenu = React.memo(
             <span>{t('documentManagement.download')}</span>
           </div>
         )}
-        {file.type === 'folder' && (
+        {file.type === 'folder' && canRename && (
           <div
             role="button"
             tabIndex={0}
@@ -176,6 +177,7 @@ FileContextMenu.propTypes = {
   onRename: PropTypes.func,
   canShare: PropTypes.bool,
   canDelete: PropTypes.bool,
+  canRename: PropTypes.bool,
 };
 
 FileContextMenu.defaultProps = {
@@ -186,6 +188,7 @@ FileContextMenu.defaultProps = {
   onRename: null,
   canShare: false,
   canDelete: false,
+  canRename: false,
 };
 
 export default FileContextMenu;

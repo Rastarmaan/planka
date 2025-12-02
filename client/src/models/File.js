@@ -89,7 +89,10 @@ export default class File extends Model {
       case ActionTypes.FILE_DELETE_HANDLE: {
         const deleteId = action.payload.id || action.payload.file?.id;
         if (deleteId) {
-          FileModel.withId(deleteId).delete();
+          const fileToDelete = FileModel.withId(deleteId);
+          if (fileToDelete) {
+            fileToDelete.delete();
+          }
         }
         break;
       }

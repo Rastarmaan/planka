@@ -78,6 +78,7 @@ export default {
       areYouSureYouWantToLeaveProject: 'Are you sure you want to leave the project?',
       areYouSureYouWantToMakeThisProjectPrivate:
         'Are you sure you want to make this project private?',
+      back: 'Back',
       areYouSureYouWantToMakeThisProjectShared:
         'Are you sure you want to make this project shared?',
       areYouSureYouWantToRemoveThisManagerFromProject:
@@ -809,6 +810,7 @@ export default {
       removeFromTask: 'Remove from task',
       removeManager: 'Remove manager',
       removeMember: 'Remove member',
+      rename: 'Rename',
       restoreToList: 'Restore to {{list}}',
       returnToBoard: 'Return to board',
       save: 'Save',

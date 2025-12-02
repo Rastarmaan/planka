@@ -65,8 +65,10 @@ module.exports = {
     const isAdmin = currentUser.role === 'admin';
 
     let space;
+    let hasPermission = false;
+
     if (isAdmin) {
-      // Admins can create folders in all spaces
+      hasPermission = true;
       space = await Space.findOne({
         id: spaceId,
         isDeleted: false,
@@ -78,20 +80,29 @@ module.exports = {
       });
 
       if (space) {
-        const permissions = await DocumentPermission.find({
-          user: currentUser.id,
-          resourceType: 'space',
-          resourceId: spaceId,
-          canEdit: true,
-        }).limit(1);
+        if (parentFolderId) {
+          hasPermission = await sails.helpers.permissions.checkPermission.with({
+            userId: currentUser.id,
+            resourceType: 'folder',
+            resourceId: parentFolderId,
+            permissionType: 'canEdit',
+          });
+        }
 
-        if (permissions.length === 0) {
-          space = null;
+        if (!hasPermission) {
+          const spacePermissions = await DocumentPermission.find({
+            user: currentUser.id,
+            resourceType: 'space',
+            resourceId: spaceId,
+            canEdit: true,
+          }).limit(1);
+
+          hasPermission = spacePermissions.length > 0;
         }
       }
     }
 
-    if (!space) {
+    if (!space || !hasPermission) {
       throw 'notFound';
     }
 

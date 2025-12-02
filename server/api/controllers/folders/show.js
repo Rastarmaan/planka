@@ -35,21 +35,18 @@ module.exports = {
     let hasAccess = false;
 
     if (isAdmin) {
-      // Admins have access to all folders
       hasAccess = true;
     } else {
-      const permissions = await DocumentPermission.find({
-        user: currentUser.id,
-        or: [
-          { resourceType: 'folder', resourceId: folder.id },
-          { resourceType: 'space', resourceId: folder.space },
-        ],
-      }).limit(1);
-      hasAccess = permissions.length > 0;
+      hasAccess = await sails.helpers.permissions.checkPermission.with({
+        userId: currentUser.id,
+        resourceType: 'folder',
+        resourceId: inputs.id,
+        permissionType: 'canView',
+      });
     }
 
     if (!hasAccess) {
-      throw 'forbidden';
+      throw 'notFound';
     }
 
     if (this.req.isSocket) {

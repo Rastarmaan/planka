@@ -42,15 +42,15 @@ module.exports = {
     const isAdmin = currentUser.role === 'admin';
 
     if (!isAdmin) {
-      const permissions = await DocumentPermission.find({
-        user: currentUser.id,
-        resourceType: 'space',
-        resourceId: file.space,
-        canEdit: true,
-      }).limit(1);
+      const hasPermission = await sails.helpers.permissions.checkPermission.with({
+        userId: currentUser.id,
+        resourceType: 'file',
+        resourceId: inputs.id,
+        permissionType: 'canEdit',
+      });
 
-      if (permissions.length === 0) {
-        throw 'forbidden';
+      if (!hasPermission) {
+        throw 'notFound';
       }
     }
 
