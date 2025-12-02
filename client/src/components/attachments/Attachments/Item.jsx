@@ -74,7 +74,11 @@ const Item = React.memo(({ id, isVisible }) => {
         case 'video/webm':
           content = (
             // eslint-disable-next-line jsx-a11y/media-has-caption
-            <video controls src={attachment.data.url} className={styles.content} />
+            <video
+              controls
+              src={attachment.data.url}
+              className={classNames(styles.content, styles.videoPlayer)}
+            />
           );
 
           break;

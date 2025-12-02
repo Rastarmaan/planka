@@ -52,6 +52,12 @@ const AddStep = React.memo(({ onClose, onOpenImportModal }) => {
       return;
     }
 
+    Object.keys(cleanData).forEach((key) => {
+      if (cleanData[key] === null) {
+        delete cleanData[key];
+      }
+    });
+
     setIsSubmitting(true);
     dispatch(entryActions.createBoardInCurrentProject(cleanData));
 
