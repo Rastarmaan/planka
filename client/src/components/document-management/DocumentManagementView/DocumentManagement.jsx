@@ -260,16 +260,28 @@ const DocumentManagement = React.memo(() => {
     return Array.from(indirectSpaceIds).filter((id) => !directSpaceIds.has(id));
   }, [isAdmin, userPermissions]);
 
+  const hasSpacePermission = useMemo(() => {
+    if (isAdmin) return true;
+    if (!selectedWorkspace) return false;
+
+    return userPermissions.some(
+      (perm) =>
+        perm.resourceType === 'space' && String(perm.resourceId) === String(selectedWorkspace),
+    );
+  }, [isAdmin, selectedWorkspace, userPermissions]);
+
   const hasPermissionOnResource = useCallback(
     (resourceId, resourceType) => {
       if (isAdmin) return true;
+
+      if (hasSpacePermission) return true;
 
       return userPermissions.some(
         (perm) =>
           String(perm.resourceId) === String(resourceId) && perm.resourceType === resourceType,
       );
     },
-    [isAdmin, userPermissions],
+    [isAdmin, userPermissions, hasSpacePermission],
   );
 
   const buildFolderPath = useCallback(
@@ -323,6 +335,9 @@ const DocumentManagement = React.memo(() => {
 
   const canUploadInCurrentFolder = useMemo(() => {
     if (isAdmin) return true;
+
+    if (hasSpacePermission) return true;
+
     if (!currentFolderId) return false;
 
     if (hasPermissionOnResource(currentFolderId, 'folder')) {
@@ -330,11 +345,14 @@ const DocumentManagement = React.memo(() => {
     }
 
     return currentPath.some((folder) => hasPermissionOnResource(folder.id, 'folder'));
-  }, [isAdmin, currentFolderId, hasPermissionOnResource, currentPath]);
+  }, [isAdmin, currentFolderId, hasPermissionOnResource, currentPath, hasSpacePermission]);
 
   const canDropInFolder = useCallback(
     (folderId) => {
       if (isAdmin) return true;
+
+      if (hasSpacePermission) return true;
+
       if (folderId === 'root') return false;
 
       if (hasPermissionOnResource(folderId, 'folder')) {
@@ -344,7 +362,7 @@ const DocumentManagement = React.memo(() => {
       const folderPath = buildFolderPath(folderId);
       return folderPath.some((folder) => hasPermissionOnResource(folder.id, 'folder'));
     },
-    [isAdmin, hasPermissionOnResource, buildFolderPath],
+    [isAdmin, hasPermissionOnResource, buildFolderPath, hasSpacePermission],
   );
 
   useEffect(() => {
@@ -955,6 +973,16 @@ const DocumentManagement = React.memo(() => {
           onToggleWorkspacePopup={() => setShowWorkspacePopup(!showWorkspacePopup)}
           onSelectWorkspace={(value) => {
             setSelectedWorkspace(value);
+            setShowWorkspacePopup(false);
+          }}
+          onShareWorkspace={(e, workspace) => {
+            e.stopPropagation();
+            const spaceData = spaces.find((s) => s.id === workspace.value);
+            if (spaceData) {
+              setResourceToShare({ id: spaceData.id, name: spaceData.name });
+              setResourceTypeToShare('space');
+              setShareModalOpen(true);
+            }
             setShowWorkspacePopup(false);
           }}
           onRenameWorkspace={(e, workspace) => {

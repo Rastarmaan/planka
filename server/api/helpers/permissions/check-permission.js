@@ -20,7 +20,7 @@ async function checkParentPermission(inputs) {
       parentId = file.folder;
     } else {
       parentType = 'space';
-      parentId = file.spaceId;
+      parentId = file.space;
     }
   } else if (inputs.resourceType === 'folder') {
     const folder = await DocumentFolder.findOne({ id: inputs.resourceId });
@@ -31,7 +31,7 @@ async function checkParentPermission(inputs) {
       parentId = folder.parentFolder;
     } else {
       parentType = 'space';
-      parentId = folder.spaceId;
+      parentId = folder.space;
     }
   }
 
@@ -39,7 +39,7 @@ async function checkParentPermission(inputs) {
 
   const parentPermission = await DocumentPermission.findOne({
     resourceType: parentType,
-    resourceId: parentId,
+    resourceId: String(parentId),
     user: inputs.userId,
   });
 
@@ -51,7 +51,7 @@ async function checkParentPermission(inputs) {
     return checkParentPermission({
       userId: inputs.userId,
       resourceType: parentType,
-      resourceId: parentId,
+      resourceId: String(parentId),
       permissionType: inputs.permissionType,
     });
   }

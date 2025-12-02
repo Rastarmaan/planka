@@ -38,6 +38,22 @@ module.exports = {
       throw 'notFound';
     }
 
+    const { currentUser } = this.req;
+    const isAdmin = currentUser.role === 'admin';
+
+    if (!isAdmin) {
+      const hasPermission = await sails.helpers.permissions.checkPermission.with({
+        userId: currentUser.id,
+        resourceType: 'folder',
+        resourceId: inputs.id,
+        permissionType: 'canEdit',
+      });
+
+      if (!hasPermission) {
+        throw 'notFound';
+      }
+    }
+
     if (inputs.parentFolderId !== undefined) {
       if (inputs.parentFolderId) {
         const newParent = await DocumentFolder.findOne({

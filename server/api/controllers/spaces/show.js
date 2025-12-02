@@ -46,33 +46,55 @@ module.exports = {
     const { currentUser } = this.req;
     const isAdmin = currentUser.role === 'admin';
 
-    let space;
-    if (isAdmin) {
-      space = await Space.findOne({
-        id: inputs.id,
-        isDeleted: false,
-      });
-    } else {
-      space = await Space.findOne({
-        id: inputs.id,
-        isDeleted: false,
-      });
-
-      if (space) {
-        const permissions = await DocumentPermission.find({
-          user: currentUser.id,
-          resourceType: 'space',
-          resourceId: inputs.id,
-        }).limit(1);
-
-        if (permissions.length === 0) {
-          space = null;
-        }
-      }
-    }
+    const space = await Space.findOne({
+      id: inputs.id,
+      isDeleted: false,
+    });
 
     if (!space) {
       throw 'notFound';
+    }
+
+    if (!isAdmin) {
+      const spacePermission = await DocumentPermission.findOne({
+        user: currentUser.id,
+        resourceType: 'space',
+        resourceId: inputs.id,
+      });
+
+      if (!spacePermission) {
+        const folderPermissions = await DocumentPermission.find({
+          user: currentUser.id,
+          resourceType: 'folder',
+        });
+
+        const folderIds = folderPermissions.map((perm) => perm.resourceId);
+        const folders = await DocumentFolder.find({
+          id: folderIds,
+          isDeleted: false,
+        });
+
+        let hasAccess = folders.some((folder) => String(folder.space) === String(inputs.id));
+
+        if (!hasAccess) {
+          const filePermissions = await DocumentPermission.find({
+            user: currentUser.id,
+            resourceType: 'file',
+          });
+
+          const fileIds = filePermissions.map((perm) => perm.resourceId);
+          const files = await DocumentFile.find({
+            id: fileIds,
+            isDeleted: false,
+          });
+
+          hasAccess = files.some((file) => String(file.space) === String(inputs.id));
+        }
+
+        if (!hasAccess) {
+          throw 'notFound';
+        }
+      }
     }
 
     if (this.req.isSocket) {

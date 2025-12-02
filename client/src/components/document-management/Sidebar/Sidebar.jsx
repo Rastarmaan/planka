@@ -29,9 +29,10 @@ const Sidebar = React.memo(
     onToggleExpand,
     onToggleWorkspacePopup,
     onSelectWorkspace,
+    onCreateWorkspace,
+    onShareWorkspace,
     onRenameWorkspace,
     onDeleteWorkspace,
-    onCreateWorkspace,
     draggedFile,
     dropTarget,
     onDragOver,
@@ -75,9 +76,10 @@ const Sidebar = React.memo(
         workspacePopupRef={workspacePopupRef}
         onTogglePopup={onToggleWorkspacePopup}
         onSelectWorkspace={onSelectWorkspace}
+        onCreateWorkspace={onCreateWorkspace}
+        onShareWorkspace={onShareWorkspace}
         onRenameWorkspace={onRenameWorkspace}
         onDeleteWorkspace={onDeleteWorkspace}
-        onCreateWorkspace={onCreateWorkspace}
         canManageWorkspaces={canManageWorkspaces}
         isAdmin={isAdmin}
         sharedSpaceIds={sharedSpaceIds}
@@ -115,9 +117,10 @@ Sidebar.propTypes = {
   onToggleExpand: PropTypes.func.isRequired,
   onToggleWorkspacePopup: PropTypes.func.isRequired,
   onSelectWorkspace: PropTypes.func.isRequired,
-  onRenameWorkspace: PropTypes.func.isRequired,
-  onDeleteWorkspace: PropTypes.func.isRequired,
   onCreateWorkspace: PropTypes.func.isRequired,
+  onShareWorkspace: PropTypes.func,
+  onRenameWorkspace: PropTypes.func,
+  onDeleteWorkspace: PropTypes.func,
   draggedFile: PropTypes.shape({
     id: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
     type: PropTypes.string,
@@ -144,6 +147,9 @@ Sidebar.defaultProps = {
   canManageWorkspaces: true,
   isAdmin: false,
   sharedSpaceIds: [],
+  onShareWorkspace: () => {},
+  onRenameWorkspace: () => {},
+  onDeleteWorkspace: () => {},
 };
 
 export default Sidebar;
