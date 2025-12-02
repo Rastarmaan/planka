@@ -65,70 +65,80 @@ module.exports = {
       image: null,
     };
 
-    if (!['image/svg+xml', 'application/pdf'].includes(mimeType)) {
-      let image = sharp(buffer || filePath, {
-        animated: true,
-      });
+    if (
+      !['image/svg+xml', 'application/pdf'].includes(mimeType) &&
+      mimeType &&
+      mimeType.startsWith('image/')
+    ) {
+      let image;
 
-      let metadata;
-      try {
-        metadata = await image.metadata();
-      } catch (error) {
-        /* empty */
+      if (buffer) {
+        image = sharp(buffer, { animated: true });
+      } else if (filePath) {
+        image = sharp(filePath, { animated: true });
       }
 
-      if (metadata) {
-        let { width, pageHeight: height = metadata.height } = metadata;
-        if (metadata.orientation && metadata.orientation > 4) {
-          [image, width, height] = [image.rotate(), height, width];
+      if (image) {
+        let metadata;
+        try {
+          metadata = await image.metadata();
+        } catch (error) {
+          /* empty */
         }
 
-        const thumbnailsPathSegment = `${dirPathSegment}/thumbnails`;
-        const thumbnailsExtension = metadata.format === 'jpeg' ? 'jpg' : metadata.format;
+        if (metadata) {
+          let { width, pageHeight: height = metadata.height } = metadata;
+          if (metadata.orientation && metadata.orientation > 4) {
+            [image, width, height] = [image.rotate(), height, width];
+          }
 
-        try {
-          const outside360Buffer = await image
-            .resize(360, 360, {
-              fit: 'outside',
-              withoutEnlargement: true,
-            })
-            .png({
-              quality: 75,
-              force: false,
-            })
-            .toBuffer();
+          const thumbnailsPathSegment = `${dirPathSegment}/thumbnails`;
+          const thumbnailsExtension = metadata.format === 'jpeg' ? 'jpg' : metadata.format;
 
-          await fileManager.save(
-            `${thumbnailsPathSegment}/outside-360.${thumbnailsExtension}`,
-            outside360Buffer,
-            inputs.file.type,
-          );
+          try {
+            const outside360Buffer = await image
+              .resize(360, 360, {
+                fit: 'outside',
+                withoutEnlargement: true,
+              })
+              .png({
+                quality: 75,
+                force: false,
+              })
+              .toBuffer();
 
-          const outside720Buffer = await image
-            .resize(720, 720, {
-              fit: 'outside',
-              withoutEnlargement: true,
-            })
-            .png({
-              quality: 75,
-              force: false,
-            })
-            .toBuffer();
+            await fileManager.save(
+              `${thumbnailsPathSegment}/outside-360.${thumbnailsExtension}`,
+              outside360Buffer,
+              inputs.file.type,
+            );
 
-          await fileManager.save(
-            `${thumbnailsPathSegment}/outside-720.${thumbnailsExtension}`,
-            outside720Buffer,
-            inputs.file.type,
-          );
+            const outside720Buffer = await image
+              .resize(720, 720, {
+                fit: 'outside',
+                withoutEnlargement: true,
+              })
+              .png({
+                quality: 75,
+                force: false,
+              })
+              .toBuffer();
 
-          data.image = {
-            width,
-            height,
-            thumbnailsExtension,
-          };
-        } catch (error) {
-          sails.log.warn(error.stack);
-          await fileManager.deleteDir(thumbnailsPathSegment);
+            await fileManager.save(
+              `${thumbnailsPathSegment}/outside-720.${thumbnailsExtension}`,
+              outside720Buffer,
+              inputs.file.type,
+            );
+
+            data.image = {
+              width,
+              height,
+              thumbnailsExtension,
+            };
+          } catch (error) {
+            sails.log.warn(error.stack);
+            await fileManager.deleteDir(thumbnailsPathSegment);
+          }
         }
       }
     }
