@@ -42,16 +42,12 @@ module.exports = {
     if (isAdmin) {
       hasAccess = true;
     } else {
-      const permissions = await DocumentPermission.find({
-        user: currentUser.id,
-        canDownload: true,
-        or: [
-          { resourceType: 'file', resourceId: file.id },
-          { resourceType: 'folder', resourceId: file.folder || '0' },
-          { resourceType: 'space', resourceId: file.space },
-        ],
-      }).limit(1);
-      hasAccess = permissions.length > 0;
+      hasAccess = await sails.helpers.permissions.checkPermission.with({
+        userId: currentUser.id,
+        resourceType: 'file',
+        resourceId: file.id,
+        permissionType: 'canDownload',
+      });
     }
 
     if (!hasAccess) {

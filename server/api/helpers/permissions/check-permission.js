@@ -7,6 +7,58 @@
  * Helper to check if a user has specific permission for a resource
  */
 
+async function checkParentPermission(inputs) {
+  let parentType;
+  let parentId;
+
+  if (inputs.resourceType === 'file') {
+    const file = await DocumentFile.findOne({ id: inputs.resourceId });
+    if (!file) return false;
+
+    if (file.folder) {
+      parentType = 'folder';
+      parentId = file.folder;
+    } else {
+      parentType = 'space';
+      parentId = file.space;
+    }
+  } else if (inputs.resourceType === 'folder') {
+    const folder = await DocumentFolder.findOne({ id: inputs.resourceId });
+    if (!folder) return false;
+
+    if (folder.parentFolder) {
+      parentType = 'folder';
+      parentId = folder.parentFolder;
+    } else {
+      parentType = 'space';
+      parentId = folder.space;
+    }
+  }
+
+  if (!parentId) return false;
+
+  const parentPermission = await DocumentPermission.findOne({
+    resourceType: parentType,
+    resourceId: String(parentId),
+    user: inputs.userId,
+  });
+
+  if (parentPermission && parentPermission[inputs.permissionType]) {
+    return true;
+  }
+
+  if (parentType === 'folder') {
+    return checkParentPermission({
+      userId: inputs.userId,
+      resourceType: parentType,
+      resourceId: String(parentId),
+      permissionType: inputs.permissionType,
+    });
+  }
+
+  return false;
+}
+
 module.exports = {
   inputs: {
     userId: {
@@ -41,63 +93,7 @@ module.exports = {
     }
 
     if (inputs.resourceType === 'file' || inputs.resourceType === 'folder') {
-      return this.checkParentPermission(inputs);
-    }
-
-    return false;
-  },
-
-  async checkParentPermission(inputs) {
-    let parentType;
-    let parentId;
-
-    if (inputs.resourceType === 'file') {
-      const file = await DocumentFile.findOne({ id: inputs.resourceId });
-      if (!file) return false;
-
-      if (file.folder) {
-        parentType = 'folder';
-        parentId = file.folder;
-      } else {
-        parentType = 'space';
-        parentId = file.spaceId;
-      }
-    } else if (inputs.resourceType === 'folder') {
-      const folder = await DocumentFolder.findOne({ id: inputs.resourceId });
-      if (!folder) return false;
-
-      if (folder.parentFolder) {
-        parentType = 'folder';
-        parentId = folder.parentFolder;
-      } else {
-        parentType = 'space';
-        parentId = folder.spaceId;
-      }
-    }
-
-    if (!parentId) return false;
-
-    const parentPermission = await DocumentPermission.findOne({
-      resourceType: parentType,
-      resourceId: parentId,
-      user: inputs.userId,
-    });
-
-    if (
-      parentPermission &&
-      parentPermission.inheritFromParent &&
-      parentPermission[inputs.permissionType]
-    ) {
-      return true;
-    }
-
-    if (parentType === 'folder') {
-      return this.checkParentPermission({
-        userId: inputs.userId,
-        resourceType: parentType,
-        resourceId: parentId,
-        permissionType: inputs.permissionType,
-      });
+      return checkParentPermission(inputs);
     }
 
     return false;

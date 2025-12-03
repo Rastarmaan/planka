@@ -29,9 +29,10 @@ const Sidebar = React.memo(
     onToggleExpand,
     onToggleWorkspacePopup,
     onSelectWorkspace,
+    onCreateWorkspace,
+    onShareWorkspace,
     onRenameWorkspace,
     onDeleteWorkspace,
-    onCreateWorkspace,
     draggedFile,
     dropTarget,
     onDragOver,
@@ -40,6 +41,7 @@ const Sidebar = React.memo(
     canUpload,
     canManageWorkspaces,
     isAdmin,
+    sharedSpaceIds,
   }) => (
     <div className={styles.sidebar}>
       {canUpload && (
@@ -67,19 +69,21 @@ const Sidebar = React.memo(
         isAdmin={isAdmin}
       />
 
-      {canManageWorkspaces && (
-        <WorkspaceSelector
-          workspaces={workspaces}
-          selectedWorkspace={selectedWorkspace}
-          showWorkspacePopup={showWorkspacePopup}
-          workspacePopupRef={workspacePopupRef}
-          onTogglePopup={onToggleWorkspacePopup}
-          onSelectWorkspace={onSelectWorkspace}
-          onRenameWorkspace={onRenameWorkspace}
-          onDeleteWorkspace={onDeleteWorkspace}
-          onCreateWorkspace={onCreateWorkspace}
-        />
-      )}
+      <WorkspaceSelector
+        workspaces={workspaces}
+        selectedWorkspace={selectedWorkspace}
+        showWorkspacePopup={showWorkspacePopup}
+        workspacePopupRef={workspacePopupRef}
+        onTogglePopup={onToggleWorkspacePopup}
+        onSelectWorkspace={onSelectWorkspace}
+        onCreateWorkspace={onCreateWorkspace}
+        onShareWorkspace={onShareWorkspace}
+        onRenameWorkspace={onRenameWorkspace}
+        onDeleteWorkspace={onDeleteWorkspace}
+        canManageWorkspaces={canManageWorkspaces}
+        isAdmin={isAdmin}
+        sharedSpaceIds={sharedSpaceIds}
+      />
     </div>
   ),
 );
@@ -113,9 +117,10 @@ Sidebar.propTypes = {
   onToggleExpand: PropTypes.func.isRequired,
   onToggleWorkspacePopup: PropTypes.func.isRequired,
   onSelectWorkspace: PropTypes.func.isRequired,
-  onRenameWorkspace: PropTypes.func.isRequired,
-  onDeleteWorkspace: PropTypes.func.isRequired,
   onCreateWorkspace: PropTypes.func.isRequired,
+  onShareWorkspace: PropTypes.func,
+  onRenameWorkspace: PropTypes.func,
+  onDeleteWorkspace: PropTypes.func,
   draggedFile: PropTypes.shape({
     id: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
     type: PropTypes.string,
@@ -127,6 +132,7 @@ Sidebar.propTypes = {
   canUpload: PropTypes.bool,
   canManageWorkspaces: PropTypes.bool,
   isAdmin: PropTypes.bool,
+  sharedSpaceIds: PropTypes.arrayOf(PropTypes.oneOfType([PropTypes.string, PropTypes.number])),
 };
 
 Sidebar.defaultProps = {
@@ -140,6 +146,10 @@ Sidebar.defaultProps = {
   canUpload: true,
   canManageWorkspaces: true,
   isAdmin: false,
+  sharedSpaceIds: [],
+  onShareWorkspace: () => {},
+  onRenameWorkspace: () => {},
+  onDeleteWorkspace: () => {},
 };
 
 export default Sidebar;

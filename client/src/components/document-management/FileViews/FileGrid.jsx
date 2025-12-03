@@ -30,8 +30,9 @@ const FileGrid = React.memo(
     onDownload,
     onDelete,
     onRename,
-    canShare,
-    canDelete,
+    canManageFile,
+    canRename,
+    isAdmin,
   }) => {
     const [t] = useTranslation();
     const [activeContextMenu, setActiveContextMenu] = React.useState(null);
@@ -80,8 +81,9 @@ const FileGrid = React.memo(
               onRename={onRename}
               contextMenuState={activeContextMenu}
               onContextMenuChange={setActiveContextMenu}
-              canShare={canShare}
-              canDelete={canDelete}
+              canShare={isAdmin}
+              canDelete={isAdmin || canManageFile(file)}
+              canRename={isAdmin || canRename(file)}
             />
           ))
         )}
@@ -98,7 +100,7 @@ FileGrid.propTypes = {
   ).isRequired,
   selectedFile: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
   draggedFile: PropTypes.shape({ id: PropTypes.oneOfType([PropTypes.string, PropTypes.number]) }),
-  dropTarget: PropTypes.number,
+  dropTarget: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
   onFileSelect: PropTypes.func.isRequired,
   onFolderDoubleClick: PropTypes.func.isRequired,
   onDragStart: PropTypes.func.isRequired,
@@ -112,8 +114,9 @@ FileGrid.propTypes = {
   onDownload: PropTypes.func,
   onDelete: PropTypes.func,
   onRename: PropTypes.func,
-  canShare: PropTypes.bool,
-  canDelete: PropTypes.bool,
+  canManageFile: PropTypes.func,
+  canRename: PropTypes.func,
+  isAdmin: PropTypes.bool,
 };
 
 FileGrid.defaultProps = {
@@ -125,8 +128,9 @@ FileGrid.defaultProps = {
   onDownload: null,
   onDelete: null,
   onRename: null,
-  canShare: false,
-  canDelete: false,
+  canManageFile: () => false,
+  canRename: () => false,
+  isAdmin: false,
 };
 
 export default FileGrid;
