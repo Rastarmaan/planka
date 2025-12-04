@@ -27,6 +27,12 @@ module.exports = {
     },
   },
 
+  exits: {
+    notFound: {
+      responseType: 'notFound',
+    },
+  },
+
   async fn(inputs) {
     const shareLink = await ShareLink.findOne({ token: inputs.token, isActive: true });
 

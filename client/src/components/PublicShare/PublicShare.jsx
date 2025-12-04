@@ -539,6 +539,8 @@ function PublicShare() {
           setError('This share link has expired');
         } else if (errorCode === 'E_ACCESS_LIMIT') {
           setError('This share link has reached its access limit');
+        } else if (errorCode === 'E_NOT_FOUND') {
+          setError('Share link not found or expired');
         } else {
           setError(errorMessage);
         }
@@ -766,17 +768,43 @@ function PublicShare() {
   }
 
   if (error) {
+    const isNotFound =
+      error.toLowerCase().includes('not found') || error.toLowerCase().includes('expired');
+    const isAccessLimit = error.toLowerCase().includes('limit');
+
+    const getErrorTitle = () => {
+      if (isNotFound) return 'Link Not Found';
+      if (isAccessLimit) return 'Access Limit Reached';
+      return 'Access Denied';
+    };
+
+    const getErrorIcon = () => {
+      if (isNotFound) return 'unlink';
+      if (isAccessLimit) return 'ban';
+      return 'warning circle';
+    };
+
+    const getErrorHint = () => {
+      if (isNotFound) {
+        return 'This link may have been deleted, expired, or the URL might be incorrect.';
+      }
+      if (isAccessLimit) {
+        return 'This shared link has reached its maximum number of allowed accesses.';
+      }
+      return "You don't have permission to view this content.";
+    };
+
     return (
       <div className={styles.container}>
-        <div className={styles.minimalHeader}>
-          <div className={styles.headerContent}>
-            <Icon name="warning circle" color="red" className={styles.headerIcon} />
-            <span>Access Denied</span>
+        <div className={styles.errorPage}>
+          <div className={styles.errorIcon}>
+            <Icon size="large" name={getErrorIcon()} />
           </div>
-        </div>
-        <div className={styles.content}>
-          <div className={styles.errorBox}>
-            <p>{error}</p>
+          <h1 className={styles.errorTitle}>{getErrorTitle()}</h1>
+          <p className={styles.errorMessage}>{error}</p>
+          <div className={styles.errorHint}>
+            <Icon name="info circle" />
+            <span>{getErrorHint()}</span>
           </div>
         </div>
       </div>
