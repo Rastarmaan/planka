@@ -65,7 +65,10 @@ module.exports.policies = {
   'share-links/delete': ['is-authenticated', 'is-external', 'is-admin'],
   'share-links/access': true,
   'share-links/download': true,
+  'share-links/download-folder': true,
+  'share-links/download-folder-file': true,
   'share-links/preview': true,
+  'share-links/preview-folder-file': true,
 
   'permissions/create': ['is-authenticated', 'is-external', 'is-admin'],
   'permissions/index': ['is-authenticated', 'is-external'],
