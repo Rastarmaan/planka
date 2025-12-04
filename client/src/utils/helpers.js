@@ -40,7 +40,18 @@ export const formatDate = (date) => {
   });
 };
 
+/**
+ * Check if a card name represents a divider
+ * Divider patterns: --- or ___ (3 or more dashes/underscores)
+ */
+export const isDividerCard = (name) => {
+  if (!name || typeof name !== 'string') return false;
+  const trimmed = name.trim();
+  return /^-{3,}$/.test(trimmed) || /^_{3,}$/.test(trimmed);
+};
+
 export default {
   formatBytes,
   formatDate,
+  isDividerCard,
 };

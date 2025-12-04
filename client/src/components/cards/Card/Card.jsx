@@ -16,7 +16,9 @@ import { push } from '../../../lib/redux-router';
 import { BoardMembershipRoles, CardTypes, UserRoles } from '../../../constants/Enums';
 import Paths from '../../../constants/Paths';
 import selectors from '../../../selectors';
+import { isDividerCard } from '../../../utils/helpers';
 import ActionsStep from './ActionsStep';
+import DividerContent from './DividerContent';
 import EditName from './EditName';
 import InlineContent from './InlineContent';
 import ProjectContent from './ProjectContent';
@@ -95,6 +97,26 @@ const Card = React.memo(({ id, isInline }) => {
 
   if (isEditNameOpened) {
     return <EditName cardId={id} onClose={handleEditNameClose} />;
+  }
+
+  const isDivider = isDividerCard(card.name);
+
+  if (isDivider) {
+    return (
+      <div
+        className={classNames(styles.wrapper, styles.wrapperDivider, 'card')}
+        onContextMenu={handleContextMenu}
+      >
+        <DividerContent />
+        {canUseActions && (
+          <ActionsPopup ref={actionsPopupRef} cardId={id} isDivider onNameEdit={handleNameEdit}>
+            <Button className={styles.actionsButton}>
+              <Icon fitted name="pencil" size="small" />
+            </Button>
+          </ActionsPopup>
+        )}
+      </div>
+    );
   }
 
   let Content;
