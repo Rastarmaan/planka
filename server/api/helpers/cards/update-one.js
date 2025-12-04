@@ -510,6 +510,17 @@ module.exports = {
       }
     }
 
+    if (card && !_.isEmpty(values)) {
+      try {
+        await sails.helpers.cards.syncLinkedCard.with({
+          sourceCard: card,
+          changedValues: values,
+        });
+      } catch (err) {
+        sails.log.error('[Card Sync] Error syncing linked card:', err);
+      }
+    }
+
     return card;
   },
 };

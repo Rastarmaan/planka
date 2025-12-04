@@ -36,10 +36,16 @@ module.exports = {
     request: {
       type: 'ref',
     },
+    skipSync: {
+      type: 'boolean',
+      defaultsTo: false,
+    },
   },
 
   async fn(inputs) {
     const { values } = inputs;
+
+    const previousText = inputs.record.text;
 
     const comment = await Comment.qm.updateOne(inputs.record.id, values);
 
@@ -72,6 +78,19 @@ module.exports = {
         }),
         user: inputs.actorUser,
       });
+
+      if (!inputs.skipSync && values.text !== undefined) {
+        try {
+          await sails.helpers.comments.syncUpdateToLinkedCard.with({
+            comment,
+            previousText,
+            card: inputs.card,
+            actorUser: inputs.actorUser,
+          });
+        } catch (err) {
+          sails.log.error('[Comment Sync] Error syncing comment update:', err);
+        }
+      }
     }
 
     return comment;

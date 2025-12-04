@@ -67,6 +67,11 @@ export default function* cardsWatchers() {
     takeEvery(EntryActionTypes.CURRENT_CARD_DUPLICATE, ({ payload: { data } }) =>
       services.duplicateCurrentCard(data),
     ),
+    takeEvery(
+      EntryActionTypes.CARD_IMPORT_AND_SYNC,
+      ({ payload: { sourceCardId, targetListId, data } }) =>
+        services.importAndSyncCard(sourceCardId, targetListId, data),
+    ),
     takeEvery(EntryActionTypes.TO_ADJACENT_CARD_GO, ({ payload: { direction } }) =>
       services.goToAdjacentCard(direction),
     ),

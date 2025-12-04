@@ -214,6 +214,7 @@ module.exports.routes = {
   'GET /api/lists/:listId/cards': 'cards/index',
   'POST /api/lists/:listId/cards': 'cards/create',
   'GET /api/cards/filter': 'cards/filter',
+  'POST /api/cards/import-and-sync': 'cards/import-and-sync',
   'GET /api/cards/:id': 'cards/show',
   'GET /api/cards/:id/children': 'cards/get-children',
   'PATCH /api/cards/:id': 'cards/update',

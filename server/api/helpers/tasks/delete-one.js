@@ -99,6 +99,18 @@ module.exports = {
       }
     }
 
+    if (task) {
+      try {
+        await sails.helpers.tasks.syncToLinkedCard.with({
+          task,
+          card: inputs.card,
+          action: 'delete',
+        });
+      } catch (err) {
+        sails.log.error('[Task Sync] Error syncing task deletion to linked card:', err);
+      }
+    }
+
     return task;
   },
 };

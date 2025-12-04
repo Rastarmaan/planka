@@ -212,6 +212,47 @@ duplicateCard.failure = (localId, error) => ({
   },
 });
 
+const importAndSyncCard = (sourceCardId, targetListId, data) => ({
+  type: ActionTypes.CARD_IMPORT_AND_SYNC,
+  payload: {
+    sourceCardId,
+    targetListId,
+    data,
+  },
+});
+
+importAndSyncCard.success = (
+  card,
+  cardMemberships,
+  cardLabels,
+  taskLists,
+  tasks,
+  attachments,
+  customFieldGroups,
+  customFields,
+  customFieldValues,
+) => ({
+  type: ActionTypes.CARD_IMPORT_AND_SYNC__SUCCESS,
+  payload: {
+    card,
+    cardMemberships,
+    cardLabels,
+    taskLists,
+    tasks,
+    attachments,
+    customFieldGroups,
+    customFields,
+    customFieldValues,
+  },
+});
+
+importAndSyncCard.failure = (error) => ({
+  type: ActionTypes.CARD_IMPORT_AND_SYNC__FAILURE,
+  payload: {
+    error,
+  },
+});
+
 const deleteCard = (id) => ({
   type: ActionTypes.CARD_DELETE,
   payload: {
@@ -355,6 +396,7 @@ export default {
   updateCard,
   handleCardUpdate,
   duplicateCard,
+  importAndSyncCard,
   deleteCard,
   handleCardDelete,
   fetchChildCards,

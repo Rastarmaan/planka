@@ -97,6 +97,16 @@ const duplicateCard = (id, data, headers) =>
     },
   }));
 
+const importAndSyncCard = (data, headers) =>
+  socket.post('/cards/import-and-sync', data, headers).then((body) => ({
+    ...body,
+    item: transformCard(body.item),
+    included: {
+      ...body.included,
+      attachments: body.included.attachments.map(transformAttachment),
+    },
+  }));
+
 const readCardNotifications = (id, headers) =>
   socket.post(`/cards/${id}/read-notifications`, undefined, headers).then((body) => ({
     ...body,
@@ -169,6 +179,7 @@ export default {
   getCard,
   updateCard,
   duplicateCard,
+  importAndSyncCard,
   readCardNotifications,
   deleteCard,
   getChildCards,

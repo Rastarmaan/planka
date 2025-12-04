@@ -140,6 +140,16 @@
  *           nullable: true
  *           description: Story points for the card (1-50)
  *           example: 8
+ *         syncedFromCardId:
+ *           type: string
+ *           nullable: true
+ *           description: ID of the card this was imported/synced from
+ *           example: "1357158568008091270"
+ *         isSyncEnabled:
+ *           type: boolean
+ *           default: false
+ *           description: Whether sync is enabled for this card (disabled when moved to different list)
+ *           example: true
  *         listChangedAt:
  *           type: string
  *           format: date-time
@@ -270,6 +280,15 @@ module.exports = {
     parentCardId: {
       model: 'Card',
       columnName: 'parent_card_id',
+    },
+    syncedFromCardId: {
+      model: 'Card',
+      columnName: 'synced_from_card_id',
+    },
+    isSyncEnabled: {
+      type: 'boolean',
+      defaultsTo: false,
+      columnName: 'is_sync_enabled',
     },
     subscriptionUsers: {
       collection: 'User',

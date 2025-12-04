@@ -140,6 +140,7 @@ const List = React.memo(({ id, index }) => {
     <AddCard
       isOpened={!!addCardPosition}
       className={styles.addCard}
+      listId={id}
       onCreate={handleCardCreate}
       onClose={handleAddCardClose}
     />

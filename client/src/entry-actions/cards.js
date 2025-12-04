@@ -257,6 +257,15 @@ const handleCardDependencyDelete = (cardDependency) => ({
   },
 });
 
+const importAndSyncCard = (sourceCardId, targetListId, data) => ({
+  type: EntryActionTypes.CARD_IMPORT_AND_SYNC,
+  payload: {
+    sourceCardId,
+    targetListId,
+    data,
+  },
+});
+
 export default {
   fetchCardsInCurrentList,
   handleCardsUpdate,
@@ -292,4 +301,5 @@ export default {
   removeDependencyFromCard,
   removeDependencyFromCurrentCard,
   handleCardDependencyDelete,
+  importAndSyncCard,
 };

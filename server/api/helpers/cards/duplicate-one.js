@@ -83,9 +83,6 @@ module.exports = {
 
     let card = await Card.qm.createOne({
       ..._.pick(inputs.record, [
-        'boardId',
-        'listId',
-        'prevListId',
         'type',
         'name',
         'description',
@@ -94,8 +91,12 @@ module.exports = {
         'isDueCompleted',
         'stopwatch',
         'isClosed',
+        'weight',
       ]),
       ...values,
+      boardId: inputs.board.id,
+      listId: inputs.list.id,
+      prevListId: null,
       creatorUserId: values.creatorUser.id,
       listChangedAt: new Date().toISOString(),
     });

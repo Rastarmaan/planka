@@ -139,6 +139,34 @@
     white-space: nowrap;
   }
 
+  .syncBadge {
+    background: #00b8d9;
+    border-radius: 3px;
+    color: #fff;
+    display: inline-flex;
+    align-items: center;
+    justify-content: flex-start;
+    font-size: 11px;
+    line-height: 1;
+    margin-bottom: 4px;
+    padding: 4px 6px;
+    max-width: 100%;
+
+    :global(.icon) {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      line-height: 1;
+    }
+  }
+
+  .syncBadgeText {
+    margin-left: 4px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
   .wrapper {
     padding: 6px 8px 0;
 

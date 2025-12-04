@@ -29,6 +29,12 @@ export default class extends BaseModel {
     storyPoints: attr({
       getDefault: () => null,
     }),
+    syncedFromCardId: attr({
+      getDefault: () => null,
+    }),
+    isSyncEnabled: attr({
+      getDefault: () => false,
+    }),
     commentsTotal: attr({
       getDefault: () => 0,
     }),
@@ -487,6 +493,19 @@ export default class extends BaseModel {
         Card.withId(payload.localId).deleteWithRelated();
 
         break;
+      case ActionTypes.CARD_IMPORT_AND_SYNC__SUCCESS: {
+        const cardModel = Card.upsert(payload.card);
+
+        payload.cardMemberships.forEach(({ userId }) => {
+          cardModel.users.add(userId);
+        });
+
+        payload.cardLabels.forEach(({ labelId }) => {
+          cardModel.labels.add(labelId);
+        });
+
+        break;
+      }
       case ActionTypes.CARD_DELETE:
         Card.withId(payload.id).deleteWithRelated();
 
