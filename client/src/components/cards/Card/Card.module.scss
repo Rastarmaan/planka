@@ -64,6 +64,19 @@
     }
   }
 
+  .wrapperDivider {
+    background: transparent;
+    box-shadow: none;
+
+    &:hover {
+      background: transparent;
+
+      .actionsButton {
+        opacity: 1;
+      }
+    }
+  }
+
   .wrapperRecent:not(:hover) {
     overflow: hidden;
 

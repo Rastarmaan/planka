@@ -22,6 +22,7 @@ import { BoardMembershipRoles, ListTypes, UserRoles } from '../../../constants/E
 import { ListTypeIcons } from '../../../constants/Icons';
 import EditName from './EditName';
 import ActionsStep from './ActionsStep';
+import CardDivider from './CardDivider';
 import DraggableCard from '../../cards/DraggableCard';
 import AddCard from '../../cards/AddCard';
 import ArchiveCardsStep from '../../cards/ArchiveCardsStep';
@@ -33,10 +34,7 @@ import globalStyles from '../../../styles.module.scss';
 const AddCardPositions = {
   TOP: 'top',
   BOTTOM: 'bottom',
-};
-
-const INDEX_BY_ADD_CARD_POSITION = {
-  [AddCardPositions.TOP]: 0,
+  BETWEEN: 'between',
 };
 
 const List = React.memo(({ id, index }) => {
@@ -79,17 +77,24 @@ const List = React.memo(({ id, index }) => {
   const [t] = useTranslation();
   const [isEditNameOpened, setIsEditNameOpened] = useState(false);
   const [addCardPosition, setAddCardPosition] = useState(null);
+  const [addCardIndex, setAddCardIndex] = useState(null);
 
   const wrapperRef = useRef(null);
   const cardsWrapperRef = useRef(null);
 
   const handleCardCreate = useCallback(
     (data, autoOpen) => {
-      dispatch(
-        entryActions.createCard(id, data, INDEX_BY_ADD_CARD_POSITION[addCardPosition], autoOpen),
-      );
+      let insertIndex;
+      if (addCardPosition === AddCardPositions.TOP) {
+        insertIndex = 0;
+      } else if (addCardPosition === AddCardPositions.BETWEEN && addCardIndex !== null) {
+        insertIndex = addCardIndex;
+      } else {
+        insertIndex = undefined;
+      }
+      dispatch(entryActions.createCard(id, data, insertIndex, autoOpen));
     },
-    [id, dispatch, addCardPosition],
+    [id, dispatch, addCardPosition, addCardIndex],
   );
 
   const handleHeaderClick = useCallback(() => {
@@ -104,6 +109,12 @@ const List = React.memo(({ id, index }) => {
 
   const handleAddCardClose = useCallback(() => {
     setAddCardPosition(null);
+    setAddCardIndex(null);
+  }, []);
+
+  const handleDividerClick = useCallback((insertIndex) => {
+    setAddCardPosition(AddCardPositions.BETWEEN);
+    setAddCardIndex(insertIndex);
   }, []);
 
   const handleCardAdd = useCallback(() => {
@@ -136,15 +147,23 @@ const List = React.memo(({ id, index }) => {
   const ActionsPopup = usePopup(ActionsStep);
   const ArchiveCardsPopup = usePopup(ArchiveCardsStep);
 
-  const addCardNode = canAddCard && (
-    <AddCard
-      isOpened={!!addCardPosition}
-      className={styles.addCard}
-      listId={id}
-      onCreate={handleCardCreate}
-      onClose={handleAddCardClose}
-    />
-  );
+  const renderAddCardAt = (position, insertIndex = null) => {
+    const isActive =
+      addCardPosition === position &&
+      (position !== AddCardPositions.BETWEEN || addCardIndex === insertIndex);
+
+    if (!isActive) return null;
+
+    return (
+      <AddCard
+        isOpened
+        className={styles.addCard}
+        listId={id}
+        onCreate={handleCardCreate}
+        onClose={handleAddCardClose}
+      />
+    );
+  };
 
   const cardsNode = (
     <Droppable
@@ -156,12 +175,18 @@ const List = React.memo(({ id, index }) => {
         // eslint-disable-next-line react/jsx-props-no-spreading
         <div {...droppableProps} ref={innerRef}>
           <div className={styles.cards}>
-            {addCardPosition === AddCardPositions.TOP && addCardNode}
+            {renderAddCardAt(AddCardPositions.TOP)}
             {cardIds.map((cardId, cardIndex) => (
-              <DraggableCard key={cardId} id={cardId} index={cardIndex} className={styles.card} />
+              <React.Fragment key={cardId}>
+                {canAddCard && !addCardPosition && cardIndex > 0 && (
+                  <CardDivider onClick={() => handleDividerClick(cardIndex)} />
+                )}
+                {renderAddCardAt(AddCardPositions.BETWEEN, cardIndex)}
+                <DraggableCard id={cardId} index={cardIndex} className={styles.card} />
+              </React.Fragment>
             ))}
             {placeholder}
-            {addCardPosition === AddCardPositions.BOTTOM && addCardNode}
+            {renderAddCardAt(AddCardPositions.BOTTOM)}
           </div>
         </div>
       )}

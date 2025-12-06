@@ -123,7 +123,10 @@ module.exports.routes = {
   'GET /api/public/:token': 'share-links/access',
   'POST /api/public/:token': 'share-links/access',
   'GET /api/public/:token/download': 'share-links/download',
+  'GET /api/public/:token/download-folder': 'share-links/download-folder',
   'GET /api/public/:token/preview': 'share-links/preview',
+  'GET /api/public/:token/file/:fileId/preview': 'share-links/preview-folder-file',
+  'GET /api/public/:token/file/:fileId/download': 'share-links/download-folder-file',
 
   'POST /api/permissions': 'permissions/create',
   'GET /api/permissions': 'permissions/index',
