@@ -175,6 +175,22 @@ module.exports = {
       }
     }
 
+    try {
+      const syncTaskList = await TaskList.qm.getOneById(task.taskListId);
+      if (syncTaskList) {
+        const card = await Card.qm.getOneById(syncTaskList.cardId);
+        if (card) {
+          await sails.helpers.tasks.syncToLinkedCard.with({
+            task,
+            card,
+            action: 'update',
+          });
+        }
+      }
+    } catch (err) {
+      sails.log.error('[Task Sync] Error syncing task to linked card:', err);
+    }
+
     return task;
   },
 };

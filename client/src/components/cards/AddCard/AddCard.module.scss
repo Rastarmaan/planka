@@ -54,6 +54,22 @@
     text-decoration: none;
   }
 
+  .importButton {
+    background: transparent;
+    box-shadow: none;
+    color: #6b808c;
+    font-weight: normal;
+    margin-left: 8px;
+    min-width: auto;
+    padding: 8px 12px;
+    transition: none;
+
+    &:hover {
+      background: rgba(9, 30, 66, 0.08);
+      color: #092d42;
+    }
+  }
+
   .weightWrapper {
     display: flex;
     align-items: center;

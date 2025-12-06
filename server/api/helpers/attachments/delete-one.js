@@ -32,6 +32,10 @@ module.exports = {
     request: {
       type: 'ref',
     },
+    skipSync: {
+      type: 'boolean',
+      defaultsTo: false,
+    },
   },
 
   async fn(inputs) {
@@ -81,14 +85,26 @@ module.exports = {
         }),
         user: inputs.actorUser,
       });
-    }
 
-    try {
-      // eslint-disable-next-line global-require
-      const boardSync = require('../../../utils/board-sync');
-      await boardSync.syncCardAttachments(inputs.card.id, inputs.request);
-    } catch (syncError) {
-      sails.log.error('Error syncing attachments to linked boards after deletion:', syncError);
+      if (!inputs.skipSync) {
+        try {
+          await sails.helpers.attachments.syncDeleteToLinkedCard.with({
+            attachment,
+            card: inputs.card,
+            actorUser: inputs.actorUser,
+          });
+        } catch (err) {
+          sails.log.error('[Attachment Sync] Error syncing attachment deletion:', err);
+        }
+      }
+
+      try {
+        // eslint-disable-next-line global-require
+        const boardSync = require('../../../utils/board-sync');
+        await boardSync.syncCardAttachments(inputs.card.id, inputs.request);
+      } catch (syncError) {
+        sails.log.error('Error syncing attachments to linked boards after deletion:', syncError);
+      }
     }
 
     return attachment;

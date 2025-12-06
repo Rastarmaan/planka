@@ -56,6 +56,11 @@ module.exports = {
     request: {
       type: 'ref',
     },
+    skipSync: {
+      type: 'boolean',
+      defaultsTo: false,
+      description: 'Skip sync to prevent infinite loops',
+    },
   },
 
   async fn(inputs) {
@@ -188,6 +193,17 @@ module.exports = {
         values.user,
         sails.helpers.utils.makeTranslator(),
       );
+    }
+
+    if (!inputs.skipSync) {
+      try {
+        await sails.helpers.comments.syncToLinkedCard.with({
+          comment,
+          card: values.card,
+        });
+      } catch (err) {
+        sails.log.error('[Comment Sync] Error syncing comment to linked card:', err);
+      }
     }
 
     return comment;

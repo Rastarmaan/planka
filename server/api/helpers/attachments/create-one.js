@@ -27,6 +27,10 @@ module.exports = {
     request: {
       type: 'ref',
     },
+    skipSync: {
+      type: 'boolean',
+      defaultsTo: false,
+    },
   },
 
   async fn(inputs) {
@@ -66,7 +70,11 @@ module.exports = {
     });
 
     if (!values.card.coverAttachmentId) {
-      if (attachment.type === Attachment.Types.FILE && attachment.data.image) {
+      if (
+        attachment.type === Attachment.Types.FILE &&
+        attachment.data.image &&
+        !values.card.isSyncEnabled
+      ) {
         await sails.helpers.cards.updateOne.with({
           webhooks,
           record: values.card,
@@ -78,6 +86,18 @@ module.exports = {
           list: inputs.list,
           actorUser: values.creatorUser,
         });
+      }
+    }
+
+    if (!inputs.skipSync) {
+      try {
+        await sails.helpers.attachments.syncToLinkedCard.with({
+          attachment,
+          card: values.card,
+          skipSync: false,
+        });
+      } catch (err) {
+        sails.log.error('[Attachment Sync] Error syncing attachment to linked card:', err);
       }
     }
 

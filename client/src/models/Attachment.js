@@ -81,6 +81,7 @@ export default class extends BaseModel {
       case ActionTypes.CARDS_FETCH__SUCCESS:
       case ActionTypes.CARD_CREATE_HANDLE:
       case ActionTypes.CARD_DUPLICATE__SUCCESS:
+      case ActionTypes.CARD_IMPORT_AND_SYNC__SUCCESS:
         payload.attachments.forEach((attachment) => {
           Attachment.upsert(prepareAttachment(attachment));
         });

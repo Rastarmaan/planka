@@ -264,6 +264,30 @@ module.exports = {
       card.isSubscribed = isSubscribedByCardId[card.id] || false;
     });
 
+    const syncedMemberships = [];
+    const syncedCardIds = cards
+      .filter((card) => card.isSyncEnabled && card.syncedFromCardId)
+      .map((card) => card.syncedFromCardId);
+
+    if (syncedCardIds.length > 0) {
+      const sourceMemberships = await CardMembership.find({
+        cardId: syncedCardIds,
+      });
+
+      cards.forEach((card) => {
+        if (card.isSyncEnabled && card.syncedFromCardId) {
+          const sourceMems = sourceMemberships.filter((m) => m.cardId === card.syncedFromCardId);
+          sourceMems.forEach((mem) => {
+            syncedMemberships.push({
+              cardId: card.id,
+              userId: mem.userId,
+              isSynced: true,
+            });
+          });
+        }
+      });
+    }
+
     if (inputs.subscribe && this.req.isSocket) {
       sails.sockets.join(this.req, `board:${board.id}`);
     }
@@ -275,7 +299,7 @@ module.exports = {
         labels,
         lists,
         cards,
-        cardMemberships,
+        cardMemberships: [...cardMemberships, ...syncedMemberships],
         cardLabels,
         cardDependencies,
         taskLists,

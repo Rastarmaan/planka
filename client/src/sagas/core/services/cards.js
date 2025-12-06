@@ -530,6 +530,108 @@ export function* duplicateCurrentCard(data) {
   yield call(duplicateCard, cardId, data);
 }
 
+export function* importAndSyncCard(sourceCardId, targetListId, data) {
+  // eslint-disable-next-line no-console
+  console.log('[importAndSyncCard] Called with:', { sourceCardId, targetListId, data });
+
+  const list = yield select(selectors.selectListById, targetListId);
+  // eslint-disable-next-line no-console
+  console.log('[importAndSyncCard] Target list:', list);
+
+  const nextData = {
+    ...data,
+    position: yield select(selectors.selectNextCardPosition, targetListId),
+  };
+
+  // eslint-disable-next-line no-console
+  console.log('[importAndSyncCard] Request data:', {
+    sourceCardId,
+    targetListId,
+    ...nextData,
+  });
+
+  let card;
+  let cardMemberships;
+  let cardLabels;
+  let taskLists;
+  let tasks;
+  let attachments;
+  let customFieldGroups;
+  let customFields;
+  let customFieldValues;
+
+  try {
+    ({
+      item: card,
+      included: {
+        cardMemberships,
+        cardLabels,
+        taskLists,
+        tasks,
+        attachments,
+        customFieldGroups,
+        customFields,
+        customFieldValues,
+      },
+    } = yield call(request, api.importAndSyncCard, {
+      sourceCardId,
+      targetListId,
+      ...nextData,
+    }));
+  } catch (error) {
+    // eslint-disable-next-line no-console
+    console.error('Failed to import and sync card:', error);
+
+    if (error.code === 'E_CONFLICT') {
+      yield put(
+        actions.handleError({
+          message:
+            'The selected card is already synced with another card. Please choose a different card.',
+        }),
+      );
+    } else {
+      yield put(
+        actions.handleError({
+          message: error.message || 'Failed to import card. Please try again.',
+        }),
+      );
+    }
+
+    return;
+  }
+
+  if (card.coverAttachmentId) {
+    const coverAttachment = attachments.find(
+      (attachment) => attachment.id === card.coverAttachmentId,
+    );
+
+    if (coverAttachment) {
+      yield call(_preloadImage, coverAttachment.data.thumbnailUrls.outside360);
+    }
+  }
+
+  // eslint-disable-next-line no-console
+  console.log('[importAndSyncCard] Dispatching success with card:', card);
+  // eslint-disable-next-line no-console
+  console.log('[importAndSyncCard] cardMemberships:', cardMemberships);
+  // eslint-disable-next-line no-console
+  console.log('[importAndSyncCard] cardLabels:', cardLabels);
+
+  yield put(
+    actions.importAndSyncCard.success(
+      card,
+      cardMemberships,
+      cardLabels,
+      taskLists,
+      tasks,
+      attachments,
+      customFieldGroups,
+      customFields,
+      customFieldValues,
+    ),
+  );
+}
+
 export function* goToAdjacentCard(direction) {
   const card = yield select(selectors.selectCurrentCard);
   const list = yield select(selectors.selectListById, card.listId);
@@ -755,6 +857,7 @@ export default {
   transferCurrentCard,
   duplicateCard,
   duplicateCurrentCard,
+  importAndSyncCard,
   goToAdjacentCard,
   deleteCard,
   deleteCurrentCard,

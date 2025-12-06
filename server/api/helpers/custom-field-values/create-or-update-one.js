@@ -69,6 +69,15 @@ module.exports = {
       user: inputs.actorUser,
     });
 
+    try {
+      await sails.helpers.customFieldValues.syncToLinkedCard.with({
+        customFieldValue,
+        card: values.card,
+      });
+    } catch (err) {
+      sails.log.error('[CustomField Sync] Error syncing custom field value to linked card:', err);
+    }
+
     return customFieldValue;
   },
 };

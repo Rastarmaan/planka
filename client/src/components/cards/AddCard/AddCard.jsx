@@ -6,7 +6,7 @@
 import React, { useCallback, useEffect, useMemo } from 'react';
 import PropTypes from 'prop-types';
 import classNames from 'classnames';
-import { useSelector } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
 import { useTranslation } from 'react-i18next';
 import TextareaAutosize from 'react-textarea-autosize';
 import { Button, Form, Icon, TextArea } from 'semantic-ui-react';
@@ -14,11 +14,13 @@ import { useClickAwayListener, useDidUpdate, usePrevious, useToggle } from '../.
 import { usePopup } from '../../../lib/popup';
 
 import selectors from '../../../selectors';
+import entryActions from '../../../entry-actions';
 import { useClosable, useForm, useNestedRef } from '../../../hooks';
 import { isModifierKeyPressed } from '../../../utils/event-helpers';
 import { getTextDirectionStyles } from '../../../utils/text-direction';
 import { CardTypeIcons } from '../../../constants/Icons';
 import SelectCardTypeStep from '../SelectCardTypeStep';
+import ImportCardSelectorStep from './ImportCardSelectorStep';
 
 import styles from './AddCard.module.scss';
 
@@ -27,13 +29,25 @@ const DEFAULT_DATA = {
   weight: 1,
 };
 
-const AddCard = React.memo(({ isOpened, className, onCreate, onClose }) => {
+const AddCard = React.memo(({ isOpened, className, listId, onCreate, onClose }) => {
+  const dispatch = useDispatch();
   const board = useSelector(selectors.selectCurrentBoard);
+  const currentUser = useSelector(selectors.selectCurrentUser);
+
   const {
     defaultCardType: defaultType,
     limitCardTypesToDefaultOne: limitTypesToDefaultOne,
     cardTypes,
   } = board;
+
+  const canImportCard = useMemo(() => {
+    if (currentUser?.role === 'admin') return true;
+
+    const currentUserMembership = currentUser?.boardMemberships?.find(
+      (m) => m.boardId === board.id,
+    );
+    return currentUserMembership?.role === 'editor';
+  }, [currentUser, board.id]);
 
   const initialCardType = useMemo(() => {
     if (cardTypes && cardTypes.length > 0) {
@@ -61,6 +75,7 @@ const AddCard = React.memo(({ isOpened, className, onCreate, onClose }) => {
   const [nameFieldRef, handleNameFieldRef] = useNestedRef();
   const [submitButtonRef, handleSubmitButtonRef] = useNestedRef();
   const [selectTypeButtonRef, handleSelectTypeButtonRef] = useNestedRef();
+  const [importButtonRef, handleImportButtonRef] = useNestedRef();
 
   // const handleWeightChange = useCallback(
   //   (event) => {
@@ -146,6 +161,36 @@ const AddCard = React.memo(({ isOpened, className, onCreate, onClose }) => {
     nameFieldRef.current.focus();
   }, [deactivateClosable, nameFieldRef]);
 
+  const handleImportCardSelect = useCallback(
+    (card) => {
+      // eslint-disable-next-line no-console
+      console.log('[AddCard] handleImportCardSelect called with:', card);
+      // eslint-disable-next-line no-console
+      console.log('[AddCard] listId:', listId);
+
+      if (!listId) {
+        // eslint-disable-next-line no-console
+        console.error('[AddCard] No listId provided!');
+        return;
+      }
+
+      // eslint-disable-next-line no-console
+      console.log('[AddCard] Dispatching importAndSyncCard action');
+      dispatch(
+        entryActions.importAndSyncCard(card.id, listId, {
+          name: card.name,
+        }),
+      );
+
+      onClose();
+    },
+    [dispatch, listId, onClose],
+  );
+
+  const handleImportCardClose = useCallback(() => {
+    deactivateClosable();
+  }, [deactivateClosable]);
+
   const handleAwayClick = useCallback(() => {
     if (!isOpened || isClosableActiveRef.current) {
       return;
@@ -159,7 +204,7 @@ const AddCard = React.memo(({ isOpened, className, onCreate, onClose }) => {
   }, [nameFieldRef]);
 
   const clickAwayProps = useClickAwayListener(
-    [nameFieldRef, submitButtonRef, selectTypeButtonRef],
+    [nameFieldRef, submitButtonRef, selectTypeButtonRef, importButtonRef],
     handleAwayClick,
     handleClickAwayCancel,
   );
@@ -186,6 +231,11 @@ const AddCard = React.memo(({ isOpened, className, onCreate, onClose }) => {
   const SelectCardTypePopup = usePopup(SelectCardTypeStep, {
     onOpen: activateClosable,
     onClose: handleSelectTypeClose,
+  });
+
+  const ImportCardPopup = usePopup(ImportCardSelectorStep, {
+    onOpen: activateClosable,
+    onClose: handleImportCardClose,
   });
 
   return (
@@ -230,6 +280,19 @@ const AddCard = React.memo(({ isOpened, className, onCreate, onClose }) => {
             {t(`common.${data.type}`)}
           </Button>
         </SelectCardTypePopup>
+        {canImportCard && (
+          <ImportCardPopup onSelect={handleImportCardSelect}>
+            <Button
+              {...clickAwayProps} // eslint-disable-line react/jsx-props-no-spreading
+              ref={handleImportButtonRef}
+              type="button"
+              className={classNames(styles.button, styles.importButton)}
+              title={t('action.importCard')}
+            >
+              <Icon name="download" />
+            </Button>
+          </ImportCardPopup>
+        )}
       </div>
     </Form>
   );
@@ -238,6 +301,7 @@ const AddCard = React.memo(({ isOpened, className, onCreate, onClose }) => {
 AddCard.propTypes = {
   isOpened: PropTypes.bool,
   className: PropTypes.string,
+  listId: PropTypes.string.isRequired,
   onCreate: PropTypes.func.isRequired,
   onClose: PropTypes.func.isRequired,
 };

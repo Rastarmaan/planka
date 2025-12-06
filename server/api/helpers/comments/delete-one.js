@@ -32,6 +32,10 @@ module.exports = {
     request: {
       type: 'ref',
     },
+    skipSync: {
+      type: 'boolean',
+      defaultsTo: false,
+    },
   },
 
   async fn(inputs) {
@@ -63,6 +67,18 @@ module.exports = {
         }),
         user: inputs.actorUser,
       });
+
+      if (!inputs.skipSync) {
+        try {
+          await sails.helpers.comments.syncDeleteToLinkedCard.with({
+            comment,
+            card: inputs.card,
+            actorUser: inputs.actorUser,
+          });
+        } catch (err) {
+          sails.log.error('[Comment Sync] Error syncing comment deletion:', err);
+        }
+      }
     }
 
     return comment;
