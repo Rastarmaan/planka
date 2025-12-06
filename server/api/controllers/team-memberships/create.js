@@ -152,7 +152,7 @@ module.exports = {
       throw Errors.USER_ALREADY_TEAM_MEMBER;
     }
 
-    const teamMembership = await sails.helpers.teams.addMember.with({
+    const { teamMembership, createdBoardMemberships } = await sails.helpers.teams.addMember.with({
       team,
       user,
       role: inputs.role,
@@ -162,6 +162,9 @@ module.exports = {
 
     return {
       item: teamMembership,
+      included: {
+        boardMemberships: createdBoardMemberships,
+      },
     };
   },
 };

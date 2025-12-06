@@ -42,7 +42,10 @@ const AddTeamStep = React.memo(({ onClose }) => {
 
   useEffect(() => {
     dispatch(entryActions.fetchTeams());
-  }, [dispatch]);
+    if (boardId) {
+      dispatch(entryActions.fetchBoardTeams(boardId));
+    }
+  }, [dispatch, boardId]);
 
   const handleRoleSelect = useCallback(
     (data) => {

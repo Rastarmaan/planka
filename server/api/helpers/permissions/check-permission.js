@@ -8,8 +8,8 @@
  */
 
 async function getUserTeamIds(userId) {
-  const teamMemberships = await TeamMembership.find({ user: userId });
-  return teamMemberships.map((tm) => tm.team);
+  const teamMemberships = await TeamMembership.find({ userId });
+  return teamMemberships.map((tm) => tm.teamId);
 }
 
 async function checkParentPermission(inputs, teamIds = []) {

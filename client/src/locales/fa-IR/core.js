@@ -311,6 +311,7 @@ export default {
       nMembers: '{{count}} عضو',
       nMembers_plural: '{{count}} عضو',
       noUnreadNotifications: 'اعلان خوانده نشده‌ای وجود ندارد.',
+      noUsersFound: 'کاربری یافت نشد.',
       notifications: 'اعلان‌ها',
       oldestFirst: 'قدیمی‌ترین اول',
       onlyOneManagerShouldRemainToMakeThisProjectPrivate:

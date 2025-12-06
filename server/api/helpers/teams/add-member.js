@@ -44,6 +44,7 @@ module.exports = {
     });
 
     const boardTeams = await BoardTeam.qm.getByTeamId(inputs.team.id);
+    const createdBoardMemberships = [];
 
     await Promise.all(
       boardTeams.map(async (boardTeam) => {
@@ -57,7 +58,7 @@ module.exports = {
 
         if (!existingMembership) {
           try {
-            await sails.helpers.boardMemberships.createOne.with({
+            const boardMembership = await sails.helpers.boardMemberships.createOne.with({
               values: {
                 board,
                 user: inputs.user,
@@ -68,6 +69,7 @@ module.exports = {
               actorUser: inputs.actorUser,
               request: inputs.request,
             });
+            createdBoardMemberships.push(boardMembership);
           } catch (error) {
             sails.log.error('Error adding team member to board:', error);
           }
@@ -75,6 +77,9 @@ module.exports = {
       }),
     );
 
-    return teamMembership;
+    return {
+      teamMembership,
+      createdBoardMemberships,
+    };
   },
 };

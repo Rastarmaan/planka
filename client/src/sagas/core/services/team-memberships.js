@@ -22,14 +22,21 @@ export function* createTeamMembership(teamId, data) {
   );
 
   let teamMembership;
+  let boardMemberships;
   try {
-    ({ item: teamMembership } = yield call(request, api.createTeamMembership, teamId, data));
+    // prettier-ignore
+    ({ item: teamMembership, included: { boardMemberships = [] } = {} } = yield call(
+      request,
+      api.createTeamMembership,
+      teamId,
+      data,
+    ));
   } catch (error) {
     yield put(actions.createTeamMembership.failure(localId, error));
     return;
   }
 
-  yield put(actions.createTeamMembership.success(localId, teamMembership));
+  yield put(actions.createTeamMembership.success(localId, teamMembership, boardMemberships));
 }
 
 export function* handleTeamMembershipCreate(teamMembership) {
@@ -58,14 +65,20 @@ export function* deleteTeamMembership(id) {
   yield put(actions.deleteTeamMembership(id));
 
   let teamMembership;
+  let boardMemberships;
   try {
-    ({ item: teamMembership } = yield call(request, api.deleteTeamMembership, id));
+    // prettier-ignore
+    ({ item: teamMembership, included: { boardMemberships = [] } = {} } = yield call(
+      request,
+      api.deleteTeamMembership,
+      id,
+    ));
   } catch (error) {
     yield put(actions.deleteTeamMembership.failure(id, error));
     return;
   }
 
-  yield put(actions.deleteTeamMembership.success(teamMembership));
+  yield put(actions.deleteTeamMembership.success(teamMembership, boardMemberships));
 }
 
 export function* handleTeamMembershipDelete(teamMembership) {

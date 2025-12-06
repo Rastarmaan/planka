@@ -29,11 +29,6 @@ export default class extends BaseModel {
       case ActionTypes.PROJECT_CREATE__SUCCESS:
       case ActionTypes.PROJECT_CREATE_HANDLE:
         if (payload.projectCategoryAssignments) {
-          // eslint-disable-next-line no-console
-          console.log(
-            '[ProjectCategoryAssignment] Upserting assignments:',
-            payload.projectCategoryAssignments,
-          );
           payload.projectCategoryAssignments.forEach((assignment) => {
             ProjectCategoryAssignment.upsert(assignment);
           });

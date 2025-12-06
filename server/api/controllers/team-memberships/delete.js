@@ -100,14 +100,18 @@ module.exports = {
       }
     }
 
-    const deletedMembership = await sails.helpers.teams.removeMember.with({
-      record: teamMembership,
-      actorUser: currentUser,
-      request: this.req,
-    });
+    const { teamMembership: deletedMembership, deletedBoardMemberships } =
+      await sails.helpers.teams.removeMember.with({
+        record: teamMembership,
+        actorUser: currentUser,
+        request: this.req,
+      });
 
     return {
       item: deletedMembership,
+      included: {
+        boardMemberships: deletedBoardMemberships,
+      },
     };
   },
 };

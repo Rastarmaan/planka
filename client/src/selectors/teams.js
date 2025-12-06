@@ -5,6 +5,7 @@
 
 import { createSelector } from 'reselect';
 import orm from '../orm';
+import { selectPath } from './router';
 
 export const selectAllTeams = createSelector(
   (state) => state.orm,
@@ -85,6 +86,64 @@ export const selectBoardTeamsByBoardId = createSelector(
   },
 );
 
+export const selectBoardTeamById = createSelector(
+  (state) => state.orm,
+  (state, id) => id,
+  (ormState, id) => {
+    const session = orm.session(ormState);
+    const boardTeam = session.BoardTeam.withId(id);
+    if (!boardTeam) return null;
+    return {
+      ...boardTeam.ref,
+      team: boardTeam.team ? boardTeam.team.ref : null,
+    };
+  },
+);
+
+export const makeSelectBoardTeamById = () =>
+  createSelector(
+    (state) => state.orm,
+    (state, id) => id,
+    (ormState, id) => {
+      const session = orm.session(ormState);
+      const boardTeam = session.BoardTeam.withId(id);
+      if (!boardTeam) return null;
+      return {
+        ...boardTeam.ref,
+        team: boardTeam.team
+          ? {
+              ...boardTeam.team.ref,
+              memberships: boardTeam.team.memberships.toModelArray().map((m) => ({
+                ...m.ref,
+                user: m.user ? m.user.ref : null,
+              })),
+            }
+          : null,
+      };
+    },
+  );
+
+export const selectBoardTeamsForCurrentBoard = createSelector(
+  (state) => state.orm,
+  (state) => selectPath(state).boardId,
+  (ormState, boardId) => {
+    if (!boardId) return [];
+    const session = orm.session(ormState);
+    return session.BoardTeam.all()
+      .filter((bt) => bt.boardId === boardId)
+      .toModelArray()
+      .map((bt) => ({
+        ...bt.ref,
+        team: bt.team
+          ? {
+              ...bt.team.ref,
+              memberships: bt.team.memberships.toModelArray().map((m) => m.ref),
+            }
+          : null,
+      }));
+  },
+);
+
 export default {
   selectAllTeams,
   selectTeamById,
@@ -92,4 +151,7 @@ export default {
   selectTeamMembershipsByTeamId,
   selectProjectTeamsByProjectId,
   selectBoardTeamsByBoardId,
+  selectBoardTeamById,
+  makeSelectBoardTeamById,
+  selectBoardTeamsForCurrentBoard,
 };

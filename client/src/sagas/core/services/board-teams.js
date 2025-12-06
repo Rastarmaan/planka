@@ -84,8 +84,8 @@ export function* deleteBoardTeam(id) {
   yield put(actions.deleteBoardTeam.success(boardTeam));
 }
 
-export function* handleBoardTeamDelete(boardTeam) {
-  yield put(actions.handleBoardTeamDelete(boardTeam));
+export function* handleBoardTeamDelete(boardTeam, boardMemberships) {
+  yield put(actions.handleBoardTeamDelete(boardTeam, boardMemberships));
 }
 
 export default {

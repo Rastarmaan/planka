@@ -83,6 +83,20 @@
       border-radius: 4px;
       min-width: 200px;
     }
+
+    .userDropdown {
+      min-width: 250px;
+    }
+  }
+
+  .userOption {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .userOptionText {
+    flex: 1;
   }
 
   .noMembers {

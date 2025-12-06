@@ -12,11 +12,12 @@ const createTeamMembership = (teamMembership) => ({
   },
 });
 
-createTeamMembership.success = (localId, teamMembership) => ({
+createTeamMembership.success = (localId, teamMembership, boardMemberships) => ({
   type: ActionTypes.TEAM_MEMBERSHIP_CREATE__SUCCESS,
   payload: {
     localId,
     teamMembership,
+    boardMemberships,
   },
 });
 
@@ -72,10 +73,11 @@ const deleteTeamMembership = (id) => ({
   },
 });
 
-deleteTeamMembership.success = (teamMembership) => ({
+deleteTeamMembership.success = (teamMembership, boardMemberships) => ({
   type: ActionTypes.TEAM_MEMBERSHIP_DELETE__SUCCESS,
   payload: {
     teamMembership,
+    boardMemberships,
   },
 });
 

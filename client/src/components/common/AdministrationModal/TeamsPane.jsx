@@ -6,7 +6,18 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useTranslation } from 'react-i18next';
-import { Button, Confirm, Form, Icon, Input, Loader, Segment, Tab, Table } from 'semantic-ui-react';
+import {
+  Button,
+  Confirm,
+  Dropdown,
+  Form,
+  Icon,
+  Input,
+  Loader,
+  Segment,
+  Tab,
+  Table,
+} from 'semantic-ui-react';
 
 import selectors from '../../../selectors';
 import entryActions from '../../../entry-actions';
@@ -107,10 +118,24 @@ const TeamsPane = React.memo(() => {
     [dispatch],
   );
 
-  const getAvailableUsers = useCallback(
+  const getAvailableUsersOptions = useCallback(
     (team) => {
       const memberUserIds = team.memberships.map((m) => m.userId);
-      return allUsers.filter((user) => !memberUserIds.includes(user.id));
+      return allUsers
+        .filter((user) => !memberUserIds.includes(user.id))
+        .map((user) => ({
+          key: user.id,
+          value: user.id,
+          text: `${user.name} (${user.email})`,
+          content: (
+            <div className={styles.userOption}>
+              <UserAvatar id={user.id} size="tiny" />
+              <span className={styles.userOptionText}>
+                {user.name} ({user.email})
+              </span>
+            </div>
+          ),
+        }));
     },
     [allUsers],
   );
@@ -230,22 +255,22 @@ const TeamsPane = React.memo(() => {
                         <div className={styles.membersHeader}>
                           <strong>{t('common.teamMembers')}</strong>
                           <div className={styles.addMember}>
-                            <select
-                              className={styles.userSelect}
-                              onChange={(e) => {
-                                if (e.target.value) {
-                                  handleAddMember(team.id, e.target.value);
-                                  e.target.value = '';
+                            <Dropdown
+                              fluid
+                              search
+                              selection
+                              options={getAvailableUsersOptions(team)}
+                              placeholder={t('common.searchUsers')}
+                              onChange={(e, { value }) => {
+                                if (value) {
+                                  handleAddMember(team.id, value);
                                 }
                               }}
-                            >
-                              <option value="">{t('action.addMember')}</option>
-                              {getAvailableUsers(team).map((user) => (
-                                <option key={user.id} value={user.id}>
-                                  {user.name} ({user.email})
-                                </option>
-                              ))}
-                            </select>
+                              value=""
+                              selectOnBlur={false}
+                              noResultsMessage={t('common.noUsersFound')}
+                              className={styles.userDropdown}
+                            />
                           </div>
                         </div>
                         {team.memberships.length === 0 ? (

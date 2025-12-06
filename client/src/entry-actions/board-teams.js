@@ -49,10 +49,11 @@ const deleteBoardTeam = (id) => ({
   },
 });
 
-const handleBoardTeamDelete = (boardTeam) => ({
+const handleBoardTeamDelete = (boardTeam, boardMemberships) => ({
   type: EntryActionTypes.BOARD_TEAM_DELETE_HANDLE,
   payload: {
     boardTeam,
+    boardMemberships,
   },
 });
 

@@ -26,6 +26,24 @@
     }
   }
 
+  .teamButton {
+    background: rgba(0, 0, 0, 0.24) !important;
+    border-radius: 50% !important;
+    box-shadow: none !important;
+    color: #fff !important;
+    line-height: 36px !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    transition: all 0.1s ease 0s !important;
+    vertical-align: top !important;
+    width: 36px !important;
+    height: 36px !important;
+
+    &:hover {
+      background: rgba(0, 0, 0, 0.32) !important;
+    }
+  }
+
   .user {
     line-height: 1;
     margin: 0 -4px 0 0;

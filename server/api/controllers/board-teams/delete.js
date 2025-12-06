@@ -96,6 +96,7 @@ module.exports = {
     const deletedBoardTeam = await sails.helpers.boardTeams.deleteOne.with({
       record: boardTeam,
       board,
+      project,
       actorUser: currentUser,
       request: this.req,
     });

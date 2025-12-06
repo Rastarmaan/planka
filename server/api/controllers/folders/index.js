@@ -44,6 +44,12 @@ module.exports = {
     },
   },
 
+  exits: {
+    notFound: {
+      responseType: 'notFound',
+    },
+  },
+
   async fn(inputs) {
     const { currentUser } = this.req;
     const isAdmin = currentUser.role === 'admin';
@@ -63,7 +69,7 @@ module.exports = {
       });
 
       if (space) {
-        const permissions = await DocumentPermission.find({
+        const userPermissions = await DocumentPermission.find({
           user: currentUser.id,
           or: [
             { resourceType: 'space', resourceId: inputs.spaceId },
@@ -72,7 +78,24 @@ module.exports = {
           ],
         }).limit(1);
 
-        if (permissions.length === 0) {
+        const teamMemberships = await TeamMembership.find({
+          userId: currentUser.id,
+        });
+        const teamIds = teamMemberships.map((tm) => tm.teamId);
+
+        let teamPermissions = [];
+        if (teamIds.length > 0) {
+          teamPermissions = await DocumentPermission.find({
+            team: teamIds,
+            or: [
+              { resourceType: 'space', resourceId: inputs.spaceId },
+              { resourceType: 'folder' },
+              { resourceType: 'file' },
+            ],
+          }).limit(1);
+        }
+
+        if (userPermissions.length === 0 && teamPermissions.length === 0) {
           space = null;
         }
       }
@@ -114,7 +137,21 @@ module.exports = {
         user: currentUser.id,
       });
 
-      const hasSpacePermission = userPermissions.some(
+      const teamMemberships = await TeamMembership.find({
+        userId: currentUser.id,
+      });
+      const teamIds = teamMemberships.map((tm) => tm.teamId);
+
+      let teamPermissions = [];
+      if (teamIds.length > 0) {
+        teamPermissions = await DocumentPermission.find({
+          team: teamIds,
+        });
+      }
+
+      const allPermissions = [...userPermissions, ...teamPermissions];
+
+      const hasSpacePermission = allPermissions.some(
         (p) => p.resourceType === 'space' && String(p.resourceId) === String(inputs.spaceId),
       );
 
@@ -143,11 +180,11 @@ module.exports = {
           }).sort('name ASC');
         }
       } else {
-        const allowedFolderIds = userPermissions
+        const allowedFolderIds = allPermissions
           .filter((p) => p.resourceType === 'folder')
           .map((p) => String(p.resourceId));
 
-        const allowedFileIds = userPermissions
+        const allowedFileIds = allPermissions
           .filter((p) => p.resourceType === 'file')
           .map((p) => String(p.resourceId));
 

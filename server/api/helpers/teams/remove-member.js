@@ -20,6 +20,7 @@ module.exports = {
 
   async fn(inputs) {
     const teamMembership = await TeamMembership.qm.deleteOne(inputs.record.id);
+    const deletedBoardMemberships = [];
 
     if (teamMembership) {
       sails.sockets.broadcast('user', 'teamMembershipDelete', {
@@ -27,6 +28,7 @@ module.exports = {
       });
 
       const boardTeams = await BoardTeam.qm.getByTeamId(teamMembership.teamId);
+      const user = await User.qm.getOneById(teamMembership.userId);
 
       await Promise.all(
         boardTeams.map(async (boardTeam) => {
@@ -52,14 +54,25 @@ module.exports = {
               const board = await Board.qm.getOneById(boardTeam.boardId);
               const project = await Project.qm.getOneById(board.projectId);
 
+              const isProjectManager = await ProjectManager.qm.getOneByProjectIdAndUserId(
+                project.id,
+                teamMembership.userId,
+              );
+
+              if (isProjectManager) {
+                return;
+              }
+
               try {
                 await sails.helpers.boardMemberships.deleteOne.with({
                   project,
                   board,
                   record: boardMembership,
+                  user,
                   actorUser: inputs.actorUser,
                   request: inputs.request,
                 });
+                deletedBoardMemberships.push(boardMembership);
               } catch (error) {
                 sails.log.error('Error removing team member from board:', error);
               }
@@ -69,6 +82,9 @@ module.exports = {
       );
     }
 
-    return teamMembership;
+    return {
+      teamMembership,
+      deletedBoardMemberships,
+    };
   },
 };

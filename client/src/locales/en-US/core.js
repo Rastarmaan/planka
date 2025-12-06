@@ -339,6 +339,7 @@ export default {
       nMembers: '{{count}} member',
       nMembers_plural: '{{count}} members',
       noUnreadNotifications: 'No unread notifications.',
+      noUsersFound: 'No users found.',
       notifications: 'Notifications',
       oldestFirst: 'Oldest first',
       onlyOneManagerShouldRemainToMakeThisProjectPrivate:

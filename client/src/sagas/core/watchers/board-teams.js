@@ -28,8 +28,10 @@ export default function* boardTeamsWatchers() {
     takeEvery(EntryActionTypes.BOARD_TEAM_DELETE, ({ payload: { id } }) =>
       services.deleteBoardTeam(id),
     ),
-    takeEvery(EntryActionTypes.BOARD_TEAM_DELETE_HANDLE, ({ payload: { boardTeam } }) =>
-      services.handleBoardTeamDelete(boardTeam),
+    takeEvery(
+      EntryActionTypes.BOARD_TEAM_DELETE_HANDLE,
+      ({ payload: { boardTeam, boardMemberships } }) =>
+        services.handleBoardTeamDelete(boardTeam, boardMemberships),
     ),
   ]);
 }

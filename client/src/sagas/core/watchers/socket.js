@@ -138,8 +138,8 @@ const createSocketEventsChannel = () =>
       emit(entryActions.handleBoardTeamUpdate(item));
     };
 
-    const handleBoardTeamDelete = ({ item }) => {
-      emit(entryActions.handleBoardTeamDelete(item));
+    const handleBoardTeamDelete = ({ item, included }) => {
+      emit(entryActions.handleBoardTeamDelete(item, included?.boardMemberships));
     };
 
     const handleBoardReleaseCreate = ({ item }) => {

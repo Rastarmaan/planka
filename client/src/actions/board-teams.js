@@ -96,10 +96,11 @@ deleteBoardTeam.failure = (id, error) => ({
   },
 });
 
-const handleBoardTeamDelete = (boardTeam) => ({
+const handleBoardTeamDelete = (boardTeam, boardMemberships) => ({
   type: ActionTypes.BOARD_TEAM_DELETE_HANDLE,
   payload: {
     boardTeam,
+    boardMemberships,
   },
 });
 
