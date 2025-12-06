@@ -42,7 +42,7 @@ const StepTypes = {
   DELETE: 'DELETE',
 };
 
-const ActionsStep = React.memo(({ cardId, onNameEdit, onClose }) => {
+const ActionsStep = React.memo(({ cardId, isDivider, onNameEdit, onClose }) => {
   const selectCardById = useMemo(() => selectors.makeSelectCardById(), []);
   const selectListById = useMemo(() => selectors.makeSelectListById(), []);
   const selectPrevListById = useMemo(() => selectors.makeSelectListById(), []);
@@ -322,6 +322,42 @@ const ActionsStep = React.memo(({ cardId, onNameEdit, onClose }) => {
     }
   }
 
+  if (isDivider) {
+    return (
+      <>
+        <Popup.Header>
+          {t('common.cardActions', {
+            context: 'title',
+          })}
+        </Popup.Header>
+        <Popup.Content>
+          <Menu secondary vertical className={styles.menu}>
+            {canEditName && (
+              <Menu.Item className={styles.menuItem} onClick={handleEditNameClick}>
+                <Icon name="edit outline" className={styles.menuItemIcon} />
+                {t('action.editTitle', {
+                  context: 'title',
+                })}
+              </Menu.Item>
+            )}
+            {canDelete && (
+              <Menu.Item className={styles.menuItem} onClick={handleDeleteClick}>
+                <Icon name="trash alternate outline" className={styles.menuItemIcon} />
+                {isInTrashList
+                  ? t('action.deleteForever', {
+                      context: 'title',
+                    })
+                  : t('action.deleteCard', {
+                      context: 'title',
+                    })}
+              </Menu.Item>
+            )}
+          </Menu>
+        </Popup.Content>
+      </>
+    );
+  }
+
   return (
     <>
       <Popup.Header>
@@ -460,8 +496,13 @@ const ActionsStep = React.memo(({ cardId, onNameEdit, onClose }) => {
 
 ActionsStep.propTypes = {
   cardId: PropTypes.string.isRequired,
+  isDivider: PropTypes.bool,
   onNameEdit: PropTypes.func.isRequired,
   onClose: PropTypes.func.isRequired,
+};
+
+ActionsStep.defaultProps = {
+  isDivider: false,
 };
 
 export default ActionsStep;
