@@ -83,6 +83,14 @@ export default class extends BaseModel {
         }
 
         break;
+      case ActionTypes.BOARD_TEAM_CREATE__SUCCESS:
+        if (payload.boardMemberships) {
+          payload.boardMemberships.forEach((boardMembership) => {
+            BoardMembership.upsert(boardMembership);
+          });
+        }
+
+        break;
       case ActionTypes.BOARD_MEMBERSHIP_UPDATE:
         BoardMembership.withId(payload.id).update(payload.data);
 

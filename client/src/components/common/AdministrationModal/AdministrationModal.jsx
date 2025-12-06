@@ -15,6 +15,7 @@ import selectors from '../../../selectors';
 import { useClosableModal } from '../../../hooks';
 import BoardTemplatesPane from './BoardTemplatesPane';
 import GlobalLabelsPane from './GlobalLabelsPane';
+import TeamsPane from './TeamsPane';
 import UsersPane from './UsersPane';
 import WebhooksPane from './WebhooksPane';
 
@@ -46,6 +47,12 @@ const AdministrationModal = React.memo(() => {
     },
     ...(isAdmin
       ? [
+          {
+            menuItem: t('common.teams', {
+              context: 'title',
+            }),
+            render: () => <TeamsPane />,
+          },
           {
             menuItem: t('common.boardTemplates', {
               context: 'title',

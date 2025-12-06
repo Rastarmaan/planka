@@ -1,0 +1,61 @@
+/*!
+ * Copyright (c) 2024 PLANKA Software GmbH
+ * Licensed under the Fair Use License: https://github.com/plankanban/planka/blob/master/LICENSE.md
+ */
+
+:global(#app) {
+  .teams {
+    max-height: 280px;
+    margin-top: 8px;
+    overflow-y: auto;
+  }
+
+  .team {
+    display: flex;
+    align-items: center;
+    width: 100%;
+    padding: 8px 12px;
+    background: none;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    text-align: left;
+    transition: background 0.1s ease;
+
+    &:hover:not(:disabled) {
+      background: rgba(0, 0, 0, 0.05);
+    }
+
+    &:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+    }
+  }
+
+  .teamIcon {
+    margin-right: 8px;
+    color: #666;
+  }
+
+  .teamName {
+    flex: 1;
+    font-weight: 500;
+  }
+
+  .teamMembers {
+    color: #999;
+    font-size: 12px;
+    margin-right: 8px;
+  }
+
+  .checkIcon {
+    color: #21ba45;
+  }
+
+  .noTeams {
+    text-align: center;
+    color: #999;
+    padding: 16px;
+    font-style: italic;
+  }
+}

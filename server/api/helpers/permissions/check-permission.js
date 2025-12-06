@@ -7,7 +7,12 @@
  * Helper to check if a user has specific permission for a resource
  */
 
-async function checkParentPermission(inputs) {
+async function getUserTeamIds(userId) {
+  const teamMemberships = await TeamMembership.find({ user: userId });
+  return teamMemberships.map((tm) => tm.team);
+}
+
+async function checkParentPermission(inputs, teamIds = []) {
   let parentType;
   let parentId;
 
@@ -47,13 +52,29 @@ async function checkParentPermission(inputs) {
     return true;
   }
 
-  if (parentType === 'folder') {
-    return checkParentPermission({
-      userId: inputs.userId,
+  if (teamIds.length > 0) {
+    const teamPermissions = await DocumentPermission.find({
       resourceType: parentType,
       resourceId: String(parentId),
-      permissionType: inputs.permissionType,
+      team: teamIds,
     });
+
+    const hasTeamPermission = teamPermissions.some((tp) => tp[inputs.permissionType]);
+    if (hasTeamPermission) {
+      return true;
+    }
+  }
+
+  if (parentType === 'folder') {
+    return checkParentPermission(
+      {
+        userId: inputs.userId,
+        resourceType: parentType,
+        resourceId: String(parentId),
+        permissionType: inputs.permissionType,
+      },
+      teamIds,
+    );
   }
 
   return false;
@@ -92,8 +113,23 @@ module.exports = {
       return true;
     }
 
+    const teamIds = await getUserTeamIds(inputs.userId);
+
+    if (teamIds.length > 0) {
+      const teamPermissions = await DocumentPermission.find({
+        resourceType: inputs.resourceType,
+        resourceId: inputs.resourceId,
+        team: teamIds,
+      });
+
+      const hasTeamPermission = teamPermissions.some((tp) => tp[inputs.permissionType]);
+      if (hasTeamPermission) {
+        return true;
+      }
+    }
+
     if (inputs.resourceType === 'file' || inputs.resourceType === 'folder') {
-      return checkParentPermission(inputs);
+      return checkParentPermission(inputs, teamIds);
     }
 
     return false;

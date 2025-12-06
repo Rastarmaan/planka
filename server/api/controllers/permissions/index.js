@@ -31,7 +31,9 @@ module.exports = {
     const permissions = await DocumentPermission.find({
       resourceType: inputs.resourceType,
       resourceId: inputs.resourceId,
-    }).populate('user');
+    })
+      .populate('user')
+      .populate('team');
 
     return {
       items: permissions,

@@ -15,6 +15,7 @@ import GeneralPane from './GeneralPane';
 import NotificationsPane from './NotificationsPane';
 import PreferencesPane from './PreferencesPane';
 import SyncPane from './SyncPane';
+import TeamsPane from './TeamsPane';
 
 const BoardSettingsModal = React.memo(() => {
   const openPreferences = useSelector(
@@ -42,6 +43,12 @@ const BoardSettingsModal = React.memo(() => {
         context: 'title',
       }),
       render: () => <PreferencesPane />,
+    },
+    {
+      menuItem: t('common.teams', {
+        context: 'title',
+      }),
+      render: () => <TeamsPane />,
     },
     {
       menuItem: t('common.sync', {

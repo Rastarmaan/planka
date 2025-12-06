@@ -40,12 +40,14 @@ import spaces from './spaces';
 import folders from './folders';
 import files from './files';
 import permissions from './permissions';
+import teams from './teams';
 
 // Re-export named exports from new modules
 export * from './spaces';
 export * from './folders';
 export * from './files';
 export * from './permissions';
+export * from './teams';
 
 export default {
   ...router,
@@ -60,6 +62,7 @@ export default {
   ...folders,
   ...files,
   ...permissions,
+  ...teams,
   ...projectCategories,
   ...projectManagers,
   ...backgroundImages,

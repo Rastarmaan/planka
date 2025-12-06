@@ -79,8 +79,11 @@ module.exports = {
 
     user: {
       model: 'User',
-      required: true,
       columnName: 'user_id',
+    },
+    team: {
+      model: 'Team',
+      columnName: 'team_id',
     },
     grantedByUser: {
       model: 'User',

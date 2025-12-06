@@ -15,6 +15,7 @@ import { isUserAdminOrProjectOwner } from '../../../utils/record-helpers';
 import { BoardMembershipRoles } from '../../../constants/Enums';
 import Group from './Group';
 import AddStep from './AddStep';
+import AddTeamStep from './AddTeamStep';
 
 import styles from './BoardMemberships.module.scss';
 
@@ -37,6 +38,7 @@ const BoardMemberships = React.memo(() => {
   );
 
   const AddPopup = usePopup(AddStep);
+  const AddTeamPopup = usePopup(AddTeamStep);
 
   return (
     <>
@@ -56,9 +58,14 @@ const BoardMemberships = React.memo(() => {
         </div>
       )}
       {canAdd && (
-        <AddPopup>
-          <Button icon="add user" className={classNames(styles.segment, styles.addButton)} />
-        </AddPopup>
+        <>
+          <AddPopup>
+            <Button icon="add user" className={classNames(styles.segment, styles.addButton)} />
+          </AddPopup>
+          <AddTeamPopup>
+            <Button icon="users" className={classNames(styles.segment, styles.addButton)} />
+          </AddTeamPopup>
+        </>
       )}
     </>
   );

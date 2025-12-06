@@ -11,6 +11,7 @@ import Board from './Board';
 import BoardLink from './BoardLink';
 import BoardMembership from './BoardMembership';
 import BoardRelease from './BoardRelease';
+import BoardTeam from './BoardTeam';
 import Card from './Card';
 import CardDependency from './CardDependency';
 import Comment from './Comment';
@@ -25,9 +26,12 @@ import Project from './Project';
 import ProjectCategory from './ProjectCategory';
 import ProjectCategoryAssignment from './ProjectCategoryAssignment';
 import ProjectManager from './ProjectManager';
+import ProjectTeam from './ProjectTeam';
 import ReleaseCard from './ReleaseCard';
 import Task from './Task';
 import TaskList from './TaskList';
+import Team from './Team';
+import TeamMembership from './TeamMembership';
 import User from './User';
 import Webhook from './Webhook';
 import Space from './Space';
@@ -45,6 +49,7 @@ export {
   BoardLink,
   BoardMembership,
   BoardRelease,
+  BoardTeam,
   Card,
   CardDependency,
   Comment,
@@ -59,9 +64,12 @@ export {
   ProjectCategory,
   ProjectCategoryAssignment,
   ProjectManager,
+  ProjectTeam,
   ReleaseCard,
   Task,
   TaskList,
+  Team,
+  TeamMembership,
   User,
   Webhook,
   Space,
