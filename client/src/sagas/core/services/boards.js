@@ -264,31 +264,48 @@ export function* transferBoard(id, projectId) {
   yield put(actions.handleBoardUpdate(board));
 }
 
-export function* importBoardToCurrentProject(data) {
+export function* importBoardToCurrentProject(data, callbacks = {}) {
   const { projectId } = yield select(selectors.selectPath);
 
   if (!projectId) {
+    if (callbacks.onError) {
+      callbacks.onError(new Error('No project selected'));
+    }
     return;
   }
 
-  const response = yield call(request, api.importBoardToProject, projectId, {
-    sourceBoardId: data.sourceBoardId,
-    enableSync: data.syncEnabled,
-    syncDirection: data.syncDirection,
-    includeOptions: {
-      cards: data.importCards,
-      members: data.importMembers,
-      labels: data.importLabels,
-    },
-  });
+  let response;
+  try {
+    response = yield call(request, api.importBoardToProject, projectId, {
+      sourceBoardId: data.sourceBoardId,
+      enableSync: data.syncEnabled,
+      syncDirection: data.syncDirection,
+      includeOptions: {
+        cards: data.importCards,
+        members: data.importMembers,
+        labels: data.importLabels,
+      },
+    });
+  } catch (error) {
+    if (callbacks.onError) {
+      callbacks.onError(error);
+    }
+    return;
+  }
 
   if (response.item) {
+    if (callbacks.onSuccess) {
+      callbacks.onSuccess(response.item);
+    }
+
     yield call(goToProject, projectId);
     yield new Promise((resolve) => {
       setTimeout(resolve, 500);
     });
 
     yield call(goToBoard, response.item.id);
+  } else if (callbacks.onError) {
+    callbacks.onError(new Error('Import failed'));
   }
 }
 

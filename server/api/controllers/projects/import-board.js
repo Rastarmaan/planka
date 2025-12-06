@@ -348,13 +348,17 @@ module.exports = {
             id: (await sails.helpers.utils.generateIds(1))[0],
             cardId: newCardId,
             creatorUserId: currentUser.id,
+            type: sourceAttachment.type,
+            data: sourceAttachment.data,
             name: sourceAttachment.name,
-            dirname: sourceAttachment.dirname,
-            image: sourceAttachment.image,
           }).fetch();
           attachmentMapping[sourceAttachment.id] = newAttachment.id;
 
-          if (sourceAttachment.dirname) {
+          if (
+            sourceAttachment.type === Attachment.Types.FILE &&
+            sourceAttachment.data &&
+            sourceAttachment.data.dirname
+          ) {
             try {
               // eslint-disable-next-line global-require
               const fs = require('fs').promises;
@@ -362,30 +366,30 @@ module.exports = {
               const path = require('path');
               const sourceDir = path.join(
                 sails.config.custom.attachmentsPath,
-                sourceAttachment.dirname,
+                sourceAttachment.data.dirname,
               );
               const targetDir = path.join(
                 sails.config.custom.attachmentsPath,
-                sourceAttachment.dirname,
+                sourceAttachment.data.dirname,
               );
 
-              const sourceFilePath = path.join(sourceDir, sourceAttachment.name);
+              const sourceFilePath = path.join(sourceDir, sourceAttachment.data.filename);
               try {
                 await fs.access(sourceFilePath);
                 await fs.mkdir(targetDir, { recursive: true });
-                const targetFilePath = path.join(targetDir, sourceAttachment.name);
+                const targetFilePath = path.join(targetDir, sourceAttachment.data.filename);
                 await fs.copyFile(sourceFilePath, targetFilePath);
 
-                if (sourceAttachment.image) {
+                if (sourceAttachment.data.image) {
                   const sourceCoverPath = path.join(
                     sourceDir,
-                    `cover.${sourceAttachment.image.extension}`,
+                    `cover.${sourceAttachment.data.image.extension}`,
                   );
                   try {
                     await fs.access(sourceCoverPath);
                     const targetCoverPath = path.join(
                       targetDir,
-                      `cover.${sourceAttachment.image.extension}`,
+                      `cover.${sourceAttachment.data.image.extension}`,
                     );
                     await fs.copyFile(sourceCoverPath, targetCoverPath);
                   } catch (err) {

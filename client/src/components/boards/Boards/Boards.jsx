@@ -81,8 +81,19 @@ const Boards = React.memo(() => {
   }, []);
 
   const handleImport = useCallback(
-    async (importData) => {
-      dispatch(entryActions.importBoardToCurrentProject(importData));
+    (importData) => {
+      return new Promise((resolve, reject) => {
+        dispatch(
+          entryActions.importBoardToCurrentProject(importData, {
+            onSuccess: (board) => {
+              resolve(board);
+            },
+            onError: (error) => {
+              reject(error);
+            },
+          }),
+        );
+      });
     },
     [dispatch],
   );
