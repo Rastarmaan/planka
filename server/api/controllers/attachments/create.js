@@ -175,10 +175,10 @@ module.exports = {
     );
 
     if (!boardMembership) {
-      throw Errors.CARD_NOT_FOUND; // Forbidden
-    }
-
-    if (boardMembership.role !== BoardMembership.Roles.EDITOR) {
+      if (currentUser.role !== User.Roles.ADMIN) {
+        throw Errors.CARD_NOT_FOUND; // Forbidden
+      }
+    } else if (boardMembership.role !== BoardMembership.Roles.EDITOR) {
       throw Errors.NOT_ENOUGH_RIGHTS;
     }
 
