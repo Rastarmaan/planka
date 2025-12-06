@@ -530,7 +530,67 @@ export function* duplicateCurrentCard(data) {
   yield call(duplicateCard, cardId, data);
 }
 
-export function* importAndSyncCard(sourceCardId, targetListId, data) {
+export function* syncCardToBoard(sourceCardId, targetListId, callbacks = {}) {
+  const list = yield select(selectors.selectListById, targetListId);
+
+  if (!list) {
+    if (callbacks.onError) {
+      callbacks.onError(new Error('Target list not found'));
+    }
+    return;
+  }
+
+  const position = yield select(selectors.selectNextCardPosition, targetListId);
+
+  let response;
+  try {
+    response = yield call(request, api.importAndSyncCard, {
+      sourceCardId,
+      targetListId,
+      position,
+    });
+  } catch (error) {
+    if (callbacks.onError) {
+      callbacks.onError(error);
+    }
+    return;
+  }
+
+  const {
+    item: card,
+    included: {
+      cardMemberships,
+      cardLabels,
+      taskLists,
+      tasks,
+      attachments,
+      customFieldGroups,
+      customFields,
+      customFieldValues,
+    },
+  } = response;
+
+  yield put(
+    actions.importAndSyncCard.success(
+      card,
+      cardMemberships,
+      cardLabels,
+      taskLists,
+      tasks,
+      attachments,
+      customFieldGroups,
+      customFields,
+      customFieldValues,
+    ),
+  );
+
+  if (callbacks.onSuccess) {
+    callbacks.onSuccess(card);
+  }
+}
+
+// eslint-disable-next-line no-unused-vars
+export function* importAndSyncCard(sourceCardId, targetListId, data, callbacks = {}) {
   // eslint-disable-next-line no-console
   console.log('[importAndSyncCard] Called with:', { sourceCardId, targetListId, data });
 
@@ -857,6 +917,7 @@ export default {
   transferCurrentCard,
   duplicateCard,
   duplicateCurrentCard,
+  syncCardToBoard,
   importAndSyncCard,
   goToAdjacentCard,
   deleteCard,

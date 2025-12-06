@@ -1,13 +1,39 @@
+.boardSelector {
+  margin-bottom: 0.75rem;
+}
+
+.boardDropdown {
+  margin-bottom: 0 !important;
+}
+
 .searchInput {
   margin-bottom: 1rem !important;
 }
 
 .cardList {
-  max-height: 400px;
+  max-height: 300px;
   overflow-y: auto;
   display: flex;
   flex-direction: column;
   gap: 0.5rem;
+
+  &::-webkit-scrollbar {
+    width: 6px;
+  }
+
+  &::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 3px;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background: #c1c1c1;
+    border-radius: 3px;
+
+    &:hover {
+      background: #a1a1a1;
+    }
+  }
 }
 
 .cardItem {
@@ -28,7 +54,7 @@
 
   &.completed {
     opacity: 0.7;
-    
+
     .cardName {
       text-decoration: line-through;
     }
@@ -63,7 +89,7 @@
   flex-shrink: 0;
 }
 
-.cardList {
+.listName {
   font-size: 0.75rem;
   color: #6b778c;
   overflow: hidden;

@@ -18,7 +18,7 @@ import { isListArchiveOrTrash } from '../../../utils/record-helpers';
 
 import styles from '../CardModal/CardSelectorStep.module.scss';
 
-const makeSelectBoardsForImport = () =>
+const makeSelectProjectsAndBoardsForImport = () =>
   createSelector(
     orm,
     (state) => {
@@ -27,35 +27,50 @@ const makeSelectBoardsForImport = () =>
     },
     ({ Board, User }, currentUser) => {
       if (!currentUser) {
-        return [];
+        return { projects: [], boardsByProject: {} };
       }
 
       const currentUserModel = User.withId(currentUser.id);
       const isAdmin = currentUser.role === 'admin';
-      const boards = [];
+      const projectsMap = new Map();
+      const boardsByProject = {};
 
       Board.all()
         .toModelArray()
         .forEach((boardModel) => {
           if (isAdmin || boardModel.isAvailableForUser(currentUserModel)) {
             const projectModel = boardModel.project;
+            if (!projectModel) return;
+
+            const projectId = projectModel.id;
             const isFetched = boardModel.lists.count() > 0;
 
-            boards.push({
+            if (!projectsMap.has(projectId)) {
+              projectsMap.set(projectId, {
+                id: projectId,
+                name: projectModel.ref.name,
+              });
+              boardsByProject[projectId] = [];
+            }
+
+            boardsByProject[projectId].push({
               id: boardModel.id,
               name: boardModel.ref.name,
-              projectId: projectModel ? projectModel.id : null,
-              projectName: projectModel ? projectModel.ref.name : 'Unknown Project',
+              projectId,
               isFetched,
             });
           }
         });
 
-      return boards.sort((a, b) => {
-        const projectCompare = (a.projectName || '').localeCompare(b.projectName || '');
-        if (projectCompare !== 0) return projectCompare;
-        return (a.name || '').localeCompare(b.name || '');
+      const projects = Array.from(projectsMap.values()).sort((a, b) =>
+        (a.name || '').localeCompare(b.name || ''),
+      );
+
+      Object.keys(boardsByProject).forEach((projectId) => {
+        boardsByProject[projectId].sort((a, b) => (a.name || '').localeCompare(b.name || ''));
       });
+
+      return { projects, boardsByProject };
     },
   );
 
@@ -99,21 +114,49 @@ const makeSelectCardsByBoardId = () =>
 const ImportCardSelectorStep = React.memo(({ onSelect, onBack }) => {
   const [t] = useTranslation();
   const [searchValue, setSearchValue] = useState('');
+  const [selectedProjectId, setSelectedProjectId] = useState('');
   const [selectedBoardId, setSelectedBoardId] = useState('');
   const [isLoadingBoard, setIsLoadingBoard] = useState(false);
 
   const dispatch = useDispatch();
   const currentBoard = useSelector(selectors.selectCurrentBoard);
 
-  const selectBoardsForImport = useMemo(() => makeSelectBoardsForImport(), []);
+  const selectProjectsAndBoards = useMemo(() => makeSelectProjectsAndBoardsForImport(), []);
   const selectCardsByBoardId = useMemo(() => makeSelectCardsByBoardId(), []);
 
-  const allBoardsForImport = useSelector(selectBoardsForImport);
+  const { projects, boardsByProject } = useSelector(selectProjectsAndBoards);
 
-  const selectedBoardInfo = useMemo(
-    () => allBoardsForImport.find((b) => b.id === selectedBoardId),
-    [allBoardsForImport, selectedBoardId],
+  const projectOptions = useMemo(
+    () =>
+      projects
+        .filter((project) => project.id !== currentBoard?.projectId)
+        .map((project) => ({
+          key: project.id,
+          value: project.id,
+          text: project.name,
+        })),
+    [projects, currentBoard?.projectId],
   );
+
+  const boardOptions = useMemo(() => {
+    if (!selectedProjectId || !boardsByProject[selectedProjectId]) {
+      return [];
+    }
+    return boardsByProject[selectedProjectId]
+      .filter((board) => board.id !== currentBoard?.id)
+      .map((board) => ({
+        key: board.id,
+        value: board.id,
+        text: board.name,
+      }));
+  }, [selectedProjectId, boardsByProject, currentBoard?.id]);
+
+  const selectedBoardInfo = useMemo(() => {
+    if (!selectedProjectId || !selectedBoardId || !boardsByProject[selectedProjectId]) {
+      return null;
+    }
+    return boardsByProject[selectedProjectId].find((b) => b.id === selectedBoardId);
+  }, [selectedProjectId, selectedBoardId, boardsByProject]);
 
   const cardsInSelectedBoard = useSelector((state) => selectCardsByBoardId(state, selectedBoardId));
 
@@ -130,18 +173,6 @@ const ImportCardSelectorStep = React.memo(({ onSelect, onBack }) => {
     }
   }, [selectedBoardInfo?.isFetched]);
 
-  const boards = useMemo(
-    () =>
-      allBoardsForImport
-        .filter((board) => board.id !== currentBoard?.id)
-        .map((board) => ({
-          key: board.id,
-          value: board.id,
-          text: `${board.projectName} / ${board.name}`,
-        })),
-    [allBoardsForImport, currentBoard?.id],
-  );
-
   const availableCards = useMemo(() => {
     if (!searchValue) {
       return cardsInSelectedBoard;
@@ -150,6 +181,12 @@ const ImportCardSelectorStep = React.memo(({ onSelect, onBack }) => {
       card.name.toLowerCase().includes(searchValue.toLowerCase()),
     );
   }, [cardsInSelectedBoard, searchValue]);
+
+  const handleProjectChange = useCallback((_, { value }) => {
+    setSelectedProjectId(value);
+    setSelectedBoardId('');
+    setSearchValue('');
+  }, []);
 
   const handleBoardChange = useCallback((_, { value }) => {
     setSelectedBoardId(value);
@@ -181,13 +218,28 @@ const ImportCardSelectorStep = React.memo(({ onSelect, onBack }) => {
           <Dropdown
             fluid
             selection
-            placeholder={t('common.selectBoard')}
-            options={boards}
-            value={selectedBoardId}
-            onChange={handleBoardChange}
+            search
+            placeholder={t('common.selectProject')}
+            options={projectOptions}
+            value={selectedProjectId}
+            onChange={handleProjectChange}
             className={styles.boardDropdown}
           />
         </div>
+        {selectedProjectId && (
+          <div className={styles.boardSelector}>
+            <Dropdown
+              fluid
+              selection
+              search
+              placeholder={t('common.selectBoard')}
+              options={boardOptions}
+              value={selectedBoardId}
+              onChange={handleBoardChange}
+              className={styles.boardDropdown}
+            />
+          </div>
+        )}
         {selectedBoardId && (
           <>
             <Input
