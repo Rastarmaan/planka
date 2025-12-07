@@ -9,6 +9,7 @@ import backgroundImages from './background-images';
 import baseCustomFieldGroups from './base-custom-field-groups';
 import boardMemberships from './board-memberships';
 import boardReleases from './board-releases';
+import boardTeams from './board-teams';
 import boards from './boards';
 import cards from './cards';
 import comments from './comments';
@@ -26,10 +27,13 @@ import notificationServices from './notification-services';
 import notifications from './notifications';
 import projectCategories from './project-categories';
 import projectManagers from './project-managers';
+import projectTeams from './project-teams';
 import projects from './projects';
 import socket from './socket';
 import taskLists from './task-lists';
 import tasks from './tasks';
+import teamMemberships from './team-memberships';
+import teams from './teams';
 import users from './users';
 import webhooks from './webhooks';
 import spaces from './spaces';
@@ -51,6 +55,10 @@ export default {
   ...permissions,
   ...projectCategories,
   ...projectManagers,
+  ...teams,
+  ...teamMemberships,
+  ...projectTeams,
+  ...boardTeams,
   ...backgroundImages,
   ...baseCustomFieldGroups,
   ...boards,

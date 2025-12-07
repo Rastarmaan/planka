@@ -1277,4 +1277,112 @@ module.exports = {
       sails.log.error('Error syncing card attachments:', error);
     }
   },
+
+  /**
+   * Sync a board team to all linked boards
+   * @param {Object} boardTeam - The board team object to sync
+   * @param {Object} team - The team object
+   * @param {Object} req - Request object
+   */
+  // eslint-disable-next-line no-unused-vars
+  async syncBoardTeam(boardTeam, team, req) {
+    const linkedBoards = await this.getLinkedBoards(boardTeam.boardId);
+
+    /* eslint-disable no-await-in-loop, no-restricted-syntax, no-continue */
+    for (const link of linkedBoards) {
+      try {
+        const targetBoardId = link.other_board_id;
+        const targetBoard = await Board.findOne({ id: targetBoardId });
+        if (!targetBoard) continue;
+
+        const boardLink = await BoardLink.findOne({ id: link.id });
+
+        // Check sync direction
+        if (boardLink.syncDirection === 'one-way' && boardLink.linkedBoardId !== targetBoardId) {
+          continue;
+        }
+
+        const mapping = await this.getSyncMapping(link.id, 'board_team', boardTeam.id);
+
+        if (mapping) {
+          // Update existing board team
+          const targetBoardTeam = await BoardTeam.findOne({
+            id: mapping.targetEntityId,
+          });
+
+          if (targetBoardTeam) {
+            const updated = await BoardTeam.updateOne({
+              id: targetBoardTeam.id,
+            }).set({
+              role: boardTeam.role,
+              canComment: boardTeam.canComment,
+            });
+
+            sails.sockets.broadcast(`board:${targetBoardId}`, 'boardTeamUpdate', {
+              item: updated,
+            });
+          }
+        } else {
+          // Create new board team
+          const existing = await BoardTeam.findOne({
+            boardId: targetBoardId,
+            teamId: boardTeam.teamId,
+          });
+
+          if (!existing) {
+            const boardTeamId = (await sails.helpers.utils.generateIds(1))[0];
+            const newBoardTeam = await BoardTeam.create({
+              id: boardTeamId,
+              boardId: targetBoardId,
+              teamId: boardTeam.teamId,
+              role: boardTeam.role,
+              canComment: boardTeam.canComment,
+            }).fetch();
+
+            await this.createSyncMapping(link.id, 'board_team', boardTeam.id, newBoardTeam.id);
+
+            sails.sockets.broadcast(`board:${targetBoardId}`, 'boardTeamCreate', {
+              item: newBoardTeam,
+            });
+
+            // Also add team members to the target board
+            const teamMemberships = await TeamMembership.find({ teamId: boardTeam.teamId });
+            const project = await Project.findOne({ id: targetBoard.projectId });
+
+            await Promise.all(
+              teamMemberships.map(async (teamMembership) => {
+                const user = await User.findOne({ id: teamMembership.userId });
+                if (!user) return;
+
+                // Check if user is already a board member
+                const existingMembership = await BoardMembership.findOne({
+                  boardId: targetBoardId,
+                  userId: user.id,
+                });
+
+                if (!existingMembership) {
+                  const membershipId = (await sails.helpers.utils.generateIds(1))[0];
+                  const newMembership = await BoardMembership.create({
+                    id: membershipId,
+                    boardId: targetBoardId,
+                    projectId: project.id,
+                    userId: user.id,
+                    role: boardTeam.role,
+                    canComment: boardTeam.canComment,
+                  }).fetch();
+
+                  sails.sockets.broadcast(`board:${targetBoardId}`, 'boardMembershipCreate', {
+                    item: newMembership,
+                  });
+                }
+              }),
+            );
+          }
+        }
+      } catch (error) {
+        sails.log.error('Error syncing board team:', error);
+      }
+    }
+    /* eslint-enable no-await-in-loop, no-restricted-syntax, no-continue */
+  },
 };

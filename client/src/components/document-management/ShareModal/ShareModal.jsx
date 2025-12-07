@@ -13,6 +13,7 @@ import { Input } from '../../../lib/custom-ui';
 import LinkSettingsModal from '../LinkSettingsModal/LinkSettingsModal';
 import selectors from '../../../selectors';
 import usersApi from '../../../api/users';
+import teamsApi from '../../../api/teams';
 import permissionsApi from '../../../api/permissions';
 import shareLinksApi from '../../../api/share-links';
 
@@ -25,6 +26,7 @@ const ShareModal = React.memo(({ resource, resourceType, isOpen, onClose, onCrea
   const accessToken = useSelector(selectors.selectAccessToken);
 
   const [selectedUsers, setSelectedUsers] = useState([]);
+  const [selectedTeams, setSelectedTeams] = useState([]);
   const [selectedPermission, setSelectedPermission] = useState('view');
 
   const [linkEnabled, setLinkEnabled] = useState(false);
@@ -34,6 +36,7 @@ const ShareModal = React.memo(({ resource, resourceType, isOpen, onClose, onCrea
   const [linkSettings, setLinkSettings] = useState({});
   const [showLinkSettings, setShowLinkSettings] = useState(false);
   const [usersOptionsFromApi, setUsersOptionsFromApi] = useState(null);
+  const [teamsOptions, setTeamsOptions] = useState([]);
 
   const [sharedUsers, setSharedUsers] = useState([]);
   const [loadingSharedUsers, setLoadingSharedUsers] = useState(false);
@@ -81,12 +84,34 @@ const ShareModal = React.memo(({ resource, resourceType, isOpen, onClose, onCrea
       }
     };
 
+    const fetchTeams = async () => {
+      try {
+        const res = await teamsApi.getTeams({
+          Authorization: `Bearer ${accessToken}`,
+        });
+        const items = (res && res.items) || [];
+        if (!mounted) return;
+        setTeamsOptions(
+          items.map((team) => ({
+            key: team.id,
+            text: team.name,
+            value: team.id,
+            icon: 'users',
+            description: `${team.memberCount || 0} members`,
+          })),
+        );
+      } catch {
+        // ignore - teams might not be available
+      }
+    };
+
     fetchUsers();
+    fetchTeams();
 
     return () => {
       mounted = false;
     };
-  }, [currentUser]);
+  }, [currentUser, accessToken]);
 
   const fetchSharedUsers = useCallback(async () => {
     if (!resource?.id || !resourceType) return;
@@ -249,8 +274,7 @@ const ShareModal = React.memo(({ resource, resourceType, isOpen, onClose, onCrea
         setLinkSettings({});
         setExistingShareLink(null);
         toast.success(t('documentManagement.shareLinkDeleted'));
-      } catch (err) {
-        console.error('Failed to delete share link:', err);
+      } catch {
         toast.error(t('documentManagement.failedToDeleteShareLink'));
       }
     } else {
@@ -330,7 +354,7 @@ const ShareModal = React.memo(({ resource, resourceType, isOpen, onClose, onCrea
   ];
 
   const handleInviteUsers = async () => {
-    if (selectedUsers.length === 0) return;
+    if (selectedUsers.length === 0 && selectedTeams.length === 0) return;
 
     try {
       const isEditPermission = selectedPermission === 'edit';
@@ -342,10 +366,12 @@ const ShareModal = React.memo(({ resource, resourceType, isOpen, onClose, onCrea
         canShare: false,
       };
 
+      const promises = [];
+
       const existingUsers = selectedUsers.filter((userValue) => /^\d+$/.test(userValue.toString()));
 
       if (existingUsers.length > 0) {
-        const promises = existingUsers.map(async (userId) => {
+        existingUsers.forEach((userId) => {
           const permissionData = {
             resourceType: resourceType || 'file',
             resourceId: resource?.id,
@@ -353,22 +379,42 @@ const ShareModal = React.memo(({ resource, resourceType, isOpen, onClose, onCrea
             ...permissionFlags,
           };
 
-          return permissionsApi.createPermission(permissionData, {
-            Authorization: `Bearer ${accessToken}`,
-          });
+          promises.push(
+            permissionsApi.createPermission(permissionData, {
+              Authorization: `Bearer ${accessToken}`,
+            }),
+          );
         });
-
-        await Promise.all(promises);
-
-        await fetchSharedUsers();
       }
 
-      setSelectedUsers([]);
+      if (selectedTeams.length > 0) {
+        selectedTeams.forEach((teamId) => {
+          const permissionData = {
+            resourceType: resourceType || 'file',
+            resourceId: resource?.id,
+            teamId: teamId.toString(),
+            ...permissionFlags,
+          };
 
+          promises.push(
+            permissionsApi.createPermission(permissionData, {
+              Authorization: `Bearer ${accessToken}`,
+            }),
+          );
+        });
+      }
+
+      await Promise.all(promises);
+      await fetchSharedUsers();
+
+      setSelectedUsers([]);
+      setSelectedTeams([]);
+
+      const totalCount = existingUsers.length + selectedTeams.length;
       toast.success(
-        existingUsers.length === 1
-          ? t('documentManagement.userAccessGranted')
-          : `${existingUsers.length} ${t('documentManagement.usersAccessGranted')}`,
+        totalCount === 1
+          ? t('documentManagement.accessGranted')
+          : `${totalCount} ${t('documentManagement.accessGrantedMultiple')}`,
       );
     } catch (error) {
       toast.error(t('documentManagement.failedToInviteUsers'));
@@ -388,6 +434,7 @@ const ShareModal = React.memo(({ resource, resourceType, isOpen, onClose, onCrea
             <p className={styles.sectionDescription}>
               {t('documentManagement.grantAccessDescription')}
             </p>
+
             <div className={styles.inviteContainer}>
               <Dropdown
                 placeholder={t('documentManagement.searchUsersToGrantAccess')}
@@ -409,11 +456,28 @@ const ShareModal = React.memo(({ resource, resourceType, isOpen, onClose, onCrea
                 className={styles.permissionDropdown}
               />
             </div>
-            {selectedUsers.length > 0 && (
+
+            {teamsOptions.length > 0 && (
+              <div className={styles.inviteContainer} style={{ marginTop: '12px' }}>
+                <Dropdown
+                  placeholder={t('documentManagement.selectTeamsToGrantAccess', 'Select teams...')}
+                  fluid
+                  multiple
+                  selection
+                  options={teamsOptions}
+                  value={selectedTeams}
+                  onChange={(e, { value }) => setSelectedTeams(value)}
+                  noResultsMessage={t('documentManagement.noTeamsFound', 'No teams found')}
+                  className={styles.userDropdown}
+                />
+              </div>
+            )}
+
+            {(selectedUsers.length > 0 || selectedTeams.length > 0) && (
               <Button
                 positive
                 size="small"
-                content={t('documentManagement.addUser')}
+                content={t('documentManagement.grantAccessButton', 'Grant Access')}
                 onClick={handleInviteUsers}
                 style={{ marginTop: '8px' }}
               />
@@ -450,8 +514,43 @@ const ShareModal = React.memo(({ resource, resourceType, isOpen, onClose, onCrea
                     </Label>
                   </List.Item>
                 ))}
-                {/* Shared users */}
                 {sharedUsers.map((permission) => {
+                  if (permission.team) {
+                    const { team } = permission;
+                    return (
+                      <List.Item key={permission.id} className={styles.userItem}>
+                        <div className={styles.avatarPlaceholder}>
+                          <Icon name="users" style={{ margin: 0 }} />
+                        </div>
+                        <List.Content className={styles.userInfo}>
+                          <List.Header>
+                            <Icon name="users" size="small" />
+                            {team.name}
+                          </List.Header>
+                          <List.Description>
+                            {t('documentManagement.team', 'Team')}
+                          </List.Description>
+                        </List.Content>
+                        <Label basic className={styles.roleLabel}>
+                          {permission.canEdit
+                            ? t('documentManagement.editor')
+                            : t('documentManagement.viewer')}
+                        </Label>
+                        <Button
+                          icon="trash"
+                          size="mini"
+                          negative
+                          basic
+                          loading={removingUserId === permission.id}
+                          disabled={removingUserId !== null}
+                          onClick={() => handleRemoveAccess(permission)}
+                          className={styles.removeButton}
+                          title={t('documentManagement.removeAccess')}
+                        />
+                      </List.Item>
+                    );
+                  }
+
                   const user = permission.user || {};
                   const userName = user.name || user.username || t('common.unknownUser');
                   const userEmail = user.email || '';

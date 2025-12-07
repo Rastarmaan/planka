@@ -74,18 +74,32 @@ module.exports = {
         }
       }
     } else {
-      const permissions = await DocumentPermission.find({
+      const userPermissions = await DocumentPermission.find({
         user: currentUser.id,
       });
 
-      if (permissions.length === 0) {
+      const teamMemberships = await TeamMembership.find({
+        userId: currentUser.id,
+      });
+      const teamIds = teamMemberships.map((tm) => tm.teamId);
+
+      let teamPermissions = [];
+      if (teamIds.length > 0) {
+        teamPermissions = await DocumentPermission.find({
+          team: teamIds,
+        });
+      }
+
+      const allPermissions = [...userPermissions, ...teamPermissions];
+
+      if (allPermissions.length === 0) {
         return { items: [] };
       }
 
       const spaceIds = new Set();
 
       await Promise.all(
-        permissions.map(async (perm) => {
+        allPermissions.map(async (perm) => {
           if (perm.resourceType === 'space') {
             spaceIds.add(perm.resourceId);
           } else if (perm.resourceType === 'folder') {

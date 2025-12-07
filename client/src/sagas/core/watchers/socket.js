@@ -118,6 +118,30 @@ const createSocketEventsChannel = () =>
       emit(entryActions.handleBoardMembershipDelete(item));
     };
 
+    const handleTeamCreate = ({ item }) => {
+      emit(entryActions.handleTeamCreate(item));
+    };
+
+    const handleTeamUpdate = ({ item }) => {
+      emit(entryActions.handleTeamUpdate(item));
+    };
+
+    const handleTeamDelete = ({ item }) => {
+      emit(entryActions.handleTeamDelete(item));
+    };
+
+    const handleBoardTeamCreate = ({ item }) => {
+      emit(entryActions.handleBoardTeamCreate(item));
+    };
+
+    const handleBoardTeamUpdate = ({ item }) => {
+      emit(entryActions.handleBoardTeamUpdate(item));
+    };
+
+    const handleBoardTeamDelete = ({ item, included }) => {
+      emit(entryActions.handleBoardTeamDelete(item, included?.boardMemberships));
+    };
+
     const handleBoardReleaseCreate = ({ item }) => {
       emit(actions.handleBoardReleaseCreate(item));
     };
@@ -407,6 +431,14 @@ const createSocketEventsChannel = () =>
     socket.on('boardMembershipUpdate', handleBoardMembershipUpdate);
     socket.on('boardMembershipDelete', handleBoardMembershipDelete);
 
+    socket.on('teamCreate', handleTeamCreate);
+    socket.on('teamUpdate', handleTeamUpdate);
+    socket.on('teamDelete', handleTeamDelete);
+
+    socket.on('boardTeamCreate', handleBoardTeamCreate);
+    socket.on('boardTeamUpdate', handleBoardTeamUpdate);
+    socket.on('boardTeamDelete', handleBoardTeamDelete);
+
     socket.on('boardReleaseCreate', handleBoardReleaseCreate);
     socket.on('boardReleaseUpdate', handleBoardReleaseUpdate);
     socket.on('boardReleaseDelete', handleBoardReleaseDelete);
@@ -525,6 +557,14 @@ const createSocketEventsChannel = () =>
       socket.off('boardMembershipCreate', handleBoardMembershipCreate);
       socket.off('boardMembershipUpdate', handleBoardMembershipUpdate);
       socket.off('boardMembershipDelete', handleBoardMembershipDelete);
+
+      socket.off('teamCreate', handleTeamCreate);
+      socket.off('teamUpdate', handleTeamUpdate);
+      socket.off('teamDelete', handleTeamDelete);
+
+      socket.off('boardTeamCreate', handleBoardTeamCreate);
+      socket.off('boardTeamUpdate', handleBoardTeamUpdate);
+      socket.off('boardTeamDelete', handleBoardTeamDelete);
 
       socket.off('boardReleaseCreate', handleBoardReleaseCreate);
       socket.off('boardReleaseUpdate', handleBoardReleaseUpdate);

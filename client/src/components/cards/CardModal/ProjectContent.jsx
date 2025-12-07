@@ -50,6 +50,7 @@ import CustomFieldGroups from './CustomFieldGroups';
 import DependenciesStep from './DependenciesStep';
 import MoreActionsStep from './MoreActionsStep';
 import NameField from './NameField';
+import SyncCardStep from './SyncCardStep';
 import TaskLists from './TaskLists';
 import ReleaseChip from '../../board-releases/ReleaseChip';
 
@@ -533,6 +534,7 @@ const ProjectContent = React.memo(() => {
   const AddAttachmentPopup = usePopupInClosableContext(AddAttachmentStep);
   const AddCustomFieldGroupPopup = usePopupInClosableContext(AddCustomFieldGroupStep);
   const MoreActionsPopup = usePopupInClosableContext(MoreActionsStep);
+  const SyncCardPopup = usePopupInClosableContext(SyncCardStep);
   const ConfirmationPopup = usePopupInClosableContext(ConfirmationStep);
 
   return (
@@ -1283,6 +1285,19 @@ const ProjectContent = React.memo(() => {
                       className={styles.listButton}
                     />
                   )}
+                </div>
+              )}
+              {canMove && (
+                <div className={classNames(styles.attachments, styles.attachmentsList)}>
+                  <div className={classNames(styles.text, styles.textList)}>
+                    {t('action.syncCard', { context: 'title', defaultValue: 'Sync Card' })}
+                  </div>
+                  <SyncCardPopup cardId={card.id}>
+                    <Button fluid className={styles.listButton}>
+                      <Icon name="sync" />
+                      {t('action.syncToBoard', { defaultValue: 'Sync to another board' })}
+                    </Button>
+                  </SyncCardPopup>
                 </div>
               )}
             </div>

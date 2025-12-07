@@ -27,7 +27,10 @@ module.exports = {
     },
     userId: {
       type: 'string',
-      required: true,
+      regex: /^\d+$/,
+    },
+    teamId: {
+      type: 'string',
       regex: /^\d+$/,
     },
     canView: {
@@ -57,9 +60,25 @@ module.exports = {
   },
 
   async fn(inputs) {
-    const user = await User.findOne({ id: inputs.userId });
-    if (!user) {
-      throw 'notFound';
+    if (!inputs.userId && !inputs.teamId) {
+      throw 'badRequest';
+    }
+
+    let targetUser = null;
+    let targetTeam = null;
+
+    if (inputs.userId) {
+      targetUser = await User.findOne({ id: inputs.userId });
+      if (!targetUser) {
+        throw 'notFound';
+      }
+    }
+
+    if (inputs.teamId) {
+      targetTeam = await Team.findOne({ id: inputs.teamId });
+      if (!targetTeam) {
+        throw 'notFound';
+      }
     }
 
     let resource;
@@ -81,11 +100,19 @@ module.exports = {
       throw 'notFound';
     }
 
-    const existingPermission = await DocumentPermission.findOne({
+    const existingQuery = {
       resourceType: inputs.resourceType,
       resourceId: inputs.resourceId,
-      user: inputs.userId,
-    });
+    };
+
+    if (inputs.userId) {
+      existingQuery.user = inputs.userId;
+    }
+    if (inputs.teamId) {
+      existingQuery.team = inputs.teamId;
+    }
+
+    const existingPermission = await DocumentPermission.findOne(existingQuery);
 
     let permission;
     if (existingPermission) {
@@ -98,10 +125,9 @@ module.exports = {
         inheritFromParent: inputs.inheritFromParent,
       });
     } else {
-      permission = await DocumentPermission.create({
+      const createData = {
         resourceType: inputs.resourceType,
         resourceId: inputs.resourceId,
-        user: inputs.userId,
         canView: inputs.canView,
         canDownload: inputs.canDownload,
         canEdit: inputs.canEdit,
@@ -109,7 +135,16 @@ module.exports = {
         canShare: inputs.canShare,
         inheritFromParent: inputs.inheritFromParent,
         grantedByUser: this.req.currentUser.id,
-      }).fetch();
+      };
+
+      if (inputs.userId) {
+        createData.user = inputs.userId;
+      }
+      if (inputs.teamId) {
+        createData.team = inputs.teamId;
+      }
+
+      permission = await DocumentPermission.create(createData).fetch();
     }
 
     let spaceId;
@@ -138,7 +173,8 @@ module.exports = {
       spaceId: spaceId ? String(spaceId) : null,
       metadata: {
         permissionId: permission.id,
-        targetUserId: inputs.userId,
+        targetUserId: inputs.userId || null,
+        targetTeamId: inputs.teamId || null,
         permissions: _.pick(inputs, ['canView', 'canDownload', 'canEdit', 'canDelete', 'canShare']),
       },
       request: this.req,

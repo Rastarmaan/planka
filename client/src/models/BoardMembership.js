@@ -83,6 +83,28 @@ export default class extends BaseModel {
         }
 
         break;
+      case ActionTypes.BOARD_TEAM_CREATE__SUCCESS:
+      case ActionTypes.TEAM_MEMBERSHIP_CREATE__SUCCESS:
+        if (payload.boardMemberships) {
+          payload.boardMemberships.forEach((boardMembership) => {
+            BoardMembership.upsert(boardMembership);
+          });
+        }
+
+        break;
+      case ActionTypes.BOARD_TEAM_DELETE_HANDLE:
+      case ActionTypes.TEAM_MEMBERSHIP_DELETE__SUCCESS:
+        if (payload.boardMemberships) {
+          payload.boardMemberships.forEach((boardMembership) => {
+            const boardMembershipModel = BoardMembership.withId(boardMembership.id);
+
+            if (boardMembershipModel) {
+              boardMembershipModel.deleteWithRelated(false);
+            }
+          });
+        }
+
+        break;
       case ActionTypes.BOARD_MEMBERSHIP_UPDATE:
         BoardMembership.withId(payload.id).update(payload.data);
 

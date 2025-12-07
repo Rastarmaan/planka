@@ -50,8 +50,9 @@ export default function* boardsWatchers() {
     takeEvery(EntryActionTypes.BOARD_TRANSFER_HANDLE, ({ payload: { board } }) =>
       services.handleBoardTransfer(board),
     ),
-    takeEvery(EntryActionTypes.BOARD_IMPORT_TO_CURRENT_PROJECT, ({ payload: { data } }) =>
-      services.importBoardToCurrentProject(data),
+    takeEvery(
+      EntryActionTypes.BOARD_IMPORT_TO_CURRENT_PROJECT,
+      ({ payload: { data, callbacks } }) => services.importBoardToCurrentProject(data, callbacks),
     ),
   ]);
 }

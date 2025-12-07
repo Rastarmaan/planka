@@ -19,24 +19,36 @@ const TOAST_BY_TYPE = {
 
 const Toaster = React.memo(() => (
   <HotToaster>
-    {(toast) => (
-      <HotToastBar
-        toast={toast}
-        style={{
-          background: 'transparent',
-          borderRadius: 0,
-          maxWidth: '90%',
-          padding: 0,
-        }}
-      >
-        {() => {
-          const Toast = TOAST_BY_TYPE[toast.message.type];
+    {(toast) => {
+      if (typeof toast.message === 'string') {
+        return <HotToastBar toast={toast}>{() => <span>{toast.message}</span>}</HotToastBar>;
+      }
 
-          // eslint-disable-next-line react/jsx-props-no-spreading
-          return <Toast {...toast.message.params} id={toast.id} />;
-        }}
-      </HotToastBar>
-    )}
+      const Toast = TOAST_BY_TYPE[toast.message?.type];
+
+      if (!Toast) {
+        return (
+          <HotToastBar toast={toast}>{() => <span>{String(toast.message)}</span>}</HotToastBar>
+        );
+      }
+
+      return (
+        <HotToastBar
+          toast={toast}
+          style={{
+            background: 'transparent',
+            borderRadius: 0,
+            maxWidth: '90%',
+            padding: 0,
+          }}
+        >
+          {() => (
+            // eslint-disable-next-line react/jsx-props-no-spreading
+            <Toast {...toast.message.params} id={toast.id} />
+          )}
+        </HotToastBar>
+      );
+    }}
   </HotToaster>
 ));
 

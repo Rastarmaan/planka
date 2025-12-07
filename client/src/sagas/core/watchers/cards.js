@@ -69,8 +69,13 @@ export default function* cardsWatchers() {
     ),
     takeEvery(
       EntryActionTypes.CARD_IMPORT_AND_SYNC,
-      ({ payload: { sourceCardId, targetListId, data } }) =>
-        services.importAndSyncCard(sourceCardId, targetListId, data),
+      ({ payload: { sourceCardId, targetListId, data, callbacks } }) =>
+        services.importAndSyncCard(sourceCardId, targetListId, data, callbacks),
+    ),
+    takeEvery(
+      EntryActionTypes.CARD_SYNC_TO_BOARD,
+      ({ payload: { sourceCardId, targetListId, callbacks } }) =>
+        services.syncCardToBoard(sourceCardId, targetListId, callbacks),
     ),
     takeEvery(EntryActionTypes.TO_ADJACENT_CARD_GO, ({ payload: { direction } }) =>
       services.goToAdjacentCard(direction),

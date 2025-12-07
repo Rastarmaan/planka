@@ -8,7 +8,7 @@
  * /permissions/my:
  *   get:
  *     summary: Get current user's permissions
- *     description: Retrieves all document permissions granted to the current user
+ *     description: Retrieves all document permissions granted to the current user (directly or through team membership)
  *     tags:
  *       - Permissions
  */
@@ -19,12 +19,27 @@ module.exports = {
   async fn() {
     const currentUserId = this.req.currentUser.id;
 
-    const permissions = await DocumentPermission.find({
+    // Get user's direct permissions
+    const userPermissions = await DocumentPermission.find({
       user: currentUserId,
     }).populate('grantedByUser');
 
+    const teamMemberships = await TeamMembership.find({
+      userId: currentUserId,
+    });
+    const teamIds = teamMemberships.map((tm) => tm.teamId);
+
+    let teamPermissions = [];
+    if (teamIds.length > 0) {
+      teamPermissions = await DocumentPermission.find({
+        team: teamIds,
+      }).populate('grantedByUser');
+    }
+
+    const allPermissions = [...userPermissions, ...teamPermissions];
+
     const enrichedPermissions = await Promise.all(
-      permissions.map(async (permission) => {
+      allPermissions.map(async (permission) => {
         let resource = null;
         let space = null;
 
@@ -75,8 +90,25 @@ module.exports = {
 
     const validPermissions = enrichedPermissions.filter((p) => p.resource !== null);
 
+    const uniquePermissions = [];
+    const seenResourceIds = new Set();
+
+    validPermissions.sort((a, b) => {
+      const aScore = (a.canEdit ? 4 : 0) + (a.canDelete ? 2 : 0) + (a.canShare ? 1 : 0);
+      const bScore = (b.canEdit ? 4 : 0) + (b.canDelete ? 2 : 0) + (b.canShare ? 1 : 0);
+      return bScore - aScore;
+    });
+
+    validPermissions.forEach((p) => {
+      const key = `${p.resourceType}-${p.resourceId}`;
+      if (!seenResourceIds.has(key)) {
+        seenResourceIds.add(key);
+        uniquePermissions.push(p);
+      }
+    });
+
     return {
-      items: validPermissions,
+      items: uniquePermissions,
     };
   },
 };

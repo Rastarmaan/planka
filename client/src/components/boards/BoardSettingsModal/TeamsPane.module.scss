@@ -1,0 +1,38 @@
+/*!
+ * Copyright (c) 2024 PLANKA Software GmbH
+ * Licensed under the Fair Use License: https://github.com/plankanban/planka/blob/master/LICENSE.md
+ */
+
+:global(#app) {
+  .wrapper {
+    min-height: 300px;
+  }
+
+  .addTeamSection {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 20px;
+  }
+
+  .teamDropdown {
+    flex: 1;
+  }
+
+  .addButton {
+    white-space: nowrap;
+  }
+
+  .teamsTable {
+    margin-top: 10px !important;
+  }
+
+  .noTeams {
+    text-align: center;
+    padding: 40px 20px;
+    color: #999;
+
+    p {
+      margin-top: 10px;
+    }
+  }
+}

@@ -9,6 +9,7 @@ import attachments from './attachments';
 import backgroundImages from './background-images';
 import baseCustomFieldGroups from './base-custom-field-groups';
 import boardMemberships from './board-memberships';
+import boardTeams from './board-teams';
 import boardTemplates from './board-templates';
 import boardVersions from './board-versions';
 import boards from './boards';
@@ -30,11 +31,14 @@ import notificationServices from './notification-services';
 import notifications from './notifications';
 import projectCategories from './project-categories';
 import projectManagers from './project-managers';
+import projectTeams from './project-teams';
 import projectVersions from './project-versions';
 import projects from './projects';
 import socket from './socket';
 import taskLists from './task-lists';
 import tasks from './tasks';
+import teamMemberships from './team-memberships';
+import teams from './teams';
 import terms from './terms';
 import users from './users';
 import webhooks from './webhooks';
@@ -87,4 +91,8 @@ export default {
   ...notifications,
   ...notificationServices,
   ...googleCalendar,
+  ...teams,
+  ...teamMemberships,
+  ...projectTeams,
+  ...boardTeams,
 };

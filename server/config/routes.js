@@ -150,6 +150,25 @@ module.exports.routes = {
   'POST /api/board-templates/:id/card-types': 'board-templates/create-card-type',
   'DELETE /api/board-templates/:id/card-types/:typeId': 'board-templates/delete-card-type',
 
+  'GET /api/teams': 'teams/index',
+  'POST /api/teams': 'teams/create',
+  'GET /api/teams/:id': 'teams/show',
+  'PATCH /api/teams/:id': 'teams/update',
+  'DELETE /api/teams/:id': 'teams/delete',
+
+  'POST /api/teams/:teamId/team-memberships': 'team-memberships/create',
+  'PATCH /api/team-memberships/:id': 'team-memberships/update',
+  'DELETE /api/team-memberships/:id': 'team-memberships/delete',
+
+  'POST /api/projects/:projectId/project-teams': 'project-teams/create',
+  'PATCH /api/project-teams/:id': 'project-teams/update',
+  'DELETE /api/project-teams/:id': 'project-teams/delete',
+
+  'GET /api/boards/:boardId/board-teams': 'board-teams/index',
+  'POST /api/boards/:boardId/board-teams': 'board-teams/create',
+  'PATCH /api/board-teams/:id': 'board-teams/update',
+  'DELETE /api/board-teams/:id': 'board-teams/delete',
+
   'POST /api/projects/:projectId/project-managers': 'project-managers/create',
   'DELETE /api/project-managers/:id': 'project-managers/delete',
 

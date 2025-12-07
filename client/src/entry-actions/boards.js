@@ -108,10 +108,11 @@ const handleBoardDelete = (board) => ({
   },
 });
 
-const importBoardToCurrentProject = (data) => ({
+const importBoardToCurrentProject = (data, callbacks = {}) => ({
   type: EntryActionTypes.BOARD_IMPORT_TO_CURRENT_PROJECT,
   payload: {
     data,
+    callbacks,
   },
 });
 
