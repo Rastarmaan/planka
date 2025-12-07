@@ -99,7 +99,7 @@ module.exports = {
     const isProjectManager =
       project && project.managerUsers.some((managerUser) => managerUser.id === currentUser.id);
 
-    if (!boardMembership && !isProjectManager && currentUser.role !== User.Roles.ADMIN) {
+    if (!boardMembership && !isProjectManager && !User.isAdminLevel(currentUser)) {
       throw 'forbidden';
     }
 

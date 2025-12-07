@@ -155,7 +155,7 @@ module.exports = {
 
       ({ card: linkedCard } = path);
 
-      if (currentUser.role !== User.Roles.ADMIN || path.project.ownerProjectManagerId) {
+      if (!User.isAdminLevel(currentUser) || path.project.ownerProjectManagerId) {
         const isProjectManager = await sails.helpers.users.isProjectManager(
           currentUser.id,
           path.project.id,

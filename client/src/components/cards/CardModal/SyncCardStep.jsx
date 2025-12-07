@@ -14,6 +14,7 @@ import { Popup } from '../../../lib/custom-ui';
 import orm from '../../../orm';
 import selectors from '../../../selectors';
 import entryActions from '../../../entry-actions';
+import { UserRoles } from '../../../constants/Enums';
 
 import styles from './SyncCardStep.module.scss';
 
@@ -30,7 +31,8 @@ const makeSelectProjectsAndBoardsForSync = () =>
       }
 
       const currentUserModel = User.withId(currentUser.id);
-      const isAdmin = currentUser.role === 'admin';
+      const isAdmin =
+        currentUser.role === UserRoles.ADMIN || currentUser.role === UserRoles.MANAGER;
       const projectsMap = new Map();
       const boardsByProject = {};
 

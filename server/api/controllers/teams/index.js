@@ -37,7 +37,7 @@ module.exports = {
     let teams;
     let teamMemberships = [];
 
-    if (currentUser.role === User.Roles.ADMIN) {
+    if (User.isAdminLevel(currentUser)) {
       teams = await Team.qm.getAll();
       if (teams.length > 0) {
         const teamIds = teams.map((t) => t.id);

@@ -167,7 +167,7 @@ module.exports = {
       throw Errors.CANNOT_SYNC_WITH_SELF;
     }
 
-    const isAdmin = currentUser.role === User.Roles.ADMIN;
+    const isAdmin = User.isAdminLevel(currentUser);
     const isSourceProjectManager = await sails.helpers.users.isProjectManager(
       currentUser.id,
       sourceProject.id,

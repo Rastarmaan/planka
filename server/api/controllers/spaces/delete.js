@@ -37,7 +37,7 @@ module.exports = {
 
   async fn(inputs) {
     const { currentUser } = this.req;
-    const isAdmin = currentUser.role === 'admin';
+    const isAdmin = User.isAdminLevel(currentUser);
 
     if (!isAdmin) {
       throw 'forbidden';

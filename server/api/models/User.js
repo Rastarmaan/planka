@@ -40,7 +40,7 @@
  *           example: john.doe@example.com
  *         role:
  *           type: string
- *           enum: [admin, projectOwner, boardUser]
+ *           enum: [admin, manager, projectOwner, boardUser]
  *           description: User role defining access permissions
  *           example: admin
  *         name:
@@ -178,6 +178,7 @@
 
 const Roles = {
   ADMIN: 'admin',
+  MANAGER: 'manager',
   PROJECT_OWNER: 'projectOwner',
   BOARD_USER: 'boardUser',
 };
@@ -268,6 +269,11 @@ module.exports = {
   PERSONAL_FIELD_NAMES,
   INTERNAL,
   OIDC,
+
+  isAdminLevel(userOrRole) {
+    const role = typeof userOrRole === 'string' ? userOrRole : userOrRole && userOrRole.role;
+    return role === Roles.ADMIN || role === Roles.MANAGER;
+  },
 
   attributes: {
     //  ╔═╗╦═╗╦╔╦╗╦╔╦╗╦╦  ╦╔═╗╔═╗
@@ -413,4 +419,9 @@ module.exports = {
   },
 
   tableName: 'user_account',
+
+  // Custom class methods
+  customToJSON() {
+    return this;
+  },
 };

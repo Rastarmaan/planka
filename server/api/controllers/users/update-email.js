@@ -124,7 +124,7 @@ module.exports = {
       if (!inputs.currentPassword) {
         throw Errors.INVALID_CURRENT_PASSWORD;
       }
-    } else if (currentUser.role !== User.Roles.ADMIN) {
+    } else if (!User.isAdminLevel(currentUser)) {
       throw Errors.USER_NOT_FOUND; // Forbidden
     }
 

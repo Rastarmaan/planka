@@ -139,7 +139,7 @@ module.exports = {
     );
 
     let boards;
-    if (currentUser.role !== User.Roles.ADMIN && project.ownerProjectManagerId) {
+    if (!User.isAdminLevel(currentUser) && project.ownerProjectManagerId) {
       if (!isProjectManager) {
         if (boardMemberships.length === 0) {
           throw Errors.PROJECT_NOT_FOUND; // Forbidden

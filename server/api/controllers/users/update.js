@@ -216,7 +216,7 @@ module.exports = {
     const availableInputKeys = ['id', 'name', 'avatar', 'phone', 'organization'];
     if (inputs.id === currentUser.id) {
       availableInputKeys.push(...User.PERSONAL_FIELD_NAMES);
-    } else if (currentUser.role === User.Roles.ADMIN) {
+    } else if (User.isAdminLevel(currentUser)) {
       availableInputKeys.push('role', 'isDeactivated');
     } else {
       throw Errors.USER_NOT_FOUND; // Forbidden

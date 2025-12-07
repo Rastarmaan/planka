@@ -19,7 +19,7 @@ export function* fetchCore() {
   } = yield call(request, api.getCurrentUser, true);
 
   let webhooks;
-  if (user.role === UserRoles.ADMIN) {
+  if (user.role === UserRoles.ADMIN || user.role === UserRoles.MANAGER) {
     ({ items: webhooks } = yield call(request, api.getWebhooks));
   }
 

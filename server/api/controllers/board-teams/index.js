@@ -69,7 +69,7 @@ module.exports = {
       .getPathToProjectById(inputs.boardId)
       .intercept('pathNotFound', () => Errors.BOARD_NOT_FOUND);
 
-    if (currentUser.role !== User.Roles.ADMIN) {
+    if (!User.isAdminLevel(currentUser)) {
       const boardMembership = await BoardMembership.qm.getOneByBoardIdAndUserId(
         board.id,
         currentUser.id,

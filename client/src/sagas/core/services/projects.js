@@ -139,7 +139,8 @@ export function* handleProjectUpdate(project) {
     (!prevProject || !!prevProject.ownerProjectManagerId) && !project.ownerProjectManagerId;
 
   const currentUser = yield select(selectors.selectCurrentUser);
-  const isCurrentUserAdmin = currentUser.role === UserRoles.ADMIN;
+  const isCurrentUserAdmin =
+    currentUser.role === UserRoles.ADMIN || currentUser.role === UserRoles.MANAGER;
 
   const isExternalAccessibleForCurrentUser = yield select(
     selectors.selectIsProjectWithIdExternalAccessibleForCurrentUser,

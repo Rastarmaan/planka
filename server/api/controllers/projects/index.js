@@ -102,7 +102,7 @@ module.exports = {
     const managerProjectIds = await sails.helpers.users.getManagerProjectIds(currentUser.id);
     const fullyVisibleProjectIds = [...managerProjectIds];
 
-    if (currentUser.role === User.Roles.ADMIN) {
+    if (User.isAdminLevel(currentUser)) {
       sharedProjects = await Project.qm.getShared({
         exceptIdOrIds: managerProjectIds,
       });

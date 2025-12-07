@@ -99,7 +99,7 @@ module.exports = {
     }
 
     // Check if user is team manager
-    if (currentUser.role !== User.Roles.ADMIN) {
+    if (!User.isAdminLevel(currentUser)) {
       const teamMembership = await TeamMembership.qm.getOneByTeamIdAndUserId(
         team.id,
         currentUser.id,

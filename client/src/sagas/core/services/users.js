@@ -62,7 +62,10 @@ export function* handleUserUpdate(user) {
   const prevUser = yield select(selectors.selectUserById, user.id);
 
   const isChangedToAdminOrProjectOwner =
-    (!prevUser || (prevUser.role !== user.role && prevUser.role !== UserRoles.ADMIN)) &&
+    (!prevUser ||
+      (prevUser.role !== user.role &&
+        prevUser.role !== UserRoles.ADMIN &&
+        prevUser.role !== UserRoles.MANAGER)) &&
     isUserAdminOrProjectOwner(user);
 
   const currentUser = yield select(selectors.selectCurrentUser);
@@ -101,7 +104,7 @@ export function* handleUserUpdate(user) {
 
     ({ items: users1 } = yield call(request, api.getUsers));
 
-    if (user.role === UserRoles.ADMIN) {
+    if (user.role === UserRoles.ADMIN || user.role === UserRoles.MANAGER) {
       ({ item: config } = yield call(request, api.getConfig));
       ({ items: webhooks } = yield call(request, api.getWebhooks));
 

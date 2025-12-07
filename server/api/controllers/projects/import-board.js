@@ -119,7 +119,7 @@ module.exports = {
       currentUser.id,
     );
 
-    if (!targetProjectManager && currentUser.role !== User.Roles.ADMIN) {
+    if (!targetProjectManager && !User.isAdminLevel(currentUser)) {
       throw Errors.NOT_ENOUGH_RIGHTS;
     }
 
@@ -132,7 +132,7 @@ module.exports = {
       currentUser.id,
     );
 
-    if (!sourceBoardMembership && currentUser.role !== User.Roles.ADMIN) {
+    if (!sourceBoardMembership && !User.isAdminLevel(currentUser)) {
       throw Errors.NOT_ENOUGH_RIGHTS;
     }
 

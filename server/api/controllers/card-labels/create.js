@@ -114,7 +114,7 @@ module.exports = {
     );
 
     if (!boardMembership) {
-      if (currentUser.role !== User.Roles.ADMIN) {
+      if (!User.isAdminLevel(currentUser)) {
         throw Errors.CARD_NOT_FOUND; // Forbidden
       }
     } else if (boardMembership.role !== BoardMembership.Roles.EDITOR) {

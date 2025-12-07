@@ -4,7 +4,7 @@
  */
 
 module.exports = async function canEditFolder(req, res, proceed) {
-  if (req.currentUser.role === 'admin') {
+  if (req.currentUser.role === 'admin' || req.currentUser.role === 'manager') {
     return proceed();
   }
 

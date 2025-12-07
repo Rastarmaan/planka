@@ -146,7 +146,7 @@ module.exports = async function filterCards(req, res) {
   const weightTo = req.query.weightTo ? parseInt(req.query.weightTo, 10) : null;
 
   let accessibleProjectIds;
-  if (currentUser.role === User.Roles.ADMIN) {
+  if (User.isAdminLevel(currentUser)) {
     const allProjects = await Project.find();
     accessibleProjectIds = allProjects.map((p) => p.id);
   } else {

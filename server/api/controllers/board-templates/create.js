@@ -86,7 +86,7 @@ module.exports = {
   async fn(inputs) {
     const { currentUser } = this.req;
 
-    if (currentUser.role !== User.Roles.ADMIN) {
+    if (!User.isAdminLevel(currentUser)) {
       throw Errors.NOT_ENOUGH_RIGHTS;
     }
 

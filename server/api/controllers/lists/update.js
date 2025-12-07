@@ -140,7 +140,7 @@ module.exports = {
     let { list } = pathToProject;
     const { board, project } = pathToProject;
 
-    const isAdmin = currentUser.role === User.Roles.ADMIN;
+    const isAdmin = User.isAdminLevel(currentUser);
     const isProjectManager = await sails.helpers.users.isProjectManager(currentUser.id, project.id);
 
     let boardMembership = await BoardMembership.qm.getOneByBoardIdAndUserId(

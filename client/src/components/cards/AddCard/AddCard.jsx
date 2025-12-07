@@ -19,6 +19,7 @@ import { useClosable, useForm, useNestedRef } from '../../../hooks';
 import { isModifierKeyPressed } from '../../../utils/event-helpers';
 import { getTextDirectionStyles } from '../../../utils/text-direction';
 import { CardTypeIcons } from '../../../constants/Icons';
+import { UserRoles } from '../../../constants/Enums';
 import SelectCardTypeStep from '../SelectCardTypeStep';
 import ImportCardSelectorStep from './ImportCardSelectorStep';
 
@@ -41,7 +42,8 @@ const AddCard = React.memo(({ isOpened, className, listId, onCreate, onClose }) 
   } = board;
 
   const canImportCard = useMemo(() => {
-    if (currentUser?.role === 'admin') return true;
+    if (currentUser?.role === UserRoles.ADMIN || currentUser?.role === UserRoles.MANAGER)
+      return true;
 
     const currentUserMembership = currentUser?.boardMemberships?.find(
       (m) => m.boardId === board.id,

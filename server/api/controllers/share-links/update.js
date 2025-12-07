@@ -47,7 +47,7 @@ module.exports = {
     }
 
     const { currentUser } = this.req;
-    if (shareLink.createdByUser !== currentUser.id && currentUser.role !== 'admin') {
+    if (shareLink.createdByUser !== currentUser.id && !User.isAdminLevel(currentUser)) {
       throw 'forbidden';
     }
 

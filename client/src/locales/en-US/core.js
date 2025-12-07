@@ -122,6 +122,8 @@ export default {
         'Can edit the board layout and assign members to cards.',
       canManageSystemWideSettingsAndActAsProjectOwner:
         'Can manage the system wide settings and act as project owner.',
+      canManageSystemWideSettingsLikeAdmin:
+        'Can manage the system wide settings with full administrative access.',
       canOnlyViewBoard: 'Can only view the board.',
       cardActions_title: 'Card Actions',
       cardNotFound_title: 'Card Not Found',

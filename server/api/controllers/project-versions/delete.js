@@ -102,7 +102,7 @@ module.exports = {
 
     const isProjectManager = await sails.helpers.users.isProjectManager(currentUser.id, project.id);
 
-    if (!isProjectManager && currentUser.role !== User.Roles.ADMIN) {
+    if (!isProjectManager && !User.isAdminLevel(currentUser)) {
       throw Errors.NOT_ENOUGH_RIGHTS;
     }
 
