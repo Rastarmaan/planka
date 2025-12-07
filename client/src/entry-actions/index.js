@@ -29,6 +29,7 @@ import projectCategories from './project-categories';
 import projectManagers from './project-managers';
 import projectTeams from './project-teams';
 import projects from './projects';
+import reports from './reports';
 import socket from './socket';
 import taskLists from './task-lists';
 import tasks from './tasks';
@@ -47,6 +48,7 @@ export default {
   ...core,
   ...modals,
   ...webhooks,
+  ...reports,
   ...users,
   ...projects,
   ...spaces,

@@ -15,6 +15,7 @@ import selectors from '../../../selectors';
 import { useClosableModal } from '../../../hooks';
 import BoardTemplatesPane from './BoardTemplatesPane';
 import GlobalLabelsPane from './GlobalLabelsPane';
+import ReportsPane from './ReportsPane';
 import TeamsPane from './TeamsPane';
 import UsersPane from './UsersPane';
 import WebhooksPane from './WebhooksPane';
@@ -26,6 +27,8 @@ const AdministrationModal = React.memo(() => {
   const [t] = useTranslation();
   const currentUser = useSelector(selectors.selectCurrentUser);
   const isAdmin = currentUser?.role === UserRoles.ADMIN;
+  const isManager = currentUser?.role === UserRoles.MANAGER;
+  const isAdminOrManager = isAdmin || isManager;
   const [activeTabIndex, setActiveTabIndex] = useState(0);
 
   const handleClose = useCallback(() => {
@@ -61,6 +64,16 @@ const AdministrationModal = React.memo(() => {
           },
         ]
       : []),
+    ...(isAdminOrManager
+      ? [
+          {
+            menuItem: t('common.reports', {
+              context: 'title',
+            }),
+            render: () => <ReportsPane />,
+          },
+        ]
+      : []),
     {
       menuItem: t('common.webhooks', {
         context: 'title',
@@ -77,10 +90,20 @@ const AdministrationModal = React.memo(() => {
 
   const isUsersPaneActive = activeTabIndex === 0;
 
+  let reportsPaneIndex = -1;
+  if (isAdmin) {
+    reportsPaneIndex = 3;
+  } else if (isAdminOrManager) {
+    reportsPaneIndex = 1;
+  }
+  const isReportsPaneActive = activeTabIndex === reportsPaneIndex;
+
+  const isLargeModal = isUsersPaneActive || isReportsPaneActive;
+
   return (
     <ClosableModal
       closeIcon
-      size={isUsersPaneActive ? 'large' : 'small'}
+      size={isLargeModal ? 'large' : 'small'}
       centered={false}
       className={classNames(isUsersPaneActive && styles.wrapperUsers)}
       onClose={handleClose}

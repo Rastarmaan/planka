@@ -28,6 +28,8 @@ import ProjectCategoryAssignment from './ProjectCategoryAssignment';
 import ProjectManager from './ProjectManager';
 import ProjectTeam from './ProjectTeam';
 import ReleaseCard from './ReleaseCard';
+import Report from './Report';
+import ReportPhase from './ReportPhase';
 import Task from './Task';
 import TaskList from './TaskList';
 import Team from './Team';
@@ -66,6 +68,8 @@ export {
   ProjectManager,
   ProjectTeam,
   ReleaseCard,
+  Report,
+  ReportPhase,
   Task,
   TaskList,
   Team,

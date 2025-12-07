@@ -13,6 +13,7 @@ import {
   ProjectGroups,
   ProjectOrders,
   ProjectTypes,
+  ReportPhaseStatuses,
   UserRoles,
 } from './Enums';
 
@@ -76,4 +77,10 @@ export const CardTypeIcons = {
   [CardTypes.PROJECT]: 'list alternate outline',
   [CardTypes.STORY]: 'images outline',
   [CardTypes.EPIC]: 'sitemap',
+};
+
+export const ReportPhaseStatusIcons = {
+  [ReportPhaseStatuses.TODO]: 'circle outline',
+  [ReportPhaseStatuses.DOING]: 'circle notch',
+  [ReportPhaseStatuses.DONE]: 'check circle',
 };

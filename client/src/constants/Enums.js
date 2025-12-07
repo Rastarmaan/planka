@@ -79,6 +79,12 @@ export const ListTypeStates = {
   CLOSED: 'closed',
 };
 
+export const ReportPhaseStatuses = {
+  TODO: 'todo',
+  DOING: 'doing',
+  DONE: 'done',
+};
+
 export const ListSortFieldNames = {
   NAME: 'name',
   DUE_DATE: 'dueDate',

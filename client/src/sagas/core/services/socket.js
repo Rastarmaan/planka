@@ -25,6 +25,8 @@ export function* handleSocketReconnect() {
   let user;
   let board;
   let webhooks;
+  let reports;
+  let reportPhases;
   let users;
   let projects;
   let projectManagers;
@@ -55,6 +57,8 @@ export function* handleSocketReconnect() {
       user,
       board,
       webhooks,
+      reports,
+      reportPhases,
       users,
       projects,
       projectManagers,
@@ -88,6 +92,8 @@ export function* handleSocketReconnect() {
       user,
       board,
       webhooks,
+      reports,
+      reportPhases,
       users,
       projects,
       projectManagers,

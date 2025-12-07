@@ -1,0 +1,50 @@
+/*!
+ * Copyright (c) 2024 PLANKA Software GmbH
+ * Licensed under the Fair Use License: https://github.com/plankanban/planka/blob/master/LICENSE.md
+ */
+
+module.exports = {
+  inputs: {
+    record: {
+      type: 'ref',
+      required: true,
+    },
+    values: {
+      type: 'json',
+      required: true,
+    },
+    request: {
+      type: 'ref',
+    },
+  },
+
+  async fn(inputs) {
+    const phase = await ReportPhase.updateOne(inputs.record.id).set(inputs.values);
+
+    if (!phase) {
+      return inputs.record;
+    }
+
+    const phaseData = {
+      ...phase,
+      reportId: phase.report,
+    };
+
+    const adminUsers = await User.find({
+      or: [{ role: User.Roles.ADMIN }, { role: User.Roles.MANAGER }],
+    });
+
+    adminUsers.forEach((user) => {
+      sails.sockets.broadcast(
+        `user:${user.id}`,
+        'reportPhaseUpdate',
+        {
+          item: phaseData,
+        },
+        inputs.request,
+      );
+    });
+
+    return phaseData;
+  },
+};
