@@ -31,6 +31,8 @@ import {
   ProjectManager,
   ProjectTeam,
   ReleaseCard,
+  Report,
+  ReportPhase,
   Task,
   TaskList,
   Team,
@@ -85,6 +87,8 @@ orm.register(
   Activity,
   Notification,
   NotificationService,
+  Report,
+  ReportPhase,
 );
 
 export default orm;

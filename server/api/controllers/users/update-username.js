@@ -122,7 +122,7 @@ module.exports = {
   async fn(inputs) {
     const { currentUser } = this.req;
 
-    if (inputs.id !== currentUser.id && currentUser.role !== User.Roles.ADMIN) {
+    if (inputs.id !== currentUser.id && !User.isAdminLevel(currentUser)) {
       throw Errors.USER_NOT_FOUND; // Forbidden
     }
 

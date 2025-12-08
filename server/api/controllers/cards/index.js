@@ -196,7 +196,7 @@ module.exports = {
       .getPathToProjectById(inputs.listId)
       .intercept('pathNotFound', () => Errors.LIST_NOT_FOUND);
 
-    if (currentUser.role !== User.Roles.ADMIN && project.ownerProjectManagerId) {
+    if (!User.isAdminLevel(currentUser) && project.ownerProjectManagerId) {
       const isProjectManager = await sails.helpers.users.isProjectManager(
         currentUser.id,
         project.id,

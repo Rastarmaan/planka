@@ -74,7 +74,7 @@ module.exports = {
       (managerUser) => managerUser.id === currentUser.id,
     );
 
-    if (!isProjectManager && currentUser.role !== User.Roles.ADMIN) {
+    if (!isProjectManager && !User.isAdminLevel(currentUser)) {
       throw 'forbidden';
     }
 

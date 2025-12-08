@@ -71,6 +71,16 @@ module.exports.routes = {
   'PATCH /api/webhooks/:id': 'webhooks/update',
   'DELETE /api/webhooks/:id': 'webhooks/delete',
 
+  'GET /api/reports': 'reports/index',
+  'POST /api/reports': 'reports/create',
+  'GET /api/reports/:id': 'reports/show',
+  'PATCH /api/reports/:id': 'reports/update',
+  'DELETE /api/reports/:id': 'reports/delete',
+
+  'POST /api/reports/:reportId/phases': 'report-phases/create',
+  'PATCH /api/report-phases/:id': 'report-phases/update',
+  'DELETE /api/report-phases/:id': 'report-phases/delete',
+
   'POST /api/access-tokens': 'access-tokens/create',
   'POST /api/access-tokens/exchange-with-oidc': 'access-tokens/exchange-with-oidc',
   'POST /api/access-tokens/accept-terms': 'access-tokens/accept-terms',

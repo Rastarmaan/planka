@@ -62,7 +62,7 @@ module.exports = {
     }
 
     const { currentUser } = this.req;
-    const isAdmin = currentUser.role === 'admin';
+    const isAdmin = User.isAdminLevel(currentUser);
 
     let space;
     let hasPermission = false;

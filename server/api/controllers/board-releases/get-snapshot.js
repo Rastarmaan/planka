@@ -96,7 +96,7 @@ module.exports = {
     );
 
     const canView =
-      isProjectManager || currentUser.role === User.Roles.ADMIN || boardMembership !== undefined;
+      isProjectManager || User.isAdminLevel(currentUser) || boardMembership !== undefined;
 
     if (!canView) {
       throw 'forbidden';

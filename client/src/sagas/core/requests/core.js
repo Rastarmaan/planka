@@ -19,8 +19,13 @@ export function* fetchCore() {
   } = yield call(request, api.getCurrentUser, true);
 
   let webhooks;
-  if (user.role === UserRoles.ADMIN) {
+  let reports;
+  let reportPhases;
+  if (user.role === UserRoles.ADMIN || user.role === UserRoles.MANAGER) {
     ({ items: webhooks } = yield call(request, api.getWebhooks));
+    const reportsResponse = yield call(request, api.getReports);
+    reports = reportsResponse.items;
+    reportPhases = reportsResponse.included?.reportPhases || [];
   }
 
   let users1;
@@ -114,6 +119,8 @@ export function* fetchCore() {
     user,
     board,
     webhooks,
+    reports,
+    reportPhases,
     projectManagers,
     projectCategories,
     projectCategoryAssignments,

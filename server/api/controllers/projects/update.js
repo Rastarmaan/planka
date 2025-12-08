@@ -217,7 +217,7 @@ module.exports = {
 
         availableInputKeys.push('ownerProjectManagerId', 'isHidden');
       }
-    } else if (currentUser.role === User.Roles.ADMIN) {
+    } else if (User.isAdminLevel(currentUser)) {
       availableInputKeys.push('ownerProjectManagerId', 'isHidden');
     } else if (projectManager) {
       availableInputKeys.push('isHidden');
@@ -264,7 +264,7 @@ module.exports = {
     }
 
     if (!_.isUndefined(inputs.isFavorite)) {
-      if (currentUser.role !== User.Roles.ADMIN && project.ownerProjectManagerId) {
+      if (!User.isAdminLevel(currentUser) && project.ownerProjectManagerId) {
         if (!projectManager) {
           const boardMembershipsTotal =
             await sails.helpers.projects.getBoardMembershipsTotalByIdAndUserId(

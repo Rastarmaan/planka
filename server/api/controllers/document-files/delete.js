@@ -30,7 +30,7 @@ module.exports = {
     }
 
     const { currentUser } = this.req;
-    const isAdmin = currentUser.role === 'admin';
+    const isAdmin = User.isAdminLevel(currentUser);
 
     if (!isAdmin) {
       const hasPermission = await sails.helpers.permissions.checkPermission.with({

@@ -34,6 +34,7 @@ import projectManagers from './project-managers';
 import projectTeams from './project-teams';
 import projectVersions from './project-versions';
 import projects from './projects';
+import reports from './reports';
 import socket from './socket';
 import taskLists from './task-lists';
 import tasks from './tasks';
@@ -56,6 +57,7 @@ export default {
   ...terms,
   ...accessTokens,
   ...webhooks,
+  ...reports,
   ...users,
   ...projects,
   ...spaces,

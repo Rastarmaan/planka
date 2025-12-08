@@ -4,7 +4,7 @@
  */
 
 module.exports = async function isAuthenticated(req, res, proceed) {
-  if (req.currentUser.role !== User.Roles.ADMIN) {
+  if (req.currentUser.role !== User.Roles.ADMIN && req.currentUser.role !== User.Roles.MANAGER) {
     return res.notFound(); // Forbidden
   }
 

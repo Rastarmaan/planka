@@ -20,6 +20,7 @@ export const HomeViews = {
 
 export const UserRoles = {
   ADMIN: 'admin',
+  MANAGER: 'manager',
   PROJECT_OWNER: 'projectOwner',
   BOARD_USER: 'boardUser',
 };
@@ -76,6 +77,12 @@ export const ListTypes = {
 export const ListTypeStates = {
   OPENED: 'opened',
   CLOSED: 'closed',
+};
+
+export const ReportPhaseStatuses = {
+  TODO: 'todo',
+  DOING: 'doing',
+  DONE: 'done',
 };
 
 export const ListSortFieldNames = {

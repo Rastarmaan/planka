@@ -84,7 +84,7 @@ module.exports = {
     }
 
     // Check if user is project manager or admin
-    if (currentUser.role !== User.Roles.ADMIN) {
+    if (!User.isAdminLevel(currentUser)) {
       const isProjectManager = await sails.helpers.users.isProjectManager(
         currentUser.id,
         project.id,

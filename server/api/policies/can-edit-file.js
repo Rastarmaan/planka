@@ -4,7 +4,7 @@
  */
 
 module.exports = async function canEditFile(req, res, proceed) {
-  if (req.currentUser.role === 'admin') {
+  if (req.currentUser.role === 'admin' || req.currentUser.role === 'manager') {
     return proceed();
   }
 

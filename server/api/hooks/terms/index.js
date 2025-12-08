@@ -65,7 +65,9 @@ module.exports = function defineTermsHook(sails) {
     },
 
     getTypeByUserRole(userRole) {
-      return userRole === User.Roles.ADMIN ? Types.EXTENDED : Types.GENERAL;
+      return userRole === User.Roles.ADMIN || userRole === User.Roles.MANAGER
+        ? Types.EXTENDED
+        : Types.GENERAL;
     },
 
     getContent(type, language = DEFAULT_LANGUAGE) {

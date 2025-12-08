@@ -96,7 +96,7 @@ module.exports = {
     const { currentUser } = this.req;
 
     let user;
-    if (currentUser.role === User.Roles.ADMIN) {
+    if (User.isAdminLevel(currentUser)) {
       user = await User.qm.getOneById(inputs.id);
 
       if (!user) {

@@ -87,7 +87,7 @@ module.exports = {
 
     const canEdit =
       isProjectManager ||
-      currentUser.role === User.Roles.ADMIN ||
+      User.isAdminLevel(currentUser) ||
       (boardMembership && boardMembership.role === BoardMembership.Roles.EDITOR);
 
     if (!canEdit) {
