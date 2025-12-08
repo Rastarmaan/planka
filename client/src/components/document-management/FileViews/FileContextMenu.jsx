@@ -26,9 +26,106 @@ const FileContextMenu = React.memo(
   }) => {
     const [t] = useTranslation();
     const menuRef = useRef(null);
-    const isImageFile = file.type === 'file' && file.mimeType && file.mimeType.startsWith('image/');
-    const isVideoFile = file.type === 'file' && file.mimeType && file.mimeType.startsWith('video/');
-    const isPreviewable = isImageFile || isVideoFile;
+
+    const canPreviewFile = useCallback(() => {
+      if (file.type !== 'file') return false;
+      const { mimeType, name } = file;
+
+      // Image files
+      if (mimeType && mimeType.startsWith('image/')) return true;
+
+      // Video files
+      if (mimeType && mimeType.startsWith('video/')) return true;
+
+      // Audio files
+      if (mimeType && mimeType.startsWith('audio/')) return true;
+      if (name) {
+        const ext = name.split('.').pop().toLowerCase();
+        if (['mp3', 'wav', 'ogg', 'm4a', 'aac', 'flac', 'wma', 'aiff'].includes(ext)) return true;
+      }
+
+      // PDF files
+      if (mimeType === 'application/pdf') return true;
+      if (name && name.toLowerCase().endsWith('.pdf')) return true;
+
+      // Text/code files
+      const textMimeTypes = [
+        'text/plain',
+        'text/markdown',
+        'text/csv',
+        'text/html',
+        'text/css',
+        'text/javascript',
+        'text/xml',
+        'application/json',
+        'application/javascript',
+        'application/xml',
+      ];
+      if (mimeType && (textMimeTypes.includes(mimeType) || mimeType.startsWith('text/'))) {
+        return true;
+      }
+      if (name) {
+        const ext = name.split('.').pop().toLowerCase();
+        const textExtensions = [
+          'txt',
+          'md',
+          'markdown',
+          'csv',
+          'tsv',
+          'log',
+          'html',
+          'htm',
+          'css',
+          'scss',
+          'sass',
+          'less',
+          'js',
+          'jsx',
+          'ts',
+          'tsx',
+          'mjs',
+          'cjs',
+          'py',
+          'pyw',
+          'java',
+          'kt',
+          'c',
+          'cpp',
+          'h',
+          'hpp',
+          'cs',
+          'go',
+          'rs',
+          'rb',
+          'php',
+          'swift',
+          'scala',
+          'sh',
+          'bash',
+          'zsh',
+          'ps1',
+          'bat',
+          'cmd',
+          'json',
+          'xml',
+          'yaml',
+          'yml',
+          'toml',
+          'ini',
+          'cfg',
+          'conf',
+          'env',
+          'sql',
+          'vue',
+          'svelte',
+        ];
+        if (textExtensions.includes(ext)) return true;
+      }
+
+      return false;
+    }, [file]);
+
+    const isPreviewable = canPreviewFile();
 
     useEffect(() => {
       const handleClickOutside = (e) => {
@@ -103,7 +200,7 @@ const FileContextMenu = React.memo(
             <span>{t('documentManagement.preview')}</span>
           </div>
         )}
-        {file.type === 'file' && (
+        {(file.type === 'file' || file.type === 'folder') && (
           <div
             role="button"
             tabIndex={0}
@@ -112,7 +209,11 @@ const FileContextMenu = React.memo(
             onKeyDown={(e) => e.key === 'Enter' && handleAction('download', onDownload)}
           >
             <Icon name="download" />
-            <span>{t('documentManagement.download')}</span>
+            <span>
+              {file.type === 'folder'
+                ? t('documentManagement.download', 'Download')
+                : t('documentManagement.download')}
+            </span>
           </div>
         )}
         {file.type === 'folder' && canRename && (
@@ -162,6 +263,7 @@ const FileContextMenu = React.memo(
 FileContextMenu.propTypes = {
   file: PropTypes.shape({
     id: PropTypes.oneOfType([PropTypes.string, PropTypes.number]).isRequired,
+    name: PropTypes.string,
     type: PropTypes.string.isRequired,
     mimeType: PropTypes.string,
   }).isRequired,
