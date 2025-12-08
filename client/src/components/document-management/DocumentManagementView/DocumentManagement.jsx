@@ -598,13 +598,116 @@ const DocumentManagement = React.memo(() => {
 
   const handlePreview = () => {
     const file = files.find((f) => f.id === selectedFile);
-    if (
-      file &&
-      file.type === 'file' &&
-      file.mimeType &&
-      (file.mimeType.startsWith('image/') || file.mimeType.startsWith('video/'))
-    ) {
-      setPreviewFile(file);
+    if (file && file.type === 'file') {
+      const { mimeType, name } = file;
+
+      // Image files
+      if (mimeType && mimeType.startsWith('image/')) {
+        setPreviewFile(file);
+        return;
+      }
+
+      // Video files
+      if (mimeType && mimeType.startsWith('video/')) {
+        setPreviewFile(file);
+        return;
+      }
+
+      // Audio files
+      if (mimeType && mimeType.startsWith('audio/')) {
+        setPreviewFile(file);
+        return;
+      }
+      if (name) {
+        const ext = name.split('.').pop().toLowerCase();
+        if (['mp3', 'wav', 'ogg', 'm4a', 'aac', 'flac', 'wma', 'aiff'].includes(ext)) {
+          setPreviewFile(file);
+          return;
+        }
+      }
+
+      // PDF files
+      if (mimeType === 'application/pdf' || (name && name.toLowerCase().endsWith('.pdf'))) {
+        setPreviewFile(file);
+        return;
+      }
+
+      // Text/code files
+      const textMimeTypes = [
+        'text/plain',
+        'text/markdown',
+        'text/csv',
+        'text/html',
+        'text/css',
+        'text/javascript',
+        'text/xml',
+        'application/json',
+        'application/javascript',
+        'application/xml',
+      ];
+      if (mimeType && (textMimeTypes.includes(mimeType) || mimeType.startsWith('text/'))) {
+        setPreviewFile(file);
+        return;
+      }
+      if (name) {
+        const ext = name.split('.').pop().toLowerCase();
+        const textExtensions = [
+          'txt',
+          'md',
+          'markdown',
+          'csv',
+          'tsv',
+          'log',
+          'html',
+          'htm',
+          'css',
+          'scss',
+          'sass',
+          'less',
+          'js',
+          'jsx',
+          'ts',
+          'tsx',
+          'mjs',
+          'cjs',
+          'py',
+          'pyw',
+          'java',
+          'kt',
+          'c',
+          'cpp',
+          'h',
+          'hpp',
+          'cs',
+          'go',
+          'rs',
+          'rb',
+          'php',
+          'swift',
+          'scala',
+          'sh',
+          'bash',
+          'zsh',
+          'ps1',
+          'bat',
+          'cmd',
+          'json',
+          'xml',
+          'yaml',
+          'yml',
+          'toml',
+          'ini',
+          'cfg',
+          'conf',
+          'env',
+          'sql',
+          'vue',
+          'svelte',
+        ];
+        if (textExtensions.includes(ext)) {
+          setPreviewFile(file);
+        }
+      }
     }
   };
 
@@ -693,13 +796,116 @@ const DocumentManagement = React.memo(() => {
   };
 
   const handleContextMenuPreview = (file) => {
-    if (
-      file &&
-      file.type === 'file' &&
-      file.mimeType &&
-      (file.mimeType.startsWith('image/') || file.mimeType.startsWith('video/'))
-    ) {
-      setPreviewFile(file);
+    if (file && file.type === 'file') {
+      const { mimeType, name } = file;
+
+      // Image files
+      if (mimeType && mimeType.startsWith('image/')) {
+        setPreviewFile(file);
+        return;
+      }
+
+      // Video files
+      if (mimeType && mimeType.startsWith('video/')) {
+        setPreviewFile(file);
+        return;
+      }
+
+      // Audio files
+      if (mimeType && mimeType.startsWith('audio/')) {
+        setPreviewFile(file);
+        return;
+      }
+      if (name) {
+        const ext = name.split('.').pop().toLowerCase();
+        if (['mp3', 'wav', 'ogg', 'm4a', 'aac', 'flac', 'wma', 'aiff'].includes(ext)) {
+          setPreviewFile(file);
+          return;
+        }
+      }
+
+      // PDF files
+      if (mimeType === 'application/pdf' || (name && name.toLowerCase().endsWith('.pdf'))) {
+        setPreviewFile(file);
+        return;
+      }
+
+      // Text/code files
+      const textMimeTypes = [
+        'text/plain',
+        'text/markdown',
+        'text/csv',
+        'text/html',
+        'text/css',
+        'text/javascript',
+        'text/xml',
+        'application/json',
+        'application/javascript',
+        'application/xml',
+      ];
+      if (mimeType && (textMimeTypes.includes(mimeType) || mimeType.startsWith('text/'))) {
+        setPreviewFile(file);
+        return;
+      }
+      if (name) {
+        const ext = name.split('.').pop().toLowerCase();
+        const textExtensions = [
+          'txt',
+          'md',
+          'markdown',
+          'csv',
+          'tsv',
+          'log',
+          'html',
+          'htm',
+          'css',
+          'scss',
+          'sass',
+          'less',
+          'js',
+          'jsx',
+          'ts',
+          'tsx',
+          'mjs',
+          'cjs',
+          'py',
+          'pyw',
+          'java',
+          'kt',
+          'c',
+          'cpp',
+          'h',
+          'hpp',
+          'cs',
+          'go',
+          'rs',
+          'rb',
+          'php',
+          'swift',
+          'scala',
+          'sh',
+          'bash',
+          'zsh',
+          'ps1',
+          'bat',
+          'cmd',
+          'json',
+          'xml',
+          'yaml',
+          'yml',
+          'toml',
+          'ini',
+          'cfg',
+          'conf',
+          'env',
+          'sql',
+          'vue',
+          'svelte',
+        ];
+        if (textExtensions.includes(ext)) {
+          setPreviewFile(file);
+        }
+      }
     }
   };
 
@@ -1147,7 +1353,7 @@ const DocumentManagement = React.memo(() => {
       {previewFile && (
         <FilePreviewModal
           file={previewFile}
-          files={files}
+          files={getFilteredFiles()}
           onClose={handleClosePreview}
           onShare={() => handleShare(previewFile)}
           onDownload={handleDownload}
