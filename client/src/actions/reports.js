@@ -28,10 +28,12 @@ createReport.failure = (localId, error) => ({
   },
 });
 
-const handleReportCreate = (report) => ({
+const handleReportCreate = (report, reportPhases, reportPhaseMemberships) => ({
   type: ActionTypes.REPORT_CREATE_HANDLE,
   payload: {
     report,
+    reportPhases,
+    reportPhaseMemberships,
   },
 });
 
@@ -101,11 +103,12 @@ const createReportPhase = (reportPhase) => ({
   },
 });
 
-createReportPhase.success = (localId, reportPhase) => ({
+createReportPhase.success = (localId, reportPhase, reportPhaseMemberships) => ({
   type: ActionTypes.REPORT_PHASE_CREATE__SUCCESS,
   payload: {
     localId,
     reportPhase,
+    reportPhaseMemberships,
   },
 });
 
@@ -117,10 +120,11 @@ createReportPhase.failure = (localId, error) => ({
   },
 });
 
-const handleReportPhaseCreate = (reportPhase) => ({
+const handleReportPhaseCreate = (reportPhase, reportPhaseMemberships) => ({
   type: ActionTypes.REPORT_PHASE_CREATE_HANDLE,
   payload: {
     reportPhase,
+    reportPhaseMemberships,
   },
 });
 
@@ -132,10 +136,11 @@ const updateReportPhase = (id, data) => ({
   },
 });
 
-updateReportPhase.success = (reportPhase) => ({
+updateReportPhase.success = (reportPhase, reportPhaseMemberships) => ({
   type: ActionTypes.REPORT_PHASE_UPDATE__SUCCESS,
   payload: {
     reportPhase,
+    reportPhaseMemberships,
   },
 });
 
@@ -147,10 +152,11 @@ updateReportPhase.failure = (id, error) => ({
   },
 });
 
-const handleReportPhaseUpdate = (reportPhase) => ({
+const handleReportPhaseUpdate = (reportPhase, reportPhaseMemberships) => ({
   type: ActionTypes.REPORT_PHASE_UPDATE_HANDLE,
   payload: {
     reportPhase,
+    reportPhaseMemberships,
   },
 });
 

@@ -85,6 +85,11 @@ export const ReportPhaseStatuses = {
   DONE: 'done',
 };
 
+export const ReportPhasePermissions = {
+  VIEW: 'view',
+  EDIT: 'edit',
+};
+
 export const ListSortFieldNames = {
   NAME: 'name',
   DUE_DATE: 'dueDate',

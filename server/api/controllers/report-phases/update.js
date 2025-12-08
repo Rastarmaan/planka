@@ -72,6 +72,13 @@ module.exports = {
     position: {
       type: 'number',
     },
+    project: {
+      type: 'string',
+      allowNull: true,
+    },
+    memberships: {
+      type: 'json',
+    },
   },
 
   exits: {
@@ -87,7 +94,7 @@ module.exports = {
       throw 'notFound';
     }
 
-    let phase = await ReportPhase.findOne({
+    const phase = await ReportPhase.findOne({
       id: inputs.id,
       isDeleted: false,
     });
@@ -103,16 +110,19 @@ module.exports = {
       'endDate',
       'status',
       'position',
+      'project',
+      'memberships',
     ]);
 
-    phase = await sails.helpers.reportPhases.updateOne.with({
+    const result = await sails.helpers.reportPhases.updateOne.with({
       record: phase,
       values,
       request: this.req,
     });
 
     return {
-      item: phase,
+      item: result.phase,
+      reportPhaseMemberships: result.reportPhaseMemberships,
     };
   },
 };

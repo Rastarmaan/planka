@@ -394,6 +394,30 @@ const createSocketEventsChannel = () =>
       emit(entryActions.handlePermissionDelete(item));
     };
 
+    const handleReportCreate = ({ item, reportPhases, reportPhaseMemberships }) => {
+      emit(entryActions.handleReportCreate(item, reportPhases, reportPhaseMemberships));
+    };
+
+    const handleReportUpdate = ({ item }) => {
+      emit(entryActions.handleReportUpdate(item));
+    };
+
+    const handleReportDelete = ({ item }) => {
+      emit(entryActions.handleReportDelete(item));
+    };
+
+    const handleReportPhaseCreate = ({ item, reportPhaseMemberships }) => {
+      emit(entryActions.handleReportPhaseCreate(item, reportPhaseMemberships));
+    };
+
+    const handleReportPhaseUpdate = ({ item, reportPhaseMemberships }) => {
+      emit(entryActions.handleReportPhaseUpdate(item, reportPhaseMemberships));
+    };
+
+    const handleReportPhaseDelete = ({ item }) => {
+      emit(entryActions.handleReportPhaseDelete(item));
+    };
+
     socket.on('disconnect', handleDisconnect);
     socket.on('reconnect', handleReconnect);
 
@@ -524,6 +548,14 @@ const createSocketEventsChannel = () =>
     socket.on('permissionCreate', handlePermissionCreate);
     socket.on('permissionDelete', handlePermissionDelete);
 
+    socket.on('reportCreate', handleReportCreate);
+    socket.on('reportUpdate', handleReportUpdate);
+    socket.on('reportDelete', handleReportDelete);
+
+    socket.on('reportPhaseCreate', handleReportPhaseCreate);
+    socket.on('reportPhaseUpdate', handleReportPhaseUpdate);
+    socket.on('reportPhaseDelete', handleReportPhaseDelete);
+
     return () => {
       socket.off('disconnect', handleDisconnect);
       socket.off('reconnect', handleReconnect);
@@ -650,6 +682,14 @@ const createSocketEventsChannel = () =>
 
       socket.off('permissionCreate', handlePermissionCreate);
       socket.off('permissionDelete', handlePermissionDelete);
+
+      socket.off('reportCreate', handleReportCreate);
+      socket.off('reportUpdate', handleReportUpdate);
+      socket.off('reportDelete', handleReportDelete);
+
+      socket.off('reportPhaseCreate', handleReportPhaseCreate);
+      socket.off('reportPhaseUpdate', handleReportPhaseUpdate);
+      socket.off('reportPhaseDelete', handleReportPhaseDelete);
     };
   });
 

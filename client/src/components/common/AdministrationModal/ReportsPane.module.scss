@@ -59,6 +59,10 @@
   }
 
   .phasesSection {
+    width: 100%;
+    max-width: 100%;
+    overflow: hidden;
+
     .phasesHeader {
       display: flex;
       justify-content: space-between;
@@ -133,7 +137,14 @@
     }
 
     table {
-      table-layout: fixed;
+      width: 100%;
+      table-layout: auto;
+
+      th {
+        white-space: nowrap;
+        font-weight: 600;
+        font-size: 13px;
+      }
 
       td {
         vertical-align: middle;
@@ -151,6 +162,10 @@
 
         .ui.selection.dropdown {
           min-height: 36px;
+
+          .menu > .item {
+            white-space: nowrap !important;
+          }
         }
 
         .ui.buttons {
@@ -177,33 +192,161 @@
 
       th:nth-child(1),
       td:nth-child(1) {
-        width: 12%;
+        width: 10%;
+        min-width: 80px;
       }
 
       th:nth-child(2),
       td:nth-child(2) {
-        width: 22%;
+        width: 18%;
+        min-width: 100px;
       }
 
       th:nth-child(3),
       td:nth-child(3) {
-        width: 14%;
+        width: 12%;
+        min-width: 90px;
       }
 
       th:nth-child(4),
       td:nth-child(4) {
-        width: 14%;
+        width: 12%;
+        min-width: 90px;
       }
 
       th:nth-child(5),
       td:nth-child(5) {
-        width: 14%;
+        width: 12%;
+        min-width: 85px;
       }
 
       th:nth-child(6),
       td:nth-child(6) {
-        width: 24%;
+        width: 12%;
+        min-width: 95px;
+      }
+
+      th:nth-child(7),
+      td:nth-child(7) {
+        width: 12%;
+        min-width: 95px;
+      }
+
+      th:nth-child(8),
+      td:nth-child(8) {
+        width: 12%;
+        min-width: 80px;
         text-align: center;
+      }
+    }
+
+    .membershipsList {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      margin-top: 12px;
+      max-height: 300px;
+      overflow-y: auto;
+      padding-right: 4px;
+
+      &::-webkit-scrollbar {
+        width: 6px;
+      }
+
+      &::-webkit-scrollbar-track {
+        background: rgba(0, 0, 0, 0.05);
+        border-radius: 3px;
+      }
+
+      &::-webkit-scrollbar-thumb {
+        background: rgba(0, 0, 0, 0.2);
+        border-radius: 3px;
+
+        &:hover {
+          background: rgba(0, 0, 0, 0.3);
+        }
+      }
+
+      .membershipItem {
+        display: flex;
+        gap: 12px;
+        align-items: center;
+        padding: 8px 12px;
+        background: rgba(0, 0, 0, 0.03);
+        border-radius: 4px;
+
+        .membershipUser {
+          display: flex;
+          align-items: center;
+          gap: 10px;
+          flex: 1;
+          min-width: 0;
+
+          .membershipAvatar {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            object-fit: cover;
+            flex-shrink: 0;
+          }
+
+          span {
+            flex: 1;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+          }
+        }
+
+        .membershipActions {
+          display: flex;
+          align-items: center;
+          gap: 8px;
+          flex-shrink: 0;
+
+          > .ui.dropdown {
+            min-width: 100px;
+          }
+
+          > button {
+            margin: 0;
+          }
+        }
+      }
+    }
+
+    .assignedPeopleCell {
+      .avatarList {
+        display: flex;
+        align-items: center;
+        gap: 4px;
+
+        .avatarSmall {
+          width: 28px;
+          height: 28px;
+          border-radius: 50%;
+          object-fit: cover;
+          border: 2px solid white;
+          cursor: pointer;
+
+          &:not(:first-child) {
+            margin-left: -8px;
+          }
+        }
+
+        .moreCount {
+          display: inline-flex;
+          align-items: center;
+          justify-content: center;
+          width: 28px;
+          height: 28px;
+          border-radius: 50%;
+          background: rgba(0, 0, 0, 0.1);
+          font-size: 11px;
+          font-weight: 600;
+          margin-left: -8px;
+          border: 2px solid white;
+        }
       }
     }
   }

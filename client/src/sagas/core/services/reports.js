@@ -32,8 +32,8 @@ export function* createReport(data) {
   yield put(actions.createReport.success(localId, report));
 }
 
-export function* handleReportCreate(report, reportPhases) {
-  yield put(actions.handleReportCreate(report, reportPhases));
+export function* handleReportCreate(report, reportPhases, reportPhaseMemberships) {
+  yield put(actions.handleReportCreate(report, reportPhases, reportPhaseMemberships));
 }
 
 export function* updateReport(id, data) {
@@ -84,36 +84,48 @@ export function* createReportPhase(reportId, data) {
   );
 
   let reportPhase;
+  let reportPhaseMemberships;
   try {
-    ({ item: reportPhase } = yield call(request, api.createReportPhase, reportId, data));
+    ({ item: reportPhase, reportPhaseMemberships } = yield call(
+      request,
+      api.createReportPhase,
+      reportId,
+      data,
+    ));
   } catch (error) {
     yield put(actions.createReportPhase.failure(localId, error));
     return;
   }
 
-  yield put(actions.createReportPhase.success(localId, reportPhase));
+  yield put(actions.createReportPhase.success(localId, reportPhase, reportPhaseMemberships));
 }
 
-export function* handleReportPhaseCreate(reportPhase) {
-  yield put(actions.handleReportPhaseCreate(reportPhase));
+export function* handleReportPhaseCreate(reportPhase, reportPhaseMemberships) {
+  yield put(actions.handleReportPhaseCreate(reportPhase, reportPhaseMemberships));
 }
 
 export function* updateReportPhase(id, data) {
   yield put(actions.updateReportPhase(id, data));
 
   let reportPhase;
+  let reportPhaseMemberships;
   try {
-    ({ item: reportPhase } = yield call(request, api.updateReportPhase, id, data));
+    ({ item: reportPhase, reportPhaseMemberships } = yield call(
+      request,
+      api.updateReportPhase,
+      id,
+      data,
+    ));
   } catch (error) {
     yield put(actions.updateReportPhase.failure(id, error));
     return;
   }
 
-  yield put(actions.updateReportPhase.success(reportPhase));
+  yield put(actions.updateReportPhase.success(reportPhase, reportPhaseMemberships));
 }
 
-export function* handleReportPhaseUpdate(reportPhase) {
-  yield put(actions.handleReportPhaseUpdate(reportPhase));
+export function* handleReportPhaseUpdate(reportPhase, reportPhaseMemberships) {
+  yield put(actions.handleReportPhaseUpdate(reportPhase, reportPhaseMemberships));
 }
 
 export function* deleteReportPhase(id) {

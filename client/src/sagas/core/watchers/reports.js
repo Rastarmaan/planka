@@ -13,8 +13,10 @@ export default function* reportsWatchers() {
     takeEvery(EntryActionTypes.REPORT_CREATE, ({ payload: { data } }) =>
       services.createReport(data),
     ),
-    takeEvery(EntryActionTypes.REPORT_CREATE_HANDLE, ({ payload: { report, reportPhases } }) =>
-      services.handleReportCreate(report, reportPhases),
+    takeEvery(
+      EntryActionTypes.REPORT_CREATE_HANDLE,
+      ({ payload: { report, reportPhases, reportPhaseMemberships } }) =>
+        services.handleReportCreate(report, reportPhases, reportPhaseMemberships),
     ),
     takeEvery(EntryActionTypes.REPORT_UPDATE, ({ payload: { id, data } }) =>
       services.updateReport(id, data),
@@ -29,14 +31,18 @@ export default function* reportsWatchers() {
     takeEvery(EntryActionTypes.REPORT_PHASE_CREATE, ({ payload: { reportId, data } }) =>
       services.createReportPhase(reportId, data),
     ),
-    takeEvery(EntryActionTypes.REPORT_PHASE_CREATE_HANDLE, ({ payload: { reportPhase } }) =>
-      services.handleReportPhaseCreate(reportPhase),
+    takeEvery(
+      EntryActionTypes.REPORT_PHASE_CREATE_HANDLE,
+      ({ payload: { reportPhase, reportPhaseMemberships } }) =>
+        services.handleReportPhaseCreate(reportPhase, reportPhaseMemberships),
     ),
     takeEvery(EntryActionTypes.REPORT_PHASE_UPDATE, ({ payload: { id, data } }) =>
       services.updateReportPhase(id, data),
     ),
-    takeEvery(EntryActionTypes.REPORT_PHASE_UPDATE_HANDLE, ({ payload: { reportPhase } }) =>
-      services.handleReportPhaseUpdate(reportPhase),
+    takeEvery(
+      EntryActionTypes.REPORT_PHASE_UPDATE_HANDLE,
+      ({ payload: { reportPhase, reportPhaseMemberships } }) =>
+        services.handleReportPhaseUpdate(reportPhase, reportPhaseMemberships),
     ),
     takeEvery(EntryActionTypes.REPORT_PHASE_DELETE, ({ payload: { id } }) =>
       services.deleteReportPhase(id),

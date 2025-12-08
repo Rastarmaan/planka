@@ -4,55 +4,29 @@
  */
 
 /**
- * ReportPhase.js
+ * ReportPhaseMembership.js
  *
- * @description :: Model for report phases/stages
+ * @description :: Model for user memberships in report phases with permissions
  * @docs        :: https://sailsjs.com/docs/concepts/models-and-orm/models
  */
 
-const Statuses = {
-  TODO: 'todo',
-  DOING: 'doing',
-  DONE: 'done',
+const Permissions = {
+  VIEW: 'view',
+  EDIT: 'edit',
 };
 
 module.exports = {
-  Statuses,
+  Permissions,
 
   attributes: {
     //  ╔═╗╦═╗╦╔╦╗╦╔╦╗╦╦  ╦╔═╗╔═╗
     //  ╠═╝╠╦╝║║║║║ ║ ║╚╗╔╝║╣ ╚═╗
     //  ╩  ╩╚═╩╩ ╩╩ ╩ ╩ ╚╝ ╚═╝╚═╝
 
-    name: {
+    permission: {
       type: 'string',
-      required: true,
-    },
-    description: {
-      type: 'string',
-      defaultsTo: '',
-    },
-    startDate: {
-      type: 'ref',
-      columnName: 'start_date',
-    },
-    endDate: {
-      type: 'ref',
-      columnName: 'end_date',
-    },
-    status: {
-      type: 'string',
-      isIn: Object.values(Statuses),
-      defaultsTo: Statuses.TODO,
-    },
-    position: {
-      type: 'number',
-      required: true,
-    },
-    isDeleted: {
-      type: 'boolean',
-      defaultsTo: false,
-      columnName: 'is_deleted',
+      isIn: Object.values(Permissions),
+      defaultsTo: Permissions.VIEW,
     },
 
     //  ╔═╗╔╦╗╔╗ ╔═╗╔╦╗╔═╗
@@ -63,24 +37,20 @@ module.exports = {
     //  ╠═╣╚═╗╚═╗║ ║║  ║╠═╣ ║ ║║ ║║║║╚═╗
     //  ╩ ╩╚═╝╚═╝╚═╝╚═╝╩╩ ╩ ╩ ╩╚═╝╝╚╝╚═╝
 
-    report: {
-      model: 'Report',
+    phase: {
+      model: 'ReportPhase',
       required: true,
-      columnName: 'report_id',
+      columnName: 'phase_id',
     },
 
-    project: {
-      model: 'Project',
-      columnName: 'project_id',
-    },
-
-    phaseMemberships: {
-      collection: 'ReportPhaseMembership',
-      via: 'phase',
+    user: {
+      model: 'User',
+      required: true,
+      columnName: 'user_id',
     },
   },
 
-  tableName: 'report_phase',
+  tableName: 'report_phase_membership',
 
   customToJSON() {
     return this;

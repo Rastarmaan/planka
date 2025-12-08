@@ -23,7 +23,7 @@ import {
   Table,
 } from 'semantic-ui-react';
 
-import { ReportPhaseStatuses } from '../../../constants/Enums';
+import { ReportPhaseStatuses, ReportPhasePermissions } from '../../../constants/Enums';
 import { ReportPhaseStatusIcons } from '../../../constants/Icons';
 import selectors from '../../../selectors';
 import entryActions from '../../../entry-actions';
@@ -50,6 +50,8 @@ const ReportsPane = React.memo(() => {
     startDate: '',
     endDate: '',
     status: ReportPhaseStatuses.TODO,
+    projectId: null,
+    memberships: [],
   });
   const [editingPhaseId, setEditingPhaseId] = useState(null);
   const [editingPhase, setEditingPhase] = useState({
@@ -58,10 +60,14 @@ const ReportsPane = React.memo(() => {
     startDate: '',
     endDate: '',
     status: ReportPhaseStatuses.TODO,
+    projectId: null,
+    memberships: [],
   });
 
   const reports = useSelector(selectors.selectAllReports);
   const reportPhases = useSelector(selectors.selectAllReportPhases);
+  const allProjects = useSelector(selectors.selectAllProjects);
+  const allUsers = useSelector(selectors.selectAllActiveUsers);
 
   const isJalali = calendarType === 'jalali';
 
@@ -216,6 +222,8 @@ const ReportsPane = React.memo(() => {
       startDate: '',
       endDate: '',
       status: ReportPhaseStatuses.TODO,
+      projectId: null,
+      memberships: [],
     });
   }, []);
 
@@ -227,6 +235,8 @@ const ReportsPane = React.memo(() => {
       startDate: '',
       endDate: '',
       status: ReportPhaseStatuses.TODO,
+      projectId: null,
+      memberships: [],
     });
   }, []);
 
@@ -240,7 +250,9 @@ const ReportsPane = React.memo(() => {
           startDate: newPhase.startDate || null,
           endDate: newPhase.endDate || null,
           status: newPhase.status,
+          project: newPhase.projectId || null,
           position: phases.length,
+          memberships: newPhase.memberships,
         }),
       );
       setAddingPhaseToReportId(null);
@@ -250,20 +262,38 @@ const ReportsPane = React.memo(() => {
         startDate: '',
         endDate: '',
         status: ReportPhaseStatuses.TODO,
+        projectId: null,
+        memberships: [],
       });
     }
   }, [newPhase, addingPhaseToReportId, dispatch, getReportPhases]);
 
-  const handleEditPhaseClick = useCallback((phase) => {
-    setEditingPhaseId(phase.id);
-    setEditingPhase({
-      name: phase.name,
-      description: phase.description || '',
-      startDate: phase.startDate || '',
-      endDate: phase.endDate || '',
-      status: phase.status,
-    });
-  }, []);
+  const handleEditPhaseClick = useCallback(
+    (phase) => {
+      const phaseModel = reportPhases.find((p) => p.id === phase.id);
+
+      if (!phaseModel) return;
+
+      const memberships = phaseModel.memberships
+        ? phaseModel.memberships.toRefArray().map((m) => ({
+            userId: m.userId,
+            permission: m.permission,
+          }))
+        : [];
+
+      setEditingPhaseId(phaseModel.id);
+      setEditingPhase({
+        name: phaseModel.name,
+        description: phaseModel.description || '',
+        startDate: phaseModel.startDate || '',
+        endDate: phaseModel.endDate || '',
+        status: phaseModel.status,
+        projectId: phaseModel.projectId || null,
+        memberships,
+      });
+    },
+    [reportPhases],
+  );
 
   const handleCancelEditPhase = useCallback(() => {
     setEditingPhaseId(null);
@@ -273,6 +303,8 @@ const ReportsPane = React.memo(() => {
       startDate: '',
       endDate: '',
       status: ReportPhaseStatuses.TODO,
+      projectId: null,
+      memberships: [],
     });
   }, []);
 
@@ -285,6 +317,8 @@ const ReportsPane = React.memo(() => {
           startDate: editingPhase.startDate || null,
           endDate: editingPhase.endDate || null,
           status: editingPhase.status,
+          project: editingPhase.projectId || null,
+          memberships: editingPhase.memberships,
         }),
       );
       setEditingPhaseId(null);
@@ -294,6 +328,8 @@ const ReportsPane = React.memo(() => {
         startDate: '',
         endDate: '',
         status: ReportPhaseStatuses.TODO,
+        projectId: null,
+        memberships: [],
       });
     }
   }, [editingPhase, editingPhaseId, dispatch]);
@@ -617,6 +653,168 @@ const ReportsPane = React.memo(() => {
                                       )}
                                     </Form.Field>
                                   </Form.Group>
+                                  <Form.Field>
+                                    {/* eslint-disable-next-line jsx-a11y/label-has-associated-control */}
+                                    <label>{t('common.assignProject')}</label>
+                                    <Dropdown
+                                      selection
+                                      clearable
+                                      placeholder={t('common.selectProject')}
+                                      value={newPhase.projectId || undefined}
+                                      options={allProjects.map((project) => ({
+                                        key: project.id,
+                                        value: project.id,
+                                        text: project.name,
+                                      }))}
+                                      onChange={(_, { value }) =>
+                                        setNewPhase({
+                                          ...newPhase,
+                                          projectId: value || null,
+                                        })
+                                      }
+                                    />
+                                  </Form.Field>
+                                  <Form.Field>
+                                    {/* eslint-disable-next-line jsx-a11y/label-has-associated-control */}
+                                    <label>{t('common.assignPeople')}</label>
+                                    <Dropdown
+                                      selection
+                                      multiple
+                                      search
+                                      placeholder={t('common.selectUsers')}
+                                      value={newPhase.memberships.map((m) => m.userId)}
+                                      options={allUsers.map((user) => ({
+                                        key: user.id,
+                                        value: user.id,
+                                        text: user.name || user.username || user.email,
+                                        image: {
+                                          avatar: true,
+                                          src: (() => {
+                                            if (
+                                              user.avatarUrl &&
+                                              user.avatarUrl.indexOf('http') === 0
+                                            ) {
+                                              return user.avatarUrl;
+                                            }
+                                            if (user.avatarUrl) {
+                                              return `${window.location.origin}${user.avatarUrl}`;
+                                            }
+                                            return `https://ui-avatars.com/api/?name=${encodeURIComponent(
+                                              user.name || user.username || user.email,
+                                            )}&background=random`;
+                                          })(),
+                                        },
+                                      }))}
+                                      onChange={(_, { value }) => {
+                                        const selectedUserIds = value;
+                                        const currentMemberships = newPhase.memberships;
+
+                                        const newMemberships = selectedUserIds.map((userId) => {
+                                          const existing = currentMemberships.find(
+                                            (m) => m.userId === userId,
+                                          );
+                                          return {
+                                            userId,
+                                            permission:
+                                              existing?.permission || ReportPhasePermissions.VIEW,
+                                          };
+                                        });
+
+                                        setNewPhase({
+                                          ...newPhase,
+                                          memberships: newMemberships,
+                                        });
+                                      }}
+                                    />
+                                    {newPhase.memberships.length > 0 && (
+                                      <div className={styles.membershipsList}>
+                                        {newPhase.memberships.map((membership) => {
+                                          const user = allUsers.find(
+                                            (u) => u.id === membership.userId,
+                                          );
+                                          if (!user) return null;
+
+                                          return (
+                                            <div
+                                              key={membership.userId}
+                                              className={styles.membershipItem}
+                                            >
+                                              <div className={styles.membershipUser}>
+                                                <img
+                                                  className={styles.membershipAvatar}
+                                                  src={(() => {
+                                                    if (
+                                                      user.avatarUrl &&
+                                                      user.avatarUrl.indexOf('http') === 0
+                                                    ) {
+                                                      return user.avatarUrl;
+                                                    }
+                                                    if (user.avatarUrl) {
+                                                      return `${window.location.origin}${user.avatarUrl}`;
+                                                    }
+                                                    return `https://ui-avatars.com/api/?name=${encodeURIComponent(
+                                                      user.name || user.username || user.email,
+                                                    )}&background=random`;
+                                                  })()}
+                                                  alt={user.name || user.username}
+                                                />
+                                                <span>
+                                                  {user.name || user.username || user.email}
+                                                </span>
+                                              </div>
+                                              <div className={styles.membershipActions}>
+                                                <Dropdown
+                                                  selection
+                                                  compact
+                                                  value={
+                                                    membership.permission ||
+                                                    ReportPhasePermissions.VIEW
+                                                  }
+                                                  options={[
+                                                    {
+                                                      key: 'view',
+                                                      value: ReportPhasePermissions.VIEW,
+                                                      text: t('common.permissionView'),
+                                                    },
+                                                    {
+                                                      key: 'edit',
+                                                      value: ReportPhasePermissions.EDIT,
+                                                      text: t('common.permissionEdit'),
+                                                    },
+                                                  ]}
+                                                  onChange={(_, { value }) => {
+                                                    const updated = newPhase.memberships.map((m) =>
+                                                      m.userId === membership.userId
+                                                        ? { ...m, permission: value }
+                                                        : m,
+                                                    );
+                                                    setNewPhase({
+                                                      ...newPhase,
+                                                      memberships: updated,
+                                                    });
+                                                  }}
+                                                />
+                                                <Button
+                                                  icon
+                                                  size="tiny"
+                                                  onClick={() => {
+                                                    setNewPhase({
+                                                      ...newPhase,
+                                                      memberships: newPhase.memberships.filter(
+                                                        (m) => m.userId !== membership.userId,
+                                                      ),
+                                                    });
+                                                  }}
+                                                >
+                                                  <Icon name="trash" />
+                                                </Button>
+                                              </div>
+                                            </div>
+                                          );
+                                        })}
+                                      </div>
+                                    )}
+                                  </Form.Field>
                                   <Button.Group>
                                     <Button type="submit" positive>
                                       {t('action.add')}
@@ -638,195 +836,480 @@ const ReportsPane = React.memo(() => {
                             )}
 
                             {filteredPhases.length > 0 && (
-                              <Table compact>
-                                <Table.Header>
-                                  <Table.Row>
-                                    <Table.HeaderCell>{t('common.name')}</Table.HeaderCell>
-                                    <Table.HeaderCell>{t('common.description')}</Table.HeaderCell>
-                                    <Table.HeaderCell>{t('common.status')}</Table.HeaderCell>
-                                    <Table.HeaderCell>{t('common.startDate')}</Table.HeaderCell>
-                                    <Table.HeaderCell>{t('common.endDate')}</Table.HeaderCell>
-                                    <Table.HeaderCell width={2}>
-                                      {t('common.actions')}
-                                    </Table.HeaderCell>
-                                  </Table.Row>
-                                </Table.Header>
-                                <Table.Body>
-                                  {filteredPhases.map((phase) => {
-                                    const isEditingPhase = editingPhaseId === phase.id;
+                              <div style={{ overflowX: 'auto' }}>
+                                <Table compact celled>
+                                  <Table.Header>
+                                    <Table.Row>
+                                      <Table.HeaderCell width={2}>
+                                        {t('common.name')}
+                                      </Table.HeaderCell>
+                                      <Table.HeaderCell width={3}>
+                                        {t('common.description')}
+                                      </Table.HeaderCell>
+                                      <Table.HeaderCell width={2}>
+                                        {t('common.project')}
+                                      </Table.HeaderCell>
+                                      <Table.HeaderCell width={2}>
+                                        {t('common.assignedPeople')}
+                                      </Table.HeaderCell>
+                                      <Table.HeaderCell width={2}>
+                                        {t('common.status')}
+                                      </Table.HeaderCell>
+                                      <Table.HeaderCell width={2}>
+                                        {t('common.startDate')}
+                                      </Table.HeaderCell>
+                                      <Table.HeaderCell width={2}>
+                                        {t('common.endDate')}
+                                      </Table.HeaderCell>
+                                      <Table.HeaderCell width={2}>
+                                        {t('common.actions')}
+                                      </Table.HeaderCell>
+                                    </Table.Row>
+                                  </Table.Header>
+                                  <Table.Body>
+                                    {filteredPhases.map((phase) => {
+                                      const isEditingPhase = editingPhaseId === phase.id;
 
-                                    return (
-                                      <Table.Row key={phase.id}>
-                                        <Table.Cell>
-                                          {isEditingPhase ? (
-                                            <Input
-                                              fluid
-                                              size="small"
-                                              value={editingPhase.name}
-                                              onChange={(e) =>
-                                                setEditingPhase({
-                                                  ...editingPhase,
-                                                  name: e.target.value,
-                                                })
-                                              }
-                                            />
-                                          ) : (
-                                            phase.name
+                                      return (
+                                        <React.Fragment key={phase.id}>
+                                          <Table.Row>
+                                            <Table.Cell>
+                                              {isEditingPhase ? (
+                                                <Input
+                                                  fluid
+                                                  size="small"
+                                                  value={editingPhase.name}
+                                                  onChange={(e) =>
+                                                    setEditingPhase({
+                                                      ...editingPhase,
+                                                      name: e.target.value,
+                                                    })
+                                                  }
+                                                />
+                                              ) : (
+                                                phase.name
+                                              )}
+                                            </Table.Cell>
+                                            <Table.Cell>
+                                              {isEditingPhase ? (
+                                                <Input
+                                                  fluid
+                                                  size="small"
+                                                  value={editingPhase.description}
+                                                  onChange={(e) =>
+                                                    setEditingPhase({
+                                                      ...editingPhase,
+                                                      description: e.target.value,
+                                                    })
+                                                  }
+                                                />
+                                              ) : (
+                                                phase.description || '-'
+                                              )}
+                                            </Table.Cell>
+                                            <Table.Cell>
+                                              {phase.projectId
+                                                ? allProjects.find((p) => p.id === phase.projectId)
+                                                    ?.name || '-'
+                                                : '-'}
+                                            </Table.Cell>
+                                            <Table.Cell>
+                                              {(() => {
+                                                const phaseModel = reportPhases.find(
+                                                  (p) => p.id === phase.id,
+                                                );
+                                                const memberships = phaseModel?.memberships
+                                                  ? phaseModel.memberships.toRefArray()
+                                                  : [];
+
+                                                if (memberships.length === 0) {
+                                                  return '-';
+                                                }
+
+                                                const userNames = memberships
+                                                  .map((membership) => {
+                                                    const user = allUsers.find(
+                                                      (u) => u.id === membership.userId,
+                                                    );
+                                                    return user
+                                                      ? `${user.name || user.username || user.email} (${membership.permission})`
+                                                      : null;
+                                                  })
+                                                  .filter(Boolean)
+                                                  .join('\n');
+
+                                                return (
+                                                  <span title={userNames}>
+                                                    {memberships.length}{' '}
+                                                    {memberships.length === 1
+                                                      ? t('common.member')
+                                                      : t('common.members')}
+                                                  </span>
+                                                );
+                                              })()}
+                                            </Table.Cell>
+                                            <Table.Cell>
+                                              {isEditingPhase ? (
+                                                <Dropdown
+                                                  fluid
+                                                  selection
+                                                  value={editingPhase.status}
+                                                  options={statusOptions}
+                                                  onChange={(_, { value }) =>
+                                                    setEditingPhase({
+                                                      ...editingPhase,
+                                                      status: value,
+                                                    })
+                                                  }
+                                                />
+                                              ) : (
+                                                <>
+                                                  <Icon
+                                                    name={ReportPhaseStatusIcons[phase.status]}
+                                                  />
+                                                  {t(`common.status${phase.status}`)}
+                                                </>
+                                              )}
+                                            </Table.Cell>
+                                            <Table.Cell>
+                                              {!isEditingPhase && formatDate(phase.startDate)}
+                                              {isEditingPhase && isJalali && (
+                                                <JalaliDatePicker
+                                                  value={
+                                                    editingPhase.startDate
+                                                      ? new DateObject(
+                                                          parseDateToObject(editingPhase.startDate),
+                                                        ).convert(persian, persianEn)
+                                                      : null
+                                                  }
+                                                  onChange={(dateObj) => {
+                                                    const date = dateObj?.toDate?.();
+                                                    setEditingPhase({
+                                                      ...editingPhase,
+                                                      startDate: date ? dateToISOString(date) : '',
+                                                    });
+                                                  }}
+                                                  format="YYYY/MM/DD"
+                                                  calendar={persian}
+                                                  locale={persianEn}
+                                                  placeholder="YYYY/MM/DD"
+                                                  calendarPosition="bottom-center"
+                                                  inputClass={styles.datePickerInput}
+                                                />
+                                              )}
+                                              {isEditingPhase && !isJalali && (
+                                                <DatePicker
+                                                  selected={parseDateToObject(
+                                                    editingPhase.startDate,
+                                                  )}
+                                                  onChange={(date) =>
+                                                    setEditingPhase({
+                                                      ...editingPhase,
+                                                      startDate: date ? dateToISOString(date) : '',
+                                                    })
+                                                  }
+                                                  dateFormat="yyyy-MM-dd"
+                                                  placeholderText="YYYY-MM-DD"
+                                                  className="ui input small"
+                                                />
+                                              )}
+                                            </Table.Cell>
+                                            <Table.Cell>
+                                              {!isEditingPhase && formatDate(phase.endDate)}
+                                              {isEditingPhase && isJalali && (
+                                                <JalaliDatePicker
+                                                  value={
+                                                    editingPhase.endDate
+                                                      ? new DateObject(
+                                                          parseDateToObject(editingPhase.endDate),
+                                                        ).convert(persian, persianEn)
+                                                      : null
+                                                  }
+                                                  onChange={(dateObj) => {
+                                                    const date = dateObj?.toDate?.();
+                                                    setEditingPhase({
+                                                      ...editingPhase,
+                                                      endDate: date ? dateToISOString(date) : '',
+                                                    });
+                                                  }}
+                                                  format="YYYY/MM/DD"
+                                                  calendar={persian}
+                                                  locale={persianEn}
+                                                  placeholder="YYYY/MM/DD"
+                                                  calendarPosition="bottom-center"
+                                                  inputClass={styles.datePickerInput}
+                                                />
+                                              )}
+                                              {isEditingPhase && !isJalali && (
+                                                <DatePicker
+                                                  selected={parseDateToObject(editingPhase.endDate)}
+                                                  onChange={(date) =>
+                                                    setEditingPhase({
+                                                      ...editingPhase,
+                                                      endDate: date ? dateToISOString(date) : '',
+                                                    })
+                                                  }
+                                                  dateFormat="yyyy-MM-dd"
+                                                  placeholderText="YYYY-MM-DD"
+                                                  className="ui input small"
+                                                />
+                                              )}
+                                            </Table.Cell>
+                                            <Table.Cell>
+                                              {isEditingPhase ? (
+                                                <Button.Group size="tiny">
+                                                  <Button positive onClick={handleSubmitEditPhase}>
+                                                    {t('action.save')}
+                                                  </Button>
+                                                  <Button onClick={handleCancelEditPhase}>
+                                                    {t('action.cancel')}
+                                                  </Button>
+                                                </Button.Group>
+                                              ) : (
+                                                <Button.Group size="tiny">
+                                                  <Button
+                                                    icon
+                                                    onClick={() => handleEditPhaseClick(phase)}
+                                                  >
+                                                    <Icon name="pencil" />
+                                                  </Button>
+                                                  <Button
+                                                    icon
+                                                    negative
+                                                    onClick={() => handleDeletePhaseClick(phase)}
+                                                  >
+                                                    <Icon name="trash" />
+                                                  </Button>
+                                                </Button.Group>
+                                              )}
+                                            </Table.Cell>
+                                          </Table.Row>
+                                          {isEditingPhase && (
+                                            <Table.Row key={`${phase.id}-edit-details`}>
+                                              <Table.Cell colSpan={8}>
+                                                <Segment>
+                                                  <Form>
+                                                    <Form.Field>
+                                                      {/* eslint-disable-next-line jsx-a11y/label-has-associated-control */}
+                                                      <label>{t('common.assignProject')}</label>
+                                                      <Dropdown
+                                                        selection
+                                                        clearable
+                                                        search
+                                                        placeholder={t('common.selectProject')}
+                                                        value={editingPhase.projectId || undefined}
+                                                        options={allProjects.map((project) => ({
+                                                          key: project.id,
+                                                          value: project.id,
+                                                          text: project.name,
+                                                        }))}
+                                                        onChange={(_, { value }) =>
+                                                          setEditingPhase({
+                                                            ...editingPhase,
+                                                            projectId: value || null,
+                                                          })
+                                                        }
+                                                      />
+                                                    </Form.Field>
+                                                    <Form.Field>
+                                                      {/* eslint-disable-next-line jsx-a11y/label-has-associated-control */}
+                                                      <label>{t('common.assignPeople')}</label>
+                                                      <Dropdown
+                                                        selection
+                                                        multiple
+                                                        search
+                                                        placeholder={t('common.selectUsers')}
+                                                        value={editingPhase.memberships.map(
+                                                          (m) => m.userId,
+                                                        )}
+                                                        options={allUsers.map((user) => ({
+                                                          key: user.id,
+                                                          value: user.id,
+                                                          text:
+                                                            user.name ||
+                                                            user.username ||
+                                                            user.email,
+                                                          image: {
+                                                            avatar: true,
+                                                            src: (() => {
+                                                              if (
+                                                                user.avatarUrl &&
+                                                                user.avatarUrl.indexOf('http') === 0
+                                                              ) {
+                                                                return user.avatarUrl;
+                                                              }
+                                                              if (user.avatarUrl) {
+                                                                return `${window.location.origin}${user.avatarUrl}`;
+                                                              }
+                                                              return `https://ui-avatars.com/api/?name=${encodeURIComponent(
+                                                                user.name ||
+                                                                  user.username ||
+                                                                  user.email,
+                                                              )}&background=random`;
+                                                            })(),
+                                                          },
+                                                        }))}
+                                                        onChange={(_, { value }) => {
+                                                          const selectedUserIds = value;
+                                                          const currentMemberships =
+                                                            editingPhase.memberships;
+
+                                                          const newMemberships =
+                                                            selectedUserIds.map((userId) => {
+                                                              const existing =
+                                                                currentMemberships.find(
+                                                                  (m) => m.userId === userId,
+                                                                );
+                                                              return {
+                                                                userId,
+                                                                permission:
+                                                                  existing?.permission ||
+                                                                  ReportPhasePermissions.VIEW,
+                                                              };
+                                                            });
+
+                                                          setEditingPhase({
+                                                            ...editingPhase,
+                                                            memberships: newMemberships,
+                                                          });
+                                                        }}
+                                                      />
+                                                      {editingPhase.memberships.length > 0 && (
+                                                        <div className={styles.membershipsList}>
+                                                          {editingPhase.memberships.map(
+                                                            (membership) => {
+                                                              const user = allUsers.find(
+                                                                (u) => u.id === membership.userId,
+                                                              );
+                                                              if (!user) return null;
+
+                                                              return (
+                                                                <div
+                                                                  key={membership.userId}
+                                                                  className={styles.membershipItem}
+                                                                >
+                                                                  <div
+                                                                    className={
+                                                                      styles.membershipUser
+                                                                    }
+                                                                  >
+                                                                    <img
+                                                                      className={
+                                                                        styles.membershipAvatar
+                                                                      }
+                                                                      src={(() => {
+                                                                        if (
+                                                                          user.avatarUrl &&
+                                                                          user.avatarUrl.indexOf(
+                                                                            'http',
+                                                                          ) === 0
+                                                                        ) {
+                                                                          return user.avatarUrl;
+                                                                        }
+                                                                        if (user.avatarUrl) {
+                                                                          return `${window.location.origin}${user.avatarUrl}`;
+                                                                        }
+                                                                        return `https://ui-avatars.com/api/?name=${encodeURIComponent(
+                                                                          user.name ||
+                                                                            user.username ||
+                                                                            user.email,
+                                                                        )}&background=random`;
+                                                                      })()}
+                                                                      alt={
+                                                                        user.name || user.username
+                                                                      }
+                                                                    />
+                                                                    <span>
+                                                                      {user.name ||
+                                                                        user.username ||
+                                                                        user.email}
+                                                                    </span>
+                                                                  </div>
+                                                                  <div
+                                                                    className={
+                                                                      styles.membershipActions
+                                                                    }
+                                                                  >
+                                                                    <Dropdown
+                                                                      selection
+                                                                      compact
+                                                                      value={
+                                                                        membership.permission ||
+                                                                        ReportPhasePermissions.VIEW
+                                                                      }
+                                                                      options={[
+                                                                        {
+                                                                          key: 'view',
+                                                                          value:
+                                                                            ReportPhasePermissions.VIEW,
+                                                                          text: t(
+                                                                            'common.permissionView',
+                                                                          ),
+                                                                        },
+                                                                        {
+                                                                          key: 'edit',
+                                                                          value:
+                                                                            ReportPhasePermissions.EDIT,
+                                                                          text: t(
+                                                                            'common.permissionEdit',
+                                                                          ),
+                                                                        },
+                                                                      ]}
+                                                                      onChange={(_, { value }) => {
+                                                                        const updated =
+                                                                          editingPhase.memberships.map(
+                                                                            (m) =>
+                                                                              m.userId ===
+                                                                              membership.userId
+                                                                                ? {
+                                                                                    ...m,
+                                                                                    permission:
+                                                                                      value,
+                                                                                  }
+                                                                                : m,
+                                                                          );
+                                                                        setEditingPhase({
+                                                                          ...editingPhase,
+                                                                          memberships: updated,
+                                                                        });
+                                                                      }}
+                                                                    />
+                                                                    <Button
+                                                                      icon
+                                                                      size="tiny"
+                                                                      onClick={() => {
+                                                                        setEditingPhase({
+                                                                          ...editingPhase,
+                                                                          memberships:
+                                                                            editingPhase.memberships.filter(
+                                                                              (m) =>
+                                                                                m.userId !==
+                                                                                membership.userId,
+                                                                            ),
+                                                                        });
+                                                                      }}
+                                                                    >
+                                                                      <Icon name="trash" />
+                                                                    </Button>
+                                                                  </div>
+                                                                </div>
+                                                              );
+                                                            },
+                                                          )}
+                                                        </div>
+                                                      )}
+                                                    </Form.Field>
+                                                  </Form>
+                                                </Segment>
+                                              </Table.Cell>
+                                            </Table.Row>
                                           )}
-                                        </Table.Cell>
-                                        <Table.Cell>
-                                          {isEditingPhase ? (
-                                            <Input
-                                              fluid
-                                              size="small"
-                                              value={editingPhase.description}
-                                              onChange={(e) =>
-                                                setEditingPhase({
-                                                  ...editingPhase,
-                                                  description: e.target.value,
-                                                })
-                                              }
-                                            />
-                                          ) : (
-                                            phase.description || '-'
-                                          )}
-                                        </Table.Cell>
-                                        <Table.Cell>
-                                          {isEditingPhase ? (
-                                            <Dropdown
-                                              fluid
-                                              selection
-                                              value={editingPhase.status}
-                                              options={statusOptions}
-                                              onChange={(_, { value }) =>
-                                                setEditingPhase({
-                                                  ...editingPhase,
-                                                  status: value,
-                                                })
-                                              }
-                                            />
-                                          ) : (
-                                            <>
-                                              <Icon name={ReportPhaseStatusIcons[phase.status]} />
-                                              {t(`common.status${phase.status}`)}
-                                            </>
-                                          )}
-                                        </Table.Cell>
-                                        <Table.Cell>
-                                          {!isEditingPhase && formatDate(phase.startDate)}
-                                          {isEditingPhase && isJalali && (
-                                            <JalaliDatePicker
-                                              value={
-                                                editingPhase.startDate
-                                                  ? new DateObject(
-                                                      parseDateToObject(editingPhase.startDate),
-                                                    ).convert(persian, persianEn)
-                                                  : null
-                                              }
-                                              onChange={(dateObj) => {
-                                                const date = dateObj?.toDate?.();
-                                                setEditingPhase({
-                                                  ...editingPhase,
-                                                  startDate: date ? dateToISOString(date) : '',
-                                                });
-                                              }}
-                                              format="YYYY/MM/DD"
-                                              calendar={persian}
-                                              locale={persianEn}
-                                              placeholder="YYYY/MM/DD"
-                                              calendarPosition="bottom-center"
-                                              inputClass={styles.datePickerInput}
-                                            />
-                                          )}
-                                          {isEditingPhase && !isJalali && (
-                                            <DatePicker
-                                              selected={parseDateToObject(editingPhase.startDate)}
-                                              onChange={(date) =>
-                                                setEditingPhase({
-                                                  ...editingPhase,
-                                                  startDate: date ? dateToISOString(date) : '',
-                                                })
-                                              }
-                                              dateFormat="yyyy-MM-dd"
-                                              placeholderText="YYYY-MM-DD"
-                                              className="ui input small"
-                                            />
-                                          )}
-                                        </Table.Cell>
-                                        <Table.Cell>
-                                          {!isEditingPhase && formatDate(phase.endDate)}
-                                          {isEditingPhase && isJalali && (
-                                            <JalaliDatePicker
-                                              value={
-                                                editingPhase.endDate
-                                                  ? new DateObject(
-                                                      parseDateToObject(editingPhase.endDate),
-                                                    ).convert(persian, persianEn)
-                                                  : null
-                                              }
-                                              onChange={(dateObj) => {
-                                                const date = dateObj?.toDate?.();
-                                                setEditingPhase({
-                                                  ...editingPhase,
-                                                  endDate: date ? dateToISOString(date) : '',
-                                                });
-                                              }}
-                                              format="YYYY/MM/DD"
-                                              calendar={persian}
-                                              locale={persianEn}
-                                              placeholder="YYYY/MM/DD"
-                                              calendarPosition="bottom-center"
-                                              inputClass={styles.datePickerInput}
-                                            />
-                                          )}
-                                          {isEditingPhase && !isJalali && (
-                                            <DatePicker
-                                              selected={parseDateToObject(editingPhase.endDate)}
-                                              onChange={(date) =>
-                                                setEditingPhase({
-                                                  ...editingPhase,
-                                                  endDate: date ? dateToISOString(date) : '',
-                                                })
-                                              }
-                                              dateFormat="yyyy-MM-dd"
-                                              placeholderText="YYYY-MM-DD"
-                                              className="ui input small"
-                                            />
-                                          )}
-                                        </Table.Cell>
-                                        <Table.Cell>
-                                          {isEditingPhase ? (
-                                            <Button.Group size="tiny">
-                                              <Button positive onClick={handleSubmitEditPhase}>
-                                                {t('action.save')}
-                                              </Button>
-                                              <Button onClick={handleCancelEditPhase}>
-                                                {t('action.cancel')}
-                                              </Button>
-                                            </Button.Group>
-                                          ) : (
-                                            <Button.Group size="tiny">
-                                              <Button
-                                                icon
-                                                onClick={() => handleEditPhaseClick(phase)}
-                                              >
-                                                <Icon name="pencil" />
-                                              </Button>
-                                              <Button
-                                                icon
-                                                negative
-                                                onClick={() => handleDeletePhaseClick(phase)}
-                                              >
-                                                <Icon name="trash" />
-                                              </Button>
-                                            </Button.Group>
-                                          )}
-                                        </Table.Cell>
-                                      </Table.Row>
-                                    );
-                                  })}
-                                </Table.Body>
-                              </Table>
+                                        </React.Fragment>
+                                      );
+                                    })}
+                                  </Table.Body>
+                                </Table>
+                              </div>
                             )}
                           </div>
                         </Table.Cell>

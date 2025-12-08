@@ -336,6 +336,12 @@ export const selectAllProjectsForImport = createSelector(
   },
 );
 
+export const selectAllProjects = createSelector(orm, ({ Project }) =>
+  Project.all()
+    .toRefArray()
+    .sort((a, b) => a.name.localeCompare(b.name)),
+);
+
 export default {
   makeSelectProjectById,
   selectProjectById,
@@ -358,4 +364,5 @@ export default {
   selectBoardIdsForCurrentProject,
   selectIsCurrentUserManagerForCurrentProject,
   selectAllProjectsForImport,
+  selectAllProjects,
 };

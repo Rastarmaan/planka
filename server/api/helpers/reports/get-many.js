@@ -15,16 +15,32 @@ module.exports = {
 
     const phases = await ReportPhase.find({
       report: reportIds,
-    }).sort('position ASC');
+      isDeleted: false,
+    })
+      .populate('phaseMemberships')
+      .sort('position ASC');
 
     const reportPhases = phases.map((phase) => ({
       ...phase,
       reportId: phase.report,
+      projectId: phase.project || null,
     }));
+
+    const phaseMemberships = phases.flatMap((phase) =>
+      (phase.phaseMemberships || []).map((membership) => ({
+        id: membership.id,
+        phaseId: phase.id,
+        userId: membership.user,
+        permission: membership.permission,
+        createdAt: membership.createdAt,
+        updatedAt: membership.updatedAt,
+      })),
+    );
 
     return {
       reports,
       reportPhases,
+      reportPhaseMemberships: phaseMemberships,
     };
   },
 };

@@ -31,6 +31,7 @@ import projectCategories from './project-categories';
 import projectManagers from './project-managers';
 import projects from './projects';
 import reports from './reports';
+import reportPhaseMemberships from './reportPhaseMemberships';
 import releaseViewing from './release-viewing';
 import router from './router';
 import taskLists from './task-lists';
@@ -50,6 +51,8 @@ export * from './files';
 export * from './permissions';
 export * from './teams';
 export * from './reports';
+export * from './projects';
+export * from './users';
 
 export default {
   ...router,
@@ -61,6 +64,7 @@ export default {
   ...users,
   ...projects,
   ...reports,
+  ...reportPhaseMemberships,
   ...spaces,
   ...folders,
   ...files,

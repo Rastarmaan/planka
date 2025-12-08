@@ -70,6 +70,13 @@ module.exports = {
       type: 'number',
       required: true,
     },
+    project: {
+      type: 'string',
+      allowNull: true,
+    },
+    memberships: {
+      type: 'json',
+    },
   },
 
   exits: {
@@ -94,16 +101,25 @@ module.exports = {
       throw 'notFound';
     }
 
-    const values = _.pick(inputs, ['name', 'description', 'startDate', 'endDate', 'position']);
+    const values = _.pick(inputs, [
+      'name',
+      'description',
+      'startDate',
+      'endDate',
+      'position',
+      'project',
+      'memberships',
+    ]);
     values.report = report.id;
 
-    const phase = await sails.helpers.reportPhases.createOne.with({
+    const result = await sails.helpers.reportPhases.createOne.with({
       values,
       request: this.req,
     });
 
     return {
-      item: phase,
+      item: result.phase,
+      reportPhaseMemberships: result.reportPhaseMemberships,
     };
   },
 };

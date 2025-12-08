@@ -18,6 +18,7 @@ export default class extends BaseModel {
       as: 'report',
       relatedName: 'reportPhases',
     }),
+    projectId: attr(),
     name: attr(),
     description: attr(),
     startDate: attr(),
