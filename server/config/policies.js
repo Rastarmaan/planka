@@ -50,6 +50,7 @@ module.exports.policies = {
   'folders/index': ['is-authenticated', 'is-external'],
   'folders/create': ['is-authenticated', 'is-external'],
   'folders/show': ['is-authenticated', 'is-external'],
+  'folders/download': ['is-authenticated', 'is-external'],
   'folders/update': ['is-authenticated', 'is-external', 'can-edit-folder'],
   'folders/delete': ['is-authenticated', 'is-external', 'can-edit-folder'],
 

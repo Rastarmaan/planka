@@ -3,7 +3,7 @@
  * Licensed under the Fair Use License: https://github.com/plankanban/planka/blob/master/LICENSE.md
  */
 
-import React from 'react';
+import React, { useCallback } from 'react';
 import PropTypes from 'prop-types';
 import { useTranslation } from 'react-i18next';
 import { Button, Dropdown, Icon } from 'semantic-ui-react';
@@ -41,17 +41,105 @@ const SortBar = React.memo(
       }
     };
 
-    const isImageFile =
-      selectedFileData?.type === 'file' &&
-      selectedFileData?.mimeType &&
-      selectedFileData.mimeType.startsWith('image/');
+    const canPreviewFile = useCallback(() => {
+      if (!selectedFileData || selectedFileData.type !== 'file') return false;
+      const { mimeType, name } = selectedFileData;
 
-    const isVideoFile =
-      selectedFileData?.type === 'file' &&
-      selectedFileData?.mimeType &&
-      selectedFileData.mimeType.startsWith('video/');
+      // Image files
+      if (mimeType && mimeType.startsWith('image/')) return true;
 
-    const isPreviewable = isImageFile || isVideoFile;
+      // Video files
+      if (mimeType && mimeType.startsWith('video/')) return true;
+
+      // Audio files
+      if (mimeType && mimeType.startsWith('audio/')) return true;
+      if (name) {
+        const ext = name.split('.').pop().toLowerCase();
+        if (['mp3', 'wav', 'ogg', 'm4a', 'aac', 'flac', 'wma', 'aiff'].includes(ext)) return true;
+      }
+
+      // PDF files
+      if (mimeType === 'application/pdf') return true;
+      if (name && name.toLowerCase().endsWith('.pdf')) return true;
+
+      // Text/code files
+      const textMimeTypes = [
+        'text/plain',
+        'text/markdown',
+        'text/csv',
+        'text/html',
+        'text/css',
+        'text/javascript',
+        'text/xml',
+        'application/json',
+        'application/javascript',
+        'application/xml',
+      ];
+      if (mimeType && (textMimeTypes.includes(mimeType) || mimeType.startsWith('text/'))) {
+        return true;
+      }
+      if (name) {
+        const ext = name.split('.').pop().toLowerCase();
+        const textExtensions = [
+          'txt',
+          'md',
+          'markdown',
+          'csv',
+          'tsv',
+          'log',
+          'html',
+          'htm',
+          'css',
+          'scss',
+          'sass',
+          'less',
+          'js',
+          'jsx',
+          'ts',
+          'tsx',
+          'mjs',
+          'cjs',
+          'py',
+          'pyw',
+          'java',
+          'kt',
+          'c',
+          'cpp',
+          'h',
+          'hpp',
+          'cs',
+          'go',
+          'rs',
+          'rb',
+          'php',
+          'swift',
+          'scala',
+          'sh',
+          'bash',
+          'zsh',
+          'ps1',
+          'bat',
+          'cmd',
+          'json',
+          'xml',
+          'yaml',
+          'yml',
+          'toml',
+          'ini',
+          'cfg',
+          'conf',
+          'env',
+          'sql',
+          'vue',
+          'svelte',
+        ];
+        if (textExtensions.includes(ext)) return true;
+      }
+
+      return false;
+    }, [selectedFileData]);
+
+    const isPreviewable = canPreviewFile();
 
     const isFolder = selectedFileData?.type === 'folder';
 
@@ -134,6 +222,7 @@ SortBar.propTypes = {
   sortBy: PropTypes.string.isRequired,
   selectedFile: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
   selectedFileData: PropTypes.shape({
+    name: PropTypes.string,
     type: PropTypes.string,
     mimeType: PropTypes.string,
   }),
