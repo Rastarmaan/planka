@@ -200,7 +200,7 @@ const FileContextMenu = React.memo(
             <span>{t('documentManagement.preview')}</span>
           </div>
         )}
-        {file.type === 'file' && (
+        {(file.type === 'file' || file.type === 'folder') && (
           <div
             role="button"
             tabIndex={0}
@@ -209,7 +209,11 @@ const FileContextMenu = React.memo(
             onKeyDown={(e) => e.key === 'Enter' && handleAction('download', onDownload)}
           >
             <Icon name="download" />
-            <span>{t('documentManagement.download')}</span>
+            <span>
+              {file.type === 'folder'
+                ? t('documentManagement.download', 'Download')
+                : t('documentManagement.download')}
+            </span>
           </div>
         )}
         {file.type === 'folder' && canRename && (

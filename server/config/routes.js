@@ -115,6 +115,7 @@ module.exports.routes = {
   'POST /api/spaces/:spaceId/folders': 'folders/create',
   'POST /api/folders/:folderId/folders': 'folders/create',
   'GET /api/folders/:id': 'folders/show',
+  'GET /api/folders/:id/download': 'folders/download',
   'PATCH /api/folders/:id': 'folders/update',
   'DELETE /api/folders/:id': 'folders/delete',
 

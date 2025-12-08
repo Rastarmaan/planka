@@ -791,6 +791,32 @@ const DocumentManagement = React.memo(() => {
           // eslint-disable-next-line no-console
           console.error('Download error:', error);
         }
+      } else if (file && file.type === 'folder') {
+        try {
+          const response = await fetch(`/api/folders/${file.id}/download`, {
+            headers: {
+              Authorization: `Bearer ${accessToken}`,
+            },
+            credentials: 'include',
+          });
+
+          if (!response.ok) {
+            throw new Error('Download failed');
+          }
+
+          const blob = await response.blob();
+          const url = window.URL.createObjectURL(blob);
+          const link = document.createElement('a');
+          link.href = url;
+          link.download = `${file.name || `folder-${file.id}`}.zip`;
+          document.body.appendChild(link);
+          link.click();
+          document.body.removeChild(link);
+          window.URL.revokeObjectURL(url);
+        } catch (error) {
+          // eslint-disable-next-line no-console
+          console.error('Folder download error:', error);
+        }
       }
     }
   };
@@ -943,6 +969,31 @@ const DocumentManagement = React.memo(() => {
         window.URL.revokeObjectURL(url);
       } catch (error) {
         console.error('Download error:', error);
+      }
+    } else if (file && file.type === 'folder') {
+      try {
+        const response = await fetch(`/api/folders/${file.id}/download`, {
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+          },
+          credentials: 'include',
+        });
+
+        if (!response.ok) {
+          throw new Error('Download failed');
+        }
+
+        const blob = await response.blob();
+        const url = window.URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = `${file.name || `folder-${file.id}`}.zip`;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        window.URL.revokeObjectURL(url);
+      } catch (error) {
+        console.error('Folder download error:', error);
       }
     }
   };
