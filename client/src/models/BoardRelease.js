@@ -11,6 +11,7 @@ export default class BoardRelease extends BaseModel {
     version: attr(),
     name: attr(),
     target: attr(),
+    reviewResult: attr(),
     status: attr(),
     startDate: attr(),
     endDate: attr(),

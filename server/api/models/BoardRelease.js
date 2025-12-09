@@ -48,6 +48,11 @@
  *           nullable: true
  *           description: Target/goal description for the release
  *           example: "Implement complete signup flow with email verification and password reset"
+ *         reviewResult:
+ *           type: string
+ *           nullable: true
+ *           description: Review result or outcome description for the release
+ *           example: "All features tested and approved. Minor UI improvements suggested for next release."
  *         status:
  *           type: string
  *           enum: [planning, in_progress, testing, completed, released, cancelled]
@@ -117,6 +122,11 @@ module.exports = {
     target: {
       type: 'string',
       columnType: 'text',
+    },
+    reviewResult: {
+      type: 'string',
+      columnType: 'text',
+      columnName: 'review_result',
     },
     status: {
       type: 'string',

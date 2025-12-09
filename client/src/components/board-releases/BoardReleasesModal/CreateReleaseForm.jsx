@@ -39,6 +39,7 @@ const CreateReleaseForm = React.memo(({ onCreate, onCancel, isSubmitting }) => {
   const [version, setVersion] = useState('');
   const [name, setName] = useState('');
   const [target, setTarget] = useState('');
+  const [reviewResult, setReviewResult] = useState('');
   const [status, setStatus] = useState('planning');
   const [startDate, setStartDate] = useState(null);
   const [endDate, setEndDate] = useState(null);
@@ -81,12 +82,13 @@ const CreateReleaseForm = React.memo(({ onCreate, onCancel, isSubmitting }) => {
         version: version.trim(),
         name: name.trim(),
         target: target.trim() || null,
+        reviewResult: reviewResult.trim() || null,
         status,
         startDate: startDate ? startDate.toISOString() : null,
         endDate: endDate ? endDate.toISOString() : null,
       });
     },
-    [version, name, target, status, startDate, endDate, onCreate],
+    [version, name, target, reviewResult, status, startDate, endDate, onCreate],
   );
 
   const isFormValid = useMemo(() => {
@@ -116,6 +118,13 @@ const CreateReleaseForm = React.memo(({ onCreate, onCancel, isSubmitting }) => {
         value={target}
         onChange={(e) => setTarget(e.target.value)}
         rows={2}
+      />
+      <Form.TextArea
+        label={t('common.reviewResult')}
+        placeholder="Review result"
+        value={reviewResult}
+        onChange={(e) => setReviewResult(e.target.value)}
+        rows={3}
       />
       <Form.Select
         label={t('common.status')}

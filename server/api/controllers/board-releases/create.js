@@ -45,6 +45,11 @@
  *                 nullable: true
  *                 description: Target/goal description
  *                 example: "Complete signup flow"
+ *               reviewResult:
+ *                 type: string
+ *                 nullable: true
+ *                 description: Review result or outcome description
+ *                 example: "All tests passed, ready for production"
  *               status:
  *                 type: string
  *                 enum: [planning, in_progress, testing, completed, released, cancelled]
@@ -101,6 +106,11 @@ module.exports = {
       required: true,
     },
     target: {
+      type: 'string',
+      isNotEmptyString: true,
+      allowNull: true,
+    },
+    reviewResult: {
       type: 'string',
       isNotEmptyString: true,
       allowNull: true,
@@ -195,6 +205,7 @@ module.exports = {
       version: inputs.version,
       name: inputs.name,
       target: inputs.target,
+      reviewResult: inputs.reviewResult,
       status: inputs.status || BoardRelease.Statuses.PLANNING,
       boardId: inputs.boardId,
     };

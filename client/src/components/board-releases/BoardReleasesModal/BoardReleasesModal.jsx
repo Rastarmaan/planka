@@ -219,6 +219,9 @@ const BoardReleasesModal = React.memo(() => {
                   <div className={styles.targetColumn}>
                     {t('common.target', { defaultValue: 'Target' })}
                   </div>
+                  <div className={styles.reviewResultColumn}>
+                    {t('common.reviewResult', { defaultValue: 'Review Result' })}
+                  </div>
                   <div className={styles.dateColumn}>
                     {t('common.startDate', { defaultValue: 'Start Date' })}
                   </div>

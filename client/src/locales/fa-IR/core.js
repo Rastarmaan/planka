@@ -583,6 +583,7 @@ export default {
       targetDateHint: 'تاریخ هدف اختیاری برای این ریلیز',
       releaseGoal: 'هدف ریلیز',
       enterReleaseGoal: 'هدف ریلیز را وارد کنید...',
+      reviewResult: 'نتیجه بررسی',
       releasedAt: 'تاریخ انتشار',
       releasedReleaseWarning: 'هشدار ریلیز منتشر شده',
       cannotEditReleasedRelease: 'نمی‌توان ریلیز منتشر شده را ویرایش کرد',

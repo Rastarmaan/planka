@@ -70,6 +70,9 @@ const BoardReleasesFilterStep = React.memo(
                     <div className={styles.releaseVersion}>{release.version}</div>
                     <div className={styles.releaseName}>{release.name}</div>
                     {release.target && <div className={styles.releaseTarget}>{release.target}</div>}
+                    {release.reviewResult && (
+                      <div className={styles.releaseReviewResult}>{release.reviewResult}</div>
+                    )}
                   </div>
                   <div className={styles.releaseStatus} data-status={release.status}>
                     {t(`common.${release.status}`, { defaultValue: release.status })}

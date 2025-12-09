@@ -678,6 +678,7 @@ export default {
       selectDate: 'Select date',
       targetDate: 'Target Date',
       target: 'Target',
+      reviewResult: 'Review Result',
       startDate: 'Start Date',
       endDate: 'End Date',
       targetDateHint: 'Optional target date for this release',
