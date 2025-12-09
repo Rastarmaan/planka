@@ -48,6 +48,7 @@ export function* initializeCore() {
     notificationServices,
     boardReleases,
     releaseCards,
+    reportPhaseMemberships,
   } = yield call(requests.fetchCore); // TODO: handle error
 
   yield call(i18n.changeLanguage, user.language);
@@ -60,6 +61,7 @@ export function* initializeCore() {
       webhooks,
       reports,
       reportPhases,
+      reportPhaseMemberships,
       users,
       projects,
       projectManagers,

@@ -97,7 +97,10 @@ module.exports = {
     let { comment } = pathToProject;
     const { card, list, board, project } = pathToProject;
 
-    if (comment.userId !== currentUser.id) {
+    const isAdmin = User.isAdminLevel(currentUser);
+    const isProjectManager = await sails.helpers.users.isProjectManager(currentUser.id, project.id);
+
+    if (!isAdmin && !isProjectManager && comment.userId !== currentUser.id) {
       throw Errors.COMMENT_NOT_FOUND; // Forbidden
     }
 
@@ -107,11 +110,11 @@ module.exports = {
     );
 
     if (!boardMembership) {
-      throw Errors.COMMENT_NOT_FOUND; // Forbidden
-    }
-
-    if (boardMembership.role !== BoardMembership.Roles.EDITOR) {
-      if (!boardMembership.canComment) {
+      if (!isAdmin && !isProjectManager) {
+        throw Errors.COMMENT_NOT_FOUND;
+      }
+    } else if (boardMembership.role !== BoardMembership.Roles.EDITOR) {
+      if (!boardMembership.canComment && !isAdmin && !isProjectManager) {
         throw Errors.NOT_ENOUGH_RIGHTS;
       }
     }

@@ -71,6 +71,16 @@ export const selectActiveAdminOrProjectOwnerUsers = createSelector(orm, ({ User 
     .toRefArray(),
 );
 
+export const selectAllActiveUsers = createSelector(orm, ({ User }) =>
+  User.getActiveQuerySet()
+    .toRefArray()
+    .sort((a, b) => {
+      const nameA = a.name || a.username || a.email;
+      const nameB = b.name || b.username || b.email;
+      return nameA.localeCompare(nameB);
+    }),
+);
+
 export const selectCurrentUser = createSelector(
   orm,
   (state) => selectCurrentUserId(state),
@@ -365,6 +375,7 @@ export default {
   selectActiveUsers,
   selectActiveUsersTotal,
   selectActiveAdminOrProjectOwnerUsers,
+  selectAllActiveUsers,
   selectCurrentUser,
   selectProjectIdsForCurrentUser,
   selectFilteredProjectIdsForCurrentUser,

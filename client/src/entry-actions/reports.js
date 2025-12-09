@@ -12,11 +12,12 @@ const createReport = (data) => ({
   },
 });
 
-const handleReportCreate = (report, reportPhases) => ({
+const handleReportCreate = (report, reportPhases, reportPhaseMemberships) => ({
   type: EntryActionTypes.REPORT_CREATE_HANDLE,
   payload: {
     report,
     reportPhases,
+    reportPhaseMemberships,
   },
 });
 
@@ -57,10 +58,11 @@ const createReportPhase = (reportId, data) => ({
   },
 });
 
-const handleReportPhaseCreate = (reportPhase) => ({
+const handleReportPhaseCreate = (reportPhase, reportPhaseMemberships) => ({
   type: EntryActionTypes.REPORT_PHASE_CREATE_HANDLE,
   payload: {
     reportPhase,
+    reportPhaseMemberships,
   },
 });
 
@@ -72,10 +74,11 @@ const updateReportPhase = (id, data) => ({
   },
 });
 
-const handleReportPhaseUpdate = (reportPhase) => ({
+const handleReportPhaseUpdate = (reportPhase, reportPhaseMemberships) => ({
   type: EntryActionTypes.REPORT_PHASE_UPDATE_HANDLE,
   payload: {
     reportPhase,
+    reportPhaseMemberships,
   },
 });
 

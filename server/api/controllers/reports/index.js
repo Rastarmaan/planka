@@ -32,12 +32,13 @@ module.exports = {
       throw 'notFound';
     }
 
-    const { reports, reportPhases } = await sails.helpers.reports.getMany();
+    const { reports, reportPhases, reportPhaseMemberships } = await sails.helpers.reports.getMany();
 
     return {
       items: reports,
       included: {
         reportPhases,
+        reportPhaseMemberships,
       },
     };
   },

@@ -33,6 +33,7 @@ import {
   ReleaseCard,
   Report,
   ReportPhase,
+  ReportPhaseMembership,
   Task,
   TaskList,
   Team,
@@ -89,6 +90,7 @@ orm.register(
   NotificationService,
   Report,
   ReportPhase,
+  ReportPhaseMembership,
 );
 
 export default orm;
