@@ -96,16 +96,19 @@ module.exports = {
       .getPathToProjectById(inputs.cardId)
       .intercept('pathNotFound', () => Errors.CARD_NOT_FOUND);
 
+    const isAdmin = User.isAdminLevel(currentUser);
+    const isProjectManager = await sails.helpers.users.isProjectManager(currentUser.id, project.id);
+
     const boardMembership = await BoardMembership.qm.getOneByBoardIdAndUserId(
       board.id,
       currentUser.id,
     );
 
     if (!boardMembership) {
-      throw Errors.CARD_NOT_FOUND; // Forbidden
-    }
-
-    if (boardMembership.role !== BoardMembership.Roles.EDITOR) {
+      if (!isAdmin && !isProjectManager) {
+        throw Errors.CARD_NOT_FOUND;
+      }
+    } else if (boardMembership.role !== BoardMembership.Roles.EDITOR) {
       if (!boardMembership.canComment) {
         throw Errors.NOT_ENOUGH_RIGHTS;
       }

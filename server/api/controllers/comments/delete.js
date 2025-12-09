@@ -80,9 +80,10 @@ module.exports = {
     let { comment } = pathToProject;
     const { card, list, board, project } = pathToProject;
 
+    const isAdmin = User.isAdminLevel(currentUser);
     const isProjectManager = await sails.helpers.users.isProjectManager(currentUser.id, project.id);
 
-    if (!isProjectManager) {
+    if (!isAdmin && !isProjectManager) {
       if (comment.userId !== currentUser.id) {
         throw Errors.NOT_ENOUGH_RIGHTS;
       }
