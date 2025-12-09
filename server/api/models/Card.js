@@ -82,6 +82,12 @@
  *           nullable: true
  *           description: Detailed description of the card
  *           example: Add JWT-based authentication system...
+ *         color:
+ *           type: string
+ *           nullable: true
+ *           enum: [light-grey, light-blue, light-green, light-yellow, light-orange, light-red, light-purple, light-pink, medium-grey, medium-blue, medium-green, medium-yellow, medium-orange, medium-red, medium-purple, medium-pink]
+ *           description: Background color for the card
+ *           example: light-blue
  *         startDate:
  *           type: string
  *           format: date-time
@@ -176,8 +182,28 @@ const Types = {
   EPIC: 'epic',
 };
 
+const COLORS = [
+  'light-grey', // #E8E8E8
+  'light-blue', // #A8D5E5
+  'light-green', // #B8E6C3
+  'light-yellow', // #FFF4A3
+  'light-orange', // #FFD6A5
+  'light-red', // #FFB3BA
+  'light-purple', // #D5B3E5
+  'light-pink', // #FFC8DD
+  'medium-grey', // #B8B8B8
+  'medium-blue', // #6FB3D2
+  'medium-green', // #81C995
+  'medium-yellow', // #FFE66D
+  'medium-orange', // #FFB347
+  'medium-red', // #FF9AA2
+  'medium-purple', // #B39CD0
+  'medium-pink', // #FFB3C6
+];
+
 module.exports = {
   Types,
+  COLORS,
 
   attributes: {
     //  ╔═╗╦═╗╦╔╦╗╦╔╦╗╦╦  ╦╔═╗╔═╗
@@ -200,6 +226,11 @@ module.exports = {
     description: {
       type: 'string',
       isNotEmptyString: true,
+      allowNull: true,
+    },
+    color: {
+      type: 'string',
+      isIn: COLORS,
       allowNull: true,
     },
     startDate: {

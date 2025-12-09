@@ -13,6 +13,7 @@ import { push } from '../../../lib/redux-router';
 
 import { BoardMembershipRoles, CardTypes, ListTypes, UserRoles } from '../../../constants/Enums';
 import { CardTypeIcons } from '../../../constants/Icons';
+import { getCardColorHex } from '../../../constants/CardColors';
 import Paths from '../../../constants/Paths';
 import { ClosableContext } from '../../../contexts';
 import actions from '../../../actions';
@@ -53,6 +54,7 @@ import NameField from './NameField';
 import SyncCardStep from './SyncCardStep';
 import TaskLists from './TaskLists';
 import ReleaseChip from '../../board-releases/ReleaseChip';
+import CardColorPickerStep from './CardColorPickerStep';
 
 import styles from './ProjectContent.module.scss';
 
@@ -345,6 +347,13 @@ const ProjectContent = React.memo(() => {
     [dispatch],
   );
 
+  const handleColorSelect = useCallback(
+    (color) => {
+      dispatch(entryActions.updateCurrentCard({ color }));
+    },
+    [dispatch],
+  );
+
   const handlePageChange = useCallback((page) => {
     setCurrentPage(page);
   }, []);
@@ -523,6 +532,7 @@ const ProjectContent = React.memo(() => {
   const CreationDetailsPopup = usePopupInClosableContext(CreationDetailsStep);
   const BoardMembershipsPopup = usePopupInClosableContext(BoardMembershipsStep);
   const LabelsPopup = usePopupInClosableContext(LabelsStep);
+  const CardColorPickerPopup = usePopupInClosableContext(CardColorPickerStep);
   const DependenciesPopup = usePopupInClosableContext(DependenciesStep);
   const ListsPopup = usePopupInClosableContext(ListsStep);
   const EditStartDatePopup = usePopupInClosableContext(EditStartDateStep);
@@ -1311,6 +1321,28 @@ const ProjectContent = React.memo(() => {
               canAddCustomFieldGroup) && (
               <div className={styles.actions}>
                 <span className={styles.actionsTitle}>{t('action.addToCard')}</span>
+                {canEditType && (
+                  <CardColorPickerPopup currentColor={card.color} onSelect={handleColorSelect}>
+                    <Button fluid className={classNames(styles.actionButton, styles.hidable)}>
+                      <Icon name="paint brush" className={styles.actionIcon} />
+                      {t('common.selectCardColor')}
+                      {card.color && (
+                        <span
+                          style={{
+                            display: 'inline-block',
+                            width: '16px',
+                            height: '16px',
+                            borderRadius: '3px',
+                            backgroundColor: getCardColorHex(card.color),
+                            marginLeft: '8px',
+                            verticalAlign: 'middle',
+                            border: '1px solid rgba(0,0,0,0.1)',
+                          }}
+                        />
+                      )}
+                    </Button>
+                  </CardColorPickerPopup>
+                )}
                 {canUseMembers && (
                   <BoardMembershipsPopup
                     currentUserIds={userIds}

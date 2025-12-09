@@ -50,6 +50,7 @@ const ReleaseItem = React.memo(
     const [version, setVersion] = useState(release.version);
     const [name, setName] = useState(release.name);
     const [target, setTarget] = useState(release.target || '');
+    const [reviewResult, setReviewResult] = useState(release.reviewResult || '');
     const [status, setStatus] = useState(release.status);
     const [startDate, setStartDate] = useState(
       release.startDate ? new Date(release.startDate) : null,
@@ -115,18 +116,20 @@ const ReleaseItem = React.memo(
           version: version.trim(),
           name: name.trim(),
           target: target.trim() || null,
+          reviewResult: reviewResult.trim() || null,
           status,
           startDate: startDate ? startDate.toISOString() : null,
           endDate: endDate ? endDate.toISOString() : null,
         });
         setIsEditing(false);
       }
-    }, [release.id, version, name, target, status, startDate, endDate, onUpdate]);
+    }, [release.id, version, name, target, reviewResult, status, startDate, endDate, onUpdate]);
 
     const handleCancel = useCallback(() => {
       setVersion(release.version);
       setName(release.name);
       setTarget(release.target || '');
+      setReviewResult(release.reviewResult || '');
       setStatus(release.status);
       setStartDate(release.startDate ? new Date(release.startDate) : null);
       setEndDate(release.endDate ? new Date(release.endDate) : null);
@@ -187,6 +190,17 @@ const ReleaseItem = React.memo(
                 onChange={(e) => setTarget(e.target.value)}
                 placeholder="Target"
                 className={styles.input}
+              />
+            </div>
+            <div className={styles.editField}>
+              {/* eslint-disable-next-line jsx-a11y/label-has-associated-control */}
+              <label className={styles.label}>Review Result</label>
+              <textarea
+                value={reviewResult}
+                onChange={(e) => setReviewResult(e.target.value)}
+                placeholder="Review result"
+                className={styles.textarea}
+                rows={3}
               />
             </div>
             <div className={styles.editField}>
@@ -276,6 +290,12 @@ const ReleaseItem = React.memo(
 
           <div className={styles.targetColumn}>
             {release.target && <span className={styles.targetText}>{release.target}</span>}
+          </div>
+
+          <div className={styles.reviewResultColumn}>
+            {release.reviewResult && (
+              <span className={styles.reviewResultText}>{release.reviewResult}</span>
+            )}
           </div>
 
           <div className={styles.dateColumn}>
@@ -372,6 +392,7 @@ ReleaseItem.propTypes = {
     version: PropTypes.string.isRequired,
     name: PropTypes.string.isRequired,
     target: PropTypes.string,
+    reviewResult: PropTypes.string,
     status: PropTypes.string.isRequired,
     startDate: PropTypes.string,
     endDate: PropTypes.string,

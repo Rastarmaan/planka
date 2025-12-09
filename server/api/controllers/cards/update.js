@@ -62,6 +62,12 @@
  *                 nullable: true
  *                 description: Detailed description of the card
  *                 example: Add JWT-based authentication system...
+ *               color:
+ *                 type: string
+ *                 nullable: true
+ *                 enum: [light-grey, light-blue, light-green, light-yellow, light-orange, light-red, light-purple, light-pink, medium-grey, medium-blue, medium-green, medium-yellow, medium-orange, medium-red, medium-purple, medium-pink]
+ *                 description: Background color for the card
+ *                 example: light-blue
  *               startDate:
  *                 type: string
  *                 format: date-time
@@ -198,6 +204,11 @@ module.exports = {
       maxLength: 1048576,
       allowNull: true,
     },
+    color: {
+      type: 'string',
+      isIn: Object.values(Card.COLORS),
+      allowNull: true,
+    },
     startDate: {
       type: 'string',
       custom: isDueDate,
@@ -300,6 +311,7 @@ module.exports = {
         'position',
         'name',
         'description',
+        'color',
         'startDate',
         'dueDate',
         'isDueCompleted',
@@ -370,6 +382,7 @@ module.exports = {
       'position',
       'name',
       'description',
+      'color',
       'startDate',
       'dueDate',
       'isDueCompleted',

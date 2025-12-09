@@ -17,6 +17,7 @@ import { BoardMembershipRoles, CardTypes, UserRoles } from '../../../constants/E
 import Paths from '../../../constants/Paths';
 import selectors from '../../../selectors';
 import { isDividerCard } from '../../../utils/helpers';
+import { getCardColorHex } from '../../../constants/CardColors';
 import ActionsStep from './ActionsStep';
 import DividerContent from './DividerContent';
 import EditName from './EditName';
@@ -149,9 +150,12 @@ const Card = React.memo(({ id, isInline }) => {
     />
   );
 
+  const cardBackgroundColor = card.color ? getCardColorHex(card.color) : null;
+
   return (
     <div
       className={classNames(styles.wrapper, isHighlightedAsRecent && styles.wrapperRecent, 'card')}
+      style={cardBackgroundColor ? { backgroundColor: cardBackgroundColor } : undefined}
     >
       {card.isPersisted ? (
         <>

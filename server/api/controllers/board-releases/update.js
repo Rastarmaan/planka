@@ -106,6 +106,11 @@ module.exports = {
       isNotEmptyString: true,
       allowNull: true,
     },
+    reviewResult: {
+      type: 'string',
+      isNotEmptyString: true,
+      allowNull: true,
+    },
     status: {
       type: 'string',
       isIn: Object.values(BoardRelease.Statuses),
@@ -210,7 +215,15 @@ module.exports = {
       }
     }
 
-    const values = _.pick(inputs, ['version', 'name', 'target', 'status', 'startDate', 'endDate']);
+    const values = _.pick(inputs, [
+      'version',
+      'name',
+      'target',
+      'reviewResult',
+      'status',
+      'startDate',
+      'endDate',
+    ]);
 
     if (inputs.startDate !== undefined) {
       if (inputs.startDate) {

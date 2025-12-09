@@ -53,6 +53,11 @@ const ReleaseStep = React.memo(({ cardId, boardId }) => {
         {release.target && (
           <div style={{ fontSize: '0.9em', color: '#666', marginTop: '2px' }}>{release.target}</div>
         )}
+        {release.reviewResult && (
+          <div style={{ fontSize: '0.85em', color: '#888', marginTop: '2px', fontStyle: 'italic' }}>
+            {release.reviewResult}
+          </div>
+        )}
       </div>
     ),
   }));
@@ -68,6 +73,9 @@ const ReleaseStep = React.memo(({ cardId, boardId }) => {
               <div className={styles.releaseName}>{currentRelease.name}</div>
               {currentRelease.target && (
                 <div className={styles.releaseTarget}>{currentRelease.target}</div>
+              )}
+              {currentRelease.reviewResult && (
+                <div className={styles.releaseReviewResult}>{currentRelease.reviewResult}</div>
               )}
             </div>
           </div>
