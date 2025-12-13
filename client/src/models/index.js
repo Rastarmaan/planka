@@ -31,6 +31,10 @@ import ReleaseCard from './ReleaseCard';
 import Report from './Report';
 import ReportPhase from './ReportPhase';
 import ReportPhaseMembership from './ReportPhaseMembership';
+import ProjectProfile from './ProjectProfile';
+import ProjectProfileSection from './ProjectProfileSection';
+import ProjectProfileField from './ProjectProfileField';
+import ProjectProfileData from './ProjectProfileData';
 import Task from './Task';
 import TaskList from './TaskList';
 import Team from './Team';
@@ -72,6 +76,10 @@ export {
   Report,
   ReportPhase,
   ReportPhaseMembership,
+  ProjectProfile,
+  ProjectProfileSection,
+  ProjectProfileField,
+  ProjectProfileData,
   Task,
   TaskList,
   Team,

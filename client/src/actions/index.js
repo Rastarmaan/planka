@@ -28,6 +28,7 @@ import notifications from './notifications';
 import projectCategories from './project-categories';
 import projectManagers from './project-managers';
 import projectTeams from './project-teams';
+import projectProfiles from './projectProfiles';
 import projects from './projects';
 import reports from './reports';
 import router from './router';
@@ -54,6 +55,7 @@ export default {
   ...webhooks,
   ...users,
   ...projects,
+  ...projectProfiles,
   ...reports,
   ...spaces,
   ...folders,

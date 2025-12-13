@@ -418,6 +418,42 @@ const createSocketEventsChannel = () =>
       emit(entryActions.handleReportPhaseDelete(item));
     };
 
+    const handleProjectProfileCreate = ({ item, sections, fields }) => {
+      emit(entryActions.handleProjectProfileCreate(item, sections, fields));
+    };
+
+    const handleProjectProfileUpdate = ({ item }) => {
+      emit(entryActions.handleProjectProfileUpdate(item));
+    };
+
+    const handleProjectProfileDelete = ({ item }) => {
+      emit(entryActions.handleProjectProfileDelete(item));
+    };
+
+    const handleProjectProfileSectionCreate = ({ item, fields }) => {
+      emit(entryActions.handleProjectProfileSectionCreate(item, fields));
+    };
+
+    const handleProjectProfileSectionUpdate = ({ item }) => {
+      emit(entryActions.handleProjectProfileSectionUpdate(item));
+    };
+
+    const handleProjectProfileSectionDelete = ({ item }) => {
+      emit(entryActions.handleProjectProfileSectionDelete(item));
+    };
+
+    const handleProjectProfileFieldCreate = ({ item }) => {
+      emit(entryActions.handleProjectProfileFieldCreate(item));
+    };
+
+    const handleProjectProfileFieldUpdate = ({ item }) => {
+      emit(entryActions.handleProjectProfileFieldUpdate(item));
+    };
+
+    const handleProjectProfileFieldDelete = ({ item }) => {
+      emit(entryActions.handleProjectProfileFieldDelete(item));
+    };
+
     socket.on('disconnect', handleDisconnect);
     socket.on('reconnect', handleReconnect);
 
@@ -556,6 +592,18 @@ const createSocketEventsChannel = () =>
     socket.on('reportPhaseUpdate', handleReportPhaseUpdate);
     socket.on('reportPhaseDelete', handleReportPhaseDelete);
 
+    socket.on('projectProfileCreate', handleProjectProfileCreate);
+    socket.on('projectProfileUpdate', handleProjectProfileUpdate);
+    socket.on('projectProfileDelete', handleProjectProfileDelete);
+
+    socket.on('projectProfileSectionCreate', handleProjectProfileSectionCreate);
+    socket.on('projectProfileSectionUpdate', handleProjectProfileSectionUpdate);
+    socket.on('projectProfileSectionDelete', handleProjectProfileSectionDelete);
+
+    socket.on('projectProfileFieldCreate', handleProjectProfileFieldCreate);
+    socket.on('projectProfileFieldUpdate', handleProjectProfileFieldUpdate);
+    socket.on('projectProfileFieldDelete', handleProjectProfileFieldDelete);
+
     return () => {
       socket.off('disconnect', handleDisconnect);
       socket.off('reconnect', handleReconnect);
@@ -690,6 +738,18 @@ const createSocketEventsChannel = () =>
       socket.off('reportPhaseCreate', handleReportPhaseCreate);
       socket.off('reportPhaseUpdate', handleReportPhaseUpdate);
       socket.off('reportPhaseDelete', handleReportPhaseDelete);
+
+      socket.off('projectProfileCreate', handleProjectProfileCreate);
+      socket.off('projectProfileUpdate', handleProjectProfileUpdate);
+      socket.off('projectProfileDelete', handleProjectProfileDelete);
+
+      socket.off('projectProfileSectionCreate', handleProjectProfileSectionCreate);
+      socket.off('projectProfileSectionUpdate', handleProjectProfileSectionUpdate);
+      socket.off('projectProfileSectionDelete', handleProjectProfileSectionDelete);
+
+      socket.off('projectProfileFieldCreate', handleProjectProfileFieldCreate);
+      socket.off('projectProfileFieldUpdate', handleProjectProfileFieldUpdate);
+      socket.off('projectProfileFieldDelete', handleProjectProfileFieldDelete);
     };
   });
 

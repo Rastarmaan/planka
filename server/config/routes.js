@@ -81,6 +81,26 @@ module.exports.routes = {
   'PATCH /api/report-phases/:id': 'report-phases/update',
   'DELETE /api/report-phases/:id': 'report-phases/delete',
 
+  'GET /api/project-profiles': 'project-profiles/index',
+  'POST /api/project-profiles': 'project-profiles/create',
+  'GET /api/project-profiles/:id': 'project-profiles/show',
+  'PATCH /api/project-profiles/:id': 'project-profiles/update',
+  'DELETE /api/project-profiles/:id': 'project-profiles/delete',
+
+  'POST /api/project-profiles/:profileId/sections': 'project-profile-sections/create',
+  'PATCH /api/project-profile-sections/:id': 'project-profile-sections/update',
+  'DELETE /api/project-profile-sections/:id': 'project-profile-sections/delete',
+
+  'POST /api/project-profile-sections/:sectionId/fields': 'project-profile-fields/create',
+  'PATCH /api/project-profile-fields/:id': 'project-profile-fields/update',
+  'DELETE /api/project-profile-fields/:id': 'project-profile-fields/delete',
+
+  'GET /api/projects/:projectId/profile-data': 'project-profile-data/index',
+  'POST /api/projects/:projectId/profile-data': 'project-profile-data/save',
+
+  'POST /api/projects/:projectId/profile-files/upload': 'project-profile-files/upload',
+  'GET /api/profile-files/:uploadedFileId/:filename': 'project-profile-files/download',
+
   'POST /api/access-tokens': 'access-tokens/create',
   'POST /api/access-tokens/exchange-with-oidc': 'access-tokens/exchange-with-oidc',
   'POST /api/access-tokens/accept-terms': 'access-tokens/accept-terms',

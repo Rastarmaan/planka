@@ -34,6 +34,10 @@ import {
   Report,
   ReportPhase,
   ReportPhaseMembership,
+  ProjectProfile,
+  ProjectProfileSection,
+  ProjectProfileField,
+  ProjectProfileData,
   Task,
   TaskList,
   Team,
@@ -91,6 +95,10 @@ orm.register(
   Report,
   ReportPhase,
   ReportPhaseMembership,
+  ProjectProfile,
+  ProjectProfileSection,
+  ProjectProfileField,
+  ProjectProfileData,
 );
 
 export default orm;
