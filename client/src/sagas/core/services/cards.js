@@ -503,7 +503,7 @@ export function* duplicateCard(id, data) {
       (attachment) => attachment.id === card.coverAttachmentId,
     );
 
-    if (coverAttachment) {
+    if (coverAttachment && coverAttachment.data.thumbnailUrls) {
       yield call(_preloadImage, coverAttachment.data.thumbnailUrls.outside360);
     }
   }
@@ -665,7 +665,7 @@ export function* importAndSyncCard(sourceCardId, targetListId, data, callbacks =
       (attachment) => attachment.id === card.coverAttachmentId,
     );
 
-    if (coverAttachment) {
+    if (coverAttachment && coverAttachment.data.thumbnailUrls) {
       yield call(_preloadImage, coverAttachment.data.thumbnailUrls.outside360);
     }
   }

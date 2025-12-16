@@ -87,7 +87,7 @@ const ProjectContent = React.memo(({ cardId }) => {
 
   const coverUrl = useSelector((state) => {
     const attachment = selectAttachmentById(state, card.coverAttachmentId);
-    return attachment && attachment.data.thumbnailUrls.outside360;
+    return attachment && attachment.data.thumbnailUrls && attachment.data.thumbnailUrls.outside360;
   });
 
   const { listName, withCreator } = useSelector((state) => {
