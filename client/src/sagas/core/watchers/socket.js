@@ -98,6 +98,12 @@ const createSocketEventsChannel = () =>
       emit(entryActions.handleBoardCreate(item, boardMemberships, requestId));
     };
 
+    const handleImportProgress = ({ boardId, stage, message, current, total }) => {
+      // eslint-disable-next-line no-console
+      console.log(`[Trello Import] ${message} (${current}/${total})`);
+      emit(entryActions.handleImportProgress(boardId, stage, message, current, total));
+    };
+
     const handleBoardUpdate = ({ item }) => {
       emit(entryActions.handleBoardUpdate(item));
     };
@@ -484,6 +490,7 @@ const createSocketEventsChannel = () =>
     socket.on('baseCustomFieldGroupDelete', handleBaseCustomFieldGroupDelete);
 
     socket.on('boardCreate', handleBoardCreate);
+    socket.on('importProgress', handleImportProgress);
     socket.on('boardUpdate', handleBoardUpdate);
     socket.on('boardDelete', handleBoardDelete);
 
@@ -631,6 +638,7 @@ const createSocketEventsChannel = () =>
       socket.off('baseCustomFieldGroupDelete', handleBaseCustomFieldGroupDelete);
 
       socket.off('boardCreate', handleBoardCreate);
+      socket.off('importProgress', handleImportProgress);
       socket.off('boardUpdate', handleBoardUpdate);
       socket.off('boardDelete', handleBoardDelete);
 

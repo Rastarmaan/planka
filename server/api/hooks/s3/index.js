@@ -13,6 +13,7 @@
 
 const { URL } = require('url');
 const { S3Client } = require('@aws-sdk/client-s3');
+const { NodeHttpHandler } = require('@smithy/node-http-handler');
 
 module.exports = function defineS3Hook(sails) {
   let client = null;
@@ -37,6 +38,11 @@ module.exports = function defineS3Hook(sails) {
           secretAccessKey: sails.config.custom.s3SecretAccessKey,
         },
         forcePathStyle: sails.config.custom.s3ForcePathStyle,
+        requestHandler: new NodeHttpHandler({
+          connectionTimeout: 30000,
+          socketTimeout: 30000,
+          maxSockets: 500,
+        }),
       });
     },
 
