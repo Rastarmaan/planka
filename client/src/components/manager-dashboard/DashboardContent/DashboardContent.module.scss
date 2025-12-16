@@ -19,6 +19,7 @@
   .scrollableContainer {
     overflow-y: auto;
     height: 100%;
+    padding-right: 0.8rem;
 
     &::-webkit-scrollbar {
       width: 8px;
