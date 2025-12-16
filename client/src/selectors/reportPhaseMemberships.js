@@ -7,6 +7,10 @@ import { createSelector } from 'redux-orm';
 
 import orm from '../orm';
 
+export const selectAllReportPhaseMemberships = createSelector(orm, ({ ReportPhaseMembership }) =>
+  ReportPhaseMembership.all().toRefArray(),
+);
+
 export const selectMembershipsByPhaseId = createSelector(
   orm,
   (_, phaseId) => phaseId,
@@ -14,5 +18,6 @@ export const selectMembershipsByPhaseId = createSelector(
 );
 
 export default {
+  selectAllReportPhaseMemberships,
   selectMembershipsByPhaseId,
 };

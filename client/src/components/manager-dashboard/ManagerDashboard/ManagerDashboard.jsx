@@ -23,7 +23,7 @@ const TABS = {
 
 const ManagerDashboard = React.memo(() => {
   const currentUser = useSelector(selectors.selectCurrentUser);
-  const [activeTab, setActiveTab] = useState(TABS.PROJECT_HISTORY);
+  const [activeTab, setActiveTab] = useState(TABS.MANAGER_VIEW);
   const [selectedProjectId, setSelectedProjectId] = useState(null);
 
   return (

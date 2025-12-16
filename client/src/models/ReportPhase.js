@@ -51,6 +51,14 @@ export default class extends BaseModel {
         }
 
         break;
+      case ActionTypes.REPORTS_FETCH__SUCCESS:
+        if (payload.reportPhases) {
+          payload.reportPhases.forEach((phase) => {
+            ReportPhase.upsert(phase);
+          });
+        }
+
+        break;
       case ActionTypes.REPORT_PHASE_CREATE:
       case ActionTypes.REPORT_PHASE_CREATE_HANDLE:
       case ActionTypes.REPORT_PHASE_UPDATE__SUCCESS:

@@ -10,6 +10,27 @@ import actions from '../../../actions';
 import api from '../../../api';
 import { createLocalId } from '../../../utils/local-id';
 
+export function* fetchReports() {
+  let reports = [];
+  let reportPhases = [];
+  let reportPhaseMemberships = [];
+
+  try {
+    const response = yield call(request, api.getReports);
+    reports = response.items || [];
+
+    if (response.included) {
+      reportPhases = response.included.reportPhases || [];
+      reportPhaseMemberships = response.included.reportPhaseMemberships || [];
+    }
+  } catch (error) {
+    yield put(actions.fetchReports.failure(error));
+    return;
+  }
+
+  yield put(actions.fetchReports.success(reports, reportPhases, reportPhaseMemberships));
+}
+
 export function* createReport(data) {
   const localId = yield call(createLocalId);
 

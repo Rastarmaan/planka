@@ -5,6 +5,11 @@
 
 import EntryActionTypes from '../constants/EntryActionTypes';
 
+const fetchReports = () => ({
+  type: EntryActionTypes.REPORTS_FETCH,
+  payload: {},
+});
+
 const createReport = (data) => ({
   type: EntryActionTypes.REPORT_CREATE,
   payload: {
@@ -97,6 +102,7 @@ const handleReportPhaseDelete = (reportPhase) => ({
 });
 
 export default {
+  fetchReports,
   createReport,
   handleReportCreate,
   updateReport,

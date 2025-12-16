@@ -10,6 +10,7 @@ import EntryActionTypes from '../../../constants/EntryActionTypes';
 
 export default function* reportsWatchers() {
   yield all([
+    takeEvery(EntryActionTypes.REPORTS_FETCH, () => services.fetchReports()),
     takeEvery(EntryActionTypes.REPORT_CREATE, ({ payload: { data } }) =>
       services.createReport(data),
     ),

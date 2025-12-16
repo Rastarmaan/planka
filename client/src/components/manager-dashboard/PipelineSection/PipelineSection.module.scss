@@ -4,15 +4,18 @@
  */
 
 :global(#app) {
-  .wrapper {
-    padding: 9rem 2rem 2rem 2rem;
-    background-color: white;
-    border: 1px solid #d3d8de;
-    box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.05);
-    border-radius: 1.5rem;
+  .container {
+    width: 80dvw;
     position: relative;
-    width: 74%;
-    margin: 0 auto;
+    .wrapper {
+      padding: 9rem 2rem 2rem 2rem;
+      background-color: white;
+      border: 1px solid #d3d8de;
+      box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.05);
+      border-radius: 1.5rem;
+      width: 74dvw;
+      margin: 0 auto;
+    }
   }
 
   .header {
@@ -29,7 +32,7 @@
     margin-bottom: 16px;
     position: absolute;
     top: 4rem;
-    right: 1.8rem;
+    right: 8rem;
 
     span {
       z-index: 10;

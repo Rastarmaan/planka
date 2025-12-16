@@ -13,13 +13,67 @@ import styles from './PipelineCard.module.scss';
 
 const CARD_THEMES = ['teal', 'gray', 'yellow'];
 
-const PipelineCard = React.memo(({ card, index }) => {
-  if (!card) {
+const STATUS_LABELS = {
+  todo: 'در انتظار',
+  doing: 'در حال انجام',
+  done: 'انجام شده',
+};
+
+const STATUS_THEME = {
+  todo: 'teal',
+  doing: 'yellow',
+  done: 'gray',
+};
+
+const formatDate = (value) => {
+  if (!value) {
+    return '—';
+  }
+
+  const date = new Date(value);
+
+  if (Number.isNaN(date.getTime())) {
+    return '—';
+  }
+
+  try {
+    return new Intl.DateTimeFormat('fa-IR').format(date);
+  } catch (error) {
+    return date.toISOString().slice(0, 10);
+  }
+};
+
+const membershipShapeDefinition = {
+  id: PropTypes.string,
+  permission: PropTypes.string,
+  phaseId: PropTypes.string,
+  user: PropTypes.shape({
+    id: PropTypes.string,
+    name: PropTypes.string,
+    username: PropTypes.string,
+    email: PropTypes.string,
+  }),
+};
+
+export const membershipShape = PropTypes.shape(membershipShapeDefinition);
+
+const PipelineCard = React.memo(({ phase, index }) => {
+  if (!phase) {
     return null;
   }
 
-  const themeIndex = (index - 1) % CARD_THEMES.length;
-  const theme = CARD_THEMES[themeIndex];
+  const statusTheme = STATUS_THEME[phase.status];
+  const fallbackTheme = CARD_THEMES[(index - 1) % CARD_THEMES.length];
+  const theme = statusTheme || fallbackTheme;
+
+  const primaryMembership = phase.memberships?.[0]?.user;
+  const assigneeName =
+    primaryMembership?.name || primaryMembership?.username || primaryMembership?.email || '—';
+
+  const statusLabel = STATUS_LABELS[phase.status] || '—';
+  const endDateLabel = formatDate(phase.endDate);
+  const startDateLabel = formatDate(phase.startDate);
+  const description = phase.description || phase.name || 'مرحله بدون توضیح';
 
   return (
     <div
@@ -36,7 +90,7 @@ const PipelineCard = React.memo(({ card, index }) => {
 
       <div className={styles.content}>
         <div className={styles.userInfo}>
-          <span className={styles.userName}>{card.assignee || 'پریماه بخشی'}</span>
+          <span className={styles.userName}>{assigneeName}</span>
           <svg
             className={styles.profileIcon}
             viewBox="0 0 18 18"
@@ -54,15 +108,15 @@ const PipelineCard = React.memo(({ card, index }) => {
           </svg>
         </div>
 
-        <p className={styles.description}>{card.name || 'در حال مذاکره با عصر ایران...'}</p>
+        <p className={styles.description}>{description}</p>
 
         <div className={styles.statusBadge}>
-          <span>{card.listName || 'مذاکره و توافقات'}</span>
+          <span>{statusLabel}</span>
         </div>
 
         <div className={styles.datesRow}>
           <div className={styles.dateBadge}>
-            <span>{card.dueDate || '۱۴۰۴/۰۹/۱۸'}</span>
+            <span>{endDateLabel}</span>
             <svg
               className={styles.calendarIcon}
               viewBox="0 0 14 14"
@@ -84,7 +138,7 @@ const PipelineCard = React.memo(({ card, index }) => {
             </svg>
           </div>
           <div className={styles.dateBadge}>
-            <span>{card.createdDate || '۱۴۰۴/۱۰/۲۳'}</span>
+            <span>{startDateLabel}</span>
             <svg
               className={styles.calendarIcon}
               viewBox="0 0 14 14"
@@ -115,7 +169,15 @@ const PipelineCard = React.memo(({ card, index }) => {
 });
 
 PipelineCard.propTypes = {
-  card: PropTypes.object.isRequired, // eslint-disable-line react/forbid-prop-types
+  phase: PropTypes.shape({
+    id: PropTypes.string.isRequired,
+    name: PropTypes.string,
+    description: PropTypes.string,
+    status: PropTypes.string,
+    startDate: PropTypes.string,
+    endDate: PropTypes.string,
+    memberships: PropTypes.arrayOf(membershipShape),
+  }).isRequired,
   index: PropTypes.number.isRequired,
 };
 
