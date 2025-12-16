@@ -1,0 +1,284 @@
+/*!
+ * Copyright (c) 2024 PLANKA Software GmbH
+ * Licensed under the Fair Use License: https://github.com/plankanban/planka/blob/master/LICENSE.md
+ */
+
+$teal-bg: #49a6af;
+$teal-badge-bg: #c9e8eb;
+$teal-badge-border: #73c5cd;
+$teal-text: #224c51;
+
+$gray-bg: #d3d8de;
+$gray-badge-bg: #eaecef;
+$gray-badge-border: #d3d8de;
+$gray-text: #d3d8de;
+
+$yellow-bg: #ffd23e;
+$yellow-badge-bg: rgba(255, 204, 0, 0.15);
+$yellow-badge-border: #ff9500;
+$yellow-text: #ff9500;
+
+.wrapper {
+  position: relative;
+  width: 223px;
+  height: 267px;
+  flex: none;
+  flex-grow: 0;
+}
+
+.backgroundLayer {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 0;
+  bottom: 0;
+  border-radius: 18px;
+}
+
+.cardBody {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 0;
+  bottom: 0;
+}
+
+.waveShape {
+  width: 88%;
+  margin: 0 1rem;
+  height: 100%;
+  object-fit: contain;
+}
+
+.content {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  top: 38px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+  width: 187px;
+}
+
+.userInfo {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 4px;
+}
+
+.userName {
+  font-family: "Lahzeh-FaNum", "Lahzeh", sans-serif;
+  font-style: normal;
+  font-weight: 400;
+  font-size: 14.32px;
+  line-height: 150%;
+  display: flex;
+  align-items: center;
+  text-align: right;
+}
+
+.profileIcon {
+  width: 18px;
+  height: 18px;
+}
+
+.description {
+  width: 100%;
+  margin: 0;
+  font-family: "Lahzeh-FaNum", "Lahzeh", sans-serif;
+  font-style: normal;
+  font-weight: 300;
+  font-size: 12.27px;
+  line-height: 150%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+}
+
+.statusBadge {
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  padding: 6px 12px;
+  gap: 10px;
+  width: 157px;
+  height: 36px;
+  box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
+  border-radius: 8px;
+
+  span {
+    font-family: "Lahzeh-FaNum", "Lahzeh", sans-serif;
+    font-style: normal;
+    font-weight: 400;
+    font-size: 14px;
+    line-height: 150%;
+    display: flex;
+    align-items: center;
+    text-align: center;
+  }
+}
+
+.datesRow {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 7px;
+  width: 100%;
+}
+
+.dateBadge {
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  padding: 6px 12px;
+  gap: 6px;
+  width: 90px;
+  height: 25px;
+  box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
+  border-radius: 6px;
+
+  span {
+    font-family: "Lahzeh-FaNum", "Lahzeh", sans-serif;
+    font-style: normal;
+    font-weight: 400;
+    font-size: 12.27px;
+    line-height: 150%;
+    display: flex;
+    align-items: center;
+    text-align: center;
+  }
+}
+
+.calendarIcon {
+  width: 14px;
+  height: 14px;
+  flex-shrink: 0;
+}
+
+.indexNumber {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  bottom: 8px;
+  font-family: "Lahzeh", sans-serif;
+  font-style: normal;
+  font-weight: 400;
+  font-size: 28px;
+  line-height: 57px;
+  display: flex;
+  align-items: center;
+  text-align: center;
+  color: #ffffff;
+}
+
+.themeTeal {
+  .backgroundLayer {
+    background: $teal-bg;
+  }
+
+  .userName,
+  .description,
+  .profileIcon {
+    color: $teal-text;
+  }
+
+  .statusBadge {
+    background: $teal-badge-bg;
+    border: 0.26px solid $teal-badge-border;
+
+    span {
+      color: $teal-text;
+    }
+  }
+
+  .dateBadge {
+    background: $teal-badge-bg;
+    border: 0.26px solid $teal-badge-border;
+
+    span {
+      color: $teal-text;
+    }
+  }
+
+  .calendarIcon {
+    color: $teal-text;
+  }
+}
+
+.themeGray {
+  .backgroundLayer {
+    background: $gray-bg;
+  }
+
+  .userName,
+  .description,
+  .profileIcon {
+    color: $gray-text;
+  }
+
+  .statusBadge {
+    background: $gray-badge-bg;
+    border: none;
+    box-shadow: none;
+
+    span {
+      color: $gray-text;
+    }
+  }
+
+  .dateBadge {
+    background: $gray-badge-bg;
+    border: none;
+    box-shadow: none;
+
+    span {
+      color: $gray-text;
+    }
+  }
+
+  .calendarIcon {
+    color: $gray-text;
+  }
+}
+
+.themeYellow {
+  .backgroundLayer {
+    background: $yellow-bg;
+  }
+
+  .userName,
+  .description,
+  .profileIcon {
+    color: $yellow-text;
+  }
+
+  .statusBadge {
+    background: $yellow-badge-bg;
+    border: 0.26px solid $yellow-badge-border;
+
+    span {
+      color: $yellow-text;
+    }
+  }
+
+  .dateBadge {
+    background: $yellow-badge-bg;
+    border: 0.26px solid $yellow-badge-border;
+
+    span {
+      color: $yellow-text;
+    }
+  }
+
+  .calendarIcon {
+    color: $yellow-text;
+  }
+}

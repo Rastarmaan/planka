@@ -100,6 +100,7 @@ const ItemContent = React.forwardRef(({ id, onOpen }, ref) => {
           background:
             attachment.type === AttachmentTypes.FILE &&
             attachment.data.image &&
+            attachment.data.thumbnailUrls &&
             `url("${attachment.data.thumbnailUrls.outside360}") center / cover`,
         }}
       >

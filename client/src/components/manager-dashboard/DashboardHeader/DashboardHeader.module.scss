@@ -1,0 +1,216 @@
+/*!
+ * Copyright (c) 2024 PLANKA Software GmbH
+ * Licensed under the Fair Use License: https://github.com/plankanban/planka/blob/master/LICENSE.md
+ */
+
+:global(#app) {
+  .wrapper {
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0;
+    gap: 16px;
+    width: 100%;
+    height: 60px;
+    flex: none;
+    align-self: stretch;
+    flex-grow: 0;
+  }
+
+  .leftSection {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    padding: 0;
+    gap: 16px;
+    height: 60px;
+    flex: none;
+    flex-grow: 0;
+    order: 2;
+  }
+
+  .rightSection {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    padding: 0;
+    height: 60px;
+    flex: none;
+    flex-grow: 0;
+    order: 0;
+  }
+
+  .profileContainer {
+    display: flex;
+    flex-direction: row-reverse;
+    align-items: center;
+    gap: 12px;
+    padding: 8px 12px;
+    background: #ffffff;
+    border: 1px solid #d3d8de;
+    border-radius: 12px;
+    height: 60px;
+    min-width: 210px;
+    box-sizing: border-box;
+  }
+
+  .profileInfo {
+    display: flex;
+    flex-direction: row-reverse;
+    align-items: center;
+    gap: 12px;
+    flex: 1;
+  }
+
+  .profileAvatar {
+    width: 44px;
+    height: 44px;
+    border-radius: 8px;
+    overflow: hidden;
+    background: #f5f7fa;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+  }
+
+  .profileText {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    text-align: right;
+  }
+
+  .profileName {
+    margin: 0;
+    padding: 0;
+    font-family: 'Lahzeh';
+    font-weight: 500;
+    font-size: 16px;
+    line-height: 1.5;
+    color: #224c51;
+  }
+
+  .profileRole {
+    margin: 0;
+    padding: 0;
+    font-family: 'Lahzeh';
+    font-weight: 400;
+    font-size: 12px;
+    line-height: 1.4;
+    color: rgba(41, 45, 50, 0.44);
+  }
+
+  .dropdownButton {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    padding: 4px;
+    transition: opacity 0.2s ease;
+
+    &:hover {
+      opacity: 0.7;
+    }
+
+    i.icon {
+      margin: 0 !important;
+      transform: rotate(-90deg);
+      color: #292d32 !important;
+      font-size: 14px;
+    }
+  }
+
+  .actionsContainer {
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-start;
+    align-items: center;
+    padding: 0;
+    gap: 14px;
+    height: 60px;
+    flex: none;
+    flex-grow: 0;
+  }
+
+  .actionButton {
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    padding: 10px 9px;
+    gap: 10px;
+    width: 60px;
+    height: 60px;
+    background: #ffffff;
+    border: 1px solid #d3d8de;
+    box-shadow: 0 3.5px 5.5px rgba(0, 0, 0, 0.02);
+    border-radius: 12px;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+    flex: none;
+    flex-grow: 0;
+
+    &:hover {
+      background: #f5f7fa;
+    }
+
+    svg {
+      width: 32px;
+      height: 32px;
+    }
+  }
+
+
+
+  .searchBox {
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    padding: 8px 31px;
+    gap: 10px;
+    width: 494px;
+    height: 60px;
+    background: #ffffff;
+    border: 1px solid #d3d8de;
+    border-radius: 12px;
+    flex: none;
+    flex-grow: 0;
+  }
+
+  .searchInput {
+    border: none;
+    background: transparent;
+    outline: none;
+    flex: 1;
+    font-family: 'Lahzeh-FaNum', sans-serif;
+    font-style: normal;
+    font-weight: 400;
+    font-size: 16px;
+    line-height: 33px;
+    text-align: right;
+    color: #333;
+
+    &::placeholder {
+      color: #969ba0;
+    }
+  }
+
+  .searchIcon {
+    width: 24px;
+    height: 24px;
+    flex: none;
+    flex-grow: 0;
+  }
+}
