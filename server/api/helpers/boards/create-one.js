@@ -130,6 +130,7 @@ module.exports = {
         inputs.import.board,
         trelloApiKey,
         trelloApiToken,
+        inputs.actorUser,
       );
     }
 
