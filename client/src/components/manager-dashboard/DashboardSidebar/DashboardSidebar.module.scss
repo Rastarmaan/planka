@@ -1,0 +1,217 @@
+/*!
+ * Copyright (c) 2024 PLANKA Software GmbH
+ * Licensed under the Fair Use License: https://github.com/plankanban/planka/blob/master/LICENSE.md
+ */
+
+:global(#app) {
+  .wrapper {
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    padding: 24px;
+    gap: 38px;
+    width: 250px;
+    min-width: 250px;
+    height: 100%;
+    background: #edf1f1;
+    border: 1px solid #d3d8de;
+    border-radius: 16px;
+    flex: none;
+    flex-grow: 0;
+    overflow-y: auto;
+    overflow-x: hidden;
+
+    &::-webkit-scrollbar {
+      width: 6px;
+    }
+
+    &::-webkit-scrollbar-track {
+      background: transparent;
+    }
+
+    &::-webkit-scrollbar-thumb {
+      background: #d3d8de;
+      border-radius: 3px;
+    }
+
+    &::-webkit-scrollbar-thumb:hover {
+      background: #b8bfc7;
+    }
+  }
+
+  .logo {
+    width: 100%;
+    display: flex;
+    justify-content: flex-start;
+    flex: none;
+    flex-shrink: 0;
+  }
+
+  .logoImage {
+    height: 31px;
+    width: auto;
+  }
+
+  .categoriesContainer {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    padding: 0;
+    gap: 12px;
+    width: 100%;
+    flex: none;
+    flex-grow: 0;
+  }
+
+  .categorySection {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    padding: 0;
+    gap: 6px;
+    width: 100%;
+    flex: none;
+    flex-grow: 0;
+  }
+
+  .categoryHeader {
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    padding: 6px 15px;
+    gap: 6px;
+    width: 100%;
+    height: 40px;
+    background: rgba(255, 255, 255, 0.5);
+    border: 1px solid #d3d8de;
+    box-shadow: 0 3.5px 5.5px rgba(0, 0, 0, 0.02);
+    border-radius: 10px;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+
+    &:hover {
+      background: rgba(255, 255, 255, 0.7);
+    }
+  }
+
+  .categoryName {
+    font-family: 'Lahzeh-FaNum', sans-serif;
+    font-style: normal;
+    font-weight: 700;
+    font-size: 12px;
+    line-height: 150%;
+    display: flex;
+    align-items: center;
+    text-align: right;
+    color: #224c51;
+    flex: 1;
+  }
+
+  .categoryChevron {
+    color: #224c51;
+    flex: none;
+    margin: 0 !important;
+    font-size: 10px !important;
+    transition: transform 0.3s ease;
+  }
+
+  .categoryChevronCollapsed {
+    transform: rotate(90deg);
+  }
+
+  .projectsWrapper {
+    width: 100%;
+    overflow: hidden;
+    max-height: 0;
+    opacity: 0;
+    transition:
+      max-height 0.3s ease-out,
+      opacity 0.2s ease-out;
+  }
+
+  .projectsWrapperExpanded {
+    max-height: 500px;
+    opacity: 1;
+    transition:
+      max-height 0.4s ease-in,
+      opacity 0.3s ease-in;
+  }
+
+  .projectsContainer {
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    padding: 12px;
+    gap: 8px;
+    width: 100%;
+    background: #f3f5f5;
+    border: 1px solid #d3d8de;
+    border-radius: 12px;
+    flex: none;
+    flex-grow: 0;
+  }
+
+  .projectItem {
+    display: flex;
+    align-items: center;
+    padding: 4px 8px;
+    gap: 12px;
+    width: 100%;
+    min-height: 40px;
+    border: none;
+    background: transparent;
+    border-radius: 7px;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+    flex: none;
+    flex-grow: 0;
+
+    &:hover {
+      background: rgba(201, 232, 235, 0.3);
+    }
+  }
+
+  .projectItemFirst {
+    background: rgba(201, 232, 235, 0.5);
+  }
+
+  .projectItemActive {
+    background: rgba(201, 232, 235, 0.5);
+  }
+
+  .projectIcon {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    width: 25px;
+    height: 25px;
+    filter: drop-shadow(0 3.5px 5.5px rgba(0, 0, 0, 0.02));
+    border-radius: 8px;
+    flex: none;
+    overflow: hidden;
+  }
+
+  .projectIconImage {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+  }
+
+  .projectName {
+    font-family: 'Lahzeh-FaNum', sans-serif;
+    font-style: normal;
+    font-weight: 700;
+    font-size: 12px;
+    line-height: 150%;
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    text-align: right;
+    color: #2d3748;
+  }
+}

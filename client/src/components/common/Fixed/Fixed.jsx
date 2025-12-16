@@ -7,6 +7,7 @@ import React from 'react';
 import { useSelector } from 'react-redux';
 
 import selectors from '../../../selectors';
+import { UserRoles } from '../../../constants/Enums';
 import Header from '../Header';
 import Favorites from '../Favorites';
 import HomeActions from '../HomeActions';
@@ -18,6 +19,11 @@ import styles from './Fixed.module.scss';
 const Fixed = React.memo(() => {
   const { projectId } = useSelector(selectors.selectPath);
   const board = useSelector(selectors.selectCurrentBoard);
+  const currentUser = useSelector(selectors.selectCurrentUser);
+
+  if (currentUser?.role === UserRoles.MANAGER) {
+    return null;
+  }
 
   return (
     <div className={styles.wrapper}>

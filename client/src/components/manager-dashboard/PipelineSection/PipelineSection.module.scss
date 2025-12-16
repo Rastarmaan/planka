@@ -1,0 +1,78 @@
+/*!
+ * Copyright (c) 2024 PLANKA Software GmbH
+ * Licensed under the Fair Use License: https://github.com/plankanban/planka/blob/master/LICENSE.md
+ */
+
+:global(#app) {
+  .wrapper {
+    padding: 9rem 2rem 2rem 2rem;
+    background-color: white;
+    border: 1px solid #d3d8de;
+    box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.05);
+    border-radius: 1.5rem;
+    position: relative;
+    width: 74%;
+    margin: 0 auto;
+  }
+
+  .header {
+    display: flex;
+    justify-content: flex-end;
+    margin-bottom: 20px;
+  }
+
+  .flashContainer {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    margin-bottom: 16px;
+    position: absolute;
+    top: 4rem;
+    right: 1.8rem;
+
+    span {
+      z-index: 10;
+      color: white;
+      font-weight: 600;
+      font-size: 1rem;
+    }
+
+    .flashIcon {
+      position: absolute;
+      z-index: 1;
+    }
+  }
+
+  .cardsContainer {
+    display: flex;
+    gap: 16px;
+    overflow-x: auto;
+    padding-bottom: 8px;
+    direction: rtl;
+
+    &::-webkit-scrollbar {
+      height: 8px;
+    }
+
+    &::-webkit-scrollbar-track {
+      background: #f1f1f1;
+      border-radius: 4px;
+    }
+
+    &::-webkit-scrollbar-thumb {
+      background: #c1c1c1;
+      border-radius: 4px;
+    }
+  }
+
+  .noCards {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    padding: 40px;
+    color: #718096;
+    font-size: 14px;
+  }
+}
