@@ -437,27 +437,29 @@ const StoryContent = React.memo(() => {
           >
             {(board.alwaysDisplayCardCreator || labelIds.length > 0 || coverAttachment) && (
               <div className={classNames(styles.moduleWrapper, styles.moduleWrapperAttachments)}>
-                {coverAttachment && (
-                  <div className={styles.coverWrapper}>
-                    <GalleryItem
-                      {...coverAttachment.data.image} // eslint-disable-line react/jsx-props-no-spreading
-                      original={coverAttachment.data.url}
-                      caption={coverAttachment.name}
-                    >
-                      {({ ref, open }) => (
-                        /* eslint-disable-next-line jsx-a11y/click-events-have-key-events,
+                {coverAttachment &&
+                  coverAttachment.data.image &&
+                  coverAttachment.data.thumbnailUrls && (
+                    <div className={styles.coverWrapper}>
+                      <GalleryItem
+                        {...coverAttachment.data.image} // eslint-disable-line react/jsx-props-no-spreading
+                        original={coverAttachment.data.url}
+                        caption={coverAttachment.name}
+                      >
+                        {({ ref, open }) => (
+                          /* eslint-disable-next-line jsx-a11y/click-events-have-key-events,
                                                     jsx-a11y/no-noninteractive-element-interactions */
-                        <img
-                          ref={ref}
-                          src={coverAttachment.data.thumbnailUrls.outside720}
-                          alt={coverAttachment.name}
-                          className={styles.cover}
-                          onClick={open}
-                        />
-                      )}
-                    </GalleryItem>
-                  </div>
-                )}
+                          <img
+                            ref={ref}
+                            src={coverAttachment.data.thumbnailUrls.outside720}
+                            alt={coverAttachment.name}
+                            className={styles.cover}
+                            onClick={open}
+                          />
+                        )}
+                      </GalleryItem>
+                    </div>
+                  )}
                 {board.alwaysDisplayCardCreator && (
                   <div className={styles.attachments}>
                     <span className={styles.attachment}>
