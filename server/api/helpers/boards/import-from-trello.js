@@ -27,6 +27,10 @@ module.exports = {
       type: 'string',
       required: false,
     },
+    actorUser: {
+      type: 'ref',
+      required: false,
+    },
   },
 
   async fn(inputs) {
@@ -141,6 +145,24 @@ module.exports = {
     const trelloCards = inputs.trelloBoard.cards || [];
     const attachmentIdMap = {};
 
+    const totalAttachments = trelloCards.reduce((total, card) => {
+      return total + (card.attachments ? card.attachments.length : 0);
+    }, 0);
+
+    let importedAttachmentCount = 0;
+    const logMessage = `Starting import of ${totalAttachments} attachments from Trello board "${inputs.trelloBoard.name || 'Unknown'}"`;
+    sails.log.info(logMessage);
+
+    if (inputs.actorUser) {
+      sails.sockets.broadcast(`user:${inputs.actorUser.id}`, 'importProgress', {
+        boardId: inputs.board.id,
+        stage: 'attachments',
+        message: logMessage,
+        current: 0,
+        total: totalAttachments,
+      });
+    }
+
     await Promise.all(
       trelloCards.map(async (trelloCard) => {
         const cardId = cardIdByTrelloCardId[trelloCard.id];
@@ -183,6 +205,19 @@ module.exports = {
                     });
 
                     attachmentIdMap[trelloAttachment.id] = attachment.id;
+                    importedAttachmentCount += 1;
+                    const progressMessage = `Imported attachment ${importedAttachmentCount}/${totalAttachments}: "${trelloAttachment.name}" (File)`;
+                    sails.log.info(progressMessage);
+
+                    if (inputs.actorUser) {
+                      sails.sockets.broadcast(`user:${inputs.actorUser.id}`, 'importProgress', {
+                        boardId: inputs.board.id,
+                        stage: 'attachments',
+                        message: progressMessage,
+                        current: importedAttachmentCount,
+                        total: totalAttachments,
+                      });
+                    }
 
                     return attachment;
                   }
@@ -214,6 +249,19 @@ module.exports = {
               });
 
               attachmentIdMap[trelloAttachment.id] = attachment.id;
+              importedAttachmentCount += 1;
+              const progressMessage = `Imported attachment ${importedAttachmentCount}/${totalAttachments}: "${trelloAttachment.name}" (Link)`;
+              sails.log.info(progressMessage);
+
+              if (inputs.actorUser) {
+                sails.sockets.broadcast(`user:${inputs.actorUser.id}`, 'importProgress', {
+                  boardId: inputs.board.id,
+                  stage: 'attachments',
+                  message: progressMessage,
+                  current: importedAttachmentCount,
+                  total: totalAttachments,
+                });
+              }
 
               return attachment;
             } catch (error) {
@@ -227,6 +275,19 @@ module.exports = {
         );
       }),
     );
+
+    const summaryMessage = `Completed import: ${importedAttachmentCount}/${totalAttachments} attachments successfully imported`;
+    sails.log.info(summaryMessage);
+
+    if (inputs.actorUser) {
+      sails.sockets.broadcast(`user:${inputs.actorUser.id}`, 'importProgress', {
+        boardId: inputs.board.id,
+        stage: 'complete',
+        message: summaryMessage,
+        current: importedAttachmentCount,
+        total: totalAttachments,
+      });
+    }
 
     await Promise.all(
       trelloCards.map(async (trelloCard) => {

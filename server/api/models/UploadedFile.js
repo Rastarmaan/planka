@@ -14,6 +14,7 @@ const Types = {
   USER_AVATAR: 'userAvatar',
   BACKGROUND_IMAGE: 'backgroundImage',
   ATTACHMENT: 'attachment',
+  PROFILE_FILE: 'profileFile',
 };
 
 module.exports = {

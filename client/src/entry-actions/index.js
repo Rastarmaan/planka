@@ -28,6 +28,7 @@ import notifications from './notifications';
 import projectCategories from './project-categories';
 import projectManagers from './project-managers';
 import projectTeams from './project-teams';
+import projectProfiles from './projectProfiles';
 import projects from './projects';
 import reports from './reports';
 import socket from './socket';
@@ -51,6 +52,7 @@ export default {
   ...reports,
   ...users,
   ...projects,
+  ...projectProfiles,
   ...spaces,
   ...folders,
   ...files,

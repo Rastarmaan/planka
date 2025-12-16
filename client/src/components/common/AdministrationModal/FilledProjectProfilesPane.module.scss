@@ -1,0 +1,65 @@
+/*!
+ * Copyright (c) 2024 PLANKA Software GmbH
+ * Licensed under the Fair Use License: https://github.com/plankanban/planka/blob/master/LICENSE.md
+ */
+
+:global(#app) {
+  .header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+
+    h3 {
+      margin: 0;
+    }
+
+    .calendarTypeSwitch {
+      display: flex;
+      gap: 0;
+    }
+  }
+
+  .datePickerInput {
+    width: 100% !important;
+    padding: 8px 10px !important;
+    border: 1px solid rgba(34, 36, 38, 0.15) !important;
+    border-radius: 4px !important;
+    font-size: 14px !important;
+    box-sizing: border-box !important;
+
+    &:focus {
+      border-color: #85b7d9 !important;
+      outline: none !important;
+    }
+  }
+
+  :global(.react-datepicker-wrapper) {
+    width: 100%;
+    position: relative;
+
+    input {
+      width: 100% !important;
+      padding: 8px 10px !important;
+      border: 1px solid rgba(34, 36, 38, 0.15) !important;
+      border-radius: 4px !important;
+      font-size: 14px !important;
+
+      &:focus {
+        border-color: #85b7d9 !important;
+        outline: none !important;
+      }
+    }
+  }
+
+  :global(.react-datepicker-popper) {
+    z-index: 10000 !important;
+  }
+
+  :global(.react-datepicker) {
+    font-family: inherit !important;
+    border: 1px solid rgba(34, 36, 38, 0.15) !important;
+    border-radius: 4px !important;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15) !important;
+  }
+}

@@ -21,6 +21,17 @@ const handleBoardCreate = (board, boardMemberships, requestId) => ({
   },
 });
 
+const handleImportProgress = (boardId, stage, message, current, total) => ({
+  type: EntryActionTypes.IMPORT_PROGRESS_HANDLE,
+  payload: {
+    boardId,
+    stage,
+    message,
+    current,
+    total,
+  },
+});
+
 const fetchBoard = (id) => ({
   type: EntryActionTypes.BOARD_FETCH,
   payload: {
@@ -119,6 +130,7 @@ const importBoardToCurrentProject = (data, callbacks = {}) => ({
 export default {
   createBoardInCurrentProject,
   handleBoardCreate,
+  handleImportProgress,
   fetchBoard,
   updateBoard,
   updateCurrentBoard,

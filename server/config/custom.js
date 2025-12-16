@@ -60,6 +60,7 @@ module.exports.custom = {
   userAvatarsPathSegment: 'public/user-avatars',
   backgroundImagesPathSegment: 'public/background-images',
   attachmentsPathSegment: 'private/attachments',
+  profileFilesPathSegment: 'private/profile-files',
 
   defaultAdminEmail:
     process.env.DEFAULT_ADMIN_EMAIL && process.env.DEFAULT_ADMIN_EMAIL.toLowerCase(),

@@ -8,7 +8,7 @@ import PropTypes from 'prop-types';
 import React, { useCallback, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useDispatch } from 'react-redux';
-import { Button, Form, Icon } from 'semantic-ui-react';
+import { Button, Form, Icon, Progress } from 'semantic-ui-react';
 import { Input, Popup } from '../../../../lib/custom-ui';
 import { useDidUpdate, useToggle } from '../../../../lib/hooks';
 
@@ -34,6 +34,24 @@ const AddStep = React.memo(({ onClose, onOpenImportModal }) => {
     import: null,
     templateId: null,
   });
+
+  const [importProgress, setImportProgress] = React.useState(null);
+
+  React.useEffect(() => {
+    const handleImportProgressEvent = (event) => {
+      if (event.type === 'IMPORT_PROGRESS_HANDLE') {
+        setImportProgress(event.payload);
+        // eslint-disable-next-line no-console
+        console.log(`[Import Progress] ${event.payload.message}`);
+      }
+    };
+
+    window.addEventListener('importProgress', handleImportProgressEvent);
+
+    return () => {
+      window.removeEventListener('importProgress', handleImportProgressEvent);
+    };
+  }, []);
 
   const [step, openStep, handleBack] = useSteps();
   const [focusNameFieldState, focusNameField] = useToggle();
@@ -67,17 +85,17 @@ const AddStep = React.memo(({ onClose, onOpenImportModal }) => {
   }, [onClose, dispatch, data, nameFieldRef]);
 
   useEffect(() => {
-    if (isSubmitting && data.import) {
+    if (isSubmitting && data.import && importProgress && importProgress.stage === 'complete') {
       const successTimeout = setTimeout(() => {
         onClose();
-      }, 3000);
+      }, 2000);
 
       return () => {
         clearTimeout(successTimeout);
       };
     }
     return undefined;
-  }, [isSubmitting, data.import, onClose]);
+  }, [isSubmitting, data.import, importProgress, onClose]);
 
   const handleImportSelect = useCallback(
     (nextImport) => {
@@ -148,6 +166,11 @@ const AddStep = React.memo(({ onClose, onOpenImportModal }) => {
   }
 
   if (isSubmitting && data.import) {
+    const progressPercent =
+      importProgress && importProgress.total > 0
+        ? Math.round((importProgress.current / importProgress.total) * 100)
+        : 0;
+
     return (
       <>
         <Popup.Header>
@@ -161,6 +184,20 @@ const AddStep = React.memo(({ onClose, onOpenImportModal }) => {
             <div className={styles.loadingText}>
               {t('common.importingBoard')}
               <div className={styles.loadingSubtext}>{data.import.file.name}</div>
+              {importProgress && (
+                <>
+                  <Progress
+                    percent={progressPercent}
+                    size="small"
+                    indicating
+                    className={styles.progressBar}
+                  />
+                  <div className={styles.progressMessage}>{importProgress.message}</div>
+                  <div className={styles.progressCount}>
+                    {importProgress.current} / {importProgress.total}
+                  </div>
+                </>
+              )}
             </div>
           </div>
         </Popup.Content>

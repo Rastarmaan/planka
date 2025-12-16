@@ -16,6 +16,8 @@ import { useClosableModal } from '../../../hooks';
 import BoardTemplatesPane from './BoardTemplatesPane';
 import GlobalLabelsPane from './GlobalLabelsPane';
 import ReportsPane from './ReportsPane';
+import ProjectProfilesPane from './ProjectProfilesPane';
+import FilledProjectProfilesPane from './FilledProjectProfilesPane';
 import TeamsPane from './TeamsPane';
 import UsersPane from './UsersPane';
 import WebhooksPane from './WebhooksPane';
@@ -72,6 +74,14 @@ const AdministrationModal = React.memo(() => {
             }),
             render: () => <ReportsPane />,
           },
+          {
+            menuItem: t('common.profileTemplates'),
+            render: () => <ProjectProfilesPane />,
+          },
+          {
+            menuItem: t('common.projectProfiles'),
+            render: () => <FilledProjectProfilesPane />,
+          },
         ]
       : []),
     {
@@ -91,14 +101,26 @@ const AdministrationModal = React.memo(() => {
   const isUsersPaneActive = activeTabIndex === 0;
 
   let reportsPaneIndex = -1;
+  let profileTemplatesPaneIndex = -1;
+  let projectProfilesPaneIndex = -1;
   if (isAdmin) {
     reportsPaneIndex = 3;
+    profileTemplatesPaneIndex = 4;
+    projectProfilesPaneIndex = 5;
   } else if (isAdminOrManager) {
     reportsPaneIndex = 1;
+    profileTemplatesPaneIndex = 2;
+    projectProfilesPaneIndex = 3;
   }
   const isReportsPaneActive = activeTabIndex === reportsPaneIndex;
+  const isProfileTemplatesPaneActive = activeTabIndex === profileTemplatesPaneIndex;
+  const isProjectProfilesPaneActive = activeTabIndex === projectProfilesPaneIndex;
 
-  const isLargeModal = isUsersPaneActive || isReportsPaneActive;
+  const isLargeModal =
+    isUsersPaneActive ||
+    isReportsPaneActive ||
+    isProfileTemplatesPaneActive ||
+    isProjectProfilesPaneActive;
 
   return (
     <ClosableModal

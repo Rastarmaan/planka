@@ -22,12 +22,19 @@ export function* fetchCore() {
   let reports;
   let reportPhases;
   let reportPhaseMemberships;
+  let projectProfiles;
+  let projectProfileSections;
+  let projectProfileFields;
   if (user.role === UserRoles.ADMIN || user.role === UserRoles.MANAGER) {
     ({ items: webhooks } = yield call(request, api.getWebhooks));
     const reportsResponse = yield call(request, api.getReports);
     reports = reportsResponse.items;
     reportPhases = reportsResponse.included?.reportPhases || [];
     reportPhaseMemberships = reportsResponse.included?.reportPhaseMemberships || [];
+    const projectProfilesResponse = yield call(request, api.getProjectProfiles);
+    projectProfiles = projectProfilesResponse.items || [];
+    projectProfileSections = projectProfilesResponse.included?.projectProfileSections || [];
+    projectProfileFields = projectProfilesResponse.included?.projectProfileFields || [];
   }
 
   let users1;
@@ -124,6 +131,9 @@ export function* fetchCore() {
     reports,
     reportPhases,
     reportPhaseMemberships,
+    projectProfiles,
+    projectProfileSections,
+    projectProfileFields,
     projectManagers,
     projectCategories,
     projectCategoryAssignments,

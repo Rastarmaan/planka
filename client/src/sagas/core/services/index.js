@@ -29,6 +29,7 @@ import projectManagers from './project-managers';
 import projectTeams from './project-teams';
 import projects from './projects';
 import * as reports from './reports';
+import * as projectProfiles from './projectProfiles';
 import router from './router';
 import socket from './socket';
 import taskLists from './task-lists';
@@ -53,6 +54,7 @@ export default {
   ...users,
   ...projects,
   ...reports,
+  ...projectProfiles,
   ...spaces,
   ...folders,
   ...files,

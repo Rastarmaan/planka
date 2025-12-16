@@ -7,6 +7,7 @@ const COLUMN_NAME_BY_TYPE = {
   [UploadedFile.Types.USER_AVATAR]: 'user_avatars',
   [UploadedFile.Types.BACKGROUND_IMAGE]: 'background_images',
   [UploadedFile.Types.ATTACHMENT]: 'attachments',
+  [UploadedFile.Types.PROFILE_FILE]: 'profile_files',
 };
 
 /* Query methods */

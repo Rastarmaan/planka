@@ -1,0 +1,52 @@
+/*!
+ * Copyright (c) 2024 PLANKA Software GmbH
+ * Licensed under the Fair Use License: https://github.com/plankanban/planka/blob/master/LICENSE.md
+ */
+
+module.exports = {
+  inputs: {
+    record: {
+      type: 'ref',
+      required: true,
+    },
+    values: {
+      type: 'ref',
+      required: true,
+    },
+    request: {
+      type: 'ref',
+    },
+  },
+
+  async fn(inputs) {
+    const section = await ProjectProfileSection.updateOne(inputs.record.id).set(inputs.values);
+
+    if (!section) {
+      return section;
+    }
+
+    // Broadcast to all admin/manager users
+    const adminUsers = await User.find({
+      or: [{ role: User.Roles.ADMIN }, { role: User.Roles.MANAGER }],
+    });
+
+    adminUsers.forEach((user) => {
+      sails.sockets.broadcast(
+        `user:${user.id}`,
+        'projectProfileSectionUpdate',
+        {
+          item: {
+            ...section,
+            profileId: section.profile,
+          },
+        },
+        inputs.request,
+      );
+    });
+
+    return {
+      ...section,
+      profileId: section.profile,
+    };
+  },
+};
