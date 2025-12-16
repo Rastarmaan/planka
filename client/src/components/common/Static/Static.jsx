@@ -11,7 +11,7 @@ import { Icon, Loader } from 'semantic-ui-react';
 import { useTransitioning } from '../../../lib/hooks';
 
 import selectors from '../../../selectors';
-import { BoardViews } from '../../../constants/Enums';
+import { BoardViews, UserRoles } from '../../../constants/Enums';
 import Home from '../Home';
 import Board from '../../boards/Board';
 
@@ -22,6 +22,9 @@ const Static = React.memo(() => {
   const board = useSelector(selectors.selectCurrentBoard);
   const isFetching = useSelector(selectors.selectIsContentFetching);
   const isFavoritesActive = useSelector(selectors.selectIsFavoritesActiveForCurrentUser);
+  const currentUser = useSelector(selectors.selectCurrentUser);
+
+  const isManager = currentUser?.role === UserRoles.MANAGER;
 
   const [t] = useTranslation();
 
@@ -115,7 +118,7 @@ const Static = React.memo(() => {
   return (
     <div
       ref={wrapperRef}
-      className={classNames(styles.wrapper, ...wrapperClassNames)}
+      className={classNames(styles.wrapper, isManager ? styles.wrapperNoMargin : wrapperClassNames)}
       onTransitionEnd={handleTransitionEnd}
     >
       {contentNode}

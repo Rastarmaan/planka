@@ -7,14 +7,20 @@ import React from 'react';
 import { useSelector } from 'react-redux';
 
 import selectors from '../../../selectors';
-import { HomeViews } from '../../../constants/Enums';
+import { HomeViews, UserRoles } from '../../../constants/Enums';
 import GridProjectsView from './GridProjectsView';
 import GroupedProjectsView from './GroupedProjectsView';
+import ManagerDashboard from '../../manager-dashboard/ManagerDashboard';
 
 import styles from './Home.module.scss';
 
 const Home = React.memo(() => {
   const view = useSelector(selectors.selectHomeView);
+  const currentUser = useSelector(selectors.selectCurrentUser);
+
+  if (currentUser?.role === UserRoles.MANAGER) {
+    return <ManagerDashboard />;
+  }
 
   let View;
   switch (view) {
