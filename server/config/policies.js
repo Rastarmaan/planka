@@ -44,6 +44,7 @@ module.exports.policies = {
   'project-stats/show': ['is-authenticated', 'is-external', 'is-admin-or-manager'],
   'project-histories/index': ['is-authenticated', 'is-external', 'is-admin-or-manager'],
   'project-histories/create': ['is-authenticated', 'is-external', 'is-admin-or-manager'],
+  'user-card-stats/show': 'is-authenticated',
   'project-histories/update': ['is-authenticated', 'is-external', 'is-admin-or-manager'],
   'project-histories/delete': ['is-authenticated', 'is-external', 'is-admin-or-manager'],
 
