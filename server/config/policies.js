@@ -41,6 +41,11 @@ module.exports.policies = {
   'project-categories/update': ['is-authenticated', 'is-external', 'is-admin'],
   'project-categories/delete': ['is-authenticated', 'is-external', 'is-admin'],
 
+  'project-histories/index': ['is-authenticated', 'is-external', 'is-admin-or-manager'],
+  'project-histories/create': ['is-authenticated', 'is-external', 'is-admin-or-manager'],
+  'project-histories/update': ['is-authenticated', 'is-external', 'is-admin-or-manager'],
+  'project-histories/delete': ['is-authenticated', 'is-external', 'is-admin-or-manager'],
+
   'spaces/index': ['is-authenticated', 'is-external'],
   'spaces/create': ['is-authenticated', 'is-external', 'is-admin'],
   'spaces/show': ['is-authenticated', 'is-external'],

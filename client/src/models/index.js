@@ -35,6 +35,7 @@ import ProjectProfile from './ProjectProfile';
 import ProjectProfileSection from './ProjectProfileSection';
 import ProjectProfileField from './ProjectProfileField';
 import ProjectProfileData from './ProjectProfileData';
+import ProjectHistory from './ProjectHistory';
 import Task from './Task';
 import TaskList from './TaskList';
 import Team from './Team';
@@ -80,6 +81,7 @@ export {
   ProjectProfileSection,
   ProjectProfileField,
   ProjectProfileData,
+  ProjectHistory,
   Task,
   TaskList,
   Team,

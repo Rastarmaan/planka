@@ -21,6 +21,7 @@ import FilledProjectProfilesPane from './FilledProjectProfilesPane';
 import TeamsPane from './TeamsPane';
 import UsersPane from './UsersPane';
 import WebhooksPane from './WebhooksPane';
+import HistoryPane from './HistoryPane';
 
 import styles from './AdministrationModal.module.scss';
 
@@ -75,6 +76,12 @@ const AdministrationModal = React.memo(() => {
             render: () => <ReportsPane />,
           },
           {
+            menuItem: t('common.history', {
+              defaultValue: 'History',
+            }),
+            render: () => <HistoryPane />,
+          },
+          {
             menuItem: t('common.profileTemplates'),
             render: () => <ProjectProfilesPane />,
           },
@@ -101,24 +108,29 @@ const AdministrationModal = React.memo(() => {
   const isUsersPaneActive = activeTabIndex === 0;
 
   let reportsPaneIndex = -1;
+  let historyPaneIndex = -1;
   let profileTemplatesPaneIndex = -1;
   let projectProfilesPaneIndex = -1;
   if (isAdmin) {
     reportsPaneIndex = 3;
-    profileTemplatesPaneIndex = 4;
-    projectProfilesPaneIndex = 5;
+    historyPaneIndex = 4;
+    profileTemplatesPaneIndex = 5;
+    projectProfilesPaneIndex = 6;
   } else if (isAdminOrManager) {
     reportsPaneIndex = 1;
-    profileTemplatesPaneIndex = 2;
-    projectProfilesPaneIndex = 3;
+    historyPaneIndex = 2;
+    profileTemplatesPaneIndex = 3;
+    projectProfilesPaneIndex = 4;
   }
   const isReportsPaneActive = activeTabIndex === reportsPaneIndex;
+  const isHistoryPaneActive = activeTabIndex === historyPaneIndex;
   const isProfileTemplatesPaneActive = activeTabIndex === profileTemplatesPaneIndex;
   const isProjectProfilesPaneActive = activeTabIndex === projectProfilesPaneIndex;
 
   const isLargeModal =
     isUsersPaneActive ||
     isReportsPaneActive ||
+    isHistoryPaneActive ||
     isProfileTemplatesPaneActive ||
     isProjectProfilesPaneActive;
 

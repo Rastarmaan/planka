@@ -32,6 +32,7 @@ import notifications from './notifications';
 import projectCategories from './project-categories';
 import projectManagers from './project-managers';
 import projectProfiles from './projectProfiles';
+import projectHistories from './projectHistories';
 import projectTeams from './project-teams';
 import projectVersions from './project-versions';
 import projects from './projects';
@@ -60,6 +61,7 @@ export default {
   ...webhooks,
   ...reports,
   ...projectProfiles,
+  ...projectHistories,
   ...users,
   ...projects,
   ...spaces,

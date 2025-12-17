@@ -29,6 +29,7 @@ import projectCategories from './project-categories';
 import projectManagers from './project-managers';
 import projectTeams from './project-teams';
 import projectProfiles from './projectProfiles';
+import projectHistories from './projectHistories';
 import projects from './projects';
 import reports from './reports';
 import router from './router';
@@ -56,6 +57,7 @@ export default {
   ...users,
   ...projects,
   ...projectProfiles,
+  ...projectHistories,
   ...reports,
   ...spaces,
   ...folders,
