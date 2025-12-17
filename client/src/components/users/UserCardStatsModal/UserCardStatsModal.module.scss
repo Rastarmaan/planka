@@ -1,0 +1,56 @@
+.modal {
+  max-width: 720px !important;
+}
+
+.filterRow {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 14px;
+}
+
+.filterLabel {
+  font-weight: 700;
+  color: #1f2532;
+}
+
+.boardDropdown {
+  min-width: 220px;
+}
+
+.summaryCards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 12px;
+  margin-bottom: 14px;
+}
+
+.card {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08) !important;
+  border-radius: 10px !important;
+  padding: 14px !important;
+}
+
+.accentRed :global(.statistic > .value),
+.accentRed :global(.statistic > .label) {
+  color: #d63b3b !important;
+}
+
+.accentGreen :global(.statistic > .value),
+.accentGreen :global(.statistic > .label) {
+  color: #218838 !important;
+}
+
+.table :global(.table) {
+  margin: 0;
+}
+
+.boardCell {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.table :global(.table thead th) {
+  background: #f7f9fc;
+}

@@ -18,6 +18,7 @@ import styles from './UserStep.module.scss';
 
 const UserStep = React.memo(({ onClose }) => {
   const isLogouting = useSelector(selectors.selectIsLogouting);
+  const currentUserId = useSelector(selectors.selectCurrentUserId);
 
   const withAdministration = useSelector(
     (state) =>
@@ -32,6 +33,11 @@ const UserStep = React.memo(({ onClose }) => {
     dispatch(entryActions.openUserSettingsModal());
     onClose();
   }, [onClose, dispatch]);
+
+  const handleCardStatsClick = useCallback(() => {
+    dispatch(entryActions.openUserCardStatsModal(currentUserId));
+    onClose();
+  }, [currentUserId, onClose, dispatch]);
 
   const handleAdministrationClick = useCallback(() => {
     dispatch(entryActions.openAdministrationModal());
@@ -65,6 +71,12 @@ const UserStep = React.memo(({ onClose }) => {
           <Menu.Item className={styles.menuItem} onClick={handleSettingsClick}>
             <Icon name="user circle outline" className={styles.menuItemIcon} />
             {t('common.settings', {
+              context: 'title',
+            })}
+          </Menu.Item>
+          <Menu.Item className={styles.menuItem} onClick={handleCardStatsClick}>
+            <Icon name="chart bar" className={styles.menuItemIcon} />
+            {t('common.userCardStats', {
               context: 'title',
             })}
           </Menu.Item>

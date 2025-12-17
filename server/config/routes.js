@@ -174,6 +174,7 @@ module.exports.routes = {
   'GET /api/projects/:projectId/project-histories': 'project-histories/index',
   'POST /api/projects/:projectId/project-histories': 'project-histories/create',
   'PATCH /api/project-histories/:id': 'project-histories/update',
+  'GET /api/user/card-stats': 'user-card-stats/show',
   'DELETE /api/project-histories/:id': 'project-histories/delete',
 
   'GET /api/board-templates': 'board-templates/show-all',

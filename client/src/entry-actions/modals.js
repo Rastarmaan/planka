@@ -68,6 +68,16 @@ const openBoardReleasesModal = () => ({
   },
 });
 
+const openUserCardStatsModal = (userId) => ({
+  type: EntryActionTypes.MODAL_OPEN,
+  payload: {
+    type: ModalTypes.USER_CARD_STATS,
+    params: {
+      userId,
+    },
+  },
+});
+
 const closeModal = () => ({
   type: EntryActionTypes.MODAL_CLOSE,
   payload: {},
@@ -82,5 +92,6 @@ export default {
   openBoardActivitiesModal,
   openBoardVersionsModal,
   openBoardReleasesModal,
+  openUserCardStatsModal,
   closeModal,
 };

@@ -13,6 +13,7 @@ import boardTeams from './board-teams';
 import boardTemplates from './board-templates';
 import boardVersions from './board-versions';
 import boards from './boards';
+import userCardStats from './user-card-stats';
 import cardDependencies from './card-dependencies';
 import cardLabels from './card-labels';
 import cardMemberships from './card-memberships';
@@ -79,6 +80,7 @@ export default {
   ...backgroundImages,
   ...baseCustomFieldGroups,
   ...boards,
+  ...userCardStats,
   ...boardMemberships,
   ...boardTemplates,
   ...boardVersions,

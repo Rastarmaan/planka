@@ -598,6 +598,63 @@ export const selectCardsForCurrentBoard = createSelector(
   },
 );
 
+export const makeSelectCardsAssignedToUser = () =>
+  createSelector(
+    orm,
+    (_, userId) => userId,
+    ({ Card }, userId) => {
+      if (!userId) {
+        return [];
+      }
+
+      return Card.all()
+        .toModelArray()
+        .filter((cardModel) => cardModel.users.toRefArray().some((user) => user.id === userId))
+        .map((cardModel) => ({
+          id: cardModel.id,
+          name: cardModel.name,
+          boardId: cardModel.boardId,
+          boardName: cardModel.board ? cardModel.board.name : null,
+          listId: cardModel.listId,
+          listName: cardModel.list ? cardModel.list.name : null,
+          dueDate: cardModel.dueDate,
+          isClosed: cardModel.isClosed,
+          isDueCompleted: cardModel.isDueCompleted,
+        }));
+    },
+  );
+
+export const selectCardsAssignedToUser = makeSelectCardsAssignedToUser();
+
+export const makeSelectBoardsForUserCards = () =>
+  createSelector(
+    orm,
+    (_, userId) => userId,
+    ({ Card }, userId) => {
+      if (!userId) {
+        return [];
+      }
+
+      const boardsMap = new Map();
+
+      Card.all()
+        .toModelArray()
+        .forEach((cardModel) => {
+          const isMember = cardModel.users.toRefArray().some((user) => user.id === userId);
+          if (isMember && cardModel.board) {
+            boardsMap.set(cardModel.boardId, {
+              id: cardModel.boardId,
+              name: cardModel.board.name,
+            });
+          }
+        });
+
+      return Array.from(boardsMap.values());
+    },
+  );
+
+export const selectBoardsForUserCards = makeSelectBoardsForUserCards();
+
 export default {
   makeSelectCardById,
   selectCardById,
@@ -638,4 +695,8 @@ export default {
   selectChildCardListsByParentId,
   selectDependencyCardLists,
   selectCardsForCurrentBoard,
+  makeSelectCardsAssignedToUser,
+  selectCardsAssignedToUser,
+  makeSelectBoardsForUserCards,
+  selectBoardsForUserCards,
 };
