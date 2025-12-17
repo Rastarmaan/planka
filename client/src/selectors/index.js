@@ -30,6 +30,7 @@ import positioning from './positioning';
 import projectCategories from './project-categories';
 import projectManagers from './project-managers';
 import projects from './projects';
+import projectHistories from './projectHistories';
 import reports from './reports';
 import reportPhaseMemberships from './reportPhaseMemberships';
 import releaseViewing from './release-viewing';
@@ -53,6 +54,7 @@ export * from './teams';
 export * from './reports';
 export * from './projects';
 export * from './users';
+export * from './projectHistories';
 
 export default {
   ...router,
@@ -63,6 +65,7 @@ export default {
   ...webhooks,
   ...users,
   ...projects,
+  ...projectHistories,
   ...reports,
   ...reportPhaseMemberships,
   ...spaces,

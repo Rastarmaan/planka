@@ -38,6 +38,7 @@ import {
   ProjectProfileSection,
   ProjectProfileField,
   ProjectProfileData,
+  ProjectHistory,
   Task,
   TaskList,
   Team,
@@ -99,6 +100,7 @@ orm.register(
   ProjectProfileSection,
   ProjectProfileField,
   ProjectProfileData,
+  ProjectHistory,
 );
 
 export default orm;
