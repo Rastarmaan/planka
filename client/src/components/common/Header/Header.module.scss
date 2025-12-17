@@ -44,6 +44,27 @@
     background: rgba(0, 0, 0, 0.32);
   }
 
+  .navTab {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-weight: 600;
+    padding: 0 14px;
+    height: 50px;
+  }
+
+  .navIcon {
+    margin: 0 !important;
+    opacity: 0.9;
+  }
+
+  .navLabel {
+    line-height: 1;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+  }
+
   .itemIconEnabled {
     color: #bdff22;
   }

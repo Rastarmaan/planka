@@ -31,6 +31,7 @@ import projectCategories from './project-categories';
 import projectManagers from './project-managers';
 import projects from './projects';
 import projectHistories from './projectHistories';
+import projectStats from './projectStats';
 import reports from './reports';
 import reportPhaseMemberships from './reportPhaseMemberships';
 import releaseViewing from './release-viewing';
@@ -55,6 +56,7 @@ export * from './reports';
 export * from './projects';
 export * from './users';
 export * from './projectHistories';
+export * from './projectStats';
 
 export default {
   ...router,
@@ -66,6 +68,7 @@ export default {
   ...users,
   ...projects,
   ...projectHistories,
+  ...projectStats,
   ...reports,
   ...reportPhaseMemberships,
   ...spaces,

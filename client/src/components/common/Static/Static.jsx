@@ -12,13 +12,14 @@ import { useTransitioning } from '../../../lib/hooks';
 
 import selectors from '../../../selectors';
 import { BoardViews, UserRoles } from '../../../constants/Enums';
+import ProjectStats from '../../projects/ProjectStats';
 import Home from '../Home';
 import Board from '../../boards/Board';
 
 import styles from './Static.module.scss';
 
 const Static = React.memo(() => {
-  const { cardId, projectId } = useSelector(selectors.selectPath);
+  const { cardId, projectId, showProjectStats } = useSelector(selectors.selectPath);
   const board = useSelector(selectors.selectCurrentBoard);
   const isFetching = useSelector(selectors.selectIsContentFetching);
   const isFavoritesActive = useSelector(selectors.selectIsFavoritesActiveForCurrentUser);
@@ -79,6 +80,13 @@ const Static = React.memo(() => {
         </h1>
       </div>
     );
+  } else if (showProjectStats) {
+    wrapperClassNames = [
+      isFavoritesActive ? styles.wrapperProjectWithFavorites : styles.wrapperProject,
+      styles.wrapperFlex,
+    ];
+
+    contentNode = <ProjectStats />;
   } else if (board === undefined) {
     wrapperClassNames = [
       isFavoritesActive ? styles.wrapperProjectWithFavorites : styles.wrapperProject,

@@ -17,7 +17,7 @@ import BoardActions from '../../boards/BoardActions';
 import styles from './Fixed.module.scss';
 
 const Fixed = React.memo(() => {
-  const { projectId } = useSelector(selectors.selectPath);
+  const { projectId, showProjectStats } = useSelector(selectors.selectPath);
   const board = useSelector(selectors.selectCurrentBoard);
   const currentUser = useSelector(selectors.selectCurrentUser);
 
@@ -30,8 +30,8 @@ const Fixed = React.memo(() => {
       <Header />
       <Favorites />
       {projectId === undefined && <HomeActions />}
-      {projectId && <Project />}
-      {board && !board.isFetching && <BoardActions />}
+      {projectId && !showProjectStats && <Project />}
+      {board && !board.isFetching && !showProjectStats && <BoardActions />}
     </div>
   );
 });

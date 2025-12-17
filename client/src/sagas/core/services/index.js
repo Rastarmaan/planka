@@ -31,6 +31,7 @@ import projects from './projects';
 import * as reports from './reports';
 import * as projectProfiles from './projectProfiles';
 import * as projectHistories from './project-histories';
+import * as projectStats from './project-stats';
 import router from './router';
 import socket from './socket';
 import taskLists from './task-lists';
@@ -57,6 +58,7 @@ export default {
   ...reports,
   ...projectProfiles,
   ...projectHistories,
+  ...projectStats,
   ...spaces,
   ...folders,
   ...files,

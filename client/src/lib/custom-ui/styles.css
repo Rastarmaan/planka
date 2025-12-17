@@ -18481,13 +18481,6 @@ ol.ui.horizontal.list li:before,
   border: 1px solid rgba(34, 36, 38, 0.15);
 }
 
-.ui.segment:first-child {
-  margin-top: 0em;
-}
-
-.ui.segment:last-child {
-  margin-bottom: 0em;
-}
 
 /* Vertical */
 
