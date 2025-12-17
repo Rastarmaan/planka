@@ -28,6 +28,10 @@ const Header = React.memo(() => {
   const user = useSelector(selectors.selectCurrentUser);
   const project = useSelector(selectors.selectCurrentProject);
   const board = useSelector(selectors.selectCurrentBoard);
+  const { showProjectStats, projectId } = useSelector(selectors.selectPath);
+  const firstBoardId = useSelector((state) =>
+    selectors.selectFirstBoardIdByProjectId(state, projectId || project?.id),
+  );
   const notificationIds = useSelector(selectors.selectNotificationIdsForCurrentUser);
   const isFavoritesEnabled = useSelector(selectors.selectIsFavoritesEnabled);
   const isEditModeEnabled = useSelector(selectors.selectIsEditModeEnabled);
@@ -73,6 +77,8 @@ const Header = React.memo(() => {
 
   const dispatch = useDispatch();
 
+  const canViewStats = user?.role === UserRoles.ADMIN || user?.role === UserRoles.MANAGER;
+
   const handleToggleFavoritesClick = useCallback(() => {
     dispatch(entryActions.toggleFavorites(!isFavoritesEnabled));
   }, [isFavoritesEnabled, dispatch]);
@@ -116,6 +122,30 @@ const Header = React.memo(() => {
                   <Icon fitted name="pencil" size="small" />
                 </Button>
               )}
+            </Menu.Item>
+            {canViewStats && (
+              <Menu.Item
+                as={Link}
+                to={Paths.PROJECT_STATS.replace(':id', project.id)}
+                className={classNames(styles.item, styles.itemHoverable, styles.navTab)}
+                active={showProjectStats === true}
+              >
+                <Icon name="chart bar" className={styles.navIcon} />
+                <span className={styles.navLabel}>Stats</span>
+              </Menu.Item>
+            )}
+            <Menu.Item
+              as={Link}
+              to={
+                firstBoardId
+                  ? Paths.BOARDS.replace(':id', firstBoardId)
+                  : Paths.PROJECTS.replace(':id', projectId || project.id)
+              }
+              className={classNames(styles.item, styles.itemHoverable, styles.navTab)}
+              active={!showProjectStats}
+            >
+              <Icon name="columns" className={styles.navIcon} />
+              <span className={styles.navLabel}>Boards</span>
             </Menu.Item>
           </Menu.Menu>
         )}

@@ -109,10 +109,17 @@ export function* handleLocationChange() {
 
       if (boardIds && boardIds.length === 0) {
         isEditModeEnabled = true;
+      } else if (boardIds && boardIds.length > 0) {
+        yield call(goToBoard, boardIds[0]);
+        return;
       }
 
       break;
     }
+    case Paths.PROJECT_STATS:
+      isEditModeEnabled = false;
+
+      break;
     case Paths.BOARDS:
       if (currentBoard) {
         ({ id: currentBoardId } = currentBoard);

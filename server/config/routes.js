@@ -170,6 +170,7 @@ module.exports.routes = {
   'PATCH /api/project-categories/:id': 'project-categories/update',
   'DELETE /api/project-categories/:id': 'project-categories/delete',
 
+  'GET /api/projects/:projectId/stats': 'project-stats/show',
   'GET /api/projects/:projectId/project-histories': 'project-histories/index',
   'POST /api/projects/:projectId/project-histories': 'project-histories/create',
   'PATCH /api/project-histories/:id': 'project-histories/update',

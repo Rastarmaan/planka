@@ -46,6 +46,7 @@ function Root({ store, history }) {
               <Route path={Paths.DOCUMENT_TRASH} element={<DocumentManagement />} />
               <Route path={Paths.DOCUMENT_ACTIVITY} element={<DocumentManagement />} />
               <Route path={Paths.PROJECTS} element={<Core />} />
+              <Route path={Paths.PROJECT_STATS} element={<Core />} />
               <Route path={Paths.PROJECT_RELEASES} element={<Core />} />
               <Route path={Paths.BOARDS} element={<Core />} />
               <Route path={Paths.CARDS} element={<Core />} />

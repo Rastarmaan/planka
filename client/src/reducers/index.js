@@ -14,6 +14,7 @@ import orm from './orm';
 import router from './router';
 import socket from './socket';
 import ui from './ui';
+import projectStats from './projectStats';
 
 export default combineReducers({
   router,
@@ -25,4 +26,5 @@ export default combineReducers({
   ui,
   googleCalendar,
   documentActivities,
+  projectStats,
 });

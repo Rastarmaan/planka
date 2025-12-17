@@ -8,6 +8,7 @@ const LOGIN = '/login';
 const OIDC_CALLBACK = '/oidc-callback';
 const PROJECTS = '/projects/:id';
 const PROJECT_RELEASES = '/projects/:id/releases';
+const PROJECT_STATS = '/projects/:id/stats';
 const BOARDS = '/boards/:id';
 const CARDS = '/cards/:id';
 const DOCUMENT_MANAGEMENT = '/document-management';
@@ -25,6 +26,7 @@ export default {
   OIDC_CALLBACK,
   PROJECTS,
   PROJECT_RELEASES,
+  PROJECT_STATS,
   BOARDS,
   CARDS,
   DOCUMENT_MANAGEMENT,

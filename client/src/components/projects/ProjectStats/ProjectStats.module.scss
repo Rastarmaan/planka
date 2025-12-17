@@ -1,0 +1,249 @@
+.wrapper {
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+  width: 60%;
+  margin: 0 auto;
+}
+
+.contentWidth {
+  width: min(1200px, 100%);
+}
+
+.pageHeader {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: min(1200px, 100%);
+}
+
+.heading {
+  background: rgba(255, 255, 255, 0.96);
+  padding: 12px 18px;
+  border-radius: 12px;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.08);
+  text-align: center;
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+}
+
+.sectionHeader {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  margin-bottom: 10px;
+}
+
+.title {
+  font-size: 24px;
+  font-weight: 800;
+  letter-spacing: 0.4px;
+}
+
+.subtitle {
+  color: #4a4f58;
+  text-transform: uppercase;
+  font-weight: 600;
+  letter-spacing: 0.6px;
+  margin-top: 0;
+}
+
+.cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+  gap: 16px;
+  width: min(1200px, 100%);
+  align-items: stretch;
+}
+
+.card {
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.08);
+  border-radius: 10px !important;
+  padding: 14px !important;
+  display: flex !important;
+  align-items: center;
+  justify-content: center;
+  min-height: 170px;
+}
+
+.section {
+  background: rgba(255, 255, 255, 0.92);
+  border: 1px solid #e6ecf5;
+  border-radius: 10px;
+  padding: 18px;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.06);
+  width: min(1200px, 100%);
+}
+
+.chartsSection {
+  display: grid;
+  gap: 14px;
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+}
+
+.chartCard {
+  border: 1px solid #e8eef6;
+  border-radius: 10px;
+  padding: 14px 16px;
+  background: #f9fbff;
+}
+
+.chartBody {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.chartRow {
+  display: grid;
+  grid-template-columns: 1fr 4fr auto;
+  align-items: center;
+  gap: 10px;
+}
+
+.chartLabel {
+  font-weight: 600;
+  color: #1f2532;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.chartValue {
+  font-weight: 700;
+  color: #1f2532;
+}
+
+.barTrack {
+  height: 14px;
+  border-radius: 999px;
+  background: #e8edf4;
+  overflow: hidden;
+  position: relative;
+}
+
+.barFill {
+  position: absolute;
+  left: 0;
+  top: 0;
+  height: 100%;
+}
+
+.barDone {
+  background: linear-gradient(90deg, #3bb273, #2f9b62);
+}
+
+.barDelayed {
+  background: #d63b3b;
+}
+
+.barRemaining {
+  background: #94a3b8;
+}
+
+.legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 8px;
+}
+
+.legendItem {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-weight: 600;
+  color: #4a5568;
+  font-size: 13px;
+}
+
+.legendSwatch {
+  width: 14px;
+  height: 14px;
+  border-radius: 4px;
+}
+
+.tableWrapper {
+  overflow-x: auto;
+}
+
+.progressRow {
+  margin-top: 6px;
+}
+
+.statLabel {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.metricGroup {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-top: 8px;
+}
+
+.metric {
+  background: #f7f9fb;
+  border-radius: 4px;
+  padding: 6px 10px;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-weight: 600;
+}
+
+.metricIcon {
+  opacity: 0.6;
+}
+
+.tableWrapper {
+  border-radius: 8px;
+  overflow: hidden;
+  border: 1px solid #eef2f7;
+}
+
+.tableWrapper :global(.table) {
+  margin: 0;
+}
+
+.tableWrapper :global(.table thead th) {
+  background: #f6f8fc;
+}
+
+.cards :global(.statistic) {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+.cards :global(.statistic > .value) {
+  font-size: 46px;
+  font-weight: 800;
+  line-height: 1;
+}
+
+.cards :global(.statistic > .label) {
+  text-transform: uppercase;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+}
+
+.accentRed :global(.statistic > .value),
+.accentRed :global(.statistic > .label) {
+  color: #d63b3b !important;
+}
+
+.accentOrange :global(.statistic > .value),
+.accentOrange :global(.statistic > .label) {
+  color: #e99527 !important;
+}
