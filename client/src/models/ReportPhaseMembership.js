@@ -30,6 +30,16 @@ export default class extends BaseModel {
 
   static reducer({ type, payload }, ReportPhaseMembership) {
     switch (type) {
+      case ActionTypes.REPORTS_FETCH__SUCCESS:
+        ReportPhaseMembership.all().delete();
+
+        if (payload.reportPhaseMemberships) {
+          payload.reportPhaseMemberships.forEach((membership) => {
+            ReportPhaseMembership.upsert(membership);
+          });
+        }
+
+        break;
       case ActionTypes.SOCKET_RECONNECT_HANDLE:
         ReportPhaseMembership.all().delete();
 

@@ -5,14 +5,15 @@
 
 :global(#app) {
   .wrapper {
-    padding: 9rem 2rem 2rem 2rem;
+    padding: 2rem;
     background-color: white;
     border: 1px solid #d3d8de;
     box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.05);
-    border-radius: 1.5rem;
-    position: relative;
-    width: 74%;
+    border-radius: 0.8rem;
+    width: 74.7dvw;
     margin: 0 auto;
+    display: flex;
+    flex-direction: column;
   }
 
   .header {
@@ -24,23 +25,30 @@
   .flashContainer {
     display: flex;
     align-items: center;
-    justify-content: center;
+    justify-content: flex-start;
     gap: 8px;
-    margin-bottom: 16px;
-    position: absolute;
-    top: 4rem;
-    right: 1.8rem;
+    margin-right: -2.8rem;
+    margin-top: -1rem;
+    margin-bottom: 1rem;
+    position: relative;
+    width: 203px;
 
     span {
+      right: 0;
+      width: 100%;
+      height: 60%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      white-space: normal;
+      word-break: break-word;
+      text-align: center;
+      padding: 0 0.75rem;
       z-index: 10;
-      color: white;
+      color: #224c51;
       font-weight: 600;
       font-size: 1rem;
-    }
-
-    .flashIcon {
       position: absolute;
-      z-index: 1;
     }
   }
 

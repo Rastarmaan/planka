@@ -5,6 +5,27 @@
 
 import ActionTypes from '../constants/ActionTypes';
 
+const fetchReports = () => ({
+  type: ActionTypes.REPORTS_FETCH,
+  payload: {},
+});
+
+fetchReports.success = (reports, reportPhases = [], reportPhaseMemberships = []) => ({
+  type: ActionTypes.REPORTS_FETCH__SUCCESS,
+  payload: {
+    reports,
+    reportPhases,
+    reportPhaseMemberships,
+  },
+});
+
+fetchReports.failure = (error) => ({
+  type: ActionTypes.REPORTS_FETCH__FAILURE,
+  payload: {
+    error,
+  },
+});
+
 const createReport = (report) => ({
   type: ActionTypes.REPORT_CREATE,
   payload: {
@@ -190,6 +211,7 @@ const handleReportPhaseDelete = (reportPhase) => ({
 });
 
 export default {
+  fetchReports,
   createReport,
   handleReportCreate,
   updateReport,

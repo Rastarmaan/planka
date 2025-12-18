@@ -3,5 +3,6 @@
  * Licensed under the Fair Use License: https://github.com/plankanban/planka/blob/master/LICENSE.md
  */
 
-export { default as PipelineCard } from './PipelineCard';
-export { membershipShape } from './PipelineCard';
+import ProjectProfile from './ProjectProfile';
+
+export default ProjectProfile;

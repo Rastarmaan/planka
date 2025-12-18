@@ -39,6 +39,14 @@ export default class extends BaseModel {
         }
 
         break;
+      case ActionTypes.REPORTS_FETCH__SUCCESS:
+        if (payload.reports) {
+          payload.reports.forEach((report) => {
+            Report.upsert(report);
+          });
+        }
+
+        break;
       case ActionTypes.REPORT_CREATE:
       case ActionTypes.REPORT_CREATE_HANDLE:
       case ActionTypes.REPORT_UPDATE__SUCCESS:

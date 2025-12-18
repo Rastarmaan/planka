@@ -7,6 +7,8 @@ import React from 'react';
 import PropTypes from 'prop-types';
 
 import ProjectPipeline from '../ProjectPipeline';
+import ProjectProfile from '../ProjectProfile';
+import ProjectHistory from '../ProjectHistory';
 
 import styles from './DashboardContent.module.scss';
 
@@ -18,9 +20,9 @@ const DashboardContent = React.memo(({ activeTab, selectedProjectId }) => {
       case 'projectAnalysis':
         return <div className={styles.placeholder}>داشبورد تحلیل پروژه</div>;
       case 'projectProfile':
-        return <div className={styles.placeholder}>شناسنامه پروژه</div>;
+        return <ProjectProfile />;
       case 'projectHistory':
-        return <div className={styles.placeholder}>تاریخچه پروژه</div>;
+        return <ProjectHistory />;
       default:
         return null;
     }
