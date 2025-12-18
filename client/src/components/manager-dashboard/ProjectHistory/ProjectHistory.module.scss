@@ -1,0 +1,110 @@
+.wrapper {
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  padding-right: 0.7rem;
+  min-height: 100%;
+  background: #edf1f1;
+  border-radius: 12px;
+  direction: rtl;
+  font-family: "Lahzeh-FaNum", sans-serif;
+}
+
+.sectionCard {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  padding: 32px;
+  background: #ffffff;
+  border: 1px solid #d3d8de;
+  border-radius: 16px;
+  box-shadow: 0 12px 30px rgba(34, 76, 81, 0.08);
+}
+
+.sectionHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.sectionAction {
+  display: flex;
+  align-items: center;
+}
+
+.flashContainer {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 203px;
+  height: 72px;
+  margin-right: -3rem;
+}
+
+.flashIcon {
+  width: 100%;
+  height: auto;
+}
+
+.flashContainer span {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 24px;
+  color: #f1f2f5;
+  font-weight: 600;
+  font-size: 18px;
+  white-space: nowrap;
+}
+
+.sectionBody {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.historyList {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.historyItem {
+  padding: 16px 24px;
+  background: #f5f7f8;
+  border-radius: 8px;
+  border: 1px solid #e2e8f0;
+}
+
+.historyHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 12px;
+  font-size: 14px;
+}
+
+.historyUser {
+  color: #5e6c84;
+  font-weight: 700;
+}
+
+.historyDate {
+  color: #97a0af;
+  font-weight: 500;
+  direction: ltr; /* Ensure date displays correctly */
+}
+
+.historyContent {
+  margin: 0;
+  color: #172b4d;
+  font-size: 14px;
+  line-height: 1.8;
+  text-align: justify;
+}

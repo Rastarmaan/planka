@@ -1,0 +1,427 @@
+/*!
+ * Copyright (c) 2024 PLANKA Software GmbH
+ * Licensed under the Fair Use License: https://github.com/plankanban/planka/blob/master/LICENSE.md
+ */
+
+.wrapper {
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  padding-right: 0.7rem;
+  min-height: 100%;
+  background: #edf1f1;
+  border-radius: 12px;
+  direction: rtl;
+  font-family: "Lahzeh-FaNum", sans-serif;
+}
+
+.sectionCard {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  padding: 32px;
+  background: #ffffff;
+  border: 1px solid #d3d8de;
+  border-radius: 16px;
+  box-shadow: 0 12px 30px rgba(34, 76, 81, 0.08);
+}
+
+.sectionHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.sectionAction {
+  display: flex;
+  align-items: center;
+}
+
+.flashContainer {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 203px;
+  height: 72px;
+  margin-right: -3rem;
+}
+
+.flashIcon {
+  width: 100%;
+  height: auto;
+}
+
+.flashContainer span {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 24px;
+  color: #224c51;
+  font-weight: 600;
+  font-size: 18px;
+  white-space: nowrap;
+}
+
+.sectionBody {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.summaryText {
+  margin: 0;
+  color: #2d3748;
+  font-size: 1.3em;
+  font-weight: 400;
+  line-height: 1.6;
+  text-align: justify;
+}
+
+.moreButton {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 3px;
+  width: 50px;
+  height: 21px;
+  padding: 0;
+  border-radius: 999px;
+  border: none;
+  background: transparent;
+  color: #224c51;
+  font-size: 12px;
+  font-weight: 400;
+  direction: ltr;
+  cursor: pointer;
+  transition: color 0.2s ease;
+}
+
+.moreButtonIcon {
+  color: #224c51 !important;
+  line-height: 1;
+  display: inline-flex !important;
+  align-items: center;
+  justify-content: center;
+}
+
+.teamGrid {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-start;
+  align-items: flex-start;
+  gap: 24px;
+  margin: 0 auto;
+  max-width: 1526px;
+  overflow: hidden;
+  direction: rtl;
+}
+
+.teamCard {
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  width: 170px;
+  flex: 0 0 170px;
+  min-height: 213px;
+  padding: 12px;
+  background:
+    linear-gradient(#eef8f9, #eef8f9) padding-box,
+    linear-gradient(180deg, #74cad0, #e0e0e0) border-box;
+  border: 1px solid transparent;
+  border-radius: 12px;
+  box-shadow: 0 8px 20px rgba(34, 76, 81, 0.08);
+  transition:
+    transform 0.25s ease,
+    box-shadow 0.2s ease,
+    opacity 0.25s ease;
+}
+
+.teamGrid[data-expanded="false"] .teamCard:nth-child(n + 6) {
+  opacity: 0;
+  transform: translateY(-16px);
+  pointer-events: none;
+}
+
+.teamGrid[data-expanded="true"] .teamCard {
+  opacity: 1;
+  transform: translateY(0);
+  transition-delay: calc(var(--card-index, 0) * 40ms);
+}
+
+.teamFooter {
+  align-self: flex-end;
+  display: flex;
+  width: auto;
+  margin-top: 12px;
+}
+
+.accountGrid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  justify-content: flex-start;
+  align-items: flex-start;
+  direction: rtl;
+}
+
+.accountCard {
+  box-sizing: border-box;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  min-height: 40px;
+  padding: 12px;
+  flex: 1 1 310px;
+  max-width: 510px;
+  background:
+    linear-gradient(#eef8f9, #eef8f9) padding-box,
+    linear-gradient(180deg, #74cad0, #e0e0e0) border-box;
+  border: 1px solid transparent;
+  border-radius: 8px;
+}
+
+.accountLink {
+  color: #2c646a;
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 1.5;
+  direction: ltr;
+  white-space: nowrap;
+}
+
+.accountIconWrapper {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #00afe5 14.64%, #0094d4 85.36%);
+}
+
+.accountIcon {
+  color: #ffffff !important;
+  font-size: 14px !important;
+}
+
+.attachmentGrid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+  justify-content: flex-start;
+  direction: rtl;
+}
+
+.attachmentCard {
+  box-sizing: border-box;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 16px;
+  flex: 0 1 calc((100% - 48px) / 4);
+  max-width: 244px;
+  min-height: 87px;
+  padding: 16px;
+  background: #eef8f9;
+  border: 1px solid #eaecef;
+  border-radius: 12px;
+  direction: rtl;
+}
+
+.attachmentIcon {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 39px;
+  height: 39px;
+  border-radius: 10px;
+  background: linear-gradient(180deg, #f3f8ff 0%, #dce8f7 100%);
+}
+
+.attachmentIcon::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: 10px;
+  box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.08);
+}
+
+.attachmentBadge {
+  position: absolute;
+  bottom: -6px;
+  right: 50%;
+  transform: translateX(50%);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 32px;
+  padding: 0 6px;
+  height: 16px;
+  border-radius: 4px;
+  font-size: 10px;
+  font-weight: 600;
+  color: #ffffff;
+  letter-spacing: 0.5px;
+}
+
+.attachmentBadge--jpg {
+  background: #c548f1;
+}
+
+.attachmentBadge--png {
+  background: #2c7dfa;
+}
+
+.attachmentBadge--gif {
+  background: #ff8b3d;
+}
+
+.attachmentBadge--pdf {
+  background: #f55252;
+}
+
+.attachmentContent {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  align-items: flex-start;
+  width: 100%;
+}
+
+.attachmentTitle {
+  color: #224c51;
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 22px;
+  width: 100%;
+  text-align: right;
+}
+
+.attachmentLink {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  color: #2c646a;
+  font-size: 12px;
+  font-weight: 300;
+  line-height: 18px;
+  direction: ltr;
+  text-decoration: none;
+  transition: color 0.2s ease;
+}
+
+.attachmentLink:hover {
+  color: #0c7e8d;
+}
+
+.attachmentLinkIcon {
+  transform: rotate(-60deg);
+  color: #718096 !important;
+  font-size: 12px !important;
+}
+
+.avatar {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  overflow: hidden;
+  background: #d8ecef;
+  box-shadow: 0 0 4px rgba(0, 0, 0, 0.25);
+}
+
+.avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.avatarInitials {
+  color: #224c51;
+  font-weight: 700;
+  font-size: 22px;
+}
+
+.teamInfo {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  text-align: center;
+  width: 100%;
+}
+
+.role {
+  color: #224c51;
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 29px;
+  width: 100%;
+}
+
+.name {
+  color: #224c51;
+  font-size: 12px;
+  font-weight: 400;
+  line-height: 1.1;
+  width: 100%;
+}
+
+.email {
+  color: #718096;
+  font-size: 10px;
+  line-height: 20px;
+  direction: ltr;
+}
+
+@media (max-width: 768px) {
+  .wrapper {
+    padding: 24px;
+  }
+
+  .sectionCard {
+    padding: 24px;
+  }
+
+  .flashContainer {
+    width: 180px;
+    height: 64px;
+  }
+
+  .flashContainer span {
+    font-size: 16px;
+  }
+
+  .teamGrid {
+    justify-content: flex-start;
+  }
+
+  .attachmentCard {
+    flex: 0 1 calc((100% - 16px) / 2);
+  }
+}
+
+@media (min-width: 1024px) {
+  .teamGrid {
+    justify-content: flex-start;
+  }
+}
+
+@media (max-width: 540px) {
+  .attachmentCard {
+    flex: 0 0 100%;
+  }
+}
