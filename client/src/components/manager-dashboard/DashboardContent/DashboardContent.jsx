@@ -22,7 +22,7 @@ const DashboardContent = React.memo(({ activeTab, selectedProjectId }) => {
       case 'projectProfile':
         return <ProjectProfile />;
       case 'projectHistory':
-        return <ProjectHistory />;
+        return <ProjectHistory selectedProjectId={selectedProjectId} />;
       default:
         return null;
     }
