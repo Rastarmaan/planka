@@ -10,6 +10,7 @@ import ProjectPipeline from '../ProjectPipeline';
 import ProjectProfile from '../ProjectProfile';
 import ProjectHistory from '../ProjectHistory';
 import ProjectAnalysis from '../ProjectAnalysis';
+import MembersMonitoring from '../MembersMonitoring';
 
 import styles from './DashboardContent.module.scss';
 
@@ -24,6 +25,8 @@ const DashboardContent = React.memo(({ activeTab, selectedProjectId }) => {
         return <ProjectProfile />;
       case 'projectHistory':
         return <ProjectHistory selectedProjectId={selectedProjectId} />;
+      case 'membersMonitoring':
+        return <MembersMonitoring />;
       default:
         return null;
     }
