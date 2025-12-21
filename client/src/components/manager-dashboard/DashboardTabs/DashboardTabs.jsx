@@ -11,7 +11,7 @@ import styles from './DashboardTabs.module.scss';
 
 const TAB_CONFIG = [
   { key: 'managerView', label: 'نمای مدیران' },
-  { key: 'membersMonitoring', label: 'مانیتورینگ اعضای رستار' },
+  // { key: 'membersMonitoring', label: 'مانیتورینگ اعضای رستار' },
   { key: 'projectAnalysis', label: 'داشبورد تحلیل پروژه' },
   { key: 'projectProfile', label: 'شناسنامه پروژه' },
   { key: 'projectHistory', label: 'تاریخچه پروژه' },
