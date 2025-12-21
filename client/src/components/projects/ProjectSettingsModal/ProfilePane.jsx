@@ -240,6 +240,7 @@ const FieldInput = React.memo(({ field, value, onChange, projectId }) => {
       );
 
     case 'URL':
+    case 'LINK':
       return (
         <Form.Field>
           <Input

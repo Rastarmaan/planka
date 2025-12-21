@@ -642,6 +642,21 @@ const FieldInput = React.memo(({ field, value, onChange, projectId }) => {
         </Form.Field>
       );
 
+    case 'link':
+    case 'LINK':
+      return (
+        <Form.Field>
+          <Input
+            label={field.label}
+            value={value || ''}
+            onChange={handleChange}
+            required={field.metadata?.isRequired}
+            type="url"
+            placeholder="https://"
+          />
+        </Form.Field>
+      );
+
     case 'date':
     case 'DATE': {
       const parseDateToObject = (dateStr) => {

@@ -548,6 +548,7 @@ export default {
       fieldType_file: 'File',
       fieldType_number: 'Number',
       fieldType_people: 'People',
+      fieldType_link: 'Link',
 
       // People field translations
       selectUser: 'Select user',

@@ -10,4 +10,5 @@ export default {
   FILE: 'file',
   NUMBER: 'number',
   PEOPLE: 'people',
+  LINK: 'link',
 };

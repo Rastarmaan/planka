@@ -17,6 +17,7 @@ const FieldTypes = {
   FILE: 'file',
   NUMBER: 'number',
   PEOPLE: 'people',
+  LINK: 'link',
 };
 
 module.exports = {
