@@ -34,6 +34,7 @@ import {
 import { selectAllProjects } from '../../../selectors/projects';
 import entryActions from '../../../entry-actions';
 import api from '../../../api';
+import PeopleField from '../../projects/ProjectSettingsModal/PeopleField';
 
 import styles from './FilledProjectProfilesPane.module.scss';
 import 'react-datepicker/dist/react-datepicker.css';
@@ -722,6 +723,10 @@ const FieldInput = React.memo(({ field, value, onChange, projectId }) => {
           />
         </Form.Field>
       );
+
+    case 'people':
+    case 'PEOPLE':
+      return <PeopleField field={field} projectId={projectId} />;
 
     case 'text':
     case 'TEXT':

@@ -62,6 +62,18 @@ const uploadProfileFile = (projectId, fieldId, file) => {
 const getProfileFileUrl = (uploadedFileId, filename) =>
   `/api/profile-files/${uploadedFileId}/${filename}`;
 
+const getProjectProfilePeople = (projectId, fieldId, headers) =>
+  socket.get(`/projects/${projectId}/profile-people/${fieldId}`, undefined, headers);
+
+const createProjectProfilePerson = (projectId, fieldId, data, headers) =>
+  socket.post(`/projects/${projectId}/profile-people/${fieldId}`, data, headers);
+
+const updateProjectProfilePerson = (id, data, headers) =>
+  socket.patch(`/project-profile-people/${id}`, data, headers);
+
+const deleteProjectProfilePerson = (id, headers) =>
+  socket.delete(`/project-profile-people/${id}`, undefined, headers);
+
 export default {
   getProjectProfiles,
   createProjectProfile,
@@ -78,4 +90,8 @@ export default {
   saveProjectProfileData,
   uploadProfileFile,
   getProfileFileUrl,
+  getProjectProfilePeople,
+  createProjectProfilePerson,
+  updateProjectProfilePerson,
+  deleteProjectProfilePerson,
 };

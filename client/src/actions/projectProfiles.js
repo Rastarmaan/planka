@@ -298,6 +298,103 @@ const handleProjectProfileDataSave = (data) => ({
   },
 });
 
+const handleProjectProfilePeopleLoad = (fieldId, people) => ({
+  type: ActionTypes.PROJECT_PROFILE_PEOPLE_LOAD_HANDLE,
+  payload: {
+    fieldId,
+    people,
+  },
+});
+
+const createProjectProfilePerson = (data) => ({
+  type: ActionTypes.PROJECT_PROFILE_PERSON_CREATE,
+  payload: {
+    data,
+  },
+});
+
+createProjectProfilePerson.success = (localId, person) => ({
+  type: ActionTypes.PROJECT_PROFILE_PERSON_CREATE__SUCCESS,
+  payload: {
+    localId,
+    person,
+  },
+});
+
+createProjectProfilePerson.failure = (localId, error) => ({
+  type: ActionTypes.PROJECT_PROFILE_PERSON_CREATE__FAILURE,
+  payload: {
+    localId,
+    error,
+  },
+});
+
+const handleProjectProfilePersonCreate = (person) => ({
+  type: ActionTypes.PROJECT_PROFILE_PERSON_CREATE_HANDLE,
+  payload: {
+    person,
+  },
+});
+
+const updateProjectProfilePerson = (id, data) => ({
+  type: ActionTypes.PROJECT_PROFILE_PERSON_UPDATE,
+  payload: {
+    id,
+    data,
+  },
+});
+
+updateProjectProfilePerson.success = (person) => ({
+  type: ActionTypes.PROJECT_PROFILE_PERSON_UPDATE__SUCCESS,
+  payload: {
+    person,
+  },
+});
+
+updateProjectProfilePerson.failure = (id, error) => ({
+  type: ActionTypes.PROJECT_PROFILE_PERSON_UPDATE__FAILURE,
+  payload: {
+    id,
+    error,
+  },
+});
+
+const handleProjectProfilePersonUpdate = (person) => ({
+  type: ActionTypes.PROJECT_PROFILE_PERSON_UPDATE_HANDLE,
+  payload: {
+    person,
+  },
+});
+
+const deleteProjectProfilePerson = (id) => ({
+  type: ActionTypes.PROJECT_PROFILE_PERSON_DELETE,
+  payload: {
+    id,
+  },
+});
+
+deleteProjectProfilePerson.success = (person) => ({
+  type: ActionTypes.PROJECT_PROFILE_PERSON_DELETE__SUCCESS,
+  payload: {
+    person,
+  },
+});
+
+deleteProjectProfilePerson.failure = (id, error) => ({
+  type: ActionTypes.PROJECT_PROFILE_PERSON_DELETE__FAILURE,
+  payload: {
+    id,
+    error,
+  },
+});
+
+const handleProjectProfilePersonDelete = (person) => ({
+  type: ActionTypes.PROJECT_PROFILE_PERSON_DELETE_HANDLE,
+  payload: {
+    person,
+  },
+});
+
 export default {
   createProjectProfile,
   handleProjectProfileCreate,
@@ -319,4 +416,11 @@ export default {
   handleProjectProfileFieldDelete,
   handleProjectProfileDataLoad,
   handleProjectProfileDataSave,
+  handleProjectProfilePeopleLoad,
+  createProjectProfilePerson,
+  handleProjectProfilePersonCreate,
+  updateProjectProfilePerson,
+  handleProjectProfilePersonUpdate,
+  deleteProjectProfilePerson,
+  handleProjectProfilePersonDelete,
 };

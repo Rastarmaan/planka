@@ -4,50 +4,25 @@
  */
 
 /**
- * ProjectProfileField.js
+ * ProjectProfilePeople.js
  *
- * @description :: Model for dynamic fields within profile sections
+ * @description :: Model for storing user-role assignments in project profile people fields
  * @docs        :: https://sailsjs.com/docs/concepts/models-and-orm/models
  */
 
-const FieldTypes = {
-  TEXT: 'text',
-  EMAIL: 'email',
-  DATE: 'date',
-  FILE: 'file',
-  NUMBER: 'number',
-  PEOPLE: 'people',
-};
-
 module.exports = {
-  FieldTypes,
-
   attributes: {
     //  ╔═╗╦═╗╦╔╦╗╦╔╦╗╦╦  ╦╔═╗╔═╗
     //  ╠═╝╠╦╝║║║║║ ║ ║╚╗╔╝║╣ ╚═╗
     //  ╩  ╩╚═╩╩ ╩╩ ╩ ╩ ╚╝ ╚═╝╚═╝
 
-    fieldType: {
-      type: 'string',
-      isIn: Object.values(FieldTypes),
-      defaultsTo: FieldTypes.TEXT,
-      columnName: 'field_type',
-    },
-    label: {
-      type: 'string',
-      required: true,
-    },
-    value: {
+    role: {
       type: 'string',
       defaultsTo: '',
     },
-    metadata: {
-      type: 'json',
-      defaultsTo: {},
-    },
     position: {
       type: 'number',
-      required: true,
+      defaultsTo: 0,
     },
     isDeleted: {
       type: 'boolean',
@@ -63,22 +38,33 @@ module.exports = {
     //  ╠═╣╚═╗╚═╗║ ║║  ║╠═╣ ║ ║║ ║║║║╚═╗
     //  ╩ ╩╚═╝╚═╝╚═╝╚═╝╩╩ ╩ ╩ ╩╚═╝╝╚╝╚═╝
 
-    section: {
-      model: 'ProjectProfileSection',
+    project: {
+      model: 'Project',
       required: true,
-      columnName: 'section_id',
+      columnName: 'project_id',
+    },
+    field: {
+      model: 'ProjectProfileField',
+      required: true,
+      columnName: 'field_id',
+    },
+    user: {
+      model: 'User',
+      required: true,
+      columnName: 'user_id',
     },
   },
 
-  tableName: 'project_profile_field',
+  tableName: 'project_profile_people',
 
   customToJSON() {
     return {
-      ...this,
-      type: this.fieldType,
-      sectionId: this.section,
-      isRequired: (this.metadata && this.metadata.isRequired) || false,
-      options: (this.metadata && this.metadata.options) || '',
+      id: this.id,
+      projectId: this.project,
+      fieldId: this.field,
+      userId: this.user,
+      role: this.role,
+      position: this.position,
     };
   },
 };

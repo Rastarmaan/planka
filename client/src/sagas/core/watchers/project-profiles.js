@@ -95,5 +95,33 @@ export default function* projectProfilesWatchers() {
     takeEvery(EntryActionTypes.PROJECT_PROFILE_DATA_SAVE_HANDLE, ({ payload: { data } }) =>
       services.handleProjectProfileDataSave(data),
     ),
+    takeEvery(EntryActionTypes.PROJECT_PROFILE_PEOPLE_LOAD, ({ payload: { projectId, fieldId } }) =>
+      services.loadProjectProfilePeople(projectId, fieldId),
+    ),
+    takeEvery(
+      EntryActionTypes.PROJECT_PROFILE_PEOPLE_LOAD_HANDLE,
+      ({ payload: { fieldId, people } }) =>
+        services.handleProjectProfilePeopleLoad(fieldId, people),
+    ),
+    takeEvery(
+      EntryActionTypes.PROJECT_PROFILE_PERSON_CREATE,
+      ({ payload: { projectId, fieldId, data } }) =>
+        services.createProjectProfilePerson(projectId, fieldId, data),
+    ),
+    takeEvery(EntryActionTypes.PROJECT_PROFILE_PERSON_CREATE_HANDLE, ({ payload: { person } }) =>
+      services.handleProjectProfilePersonCreate(person),
+    ),
+    takeEvery(EntryActionTypes.PROJECT_PROFILE_PERSON_UPDATE, ({ payload: { id, data } }) =>
+      services.updateProjectProfilePerson(id, data),
+    ),
+    takeEvery(EntryActionTypes.PROJECT_PROFILE_PERSON_UPDATE_HANDLE, ({ payload: { person } }) =>
+      services.handleProjectProfilePersonUpdate(person),
+    ),
+    takeEvery(EntryActionTypes.PROJECT_PROFILE_PERSON_DELETE, ({ payload: { id } }) =>
+      services.deleteProjectProfilePerson(id),
+    ),
+    takeEvery(EntryActionTypes.PROJECT_PROFILE_PERSON_DELETE_HANDLE, ({ payload: { person } }) =>
+      services.handleProjectProfilePersonDelete(person),
+    ),
   ]);
 }

@@ -177,6 +177,67 @@ const handleProjectProfileDataSave = (data) => ({
   },
 });
 
+const loadProjectProfilePeople = (projectId, fieldId) => ({
+  type: EntryActionTypes.PROJECT_PROFILE_PEOPLE_LOAD,
+  payload: {
+    projectId,
+    fieldId,
+  },
+});
+
+const handleProjectProfilePeopleLoad = (fieldId, people) => ({
+  type: EntryActionTypes.PROJECT_PROFILE_PEOPLE_LOAD_HANDLE,
+  payload: {
+    fieldId,
+    people,
+  },
+});
+
+const createProjectProfilePerson = (projectId, fieldId, data) => ({
+  type: EntryActionTypes.PROJECT_PROFILE_PERSON_CREATE,
+  payload: {
+    projectId,
+    fieldId,
+    data,
+  },
+});
+
+const handleProjectProfilePersonCreate = (person) => ({
+  type: EntryActionTypes.PROJECT_PROFILE_PERSON_CREATE_HANDLE,
+  payload: {
+    person,
+  },
+});
+
+const updateProjectProfilePerson = (id, data) => ({
+  type: EntryActionTypes.PROJECT_PROFILE_PERSON_UPDATE,
+  payload: {
+    id,
+    data,
+  },
+});
+
+const handleProjectProfilePersonUpdate = (person) => ({
+  type: EntryActionTypes.PROJECT_PROFILE_PERSON_UPDATE_HANDLE,
+  payload: {
+    person,
+  },
+});
+
+const deleteProjectProfilePerson = (id) => ({
+  type: EntryActionTypes.PROJECT_PROFILE_PERSON_DELETE,
+  payload: {
+    id,
+  },
+});
+
+const handleProjectProfilePersonDelete = (person) => ({
+  type: EntryActionTypes.PROJECT_PROFILE_PERSON_DELETE_HANDLE,
+  payload: {
+    person,
+  },
+});
+
 export default {
   createProjectProfile,
   handleProjectProfileCreate,
@@ -200,4 +261,12 @@ export default {
   handleProjectProfileDataLoad,
   saveProjectProfileData,
   handleProjectProfileDataSave,
+  loadProjectProfilePeople,
+  handleProjectProfilePeopleLoad,
+  createProjectProfilePerson,
+  handleProjectProfilePersonCreate,
+  updateProjectProfilePerson,
+  handleProjectProfilePersonUpdate,
+  deleteProjectProfilePerson,
+  handleProjectProfilePersonDelete,
 };

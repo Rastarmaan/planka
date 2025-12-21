@@ -539,6 +539,7 @@ export default {
       fieldTypeDate: 'Date',
       fieldTypeSelect: 'Select',
       fieldTypeCheckbox: 'Checkbox',
+      fieldTypePeople: 'People',
 
       // Field types (snake_case)
       fieldType_text: 'Text',
@@ -546,6 +547,13 @@ export default {
       fieldType_date: 'Date',
       fieldType_file: 'File',
       fieldType_number: 'Number',
+      fieldType_people: 'People',
+
+      // People field translations
+      selectUser: 'Select user',
+      enterRole: 'Enter role',
+      noRole: 'No role assigned',
+      peopleAssigned: 'People assigned',
 
       useAsTemplate: 'Use as Template',
       saveAsTemplate: 'Save as Template',

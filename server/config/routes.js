@@ -98,6 +98,11 @@ module.exports.routes = {
   'GET /api/projects/:projectId/profile-data': 'project-profile-data/index',
   'POST /api/projects/:projectId/profile-data': 'project-profile-data/save',
 
+  'GET /api/projects/:projectId/profile-people/:fieldId': 'project-profile-people/index',
+  'POST /api/projects/:projectId/profile-people/:fieldId': 'project-profile-people/create',
+  'PATCH /api/project-profile-people/:id': 'project-profile-people/update',
+  'DELETE /api/project-profile-people/:id': 'project-profile-people/delete',
+
   'POST /api/projects/:projectId/profile-files/upload': 'project-profile-files/upload',
   'GET /api/profile-files/:uploadedFileId/:filename': 'project-profile-files/download',
 

@@ -27,6 +27,7 @@ import {
   selectProjectProfileDataByProjectId,
 } from '../../../selectors/projectProfiles';
 import entryActions from '../../../entry-actions';
+import PeopleField from './PeopleField';
 
 const ProfilePane = React.memo(() => {
   const [t] = useTranslation();
@@ -143,6 +144,7 @@ const ProfilePane = React.memo(() => {
                 section={section}
                 fieldValues={fieldValues}
                 onFieldChange={handleFieldChange}
+                projectId={currentProject.id}
               />
             ))}
 
@@ -162,7 +164,7 @@ const ProfilePane = React.memo(() => {
   );
 });
 
-const SectionForm = React.memo(({ section, fieldValues, onFieldChange }) => {
+const SectionForm = React.memo(({ section, fieldValues, onFieldChange, projectId }) => {
   const fields = useSelector((state) => selectFieldsBySectionId(state, section.id));
 
   return (
@@ -176,6 +178,7 @@ const SectionForm = React.memo(({ section, fieldValues, onFieldChange }) => {
           field={field}
           value={fieldValues[field.id] || ''}
           onChange={(value) => onFieldChange(field.id, value)}
+          projectId={projectId}
         />
       ))}
     </Segment>
@@ -188,21 +191,24 @@ SectionForm.propTypes = {
   // eslint-disable-next-line react/forbid-prop-types
   fieldValues: PropTypes.object.isRequired,
   onFieldChange: PropTypes.func.isRequired,
+  projectId: PropTypes.string.isRequired,
 };
 
-const FieldInput = React.memo(({ field, value, onChange }) => {
+const FieldInput = React.memo(({ field, value, onChange, projectId }) => {
+  const fieldType = (field.fieldType || field.type || 'text').toUpperCase();
+
   const handleChange = useCallback(
     (e, { value: newValue, checked }) => {
-      if (field.fieldType === 'CHECKBOX') {
+      if (fieldType === 'CHECKBOX') {
         onChange(checked);
       } else {
         onChange(newValue);
       }
     },
-    [field.fieldType, onChange],
+    [fieldType, onChange],
   );
 
-  switch (field.fieldType) {
+  switch (fieldType) {
     case 'TEXTAREA':
       return (
         <Form.Field>
@@ -292,6 +298,9 @@ const FieldInput = React.memo(({ field, value, onChange }) => {
         </Form.Field>
       );
 
+    case 'PEOPLE':
+      return <PeopleField field={field} projectId={projectId} />;
+
     case 'TEXT':
     default:
       return (
@@ -314,6 +323,7 @@ FieldInput.propTypes = {
   // eslint-disable-next-line react/forbid-prop-types
   value: PropTypes.any,
   onChange: PropTypes.func.isRequired,
+  projectId: PropTypes.string.isRequired,
 };
 
 FieldInput.defaultProps = {

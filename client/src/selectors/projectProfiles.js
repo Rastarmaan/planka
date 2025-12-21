@@ -80,7 +80,7 @@ export const selectFieldsBySectionId = createSelector(
     return session.ProjectProfileField.all()
       .filter((field) => field.sectionId === sectionId)
       .orderBy('position')
-      .toModelArray();
+      .toRefArray();
   },
 );
 

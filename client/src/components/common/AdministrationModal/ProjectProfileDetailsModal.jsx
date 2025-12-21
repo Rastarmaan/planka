@@ -142,6 +142,11 @@ const ProjectProfileDetailsModal = React.memo(({ profile, isOpen, onClose, secti
       value: PROJECT_PROFILE_FIELD_TYPES.NUMBER,
       text: t('common.fieldType_number'),
     },
+    {
+      key: 'people',
+      value: PROJECT_PROFILE_FIELD_TYPES.PEOPLE,
+      text: t('common.fieldType_people'),
+    },
   ];
 
   // Section handlers

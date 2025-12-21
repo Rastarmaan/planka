@@ -465,6 +465,7 @@ export default {
       fieldTypeDate: 'تاریخ',
       fieldTypeSelect: 'انتخاب',
       fieldTypeCheckbox: 'چک‌باکس',
+      fieldTypePeople: 'افراد',
 
       // Field types (snake_case)
       fieldType_text: 'متن',
@@ -475,6 +476,13 @@ export default {
       fieldType_date: 'تاریخ',
       fieldType_select: 'انتخاب',
       fieldType_checkbox: 'چک‌باکس',
+      fieldType_people: 'افراد',
+
+      // People field translations
+      selectUser: 'انتخاب کاربر',
+      enterRole: 'نقش را وارد کنید',
+      noRole: 'نقشی تعیین نشده',
+      peopleAssigned: 'افراد تخصیص داده شده',
 
       useAsTemplate: 'استفاده به عنوان قالب',
       saveAsTemplate: 'ذخیره به عنوان قالب',

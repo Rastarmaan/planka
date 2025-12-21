@@ -251,3 +251,88 @@ export function* saveProjectProfileData(projectId, profileId, fieldValues) {
 export function* handleProjectProfileDataSave(data) {
   yield put(actions.handleProjectProfileDataSave(data));
 }
+
+export function* loadProjectProfilePeople(projectId, fieldId) {
+  let people;
+  try {
+    const response = yield call(request, api.getProjectProfilePeople, projectId, fieldId);
+    people = response.items || [];
+  } catch (error) {
+    people = [];
+  }
+
+  yield put(actions.handleProjectProfilePeopleLoad(fieldId, people));
+}
+
+export function* handleProjectProfilePeopleLoad(fieldId, people) {
+  yield put(actions.handleProjectProfilePeopleLoad(fieldId, people));
+}
+
+export function* createProjectProfilePerson(projectId, fieldId, data) {
+  const localId = yield call(createLocalId);
+
+  yield put(
+    actions.createProjectProfilePerson({
+      ...data,
+      id: localId,
+      fieldId,
+      projectId,
+    }),
+  );
+
+  let person;
+  try {
+    ({ item: person } = yield call(
+      request,
+      api.createProjectProfilePerson,
+      projectId,
+      fieldId,
+      data,
+    ));
+  } catch (error) {
+    yield put(actions.createProjectProfilePerson.failure(localId, error));
+    return;
+  }
+
+  yield put(actions.createProjectProfilePerson.success(localId, person));
+}
+
+export function* handleProjectProfilePersonCreate(person) {
+  yield put(actions.handleProjectProfilePersonCreate(person));
+}
+
+export function* updateProjectProfilePerson(id, data) {
+  yield put(actions.updateProjectProfilePerson(id, data));
+
+  let person;
+  try {
+    ({ item: person } = yield call(request, api.updateProjectProfilePerson, id, data));
+  } catch (error) {
+    yield put(actions.updateProjectProfilePerson.failure(id, error));
+    return;
+  }
+
+  yield put(actions.updateProjectProfilePerson.success(person));
+}
+
+export function* handleProjectProfilePersonUpdate(person) {
+  yield put(actions.handleProjectProfilePersonUpdate(person));
+}
+
+export function* deleteProjectProfilePerson(id) {
+  yield put(actions.deleteProjectProfilePerson(id));
+
+  let person;
+  try {
+    ({ item: person } = yield call(request, api.deleteProjectProfilePerson, id));
+  } catch (error) {
+    yield put(actions.deleteProjectProfilePerson.failure(id, error));
+    return;
+  }
+
+  yield put(actions.deleteProjectProfilePerson.success(person));
+}
+
+export function* handleProjectProfilePersonDelete(person) {
+  yield put(actions.handleProjectProfilePersonDelete(person));
+}
