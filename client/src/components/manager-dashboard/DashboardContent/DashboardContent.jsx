@@ -9,6 +9,8 @@ import PropTypes from 'prop-types';
 import ProjectPipeline from '../ProjectPipeline';
 import ProjectProfile from '../ProjectProfile';
 import ProjectHistory from '../ProjectHistory';
+import ProjectAnalysis from '../ProjectAnalysis';
+import MembersMonitoring from '../MembersMonitoring';
 
 import styles from './DashboardContent.module.scss';
 
@@ -18,11 +20,13 @@ const DashboardContent = React.memo(({ activeTab, selectedProjectId }) => {
       case 'managerView':
         return <ProjectPipeline selectedProjectId={selectedProjectId} />;
       case 'projectAnalysis':
-        return <div className={styles.placeholder}>داشبورد تحلیل پروژه</div>;
+        return <ProjectAnalysis selectedProjectId={selectedProjectId} />;
       case 'projectProfile':
         return <ProjectProfile />;
       case 'projectHistory':
-        return <ProjectHistory />;
+        return <ProjectHistory selectedProjectId={selectedProjectId} />;
+      case 'membersMonitoring':
+        return <MembersMonitoring />;
       default:
         return null;
     }

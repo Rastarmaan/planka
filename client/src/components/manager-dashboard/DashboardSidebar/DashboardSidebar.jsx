@@ -3,105 +3,271 @@
  * Licensed under the Fair Use License: https://github.com/plankanban/planka/blob/master/LICENSE.md
  */
 
-import React, { useState, useCallback, useRef } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 import classNames from 'classnames';
 import { Icon } from 'semantic-ui-react';
+import { useDispatch, useSelector } from 'react-redux';
+import { createSelector } from 'redux-orm';
 
-import ManixIcon from '../icons/manix.svg';
-import BazicheIcon from '../icons/baziche.svg';
-import BitboxIcon from '../icons/bitbox.svg';
-import HubgameIcon from '../icons/hubgame.svg';
+import entryActions from '../../../entry-actions';
+import orm from '../../../orm';
 
 import styles from './DashboardSidebar.module.scss';
 
-const ICON_MAP = {
-  manix: ManixIcon,
-  baziche: BazicheIcon,
-  bitbox: BitboxIcon,
-  hubgame: HubgameIcon,
+const UNCATEGORIZED_SECTION_ID = '__uncategorized__';
+const UNCATEGORIZED_LABEL = 'بدون دسته‌بندی';
+const UNCATEGORIZED_COLOR = '#94a3b8';
+const UNNAMED_PROJECT_LABEL = 'پروژه بدون نام';
+const EMPTY_CATEGORY_MESSAGE = 'هنوز پروژه‌ای در این دسته ثبت نشده است.';
+
+const getProjectInitials = (value) => {
+  if (!value) {
+    return '؟';
+  }
+
+  const normalized = value.trim().split(/\s+/).filter(Boolean);
+
+  if (normalized.length === 0) {
+    return '؟';
+  }
+
+  if (normalized.length === 1) {
+    return normalized[0].slice(0, 2);
+  }
+
+  return `${normalized[0].charAt(0)}${normalized[1].charAt(0)}`;
 };
 
-const CATEGORIES = [
-  {
-    id: 'games',
-    name: 'بازی ها',
-    expanded: true,
-    projects: [
-      { id: '1', name: 'دایس مانیکس', icon: 'manix' },
-      { id: '2', name: 'بازیچه', icon: 'baziche' },
-      { id: '3', name: 'بیت باکس', icon: 'bitbox' },
-      { id: '4', name: 'هاب گیم', icon: 'hubgame' },
-    ],
-  },
-  {
-    id: 'ai',
-    name: 'هوش مصنوعی',
-    expanded: true,
-    projects: [
-      { id: '5', name: 'هیومانی', icon: 'manix' },
-      { id: '6', name: 'فلومانی', icon: 'baziche' },
-      { id: '7', name: 'مانی جکت', icon: 'bitbox' },
-      { id: '8', name: 'میرزا', icon: 'hubgame' },
-    ],
-  },
-];
+const selectSidebarData = createSelector(
+  orm,
+  ({ ProjectCategory, Project, ProjectCategoryAssignment }) => {
+    const sections = [];
+    const sectionById = new Map();
+    const categoriesById = new Map();
 
-function ProjectsContainer({ category, selectedProjectId, onProjectClick }) {
-  const contentRef = useRef(null);
+    ProjectCategory.all()
+      .orderBy('name')
+      .toModelArray()
+      .forEach((categoryModel) => {
+        const section = {
+          id: String(categoryModel.id),
+          name: categoryModel.name,
+          color: categoryModel.color,
+          projects: [],
+        };
+
+        sections.push(section);
+        sectionById.set(categoryModel.id, section);
+        categoriesById.set(categoryModel.id, categoryModel);
+      });
+
+    const assignmentsByProjectId = new Map();
+
+    ProjectCategoryAssignment.all()
+      .toRefArray()
+      .forEach((assignment) => {
+        if (!assignmentsByProjectId.has(assignment.projectId)) {
+          assignmentsByProjectId.set(assignment.projectId, []);
+        }
+        assignmentsByProjectId.get(assignment.projectId).push(assignment.categoryId);
+      });
+
+    const uncategorized = [];
+
+    Project.all()
+      .orderBy('name')
+      .toModelArray()
+      .forEach((projectModel) => {
+        const projectRef = projectModel.ref;
+        const projectName = (projectRef.name || '').trim() || UNNAMED_PROJECT_LABEL;
+
+        const summary = {
+          id: String(projectRef.id),
+          name: projectName,
+          iconUrl: projectRef.iconUrl || null,
+          initials: getProjectInitials(projectName),
+        };
+
+        const categoryIds = assignmentsByProjectId.get(projectRef.id) || [];
+
+        if (categoryIds.length === 0) {
+          uncategorized.push({
+            ...summary,
+            iconColor: UNCATEGORIZED_COLOR,
+          });
+          return;
+        }
+
+        categoryIds.forEach((categoryId) => {
+          const categoryModel = categoriesById.get(categoryId);
+
+          if (!categoryModel) {
+            uncategorized.push({
+              ...summary,
+              iconColor: UNCATEGORIZED_COLOR,
+            });
+            return;
+          }
+
+          let section = sectionById.get(categoryId);
+
+          if (!section) {
+            section = {
+              id: String(categoryModel.id),
+              name: categoryModel.name,
+              color: categoryModel.color,
+              projects: [],
+            };
+
+            sections.push(section);
+            sectionById.set(categoryModel.id, section);
+          }
+
+          section.projects.push({
+            ...summary,
+            iconColor: categoryModel.color,
+          });
+        });
+      });
+
+    sections.forEach((section) => {
+      section.projects.sort((a, b) => a.name.localeCompare(b.name, 'fa'));
+    });
+
+    if (uncategorized.length > 0) {
+      uncategorized.sort((a, b) => a.name.localeCompare(b.name, 'fa'));
+
+      sections.push({
+        id: UNCATEGORIZED_SECTION_ID,
+        name: UNCATEGORIZED_LABEL,
+        color: UNCATEGORIZED_COLOR,
+        projects: uncategorized,
+      });
+    }
+
+    const visibleSections = sections.filter((section) => section.projects.length > 0);
+
+    const defaultProjectId = visibleSections.reduce((result, section) => {
+      if (result) {
+        return result;
+      }
+
+      return section.projects[0]?.id || null;
+    }, null);
+
+    return {
+      sections: visibleSections,
+      defaultProjectId: defaultProjectId || null,
+    };
+  },
+);
+
+function ProjectsContainer({ isExpanded, projects, selectedProjectId, onProjectClick }) {
+  const hasProjects = projects && projects.length > 0;
 
   return (
     <div
-      className={classNames(
-        styles.projectsWrapper,
-        category.expanded && styles.projectsWrapperExpanded,
-      )}
+      className={classNames(styles.projectsWrapper, isExpanded && styles.projectsWrapperExpanded)}
     >
-      <div ref={contentRef} className={styles.projectsContainer}>
-        {category.projects.map((project, index) => {
-          const IconSrc = ICON_MAP[project.icon];
-          return (
+      <div className={styles.projectsContainer} data-empty={!hasProjects}>
+        {hasProjects ? (
+          projects.map((project) => (
             <button
               key={project.id}
               type="button"
               className={classNames(
                 styles.projectItem,
                 selectedProjectId === project.id && styles.projectItemActive,
-                index === 0 && styles.projectItemFirst,
               )}
               onClick={() => onProjectClick(project.id)}
             >
-              <div className={styles.projectIcon}>
-                {IconSrc && (
-                  <img src={IconSrc} alt={project.name} className={styles.projectIconImage} />
+              <div
+                className={styles.projectIcon}
+                style={{ backgroundColor: project.iconColor || UNCATEGORIZED_COLOR }}
+              >
+                {project.iconUrl ? (
+                  <img src={project.iconUrl} alt="" className={styles.projectIconImage} />
+                ) : (
+                  <span className={styles.projectIconFallback}>{project.initials}</span>
                 )}
               </div>
               <span className={styles.projectName}>{project.name}</span>
             </button>
-          );
-        })}
+          ))
+        ) : (
+          <div className={styles.projectsEmpty}>{EMPTY_CATEGORY_MESSAGE}</div>
+        )}
       </div>
     </div>
   );
 }
 
 ProjectsContainer.propTypes = {
-  category: PropTypes.object.isRequired, // eslint-disable-line react/forbid-prop-types
+  isExpanded: PropTypes.bool.isRequired,
+  projects: PropTypes.arrayOf(
+    PropTypes.shape({
+      id: PropTypes.string.isRequired,
+      name: PropTypes.string.isRequired,
+      initials: PropTypes.string.isRequired,
+      iconColor: PropTypes.string,
+      iconUrl: PropTypes.string,
+    }),
+  ),
   selectedProjectId: PropTypes.string,
   onProjectClick: PropTypes.func.isRequired,
 };
 
 ProjectsContainer.defaultProps = {
+  projects: [],
   selectedProjectId: null,
 };
 
 const DashboardSidebar = React.memo(({ selectedProjectId, onProjectSelect }) => {
-  const [categories, setCategories] = useState(CATEGORIES);
+  const dispatch = useDispatch();
+
+  useEffect(() => {
+    dispatch(entryActions.getProjectCategories());
+  }, [dispatch]);
+
+  const { sections, defaultProjectId } = useSelector(selectSidebarData);
+
+  useEffect(() => {
+    if (!selectedProjectId && defaultProjectId) {
+      onProjectSelect(defaultProjectId);
+    }
+  }, [defaultProjectId, onProjectSelect, selectedProjectId]);
+
+  const [expandedSections, setExpandedSections] = useState({});
+
+  useEffect(() => {
+    setExpandedSections((prev) => {
+      const next = { ...prev };
+      let changed = false;
+
+      sections.forEach((section) => {
+        if (next[section.id] === undefined) {
+          next[section.id] = true;
+          changed = true;
+        }
+      });
+
+      Object.keys(next).forEach((sectionId) => {
+        if (!sections.some((section) => section.id === sectionId)) {
+          delete next[sectionId];
+          changed = true;
+        }
+      });
+
+      return changed ? next : prev;
+    });
+  }, [sections]);
 
   const handleCategoryToggle = useCallback((categoryId) => {
-    setCategories((prev) =>
-      prev.map((cat) => (cat.id === categoryId ? { ...cat, expanded: !cat.expanded } : cat)),
-    );
+    setExpandedSections((prev) => ({
+      ...prev,
+      [categoryId]: !prev[categoryId],
+    }));
   }, []);
 
   const handleProjectClick = useCallback(
@@ -118,30 +284,38 @@ const DashboardSidebar = React.memo(({ selectedProjectId, onProjectSelect }) => 
       </div>
 
       <div className={styles.categoriesContainer}>
-        {categories.map((category) => (
-          <div key={category.id} className={styles.categorySection}>
-            <button
-              type="button"
-              className={styles.categoryHeader}
-              onClick={() => handleCategoryToggle(category.id)}
-            >
-              <span className={styles.categoryName}>{category.name}</span>
-              <Icon
-                name="chevron down"
-                className={classNames(
-                  styles.categoryChevron,
-                  !category.expanded && styles.categoryChevronCollapsed,
-                )}
-              />
-            </button>
+        {sections.length === 0 ? (
+          <div className={styles.emptyState}>پروژه‌ای برای نمایش وجود ندارد.</div>
+        ) : (
+          sections.map((section) => {
+            const isExpanded = expandedSections[section.id] !== false;
+            return (
+              <div key={section.id} className={styles.categorySection}>
+                <button
+                  type="button"
+                  className={styles.categoryHeader}
+                  onClick={() => handleCategoryToggle(section.id)}
+                >
+                  <span className={styles.categoryName}>{section.name}</span>
+                  <Icon
+                    name="chevron down"
+                    className={classNames(
+                      styles.categoryChevron,
+                      !isExpanded && styles.categoryChevronCollapsed,
+                    )}
+                  />
+                </button>
 
-            <ProjectsContainer
-              category={category}
-              selectedProjectId={selectedProjectId}
-              onProjectClick={handleProjectClick}
-            />
-          </div>
-        ))}
+                <ProjectsContainer
+                  isExpanded={isExpanded}
+                  projects={section.projects}
+                  selectedProjectId={selectedProjectId}
+                  onProjectClick={handleProjectClick}
+                />
+              </div>
+            );
+          })
+        )}
       </div>
     </div>
   );

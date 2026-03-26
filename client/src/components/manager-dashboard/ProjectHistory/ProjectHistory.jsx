@@ -3,12 +3,23 @@
  * Licensed under the Fair Use License: https://github.com/plankanban/planka/blob/master/LICENSE.md
  */
 
-import React from 'react';
+import React, { useEffect, useMemo } from 'react';
 import PropTypes from 'prop-types';
+import { useDispatch, useSelector } from 'react-redux';
 // eslint-disable-next-line import/no-unresolved
 import flashSvg from '../icons/flash-gray.svg?url';
 
+import entryActions from '../../../entry-actions';
+import selectors, { selectProjectHistoriesByProjectId } from '../../../selectors';
+
 import styles from './ProjectHistory.module.scss';
+
+const DEFAULT_SECTION_TITLE = 'تاریخچه پروژه';
+const EMPTY_STATE_NO_PROJECT = 'برای مشاهده تاریخچه، یک پروژه را انتخاب کنید.';
+const EMPTY_STATE_NO_DATA = 'تاکنون تاریخچه‌ای برای این پروژه ثبت نشده است.';
+const EMPTY_CONTENT_FALLBACK = 'بدون توضیح';
+const UNKNOWN_USER_LABEL = 'کاربر ناشناس';
+const UNKNOWN_DATE_LABEL = 'تاریخ نامشخص';
 
 const FlashTag = React.memo(({ label }) => (
   <div className={styles.flashContainer}>
@@ -41,28 +52,59 @@ SectionCard.defaultProps = {
   action: null,
 };
 
-const HISTORY_ITEMS = [
-  {
-    id: '1',
-    user: 'پریماه بخشی',
-    date: '۱۴۰۴/۰۷/۱۲',
-    content:
-      'لورم ایپسوم متن ساختگی با تولید سادگی نامفهوم از صنعت چاپ، و با استفاده از طراحان گرافیک است، چاپگرها و متون بلکه روزنامه و مجله در ستون و سطرآنچنان که لازم است، و برای شرایط فعلی تکنولوژی مورد نیاز، و کاربردهای متنوع با هدف بهبود ابزارهای کاربردی می باشد، کتابهای زیادی در شصت و سه درصد گذشته حال و آینده، شناخت فراوان جامعه و متخصصان را می طلبد، تا با نرم افزارها شناخت بیشتری برای طراحان رایانه ای علی الخصوص طراحان خلاق، و فرهنگ پیشرو در زبان فارسی ایجاد کرد، در این صورت می توان امید داشت که تمام و دشواری موجود در ارائه راهکارها، و شرایط سخت تایپ به پایان رسد و زمان مورد نیاز شامل حروفچینی دستاوردهای اصلی، و جوابگوی سوالات پیوسته اهل دنیای موجود طراحی اساسا مورد استفاده قرار گیرد.',
-  },
-  {
-    id: '2',
-    user: 'میترا نوری',
-    date: '۱۴۰۴/۰۷/۱۲',
-    content:
-      'لورم ایپسوم متن ساختگی با تولید سادگی نامفهوم از صنعت چاپ، و با استفاده از طراحان گرافیک است، چاپگرها و متون بلکه روزنامه و مجله در ستون و سطرآنچنان که لازم است، و برای شرایط فعلی تکنولوژی مورد نیاز، و کاربردهای متنوع با هدف بهبود ابزارهای کاربردی می باشد، کتابهای زیادی در شصت و سه درصد گذشته حال و آینده، شناخت فراوان جامعه و متخصصان را می طلبد، تا با نرم افزارها شناخت بیشتری برای طراحان رایانه ای علی الخصوص طراحان خلاق، و فرهنگ پیشرو در زبان فارسی ایجاد کرد، در این صورت می توان امید داشت که تمام و دشواری موجود در ارائه راهکارها، و شرایط سخت تایپ به پایان رسد و زمان مورد نیاز شامل حروفچینی دستاوردهای اصلی، و جوابگوی سوالات پیوسته اهل دنیای موجود طراحی اساسا مورد استفاده قرار گیرد.',
-  },
-];
+const formatHistoryDate = (value) => {
+  if (!value) {
+    return UNKNOWN_DATE_LABEL;
+  }
+
+  const date = new Date(value);
+
+  if (Number.isNaN(date.getTime())) {
+    return UNKNOWN_DATE_LABEL;
+  }
+
+  try {
+    return new Intl.DateTimeFormat('fa-IR', {
+      year: 'numeric',
+      month: '2-digit',
+      day: '2-digit',
+      hour: '2-digit',
+      minute: '2-digit',
+    }).format(date);
+  } catch (error) {
+    return date.toISOString().slice(0, 16).replace('T', ' ');
+  }
+};
+
+const formatMonthLabel = (value) => {
+  if (!value) {
+    return null;
+  }
+
+  const date = new Date(value);
+
+  if (Number.isNaN(date.getTime())) {
+    return null;
+  }
+
+  try {
+    return new Intl.DateTimeFormat('fa-IR', {
+      year: 'numeric',
+      month: 'long',
+    }).format(date);
+  } catch (error) {
+    return null;
+  }
+};
+
+const getUserDisplayName = (user) =>
+  user?.name || user?.username || user?.email || UNKNOWN_USER_LABEL;
 
 const HistoryItem = React.memo(({ item }) => (
   <article className={styles.historyItem}>
     <div className={styles.historyHeader}>
-      <span className={styles.historyUser}>{item.user}</span>
-      <span className={styles.historyDate}>{item.date}</span>
+      <span className={styles.historyUser}>{item.userLabel}</span>
+      <span className={styles.historyDate}>{item.dateLabel}</span>
     </div>
     <p className={styles.historyContent}>{item.content}</p>
   </article>
@@ -71,24 +113,97 @@ const HistoryItem = React.memo(({ item }) => (
 HistoryItem.propTypes = {
   item: PropTypes.shape({
     id: PropTypes.string.isRequired,
-    user: PropTypes.string.isRequired,
-    date: PropTypes.string.isRequired,
+    userLabel: PropTypes.string.isRequired,
+    dateLabel: PropTypes.string.isRequired,
     content: PropTypes.string.isRequired,
   }).isRequired,
 };
 
-const ProjectHistory = React.memo(() => {
+const ProjectHistory = React.memo(({ selectedProjectId }) => {
+  const dispatch = useDispatch();
+
+  const histories = useSelector((state) =>
+    selectProjectHistoriesByProjectId(state, selectedProjectId),
+  );
+  const users = useSelector(selectors.selectAllActiveUsers);
+
+  useEffect(() => {
+    if (!selectedProjectId) {
+      return;
+    }
+
+    // Fetch latest project histories whenever the selected project changes.
+    dispatch(entryActions.fetchProjectHistories(selectedProjectId, null));
+  }, [dispatch, selectedProjectId]);
+
+  const usersById = useMemo(() => {
+    const map = new Map();
+    (users || []).forEach((user) => {
+      if (user?.id) {
+        map.set(user.id, user);
+      }
+    });
+    return map;
+  }, [users]);
+
+  const normalizedHistories = useMemo(() => {
+    if (!histories || histories.length === 0) {
+      return [];
+    }
+
+    return histories.map((history) => {
+      const createdAt = history.createdAt || history.updatedAt || null;
+      const user = history.createdByUserId ? usersById.get(history.createdByUserId) : null;
+      const rawContent = typeof history.text === 'string' ? history.text : '';
+      const content = rawContent.trim().length > 0 ? rawContent : EMPTY_CONTENT_FALLBACK;
+
+      return {
+        id: String(history.id),
+        userLabel: getUserDisplayName(user),
+        dateLabel: formatHistoryDate(createdAt),
+        content,
+        createdAt,
+      };
+    });
+  }, [histories, usersById]);
+
+  const sectionTitle = useMemo(() => {
+    if (!selectedProjectId || normalizedHistories.length === 0) {
+      return DEFAULT_SECTION_TITLE;
+    }
+
+    return formatMonthLabel(normalizedHistories[0].createdAt) || DEFAULT_SECTION_TITLE;
+  }, [normalizedHistories, selectedProjectId]);
+
+  let sectionBody = null;
+
+  if (!selectedProjectId) {
+    sectionBody = <div className={styles.emptyState}>{EMPTY_STATE_NO_PROJECT}</div>;
+  } else if (normalizedHistories.length === 0) {
+    sectionBody = <div className={styles.emptyState}>{EMPTY_STATE_NO_DATA}</div>;
+  } else {
+    sectionBody = (
+      <div className={styles.historyList}>
+        {normalizedHistories.map((item) => (
+          <HistoryItem key={item.id} item={item} />
+        ))}
+      </div>
+    );
+  }
+
   return (
     <div className={styles.wrapper}>
-      <SectionCard title="مهرماه ۱۴۰۴">
-        <div className={styles.historyList}>
-          {HISTORY_ITEMS.map((item) => (
-            <HistoryItem key={item.id} item={item} />
-          ))}
-        </div>
-      </SectionCard>
+      <SectionCard title={sectionTitle}>{sectionBody}</SectionCard>
     </div>
   );
 });
+
+ProjectHistory.propTypes = {
+  selectedProjectId: PropTypes.string,
+};
+
+ProjectHistory.defaultProps = {
+  selectedProjectId: null,
+};
 
 export default ProjectHistory;

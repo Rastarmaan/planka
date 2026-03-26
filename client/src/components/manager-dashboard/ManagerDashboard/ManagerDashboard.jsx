@@ -16,6 +16,7 @@ import styles from './ManagerDashboard.module.scss';
 
 const TABS = {
   MANAGER_VIEW: 'managerView',
+  MEMBERS_MONITORING: 'membersMonitoring',
   PROJECT_ANALYSIS: 'projectAnalysis',
   PROJECT_PROFILE: 'projectProfile',
   PROJECT_HISTORY: 'projectHistory',

@@ -1,0 +1,499 @@
+/*!
+ * Copyright (c) 2024 PLANKA Software GmbH
+ * Licensed under the Fair Use License: https://github.com/plankanban/planka/blob/master/LICENSE.md
+ */
+
+.wrapper {
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  padding: 32px;
+  min-height: 100%;
+  background: #edf1f1;
+  border-radius: 12px;
+  direction: rtl;
+  font-family: "Lahzeh-FaNum", sans-serif;
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+}
+
+.headerContent {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.projectName {
+  margin: 0;
+  color: #224c51;
+  font-size: 28px;
+  font-weight: 700;
+}
+
+.projectSubtitle {
+  margin: 0;
+  color: #2c646a;
+  font-size: 14px;
+  font-weight: 400;
+}
+
+.headerMeta {
+  display: inline-flex;
+  align-items: center;
+  gap: 16px;
+  color: #718096;
+  font-size: 12px;
+}
+
+.metaItem {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  align-items: flex-start;
+}
+
+.metaCaption {
+  color: #718096;
+  font-size: 11px;
+  font-weight: 400;
+}
+
+.metaValue {
+  color: #224c51;
+  font-size: 18px;
+  font-weight: 600;
+}
+
+.metaDivider {
+  display: inline-flex;
+  width: 1px;
+  height: 36px;
+  background: #d3d8de;
+}
+
+.loader {
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  border: 3px solid rgba(73, 166, 175, 0.2);
+  border-top-color: #49a6af;
+  animation: spin 0.9s linear infinite;
+}
+
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.flashContainer {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 203px;
+  height: 72px;
+  margin-right: -40px;
+}
+
+.flashIcon {
+  width: 100%;
+  height: auto;
+}
+
+.flashContainer span {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 24px;
+  color: #224c51;
+  font-size: 18px;
+  font-weight: 600;
+  text-align: center;
+  white-space: nowrap;
+}
+
+.sectionCard {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  padding: 28px;
+  background: #ffffff;
+  border-radius: 16px;
+  border: 1px solid #d3d8de;
+  box-shadow: 0 12px 30px rgba(34, 76, 81, 0.08);
+}
+
+.sectionHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.sectionAction {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.sectionDescription {
+  margin: 0;
+  color: #2d3748;
+  font-size: 14px;
+  line-height: 1.7;
+}
+
+.sectionBody {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.summaryGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+  gap: 16px;
+}
+
+.summaryCard {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 20px;
+  align-items: center;
+  justify-content: center;
+  background:
+    linear-gradient(#eef8f9, #eef8f9) padding-box,
+    linear-gradient(180deg, #74cad0, #e0e0e0) border-box;
+  border-radius: 16px;
+  border: 1px solid transparent;
+  box-shadow: 0 10px 25px rgba(34, 76, 81, 0.08);
+  text-align: center;
+}
+
+.summaryCard[data-tone="warning"] {
+  background:
+    linear-gradient(#fff7ed, #fff7ed) padding-box,
+    linear-gradient(180deg, #fbbf24, #fde68a) border-box;
+}
+
+.summaryCard[data-tone="danger"] {
+  background:
+    linear-gradient(#fff5f5, #fff5f5) padding-box,
+    linear-gradient(180deg, #f87171, #fee2e2) border-box;
+}
+
+.summaryValue {
+  color: #224c51;
+  font-size: 30px;
+  font-weight: 700;
+}
+
+.summaryCard[data-tone="warning"] .summaryValue {
+  color: #d97706;
+}
+
+.summaryCard[data-tone="danger"] .summaryValue {
+  color: #b91c1c;
+}
+
+.summaryLabel {
+  color: #2c646a;
+  font-size: 13px;
+  font-weight: 500;
+}
+
+.boardsList {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.boardRow {
+  display: grid;
+  grid-template-columns: minmax(220px, 260px) minmax(0, 1fr) 80px;
+  gap: 16px;
+  align-items: center;
+  padding: 16px 20px;
+  background: #f5f9f9;
+  border: 1px solid #e0e7ed;
+  border-radius: 14px;
+}
+
+.boardInfo {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.boardName {
+  color: #224c51;
+  font-size: 15px;
+  font-weight: 600;
+  line-height: 1.4;
+  text-align: right;
+}
+
+.boardStats {
+  color: #4a6c70;
+  font-size: 12px;
+}
+
+.progressTrack {
+  position: relative;
+  display: flex;
+  width: 100%;
+  height: 12px;
+  border-radius: 999px;
+  background: #e6eff0;
+  overflow: hidden;
+}
+
+.progressSegment {
+  flex: 0 0 auto;
+  height: 100%;
+}
+
+.progressSegmentDone {
+  background: linear-gradient(135deg, #5fc3c8 10%, #0c7e8d 90%);
+}
+
+.progressSegmentDelayed {
+  background: linear-gradient(135deg, #fb923c 10%, #f97316 90%);
+}
+
+.progressSegmentRemaining {
+  background: #cbd5e0;
+}
+
+.boardPercent {
+  color: #224c51;
+  font-size: 14px;
+  font-weight: 600;
+  text-align: left;
+}
+
+.distributionCard {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  padding: 20px;
+  background: #f5f9f9;
+  border: 1px solid #e0e7ed;
+  border-radius: 16px;
+}
+
+.legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+  align-items: center;
+}
+
+.legendItem {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  color: #2d3748;
+  font-size: 13px;
+  font-weight: 500;
+}
+
+.legendSwatch {
+  width: 14px;
+  height: 14px;
+  border-radius: 4px;
+}
+
+.legendSwatch--done {
+  background: linear-gradient(135deg, #5fc3c8 10%, #0c7e8d 90%);
+}
+
+.legendSwatch--delayed {
+  background: linear-gradient(135deg, #fb923c 10%, #f97316 90%);
+}
+
+.legendSwatch--remaining {
+  background: #cbd5e0;
+}
+
+.legendValue {
+  color: #718096;
+  font-size: 12px;
+}
+
+.emptyState {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 120px;
+  padding: 24px;
+  color: #718096;
+  font-size: 15px;
+  border-radius: 14px;
+  background: #f8fbfb;
+  border: 1px dashed #d3d8de;
+}
+
+.loadingState {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  padding: 48px;
+  color: #224c51;
+  font-size: 15px;
+}
+
+.tableWrapper {
+  width: 100%;
+  overflow-x: auto;
+  border-radius: 12px;
+  border: 1px solid #e0e7ed;
+  background: #f8fbfb;
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  direction: rtl;
+  font-size: 13px;
+}
+
+.table thead tr {
+  background: #eef4f6;
+}
+
+.table th,
+.table td {
+  padding: 14px 16px;
+  text-align: center;
+  color: #2d3748;
+  border-bottom: 1px solid #e2e8f0;
+  white-space: nowrap;
+}
+
+.table th:first-child,
+.table td:first-child {
+  text-align: right;
+}
+
+.table tbody tr:nth-child(even) {
+  background: #ffffff;
+}
+
+.table tbody tr:nth-child(odd) {
+  background: #fdfefe;
+}
+
+.table td[data-negative="true"] {
+  color: #e53e3e;
+  font-weight: 600;
+}
+
+.tableBoardCell {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.tableBoardName {
+  color: #224c51;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.tableBoardHint {
+  color: #4a6c70;
+  font-size: 12px;
+}
+
+.statusPill {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 80px;
+  padding: 6px 12px;
+  border-radius: 999px;
+  background: linear-gradient(135deg, #eef8f9 10%, #d4ecec 100%);
+  color: #224c51;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.releaseVersion {
+  display: inline-flex;
+  flex-direction: column;
+  gap: 6px;
+  min-width: 160px;
+}
+
+.releaseBadge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: fit-content;
+  min-width: 56px;
+  padding: 4px 10px;
+  border-radius: 8px;
+  background: linear-gradient(135deg, #49a6af, #0c7e8d);
+  color: #ffffff;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+@media (max-width: 1024px) {
+  .wrapper {
+    padding: 24px;
+  }
+
+  .boardRow {
+    grid-template-columns: minmax(180px, 1fr);
+    gap: 12px;
+  }
+
+  .boardPercent {
+    justify-self: flex-start;
+  }
+}
+
+@media (max-width: 640px) {
+  .header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .headerMeta {
+    width: 100%;
+    justify-content: space-between;
+  }
+
+  .flashContainer {
+    margin-right: -20px;
+  }
+
+  .summaryGrid {
+    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  }
+
+  .table th,
+  .table td {
+    padding: 12px 10px;
+    font-size: 12px;
+  }
+}
